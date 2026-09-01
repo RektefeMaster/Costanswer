@@ -31,7 +31,7 @@ npm run test:e2e
 browser, and accepts `E2E_BASE_URL`. CI should install Playwright Chromium;
 local runs may set `PLAYWRIGHT_EXECUTABLE_PATH` to an existing browser binary.
 Production builds also require the public canonical origin, for example
-`NEXT_PUBLIC_SITE_URL=https://www.example.com npm run build`. The build fails
+`NEXT_PUBLIC_SITE_URL=https://howmuchusa.safe-bat-8800.chatgpt.site npm run build`. The build fails
 closed when that value is missing so localhost canonicals cannot be published.
 
 ## Data refresh

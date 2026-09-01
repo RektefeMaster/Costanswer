@@ -2,7 +2,11 @@
 
 import type { BreakdownStep } from '@/lib/calculations/contracts';
 import type { ReactNode } from 'react';
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+const subscribeToHydration = () => () => undefined;
+const clientHydratedSnapshot = () => true;
+const serverHydratedSnapshot = () => false;
 
 type FieldProps = {
   label: string;
@@ -32,8 +36,7 @@ export function InputShell({ prefix, suffix, children }: { prefix?: string; suff
 }
 
 export function CalculatorPanel({ title, intro, children }: { title: string; intro: string; children: ReactNode }) {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => setHydrated(true), []);
+  const hydrated = useSyncExternalStore(subscribeToHydration, clientHydratedSnapshot, serverHydratedSnapshot);
   return (
     <section className="calculator-panel" aria-labelledby="calculator-title" data-hydrated={hydrated}>
       <div className="calculator-heading">
