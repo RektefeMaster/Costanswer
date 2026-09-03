@@ -13,7 +13,7 @@ export const ANALYTICS_EVENTS = [
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[number];
 
-const categorySchema = z.enum(['money', 'home', 'auto', 'everyday', 'food', 'shopping']);
+const categorySchema = z.enum(['money', 'home', 'auto', 'everyday', 'food', 'shopping', 'health', 'math', 'education']);
 const toolContextSchema = z.object({
   toolId: z.string().min(1).max(80),
   category: categorySchema,

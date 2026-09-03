@@ -203,10 +203,11 @@ input, select { font-variant-numeric: tabular-nums; }
 .hero-rotate {
   position: relative;
   display: block;
-  overflow: hidden;
+  overflow: visible;
   width: min-content;
   max-width: 100%;
-  height: .94em;
+  height: 1em;
+  clip-path: inset(0 -.3em -.28em -.1em);
 }
 .hero-rotate-pair {
   display: flex;
@@ -215,15 +216,17 @@ input, select { font-variant-numeric: tabular-nums; }
 }
 .hero-noun {
   display: block;
-  flex: 0 0 .94em;
-  height: .94em;
+  overflow: visible;
+  flex: 0 0 1em;
+  height: 1em;
   width: max-content;
   max-width: 100%;
-  padding-right: .12em;
+  padding-right: .18em;
   color: #207767;
   font-style: italic;
   font-weight: 400;
-  line-height: .94em;
+  line-height: 1;
+  white-space: nowrap;
 }
 @keyframes hero-pair-slide {
   from { transform: translateY(0); }
@@ -565,8 +568,8 @@ input, select { font-variant-numeric: tabular-nums; }
   .brand-mark { width: 30px; height: 30px; }
   .hero { min-height: auto; gap: 36px; padding-block: 36px 48px; }
   .hero h1 { font-size: clamp(32px, 9.5vw, 48px); }
-  .hero-rotate, .hero-noun { height: auto; min-height: 1em; line-height: 1.05; }
-  .hero-rotate { overflow: visible; }
+  .hero-rotate, .hero-noun { height: 1em; min-height: 1em; line-height: 1; }
+  .hero-rotate { overflow: visible; clip-path: inset(0 -.3em -.28em -.1em); }
   .hero-rotate-pair { animation: none; transform: none; }
   .hero-rotate-pair .hero-noun:first-child { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
   .hero-lede { margin-top: 20px; font-size: 16px; }
@@ -1297,6 +1300,147 @@ input, select { font-variant-numeric: tabular-nums; }
   .dataset-card { padding: 22px; }
   .dataset-card dl > div { grid-template-columns: 1fr; gap: 4px; }
   .dataset-links { flex-direction: column; align-items: flex-start; }
+}
+
+.schedule-scroll {
+  margin: 0 30px 24px;
+  overflow-x: auto;
+  overscroll-behavior: contain;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+.schedule-scroll table {
+  width: 100%;
+  min-width: 520px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.schedule-scroll th, .schedule-scroll td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--line);
+  text-align: right;
+  font-size: 13px;
+}
+.schedule-scroll th:first-child, .schedule-scroll td:first-child { text-align: left; }
+.schedule-scroll th {
+  position: sticky;
+  top: 0;
+  background: #f6f3ea;
+  font-size: 10px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.schedule-toggle { margin: 0 30px 24px; }
+.scientific-keypad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 30px 24px;
+}
+.scientific-keypad button {
+  min-height: var(--touch);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 700;
+}
+.scientific-keypad button:hover, .scientific-keypad button:focus-visible { border-color: var(--ink); }
+.scientific-keypad .key-op { background: #f6f3ea; }
+.scientific-keypad .key-eq { background: var(--ink); color: var(--cream); }
+.conversion-pair { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); gap: 12px; align-items: end; padding: 0 30px 8px; }
+.conversion-swap {
+  min-width: var(--touch);
+  min-height: var(--touch);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: white;
+  cursor: pointer;
+}
+.health-note {
+  margin: 0 30px 24px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.generated-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 0 30px 8px;
+}
+.generated-list span {
+  min-width: 64px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: white;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+.row-editor-actions { padding: 0 30px 24px; }
+.add-row-button, .generate-button {
+  min-height: var(--touch);
+  padding: 0 16px;
+  border: 1px dashed var(--ink);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
+  font-weight: 750;
+}
+.generate-button { border-style: solid; background: var(--ink); color: var(--cream); }
+.expression-input { padding: 0 30px 16px; }
+.time-card-editor .ingredient-head, .time-card-editor .ingredient-row {
+  grid-template-columns: minmax(90px, .8fr) minmax(90px, .8fr) minmax(90px, .8fr) 36px;
+}
+.grade-editor .ingredient-head, .grade-editor .ingredient-row,
+.gpa-editor .ingredient-head, .gpa-editor .ingredient-row,
+.area-editor .ingredient-head, .area-editor .ingredient-row {
+  grid-template-columns: minmax(110px, 1.3fr) minmax(72px, .7fr) minmax(72px, .7fr) minmax(72px, .7fr) 36px;
+}
+
+@media (max-width: 760px) {
+  .schedule-scroll, .schedule-toggle, .scientific-keypad, .conversion-pair, .health-note, .generated-list, .row-editor-actions, .expression-input {
+    margin-left: 20px;
+    margin-right: 20px;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .scientific-keypad, .conversion-pair, .health-note, .generated-list, .row-editor-actions, .expression-input {
+    padding-left: 20px;
+    padding-right: 20px;
+    margin-left: 0;
+    margin-right: 0;
+  }
+  .conversion-pair { grid-template-columns: 1fr; }
+  .conversion-swap { justify-self: center; }
+  .time-card-editor .ingredient-row,
+  .grade-editor .ingredient-row,
+  .gpa-editor .ingredient-row,
+  .area-editor .ingredient-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, .8fr) 44px;
+    grid-template-areas: "name name remove" "a b remove" "c c remove";
+  }
+  .time-card-editor .ingredient-row label:nth-child(1),
+  .grade-editor .ingredient-row label:nth-child(1),
+  .gpa-editor .ingredient-row label:nth-child(1),
+  .area-editor .ingredient-row label:nth-child(1) { grid-area: name; }
+  .time-card-editor .ingredient-row label:nth-child(2),
+  .grade-editor .ingredient-row label:nth-child(2),
+  .gpa-editor .ingredient-row label:nth-child(2),
+  .area-editor .ingredient-row label:nth-child(2) { grid-area: a; }
+  .time-card-editor .ingredient-row label:nth-child(3),
+  .grade-editor .ingredient-row label:nth-child(3),
+  .gpa-editor .ingredient-row label:nth-child(3),
+  .area-editor .ingredient-row label:nth-child(3) { grid-area: b; }
+  .grade-editor .ingredient-row label:nth-child(4),
+  .gpa-editor .ingredient-row label:nth-child(4),
+  .area-editor .ingredient-row label:nth-child(4) { grid-area: c; }
 }
 
 @media (max-width: 480px) {

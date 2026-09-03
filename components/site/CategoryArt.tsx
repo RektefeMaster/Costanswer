@@ -7,6 +7,9 @@ export const categoryArtSrc: Record<CategoryId, string> = {
   everyday: '/categories/everyday.png',
   food: '/categories/food.png',
   shopping: '/categories/shopping.png',
+  health: '/categories/health.svg',
+  math: '/categories/math.svg',
+  education: '/categories/education.svg',
 };
 
 export function CategoryArt({ category }: { category: CategoryId }) {
