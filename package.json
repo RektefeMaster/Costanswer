@@ -3,7 +3,12 @@
   "version": "0.1.0-m1",
   "private": true,
   "engines": {
-    "node": ">=22.13.0"
+    "node": "22.x"
+  },
+  "allowScripts": {
+    "esbuild": true,
+    "unrs-resolver": true,
+    "workerd": true
   },
   "scripts": {
     "dev": "vinext dev",

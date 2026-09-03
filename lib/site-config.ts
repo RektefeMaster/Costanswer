@@ -1,4 +1,5 @@
-const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL;
+const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined);
 
 if (process.env.NODE_ENV === 'production' && !configuredOrigin) {
   throw new Error('NEXT_PUBLIC_SITE_URL is required for production canonical, sitemap and social metadata.');
