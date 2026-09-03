@@ -52,16 +52,24 @@ export default async function TopicPage({ params }: { params: Promise<{ category
           <p>{definition.description}</p>
         </header>
         <section className="topic-tool-list" aria-labelledby="tools-heading">
-          <div><p className="eyebrow muted"><span /> In this topic</p><h2 id="tools-heading">Calculators</h2></div>
-          <div>
+          <div className="topic-tool-intro">
+            <p className="eyebrow muted"><span /> In this topic</p>
+            <h2 id="tools-heading">Calculators</h2>
+          </div>
+          <div className="topic-tool-rows">
             {categoryTools.map((tool, index) => (
-              <a href={tool.path} key={tool.id}>
-                <span className="topic-tool-number">0{index + 1}</span>
-                <span><strong>{tool.title}</strong><small>{tool.description}</small></span>
-                <span className="quality-chip">
-                  {tool.indexability.provenanceStatus === 'verified' ? 'Public data' : 'Your numbers'}
+              <a className="topic-tool-card" href={tool.path} key={tool.id}>
+                <span className="topic-tool-number">{String(index + 1).padStart(2, '0')}</span>
+                <span className="topic-tool-copy">
+                  <strong>{tool.title}</strong>
+                  <small>{tool.description}</small>
                 </span>
-                <b aria-hidden="true">→</b>
+                <span className="topic-tool-meta">
+                  <span className="quality-chip">
+                    {tool.indexability.provenanceStatus === 'verified' ? 'Public data' : 'Your numbers'}
+                  </span>
+                  <span className="topic-tool-arrow" aria-hidden="true">→</span>
+                </span>
               </a>
             ))}
           </div>
