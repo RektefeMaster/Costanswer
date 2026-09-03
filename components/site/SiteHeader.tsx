@@ -22,6 +22,9 @@ export function SiteHeader() {
     if (!menu) return;
 
     const close = () => { menu.open = false; };
+    const syncBody = () => {
+      document.body.classList.toggle('nav-open', menu.open);
+    };
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') close();
     };
@@ -29,11 +32,15 @@ export function SiteHeader() {
       if (menu.open && !menu.contains(event.target as Node)) close();
     };
 
+    syncBody();
+    menu.addEventListener('toggle', syncBody);
     document.addEventListener('keydown', onKeyDown);
     document.addEventListener('pointerdown', onPointerDown);
     return () => {
+      menu.removeEventListener('toggle', syncBody);
       document.removeEventListener('keydown', onKeyDown);
       document.removeEventListener('pointerdown', onPointerDown);
+      document.body.classList.remove('nav-open');
     };
   }, []);
 

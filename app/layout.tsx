@@ -2,6 +2,13 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { siteConfig } from '@/lib/site-config';
 
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover' as const,
+  themeColor: '#f5f1e8',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
   title: {

@@ -31,7 +31,7 @@ export function SearchExperience() {
       <form className="answer-search search-page-form" role="search" action="/search" method="get" onSubmit={submit}>
         <label className="sr-only" htmlFor="site-search">Search {siteConfig.name} calculators</label>
         <span className="search-icon" aria-hidden="true" />
-        <input id="site-search" name="q" type="search" value={query} onChange={(event) => { setQuery(event.target.value); setShowAll(false); }} placeholder="Hourly to salary, electricity, concrete…" />
+        <input id="site-search" name="q" type="search" value={query} onChange={(event) => { setQuery(event.target.value); setShowAll(false); }} placeholder="Hourly to salary, electricity, concrete…" autoCapitalize="none" autoCorrect="off" enterKeyHint="search" />
         <button type="submit">Search <span aria-hidden="true">→</span></button>
       </form>
       <div className="search-results">

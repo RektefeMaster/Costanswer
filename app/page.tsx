@@ -49,7 +49,7 @@ export default function Home() {
           <form id="answer-search" className="answer-search" action="/search" role="search">
             <label className="sr-only" htmlFor="q">Search calculators</label>
             <span className="search-icon" aria-hidden="true" />
-            <input id="q" name="q" type="search" placeholder="Search calculators, e.g. hourly to salary" />
+            <input id="q" name="q" type="search" placeholder="Search calculators, e.g. hourly to salary" autoCapitalize="none" autoCorrect="off" enterKeyHint="search" />
             <button type="submit">Search <span aria-hidden="true">→</span></button>
           </form>
           <p className="search-hint">Try “can I afford this house” or “what is $100 in 1990 worth today.”</p>

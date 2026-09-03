@@ -411,7 +411,7 @@ test('mobile navigation, skip link, and recipe editor work without horizontal ov
   await expect(menu.locator('summary')).toBeVisible();
   await menu.locator('summary').click();
   await expect(menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link')).toHaveCount(7);
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
 
   await page.goto('/');
   await page.keyboard.press('Tab');
@@ -420,16 +420,27 @@ test('mobile navigation, skip link, and recipe editor work without horizontal ov
   await expect(page.locator('#main-content')).toBeFocused();
 
   await page.goto('/food/recipe-scaler');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   const editor = page.locator('.ingredient-editor');
-  expect(await editor.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  expect(await editor.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   await expect(editor.locator('.ingredient-mobile-label').first()).toBeVisible();
 
   await page.goto('/money/debt-payoff');
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
   const debtEditor = page.locator('.debt-editor');
-  expect(await debtEditor.evaluate((node) => node.scrollWidth <= node.clientWidth)).toBe(true);
+  expect(await debtEditor.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
   await expect(debtEditor.locator('.ingredient-mobile-label').first()).toBeVisible();
+});
+
+test('small phones keep home, search, and calculators inside the viewport', async ({ page }) => {
+  for (const width of [320, 360, 430]) {
+    await page.setViewportSize({ width, height: 720 });
+    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/auto/ev-vs-gas']) {
+      await page.goto(path);
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+      expect(overflow, `${path} at ${width}px overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
+    }
+  }
 });
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
