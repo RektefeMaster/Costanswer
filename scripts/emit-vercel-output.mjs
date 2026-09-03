@@ -1,5 +1,6 @@
 import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
 const distDir = path.join(root, 'dist');
@@ -7,6 +8,17 @@ const serverEntry = path.join(distDir, 'server', 'index.js');
 if (!existsSync(serverEntry)) {
   throw new Error(`Vercel output requires ${path.relative(root, serverEntry)}. Run vinext build first.`);
 }
+
+const standalonePath = path.join(root, 'node_modules', 'vinext', 'dist', 'build', 'standalone.js');
+if (!existsSync(standalonePath)) {
+  throw new Error('vinext standalone emitter is missing. Reinstall vinext.');
+}
+
+const { emitStandaloneOutput } = await import(pathToFileURL(standalonePath).href);
+const { standaloneDir, copiedPackages } = emitStandaloneOutput({
+  root,
+  outDir: distDir,
+});
 
 const outputDir = path.join(root, '.vercel', 'output');
 const funcDir = path.join(outputDir, 'functions', 'ssr.func');
@@ -19,14 +31,12 @@ mkdirSync(funcDir, { recursive: true });
 const clientDir = path.join(distDir, 'client');
 if (existsSync(clientDir)) cpSync(clientDir, staticDir, { recursive: true });
 
-cpSync(distDir, path.join(funcDir, 'dist'), { recursive: true });
-cpSync(path.join(root, 'scripts', 'vercel-ssr.mjs'), path.join(funcDir, 'index.mjs'));
-cpSync(path.join(root, 'node_modules', 'vinext'), path.join(funcDir, 'node_modules', 'vinext'), { recursive: true });
+const publicDir = path.join(root, 'public');
+if (existsSync(publicDir)) cpSync(publicDir, staticDir, { recursive: true });
 
-for (const pkg of ['react', 'react-dom', 'scheduler', 'zod', 'react-server-dom-webpack']) {
-  const from = path.join(root, 'node_modules', pkg);
-  if (existsSync(from)) cpSync(from, path.join(funcDir, 'node_modules', pkg), { recursive: true });
-}
+cpSync(path.join(standaloneDir, 'dist'), path.join(funcDir, 'dist'), { recursive: true });
+cpSync(path.join(standaloneDir, 'node_modules'), path.join(funcDir, 'node_modules'), { recursive: true });
+cpSync(path.join(root, 'scripts', 'vercel-ssr.mjs'), path.join(funcDir, 'index.mjs'));
 
 writeFileSync(path.join(funcDir, 'package.json'), `${JSON.stringify({ type: 'module' }, null, 2)}\n`);
 writeFileSync(path.join(funcDir, '.vc-config.json'), `${JSON.stringify({
@@ -44,4 +54,4 @@ writeFileSync(path.join(outputDir, 'config.json'), `${JSON.stringify({
   ],
 }, null, 2)}\n`);
 
-console.log('Wrote Vercel Build Output API to .vercel/output');
+console.log(`Wrote Vercel Build Output API to .vercel/output (${copiedPackages.length} runtime packages)`);

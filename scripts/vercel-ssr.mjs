@@ -1,6 +1,21 @@
 import path from 'node:path';
+import http from 'node:http';
 import { fileURLToPath } from 'node:url';
-import { startProdServer } from 'vinext/server/prod-server';
+
+process.env.VINEXT_TRUST_PROXY ??= '1';
+
+const { startProdServer } = await import('vinext/server/prod-server');
+
+// Vercel Node functions cannot bind a TCP port. Node still delivers
+// `request` events on an unlistening Server, which is what Vinext needs.
+http.Server.prototype.listen = function listen(port, host, cb) {
+  const callback = typeof port === 'function' ? port : typeof host === 'function' ? host : cb;
+  queueMicrotask(() => {
+    this.emit('listening');
+    callback?.();
+  });
+  return this;
+};
 
 const outDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 'dist');
 const boot = startProdServer({
@@ -11,6 +26,14 @@ const boot = startProdServer({
 });
 
 export default async function handler(req, res) {
-  const { server } = await boot;
-  server.emit('request', req, res);
+  try {
+    const { server } = await boot;
+    server.emit('request', req, res);
+  } catch (error) {
+    console.error('[costanswer] Vercel SSR failed:', error);
+    if (!res.headersSent) {
+      res.statusCode = 500;
+      res.end('Internal Server Error');
+    }
+  }
 }
