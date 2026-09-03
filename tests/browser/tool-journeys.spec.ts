@@ -14,13 +14,43 @@ const toolPaths = [
   '/money/home-affordability',
   '/money/cost-of-living',
   '/money/inflation',
+  '/money/auto-loan',
+  '/money/investment',
+  '/money/retirement',
+  '/money/amortization',
+  '/money/cd',
+  '/money/interest',
+  '/money/roth-ira',
+  '/money/401k',
+  '/money/mortgage-payoff',
+  '/money/credit-card-payoff',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
+  '/home/square-footage',
   '/auto/ev-vs-gas',
   '/auto/road-trip-fuel',
   '/auto/car-affordability',
   '/everyday/business-days',
+  '/everyday/tip',
+  '/everyday/age',
+  '/everyday/time',
+  '/everyday/random-number',
+  '/everyday/time-card',
+  '/everyday/date',
+  '/everyday/days-from-today',
+  '/health/bmi',
+  '/health/calorie',
+  '/health/tdee',
+  '/health/bmr',
+  '/health/body-fat',
+  '/math/percentage',
+  '/math/percent-change',
+  '/math/scientific',
+  '/math/fraction',
+  '/math/unit-conversion',
+  '/education/grade',
+  '/education/gpa',
   '/shopping/unit-price',
   '/shopping/where-cheaper',
   '/food/recipe-scaler',
@@ -176,11 +206,12 @@ test('cost of living stays dollar-first and keeps HUD as a gross-rent benchmark'
 });
 
 test('critical routes, metadata, sitemap gates, and security headers stay coherent', async ({ request }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
   const paths = [
-    '/', '/money/hourly-to-salary', '/money/salary-after-tax', '/money/paycheck', '/money/mortgage-payment', '/money/loan', '/money/compound-interest', '/money/debt-payoff', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/home/electricity-cost', '/home/appliance-electricity-cost', '/home/concrete-calculator',
-    '/auto/ev-vs-gas', '/auto/road-trip-fuel', '/auto/car-affordability', '/everyday/business-days', '/shopping/unit-price', '/shopping/where-cheaper', '/food/recipe-scaler',
-    '/topics/money', '/topics/home', '/topics/auto', '/topics/everyday', '/topics/food', '/topics/shopping',
+    '/', '/money/hourly-to-salary', '/money/salary-after-tax', '/money/paycheck', '/money/mortgage-payment', '/money/loan', '/money/compound-interest', '/money/debt-payoff', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/auto-loan', '/home/electricity-cost', '/home/appliance-electricity-cost', '/home/concrete-calculator', '/home/square-footage',
+    '/auto/ev-vs-gas', '/auto/road-trip-fuel', '/auto/car-affordability', '/everyday/business-days', '/everyday/time-card', '/shopping/unit-price', '/shopping/where-cheaper', '/food/recipe-scaler',
+    '/health/bmi', '/math/scientific', '/education/gpa',
+    '/topics/money', '/topics/home', '/topics/auto', '/topics/everyday', '/topics/food', '/topics/shopping', '/topics/health', '/topics/math', '/topics/education',
     '/search?q=concrete', '/methodology', '/methodology/data', '/about', '/privacy', '/sitemap.xml',
     '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/robots.txt',
     '/manifest.webmanifest', '/favicon.svg',
@@ -213,6 +244,10 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   expect(topicSitemap).toContain('/topics/shopping');
   expect(topicSitemap).toContain('/topics/money');
   expect(topicSitemap).toContain('/topics/auto');
+  expect(topicSitemap).toContain('/topics/everyday');
+  expect(topicSitemap).toContain('/topics/health');
+  expect(topicSitemap).toContain('/topics/math');
+  expect(topicSitemap).toContain('/topics/education');
   expect(topicSitemap).not.toContain('/topics/food');
   const toolSitemap = await (await request.get('/sitemaps/tools/1.xml')).text();
   for (const path of toolPaths) expect(toolSitemap).toContain(path);
@@ -402,7 +437,7 @@ test('intent search rejects unsupported pages and tracks only supported tools', 
   await expect(page.locator('.search-hint')).toContainText('afford this house');
 });
 
-test('mobile navigation, skip link, and recipe editor work without horizontal overflow', async ({ page }) => {
+test('header navigation at 390px with the mobile menu open stays inside the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await expect(page.locator('.top-nav')).toBeHidden();
@@ -410,9 +445,20 @@ test('mobile navigation, skip link, and recipe editor work without horizontal ov
   const menu = page.locator('.mobile-menu');
   await expect(menu.locator('summary')).toBeVisible();
   await menu.locator('summary').click();
+  await expect(menu).toHaveJSProperty('open', true);
   await expect(menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link')).toHaveCount(7);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+});
 
+test('homepage at 390px with the menu closed stays inside the viewport', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await expect(page.locator('.mobile-menu nav')).toBeHidden();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+});
+
+test('mobile skip link and recipe editor work without horizontal overflow', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
   await page.keyboard.press('Tab');
   await expect(page.locator('.skip-link')).toBeFocused();
@@ -433,9 +479,9 @@ test('mobile navigation, skip link, and recipe editor work without horizontal ov
 });
 
 test('small phones keep home, search, and calculators inside the viewport', async ({ page }) => {
-  for (const width of [320, 360, 430]) {
+  for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 720 });
-    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/auto/ev-vs-gas']) {
+    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/auto/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
       await page.goto(path);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, `${path} at ${width}px overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
@@ -444,7 +490,8 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 });
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/loan', '/auto/road-trip-fuel', '/auto/car-affordability', '/home/appliance-electricity-cost']) {
+  test.setTimeout(240_000);
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/loan', '/auto/road-trip-fuel', '/auto/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/education/grade', '/money/auto-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -453,5 +500,110 @@ test('representative pages have no automated WCAG A/AA violations', async ({ pag
       return result.violations.map((violation) => ({ id: violation.id, impact: violation.impact, nodes: violation.nodes.length }));
     });
     expect(violations, `${path}: ${JSON.stringify(violations)}`).toEqual([]);
+  }
+});
+
+test('homepage color-contrast is measured on the same axe config as the catalog', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto('/');
+  await page.addScriptTag({ content: axeSource });
+  const report = await page.evaluate(async () => {
+    const axe = (window as unknown as { axe: { run: (options: unknown) => Promise<{
+      violations: Array<{
+        id: string;
+        impact: string | null;
+        nodes: Array<{ target: string[]; html: string }>;
+      }>;
+    }> } }).axe;
+    const result = await axe.run({ runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'] } });
+    return result.violations.map((violation) => ({
+      id: violation.id,
+      impact: violation.impact,
+      nodes: violation.nodes.map((node) => ({ target: node.target, html: node.html.slice(0, 180) })),
+    }));
+  });
+  const contrast = report.find((violation) => violation.id === 'color-contrast');
+  expect(contrast, JSON.stringify(report)).toBeUndefined();
+  expect(report, JSON.stringify(report)).toEqual([]);
+});
+
+test('phase 7.5 calculators calculate across each family', async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto('/health/bmi');
+  await expect(page.getByRole('heading', { name: 'BMI Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result p')).toHaveText('Estimated BMI');
+  await expect(page.locator('.primary-result strong')).toHaveText('22.86');
+  await expect(page.locator('.primary-result strong')).not.toHaveText(/healthy/i);
+
+  await page.goto('/health/calorie');
+  await expect(page.locator('.primary-result strong')).toHaveText('2,136 kcal/day');
+
+  await page.goto('/math/scientific');
+  await expect(page.locator('.primary-result strong')).toHaveText('14');
+  await page.locator('#sci-expression').fill('(2 + 3) × 4');
+  await expect(page.locator('.primary-result strong')).toHaveText('20');
+  await page.getByRole('button', { name: 'Degrees' }).click();
+  await page.locator('#sci-expression').fill('sin(90)');
+  await expect(page.locator('.primary-result strong')).toHaveText(/^1(\.0+)?$/);
+
+  await page.goto('/math/unit-conversion');
+  await page.locator('#conv-from').selectOption('in');
+  await page.locator('#conv-to').selectOption('cm');
+  await page.locator('#conv-value').fill('1');
+  await expect(page.locator('.primary-result strong')).toContainText('2.54');
+
+  await page.goto('/everyday/time-card');
+  await expect(page.locator('.primary-result strong')).toHaveText('8.00 h');
+  await page.getByRole('button', { name: 'Add a shift' }).click();
+  await expect(page.locator('.time-card-editor .ingredient-row')).toHaveCount(2);
+
+  await page.goto('/everyday/date');
+  await expect(page.locator('.primary-result strong')).toHaveText('2026-02-28');
+
+  await page.goto('/everyday/days-from-today');
+  await expect(page.locator('.primary-result p')).toHaveText('Resulting calendar date');
+  await expect(page.locator('.primary-result strong')).toHaveText(/^\d{4}-\d{2}-\d{2}$/);
+
+  await page.goto('/education/gpa');
+  await expect(page.locator('.primary-result strong')).toHaveText('3.50');
+
+  await page.goto('/home/square-footage');
+  await expect(page.locator('.primary-result strong')).toHaveText('120 ft²');
+
+  await page.goto('/money/auto-loan');
+  await expect(page.locator('.primary-result p')).toHaveText('Estimated monthly loan payment');
+  await expect(page.locator('.primary-result strong')).toHaveText('$463.99');
+
+  await page.goto('/money/investment');
+  await page.locator('#inv-contrib').fill('0');
+  await page.locator('#inv-comp').selectOption('annually');
+  await page.locator('#inv-freq').selectOption('annually');
+  await expect(page.locator('.primary-result strong')).toHaveText('$19,671.51');
+  await page.locator('.result-details summary').filter({ hasText: 'What we assumed' }).click();
+  await expect(page.locator('.result-details')).toContainText('not a forecast');
+
+  await page.goto('/money/retirement');
+  await expect(page.locator('.primary-result p')).toHaveText('Projected balance');
+  await expect(page.locator('.primary-result')).not.toContainText(/on track/i);
+
+  await page.goto('/money/401k');
+  await expect(page.locator('.primary-result p')).toHaveText('Projected balance');
+  await page.locator('.result-details summary').filter({ hasText: 'What we assumed' }).click();
+  await expect(page.locator('.result-details')).toContainText('does not cap');
+
+  await page.goto('/money/mortgage-payoff');
+  await expect(page.locator('.primary-result p')).toHaveText('Pay off sooner by');
+  await expect(page.locator('.primary-result strong')).toHaveText(/years/);
+
+  await page.goto('/money/credit-card-payoff');
+  await expect(page.locator('.primary-result p')).toHaveText('Months to payoff');
+  await expect(page.locator('.primary-result strong')).toHaveText(/^\d+$/);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const path of ['/money/amortization', '/math/scientific', '/everyday/time-card', '/education/grade']) {
+    await page.goto(path);
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    expect(overflow, `${path} overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
   }
 });

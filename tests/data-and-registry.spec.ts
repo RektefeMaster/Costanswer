@@ -184,9 +184,11 @@ describe('gasoline and grocery adapters', () => {
 
 describe('registry and intent search', () => {
   it('keeps every launch tool above the indexability threshold and on a unique route', () => {
+    expect(tools).toHaveLength(50);
     expect(tools.every((tool) => evaluateToolIndexability(tool).indexable)).toBe(true);
     expect(new Set(tools.map((tool) => tool.id)).size).toBe(tools.length);
     expect(new Set(tools.map((tool) => tool.path)).size).toBe(tools.length);
+    expect(tools.some((tool) => /kg-to-|lbs-to-|days-from-today\/|percent-of-/.test(tool.path))).toBe(false);
   });
 
   it('fails closed for invalid scores, stale reviews, and dangling link evidence', () => {
@@ -232,6 +234,10 @@ describe('registry and intent search', () => {
     expect(isCategoryHubIndexable('money')).toBe(true);
     expect(isCategoryHubIndexable('auto')).toBe(true);
     expect(isCategoryHubIndexable('food')).toBe(false);
+    expect(isCategoryHubIndexable('everyday')).toBe(true);
+    expect(isCategoryHubIndexable('health')).toBe(true);
+    expect(isCategoryHubIndexable('math')).toBe(true);
+    expect(isCategoryHubIndexable('education')).toBe(true);
   });
 
   it('matches natural-language intent rather than requiring exact titles', () => {
@@ -260,7 +266,21 @@ describe('registry and intent search', () => {
     expect(searchTools('can I afford this car')[0].tool.id).toBe('car-affordability');
     expect(searchTools('true cost of owning a car')[0].tool.id).toBe('car-affordability');
     expect(searchTools('monthly car cost')[0].tool.id).toBe('car-affordability');
-    expect(searchTools('car loan')[0].tool.id).toBe('car-affordability');
+    expect(searchTools('car affordability calculator')[0].tool.id).toBe('car-affordability');
+    expect(searchTools('how much should I spend on a car')[0].tool.id).toBe('car-affordability');
+    expect(searchTools('car loan')[0].tool.id).toBe('auto-loan');
+    expect(searchTools('car loan calculator')[0].tool.id).toBe('auto-loan');
+    expect(searchTools('auto loan calculator')[0].tool.id).toBe('auto-loan');
+    expect(searchTools('car payment calculator')[0].tool.id).toBe('auto-loan');
+    expect(searchTools('vehicle loan calculator')[0].tool.id).toBe('auto-loan');
+    expect(searchTools('bmi calculator')[0].tool.id).toBe('bmi');
+    expect(searchTools('tdee calculator')[0].tool.id).toBe('tdee');
+    expect(searchTools('percentage calculator')[0].tool.id).toBe('percentage');
+    expect(searchTools('percent change calculator')[0].tool.id).toBe('percent-change');
+    expect(searchTools('days from today')[0].tool.id).toBe('days-from-today');
+    expect(searchTools('time card calculator')[0].tool.id).toBe('time-card');
+    expect(searchTools('simple interest')[0].tool.id).toBe('interest');
+    expect(searchTools('investment calculator')[0].tool.id).toBe('investment');
     expect(searchTools('cost of living')[0].tool.id).toBe('cost-of-living');
     expect(searchTools('living cost')[0].tool.id).toBe('cost-of-living');
     expect(searchTools('cost to live')[0].tool.id).toBe('cost-of-living');
@@ -281,7 +301,7 @@ describe('registry and intent search', () => {
     const empty = searchTools('');
     expect(empty).toHaveLength(8);
     expect(empty.every((result) => result.matchedOn === 'featured')).toBe(true);
-    expect(new Set(empty.map((result) => result.tool.category)).size).toBe(6);
+    expect(new Set(empty.map((result) => result.tool.category)).size).toBe(8);
     expect(searchTools('', tools.length)).toHaveLength(tools.length);
     expect(searchTools('how much')).toEqual([]);
   });

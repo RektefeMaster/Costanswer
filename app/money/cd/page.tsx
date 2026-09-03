@@ -1,4 +1,4 @@
-import { CdCalculator } from '@/components/calculators/FinanceExpansionCalculators';
+import { CdCalculator } from '@/components/calculators/CdCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

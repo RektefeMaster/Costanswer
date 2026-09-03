@@ -73,16 +73,21 @@ export function searchTools(query: string, limit = 8): SearchResult[] {
       let score = 0;
       let matchedOn = '';
       const matchedTerms = new Set<string>();
+      let bestPhraseScore = 0;
       for (const field of fields) {
         const normalizedField = field.value;
+        let phraseScore = 0;
         if (normalizedField === normalizedQuery) {
-          score += field.weight * 3;
-          matchedOn ||= field.label;
+          phraseScore = field.weight * 3;
         } else if (normalizedField.includes(normalizedQuery)) {
-          score += field.weight * 2;
-          matchedOn ||= field.label;
+          phraseScore = field.weight * 2;
+        }
+        if (phraseScore > bestPhraseScore) {
+          bestPhraseScore = phraseScore;
+          matchedOn = field.label;
         }
       }
+      score += bestPhraseScore;
       for (const term of queryTerms) {
         const bestField = fields
           .filter((field) => fieldMatchesTerm(field.value, term))

@@ -54,12 +54,17 @@ describe('dataset freshness policy', () => {
     expect(evaluateDatasetFreshness('freddie-mac-pmms', { observationPeriod: '2026-08-27' }, '2026-09-10')).toBe('fresh');
     expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2027-02-04')).toBe('fresh');
     expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2028-02-05')).toBe('stale');
+    expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2027-02-04')).toBe('fresh');
+    expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2028-02-05')).toBe('stale');
   });
 
   it('does not weekly-refresh tax and keeps year-keyed history', () => {
     expect(DATASET_POLICIES['us-tax'].expectedCadence).toBe('yearly');
     expect(DATASET_POLICIES['us-tax'].refreshMode).toBe('manual');
     expect(scheduledDatasetIds()).not.toContain('us-tax');
+    expect(DATASET_POLICIES['irs-retirement-limits'].expectedCadence).toBe('yearly');
+    expect(DATASET_POLICIES['irs-retirement-limits'].refreshMode).toBe('manual');
+    expect(scheduledDatasetIds()).not.toContain('irs-retirement-limits');
     expect(listPublishedTaxYears()).toEqual([2026]);
   });
 

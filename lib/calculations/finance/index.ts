@@ -18,6 +18,7 @@ export {
   LOAN_SIMULATION_MONTH_CAP,
   MONTHS_PER_YEAR,
   amortizationSchedule,
+  amortizeLoan,
   loanFromMonthlyPrincipalAndInterest,
   monthlyPaymentFactor,
   monthlyPrincipalAndInterest,

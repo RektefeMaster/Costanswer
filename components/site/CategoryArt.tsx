@@ -12,12 +12,23 @@ export const categoryArtSrc: Record<CategoryId, string> = {
   education: '/categories/education.svg',
 };
 
-export function CategoryArt({ category }: { category: CategoryId }) {
+export function CategoryArt({
+  category,
+  priority = false,
+}: {
+  category: CategoryId;
+  priority?: boolean;
+}) {
   return (
     <img
       className={`category-art category-art-${category}`}
       src={categoryArtSrc[category]}
       alt=""
+      width={520}
+      height={520}
+      decoding="async"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchPriority={priority ? 'high' : 'low'}
       aria-hidden="true"
       draggable={false}
     />
@@ -34,8 +45,6 @@ export function CategoryChip({
   tone?: 'ink' | 'color';
 }) {
   return (
-    <span className={`nav-chip nav-chip-${size} nav-chip-${tone} accent-${categories[category].accent}`} aria-hidden="true">
-      <img src={categoryArtSrc[category]} alt="" draggable={false} />
-    </span>
+    <span className={`nav-chip nav-chip-${size} nav-chip-${tone} accent-${categories[category].accent}`} aria-hidden="true" />
   );
 }

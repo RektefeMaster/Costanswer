@@ -10,6 +10,7 @@ import { acsSnapshot } from '@/lib/data/acs-snapshot';
 import { beaRppSnapshot } from '@/lib/data/bea-rpp-snapshot';
 import { resolveHudFmrSnapshot, hudLatestPublishedSnapshot } from '@/lib/data/hud-fmr-snapshot';
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
+import { irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
 import { datasetSourceDisplay, officialDatasetJsonLd } from '@/lib/data/source-display';
 import { DATASET_POLICIES } from '@/lib/data/dataset-policy';
@@ -102,6 +103,14 @@ const usdaSource = datasetSourceDisplay({
   verifiedAt: usdaFoodSnapshot.verifiedAt,
   fetchedAt: usdaFoodSnapshot.fetchedAt,
 });
+const irsRetirementSource = datasetSourceDisplay({
+  datasetId: 'irs-retirement-limits',
+  observationPeriod: irsRetirementSnapshot.observationPeriod,
+  sourceStatus: irsRetirementSnapshot.sourceStatus,
+  publishedAt: irsRetirementSnapshot.publishedAt,
+  verifiedAt: irsRetirementSnapshot.verifiedAt,
+  fetchedAt: irsRetirementSnapshot.fetchedAt,
+});
 
 const datasetJsonLd = [
   officialDatasetJsonLd({
@@ -183,6 +192,14 @@ const datasetJsonLd = [
     dateModified: usdaFoodSnapshot.verifiedAt,
     creatorName: usdaFoodSnapshot.provider,
     sourceUrl: usdaFoodSnapshot.sourceUrl,
+  }),
+  officialDatasetJsonLd({
+    name: `IRS tax year ${irsRetirementSnapshot.observationPeriod} retirement contribution limits`,
+    description: irsRetirementSnapshot.attribution,
+    temporalCoverage: irsRetirementSnapshot.observationPeriod,
+    dateModified: irsRetirementSnapshot.verifiedAt,
+    creatorName: irsRetirementSnapshot.provider,
+    sourceUrl: irsRetirementSnapshot.sourceUrl,
   }),
 ];
 
@@ -305,6 +322,28 @@ export default function DataSourcesPage() {
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
+        <h2>IRS retirement contribution limits</h2>
+        <dl>
+          <div><dt>Snapshot</dt><dd>{irsRetirementSnapshot.snapshotId}</dd></div>
+          <div><dt>Tax year</dt><dd>{irsRetirementSnapshot.observationPeriod}</dd></div>
+          {freshnessRows(irsRetirementSource)}
+          <div><dt>Source status</dt><dd>{irsRetirementSnapshot.sourceStatus}</dd></div>
+          <div><dt>Cadence</dt><dd>{DATASET_POLICIES['irs-retirement-limits'].expectedCadence} / {DATASET_POLICIES['irs-retirement-limits'].refreshMode}</dd></div>
+          <div><dt>401(k) elective deferral</dt><dd>${irsRetirementSnapshot.limits.electiveDeferral401k.toLocaleString('en-US')}</dd></div>
+          <div><dt>Age 50+ catch-up</dt><dd>${irsRetirementSnapshot.limits.catchUp401kAge50.toLocaleString('en-US')}</dd></div>
+          <div><dt>Ages 60–63 catch-up</dt><dd>${irsRetirementSnapshot.limits.catchUp401kAges60to63.toLocaleString('en-US')}</dd></div>
+          <div><dt>Defined-contribution overall</dt><dd>${irsRetirementSnapshot.limits.definedContributionOverall.toLocaleString('en-US')}</dd></div>
+          <div><dt>IRA</dt><dd>${irsRetirementSnapshot.limits.iraLimit.toLocaleString('en-US')} + ${irsRetirementSnapshot.limits.catchUpIraAge50.toLocaleString('en-US')} age 50+</dd></div>
+          <div><dt>Roth catch-up wage threshold</dt><dd>${irsRetirementSnapshot.limits.rothCatchUpPriorYearFicaWageThreshold.toLocaleString('en-US')} prior-year FICA</dd></div>
+          <div><dt>Adapter</dt><dd>{irsRetirementSnapshot.adapterVersion}</dd></div>
+          <div><dt>Schema</dt><dd>{irsRetirementSnapshot.schemaVersion}</dd></div>
+        </dl>
+        <p>{irsRetirementSnapshot.attribution}</p>
+        <ul>{irsRetirementSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        <p className="dataset-links"><a href={irsRetirementSnapshot.sourceUrl}>IR-2025-111 ↗</a><a href={irsRetirementSnapshot.colaTableUrl}>COLA table ↗</a><a href={irsRetirementSnapshot.noticeUrl}>Notice 2025-67 ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
         <h2>Census geography and ACS 5-Year estimates</h2>
         <dl>
           <div><dt>Geography snapshot</dt><dd>{geographySnapshot.snapshotId}</dd></div>
@@ -355,7 +394,7 @@ export default function DataSourcesPage() {
       <h2>How to read this</h2>
       <p>Electricity prices are average residential rates, not your utility rate. Gasoline prices are EIA weekly regular averages for a state or PADD region, not a pump. Grocery staples are BLS average retail prices for the U.S. city average or a census region; they are not a household food budget. Mortgage rates are Freddie Mac national weekly averages, not a lender quote. CPI-U is the average urban price level, not your personal basket. Tax results are estimated annual liability from published IRS, SSA, and state schedules, not a prepared return or employer withholding. HUD FMR is a gross-rent benchmark, not listing rent. BEA RPP is a spatial price index, not inflation. USDA Food Plans are food at home. None of this is Walmart, Kroger, Costco, or a weekly circular.</p>
       <h2>When it updates</h2>
-      <p>A normal new period can go live after the checks pass. Odd unit changes, missing states, duplicates, or big jumps wait for a person to look. If a check fails, the last good copy stays on the site. Tax snapshots are yearly official releases, not a weekly fetch. Census, HUD, and BEA are annual; an old reference year is not automatically stale. HUD effectiveness is separate from publication: a future fiscal year can be on file without becoming the default. Source status (preliminary, final, revised, or verified) is not the same as freshness (fresh or stale).</p>
+      <p>A normal new period can go live after the checks pass. Odd unit changes, missing states, duplicates, or big jumps wait for a person to look. If a check fails, the last good copy stays on the site. Tax snapshots and IRS retirement-limit copies are yearly official releases, not a weekly fetch. Census, HUD, and BEA are annual; an old reference year is not automatically stale. HUD effectiveness is separate from publication: a future fiscal year can be on file without becoming the default. Source status (preliminary, final, revised, or verified) is not the same as freshness (fresh or stale).</p>
     </InfoPage>
   );
 }

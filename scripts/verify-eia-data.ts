@@ -22,6 +22,8 @@ import { validateBeaRppEnvelope } from '../lib/data/bea-rpp-snapshot';
 import { beaRppSnapshotSchema } from '../lib/data/bea-rpp';
 import { validateUsdaFoodEnvelope } from '../lib/data/usda-food-snapshot';
 import { usdaFoodSnapshotSchema } from '../lib/data/usda-food';
+import { validateIrsRetirementEnvelope } from '../lib/data/irs-retirement-snapshot';
+import { irsRetirementSnapshotSchema } from '../lib/data/irs-retirement';
 import { geographySnapshot } from '../lib/data/geography-snapshot';
 import { PUBLISHING_SNAPSHOT_DATE } from '../lib/publishing';
 
@@ -185,6 +187,20 @@ async function verifyTax(): Promise<string> {
   return snapshot.snapshotId;
 }
 
+async function verifyIrsRetirement(): Promise<string> {
+  const snapshotId = await verifyEnvelope(
+    path.join(process.cwd(), 'data', 'irs-retirement'),
+    'retirement-limits.normalized.json',
+    validateIrsRetirementEnvelope,
+    irsRetirementSnapshotSchema.parse,
+    '2026.json',
+  );
+  if (DATASET_POLICIES['irs-retirement-limits'].refreshMode !== 'manual' || DATASET_POLICIES['irs-retirement-limits'].expectedCadence !== 'yearly') {
+    throw new Error('IRS retirement-limit dataset policy must remain yearly and manual.');
+  }
+  return snapshotId;
+}
+
 const ids = [
   await verifyElectricity(),
   await verifyGasoline(),
@@ -192,6 +208,7 @@ const ids = [
   await verifyMortgageRates(),
   await verifyCpi(),
   await verifyTax(),
+  await verifyIrsRetirement(),
   ...(await verifyLocationDatasets()),
 ];
 console.log(`Verified ${ids.join(', ')}: raw hash, normalized hash, semantics and promotion envelope passed.`);

@@ -12,7 +12,7 @@ import { parsePublishingDate, PUBLISHING_SNAPSHOT_DATE } from './publishing';
 
 export const CATEGORY_IDS = ['money', 'home', 'auto', 'everyday', 'food', 'shopping', 'health', 'math', 'education'] as const;
 export type CategoryId = (typeof CATEGORY_IDS)[number];
-/** Header keeps the original launch set so new topics do not worsen the known mobile-nav overflow. */
+/** Header stays at the original six categories. Health, math, and education are in the footer, homepage strip, and topic hubs. */
 export const HEADER_CATEGORY_IDS: readonly CategoryId[] = ['money', 'home', 'auto', 'everyday', 'food', 'shopping'];
 
 export type ToolRelationship = {
@@ -528,10 +528,10 @@ export const tools: ToolDefinition[] = [
       'car affordability calculator',
       'how much car can i afford',
       'can i afford this car',
+      'how much should i spend on a car',
       'true cost of owning a car',
       'monthly car cost',
       'car payment vs income',
-      'car loan affordability',
       'cost of car ownership',
     ],
     eyebrow: 'True monthly cost vs. take-home pay',
@@ -1002,7 +1002,15 @@ export const tools: ToolDefinition[] = [
     description: 'Monthly vehicle loan payment, total interest, and amount financed. Not insurance, fuel, or the true cost of owning the car.',
     category: 'money',
     engine: AUTO_LOAN_ENGINE_ID,
-    searchTerms: ['auto loan calculator', 'vehicle loan calculator', 'car payment calculator', 'monthly auto payment', 'auto loan payment'],
+    searchTerms: [
+      'auto loan calculator',
+      'car loan calculator',
+      'car loan',
+      'vehicle loan calculator',
+      'car payment calculator',
+      'monthly auto payment',
+      'auto loan payment',
+    ],
     eyebrow: 'Vehicle loan payment',
     accent: 'mint',
     featured: true,

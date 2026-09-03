@@ -17,9 +17,9 @@ export default defineConfig({
     launchOptions: executablePath ? { executablePath } : undefined,
   },
   webServer: {
-    command: 'npm run dev',
+    command: 'PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH" npm run dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
-    timeout: 120_000,
+    timeout: 180_000,
   },
 });

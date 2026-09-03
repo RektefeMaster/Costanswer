@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
-import { IRS_RETIREMENT_LIMITS_2026 } from '@/lib/data/irs-retirement';
+import { irsRetirementLimits, irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { K401_ENGINE_ID } from './finance/version';
 
 export const k401InputSchema = z.object({
@@ -67,7 +67,7 @@ export function calculate401k(rawInput: unknown): CalculationResult<{
       'Under these assumptions only. This is not tax, plan, or investment advice.',
       'Employer match is a simple rate on employee deferrals, capped at a percent of salary. Plans differ.',
       'Each year applies the assumed return to the existing balance, then adds that year’s employee and employer amounts.',
-      `IRS ${IRS_RETIREMENT_LIMITS_2026.taxYear} elective deferral limit is ${formatMoney(IRS_RETIREMENT_LIMITS_2026.electiveDeferral401k, 0)}. This projection does not cap contributions or model catch-up or Roth-catch-up rules.`,
+      `IRS tax year ${irsRetirementSnapshot.observationPeriod} elective deferral limit is ${formatMoney(irsRetirementLimits.electiveDeferral401k, 0)}. Age 50+ catch-up is ${formatMoney(irsRetirementLimits.catchUp401kAge50, 0)}; ages 60, 61, 62, or 63 catch-up is ${formatMoney(irsRetirementLimits.catchUp401kAges60to63, 0)}. Combined defined-contribution limit is ${formatMoney(irsRetirementLimits.definedContributionOverall, 0)}. Beginning in ${irsRetirementSnapshot.observationPeriod}, catch-up contributions for employees whose prior-year FICA wages exceeded ${formatMoney(irsRetirementLimits.rothCatchUpPriorYearFicaWageThreshold, 0)} must be Roth. This projection does not cap contributions or apply those rules. Official copy: ${irsRetirementSnapshot.snapshotId}.`,
     ],
   };
 }

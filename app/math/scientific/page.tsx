@@ -1,4 +1,4 @@
-import { ScientificCalculator } from '@/components/calculators/MathCalculators';
+import { ScientificCalculator } from '@/components/calculators/ScientificCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

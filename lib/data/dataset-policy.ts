@@ -10,6 +10,7 @@ export const DATASET_IDS = [
   'hud-fmr',
   'bea-rpp',
   'usda-food-plans',
+  'irs-retirement-limits',
 ] as const;
 
 export type DatasetId = (typeof DATASET_IDS)[number];
@@ -126,6 +127,15 @@ export const DATASET_POLICIES: Record<DatasetId, DatasetPolicy> = {
     refreshMode: 'scheduled',
     providerShort: 'USDA',
     periodKind: 'monthly',
+    freshnessAnchor: 'observation-end',
+  },
+  'irs-retirement-limits': {
+    datasetId: 'irs-retirement-limits',
+    expectedCadence: 'yearly',
+    staleAfterDays: 400,
+    refreshMode: 'manual',
+    providerShort: 'IRS',
+    periodKind: 'yearly',
     freshnessAnchor: 'observation-end',
   },
 };

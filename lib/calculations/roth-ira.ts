@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
-import { IRS_RETIREMENT_LIMITS_2026 } from '@/lib/data/irs-retirement';
+import { irsRetirementLimits, irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { compoundInterestGrowth } from './finance/interest';
 import { ROTH_IRA_ENGINE_ID } from './finance/version';
 
@@ -44,7 +44,7 @@ export function calculateRothIra(rawInput: unknown): CalculationResult<{
     ],
     assumptions: [
       'This is a projected Roth IRA growth estimate under the return you typed, not a determination of eligibility.',
-      `The IRS ${IRS_RETIREMENT_LIMITS_2026.taxYear} IRA contribution limit is ${formatMoney(IRS_RETIREMENT_LIMITS_2026.iraLimit, 0)} (${formatMoney(IRS_RETIREMENT_LIMITS_2026.catchUpIraAge50, 0)} additional catch-up at age 50+). This page does not enforce those caps.`,
+      `The IRS tax year ${irsRetirementSnapshot.observationPeriod} IRA contribution limit is ${formatMoney(irsRetirementLimits.iraLimit, 0)} (${formatMoney(irsRetirementLimits.catchUpIraAge50, 0)} additional catch-up at age 50+). This page does not enforce those caps. Official copy: ${irsRetirementSnapshot.snapshotId}.`,
       'Roth eligibility depends on filing status and MAGI. Those rules are not modeled here.',
       'Taxes, penalties, and conversion rules are not included.',
     ],

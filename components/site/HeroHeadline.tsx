@@ -7,6 +7,7 @@ const HOLD_MS = 2200;
 const SLIDE_MS = 380;
 
 export function HeroHeadline() {
+  const headlineRef = useRef<HTMLHeadingElement>(null);
   const indexRef = useRef(0);
   const [index, setIndex] = useState(0);
   const [previous, setPrevious] = useState<number | null>(null);
@@ -22,14 +23,27 @@ export function HeroHeadline() {
 
   useEffect(() => {
     if (reduceMotion) return undefined;
+    const headline = headlineRef.current;
+    let onScreen = true;
+    const visibility = headline
+      ? new IntersectionObserver((entries) => {
+        onScreen = entries[0]?.isIntersecting ?? false;
+      }, { threshold: 0 })
+      : null;
+    if (headline) visibility?.observe(headline);
+
     const timer = window.setInterval(() => {
+      if (!onScreen) return;
       const current = indexRef.current;
       const next = (current + 1) % HERO_NOUNS.length;
       indexRef.current = next;
       setPrevious(current);
       setIndex(next);
     }, HOLD_MS + SLIDE_MS);
-    return () => window.clearInterval(timer);
+    return () => {
+      window.clearInterval(timer);
+      visibility?.disconnect();
+    };
   }, [reduceMotion]);
 
   useEffect(() => {
@@ -42,7 +56,7 @@ export function HeroHeadline() {
   const outgoing = previous == null ? null : HERO_NOUNS[previous];
 
   return (
-    <h1>
+    <h1 ref={headlineRef}>
       <span className="sr-only">How much will it cost in the U.S.?</span>
       <span className="hero-headline" aria-hidden="true">
         <span className="hero-kicker">How much will</span>

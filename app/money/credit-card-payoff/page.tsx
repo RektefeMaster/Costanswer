@@ -1,4 +1,4 @@
-import { CreditCardPayoffCalculator } from '@/components/calculators/FinanceExpansionCalculators';
+import { CreditCardPayoffCalculator } from '@/components/calculators/CreditCardPayoffCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

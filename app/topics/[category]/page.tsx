@@ -44,7 +44,7 @@ export default async function TopicPage({ params }: { params: Promise<{ category
       <main id="main-content" tabIndex={-1} className={`topic-page accent-${definition.accent}`}>
         <header className="topic-hero">
           <div className="topic-hero-mark" aria-hidden="true">
-            <CategoryArt category={category} />
+            <CategoryArt category={category} priority />
           </div>
           <nav className="breadcrumbs" aria-label="Breadcrumb"><span><a href="/">{siteConfig.name}</a></span><span><b aria-hidden="true">/</b><span aria-current="page">{definition.name}</span></span></nav>
           <p className="eyebrow"><span /> {definition.name} calculators</p>

@@ -27,7 +27,10 @@ const serverHydratedSnapshot = () => false;
 const ToolAnalyticsContext = createContext<{ toolId: string; category: CategoryId } | null>(null);
 
 type ResultDockState = { label: string; value: string; tone: string };
-const ResultDockContext = createContext<{ setDock: (state: ResultDockState | null) => void } | null>(null);
+const ResultDockContext = createContext<{
+  setDock: (state: ResultDockState | null) => void;
+  setDockVisible: (visible: boolean) => void;
+} | null>(null);
 
 type FieldProps = {
   label: string;
@@ -163,12 +166,13 @@ export function CalculatorPanel({
   };
 
   const [dock, setDock] = useState<ResultDockState | null>(null);
-  const dockApi = useMemo(() => ({ setDock }), []);
+  const [dockVisible, setDockVisible] = useState(false);
+  const dockApi = useMemo(() => ({ setDock, setDockVisible }), []);
 
   return (
     <ToolAnalyticsContext.Provider value={{ toolId, category }}>
       <ResultDockContext.Provider value={dockApi}>
-        <section className="calculator-panel" aria-labelledby="calculator-title" data-hydrated={hydrated} onInputCapture={markStarted} onChangeCapture={markStarted}>
+        <section className={`calculator-panel${dockVisible ? ' dock-visible' : ''}`} aria-labelledby="calculator-title" data-hydrated={hydrated} onInputCapture={markStarted} onChangeCapture={markStarted}>
           <div className="calculator-heading">
             <p>Your numbers</p>
             <h2 id="calculator-title">{title}</h2>
@@ -183,7 +187,10 @@ export function CalculatorPanel({
 }
 
 function ResultDock({ label, value, tone }: ResultDockState) {
+  const dock = useContext(ResultDockContext);
   const [visible, setVisible] = useState(false);
+  const resultInView = useRef(true);
+  const panelInView = useRef(true);
 
   useEffect(() => {
     const result = document.querySelector('.calculator-panel .primary-result');
@@ -193,24 +200,34 @@ function ResultDock({ label, value, tone }: ResultDockState) {
       return;
     }
 
-    const update = () => {
-      const resultBox = result.getBoundingClientRect();
-      const panelBox = panel.getBoundingClientRect();
-      const resultInView = resultBox.top < window.innerHeight * 0.88 && resultBox.bottom > 88;
-      const panelInView = panelBox.bottom > 88 && panelBox.top < window.innerHeight;
-      setVisible(panelInView && !resultInView);
+    const sync = () => {
+      const next = panelInView.current && !resultInView.current;
+      setVisible((current) => (current === next ? current : next));
+      dock?.setDockVisible(next);
     };
 
-    const observer = new IntersectionObserver(update, { threshold: [0, 0.25, 0.5, 1] });
-    observer.observe(result);
-    observer.observe(panel);
-    window.addEventListener('scroll', update, { passive: true });
-    update();
+    const resultObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      resultInView.current = entry.isIntersecting;
+      sync();
+    }, { threshold: 0, rootMargin: '-88px 0px -12% 0px' });
+
+    const panelObserver = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (!entry) return;
+      panelInView.current = entry.isIntersecting;
+      sync();
+    }, { threshold: 0, rootMargin: '-88px 0px 0px 0px' });
+
+    resultObserver.observe(result);
+    panelObserver.observe(panel);
     return () => {
-      observer.disconnect();
-      window.removeEventListener('scroll', update);
+      resultObserver.disconnect();
+      panelObserver.disconnect();
+      dock?.setDockVisible(false);
     };
-  }, [label, value]);
+  }, [dock, label, value]);
 
   return (
     <p className={`result-dock result-${tone}${visible ? ' is-visible' : ''}`} aria-hidden="true">

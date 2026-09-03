@@ -206,6 +206,25 @@ export function amortizationSchedule(
   return simulateAmortization(loanAmount, annualRatePercent, paymentCount, extra).rows;
 }
 
+/** One pass: summary totals plus the payment rows used by schedule UIs. */
+export function amortizeLoan(
+  loanAmount: number,
+  annualRatePercent: number,
+  paymentCount: number,
+  extra: ExtraPaymentPlan = {},
+): SimulatedAmortization {
+  if (!(loanAmount > 0) || !Number.isFinite(loanAmount)) {
+    throw new Error('Loan amount must be a positive finite number.');
+  }
+  if (!Number.isFinite(annualRatePercent) || annualRatePercent < 0) {
+    throw new Error('Interest rate must be a finite number that is at least 0.');
+  }
+  if (!Number.isInteger(paymentCount) || paymentCount < 1) {
+    throw new Error('Loan term must include at least one payment.');
+  }
+  return simulateAmortization(loanAmount, annualRatePercent, paymentCount, extra);
+}
+
 export function summarizeAmortization(
   loanAmount: number,
   annualRatePercent: number,

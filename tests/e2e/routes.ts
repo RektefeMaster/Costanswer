@@ -13,13 +13,43 @@ const htmlPaths = [
   '/money/home-affordability',
   '/money/cost-of-living',
   '/money/inflation',
+  '/money/auto-loan',
+  '/money/investment',
+  '/money/retirement',
+  '/money/amortization',
+  '/money/cd',
+  '/money/interest',
+  '/money/roth-ira',
+  '/money/401k',
+  '/money/mortgage-payoff',
+  '/money/credit-card-payoff',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
+  '/home/square-footage',
   '/auto/ev-vs-gas',
   '/auto/road-trip-fuel',
   '/auto/car-affordability',
   '/everyday/business-days',
+  '/everyday/tip',
+  '/everyday/age',
+  '/everyday/time',
+  '/everyday/random-number',
+  '/everyday/time-card',
+  '/everyday/date',
+  '/everyday/days-from-today',
+  '/health/bmi',
+  '/health/calorie',
+  '/health/tdee',
+  '/health/bmr',
+  '/health/body-fat',
+  '/math/percentage',
+  '/math/percent-change',
+  '/math/scientific',
+  '/math/fraction',
+  '/math/unit-conversion',
+  '/education/grade',
+  '/education/gpa',
   '/shopping/unit-price',
   '/shopping/where-cheaper',
   '/food/recipe-scaler',
@@ -29,6 +59,9 @@ const htmlPaths = [
   '/topics/everyday',
   '/topics/food',
   '/topics/shopping',
+  '/topics/health',
+  '/topics/math',
+  '/topics/education',
   '/search?q=concrete',
   '/methodology',
   '/methodology/data',
@@ -66,9 +99,9 @@ if (robotsText.includes('Disallow: /search')) throw new Error('Crawlers must be 
 const sitemapIndex = await (await fetchWithTimeout('/sitemap.xml')).text();
 if (!sitemapIndex.includes('<sitemapindex') || !sitemapIndex.includes('/sitemaps/tools/1.xml')) throw new Error('Sitemap index is incomplete.');
 const toolsSitemap = await (await fetchWithTimeout('/sitemaps/tools/1.xml')).text();
-if (!toolsSitemap.includes('/home/electricity-cost') || !toolsSitemap.includes('/home/appliance-electricity-cost') || toolsSitemap.includes('/search')) throw new Error('Tool sitemap membership is incorrect.');
+if (!toolsSitemap.includes('/home/electricity-cost') || !toolsSitemap.includes('/home/appliance-electricity-cost') || !toolsSitemap.includes('/health/bmi') || !toolsSitemap.includes('/money/auto-loan') || toolsSitemap.includes('/search') || toolsSitemap.includes('/kg-to-lbs') || toolsSitemap.includes('/45-days-from-today')) throw new Error('Tool sitemap membership is incorrect.');
 const topicsSitemap = await (await fetchWithTimeout('/sitemaps/topics/1.xml')).text();
-if (!topicsSitemap.includes('/topics/home') || !topicsSitemap.includes('/topics/money') || topicsSitemap.includes('/topics/food')) throw new Error('Thin topic hubs entered the sitemap.');
+if (!topicsSitemap.includes('/topics/home') || !topicsSitemap.includes('/topics/money') || !topicsSitemap.includes('/topics/health') || !topicsSitemap.includes('/topics/math') || !topicsSitemap.includes('/topics/education') || !topicsSitemap.includes('/topics/everyday') || topicsSitemap.includes('/topics/food')) throw new Error('Thin topic hubs entered the sitemap.');
 
 const moneyTopicHtml = await (await fetchWithTimeout('/topics/money')).text();
 if (moneyTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool money hub should be indexable.');

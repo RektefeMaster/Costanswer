@@ -15,6 +15,7 @@ function isCategoryActive(pathname: string, categoryId: CategoryId) {
 export function SiteHeader() {
   const pathname = usePathname();
   const menuRef = useRef<HTMLDetailsElement>(null);
+  const pathnameRef = useRef(pathname);
   const searchCurrent = pathname === '/search' ? 'page' as const : undefined;
 
   useEffect(() => {
@@ -45,6 +46,8 @@ export function SiteHeader() {
   }, []);
 
   useEffect(() => {
+    if (pathnameRef.current === pathname) return;
+    pathnameRef.current = pathname;
     if (menuRef.current) menuRef.current.open = false;
   }, [pathname]);
 

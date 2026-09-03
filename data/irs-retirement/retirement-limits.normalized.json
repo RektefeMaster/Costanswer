@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterVersion": "irs-retirement-limits-v1.0.0",
+  "snapshotId": "irs-retirement-limits-2026-v1",
+  "provider": "Internal Revenue Service",
+  "datasetId": "irs-retirement-limits",
+  "observationPeriod": "2026",
+  "sourceStatus": "verified",
+  "fetchedAt": "2026-09-03T00:00:00.000Z",
+  "verifiedAt": "2026-09-03T00:00:00.000Z",
+  "publishedAt": "2025-11-13T00:00:00.000Z",
+  "sourceUrl": "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
+  "noticeUrl": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf",
+  "colaTableUrl": "https://www.irs.gov/retirement-plans/cola-increases-for-dollar-limitations-on-benefits-and-contributions",
+  "attribution": "IRS IR-2025-111 and Notice 2025-67. 2026 COLA limits for 401(k) elective deferrals, catch-up contributions, IRAs, and the section 415(c) defined-contribution overall limit. Context only; CostAnswer does not enforce these caps in growth math.",
+  "rawSha256": "eabbf7a2f43152fdf72a2b78538748d0a2ea354f914cf18b7b36fb099601ce1f",
+  "validationStatus": "passed",
+  "validationReport": [
+    "Elective deferral $24,500, IRA $7,500, and IRA age-50 catch-up $1,100 match IR-2025-111.",
+    "Age-50 401(k) catch-up is $8,000; ages 60–63 catch-up is $11,250.",
+    "Section 415(c) overall defined-contribution limit is $72,000.",
+    "2026 Roth catch-up prior-year FICA wage threshold is $150,000. Displayed as context, not an eligibility engine."
+  ],
+  "limits": {
+    "electiveDeferral401k": 24500,
+    "catchUp401kAge50": 8000,
+    "catchUp401kAges60to63": 11250,
+    "definedContributionOverall": 72000,
+    "iraLimit": 7500,
+    "catchUpIraAge50": 1100,
+    "rothCatchUpPriorYearFicaWageThreshold": 150000
+  },
+  "normalizedSha256": "1381bfb7ce02b42823cb3bce6c198814adab97b688b0e97191a1e8b4fe318779"
+}

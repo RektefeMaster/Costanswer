@@ -1,0 +1,26 @@
+{
+  "taxYear": 2026,
+  "sourceName": "IR-2025-111",
+  "sourceUrl": "https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500",
+  "noticeName": "Notice 2025-67",
+  "noticeUrl": "https://www.irs.gov/pub/irs-drop/n-25-67.pdf",
+  "colaTableUrl": "https://www.irs.gov/retirement-plans/cola-increases-for-dollar-limitations-on-benefits-and-contributions",
+  "publishedAt": "2025-11-13T00:00:00.000Z",
+  "limits": {
+    "electiveDeferral401k": 24500,
+    "catchUp401kAge50": 8000,
+    "catchUp401kAges60to63": 11250,
+    "definedContributionOverall": 72000,
+    "iraLimit": 7500,
+    "catchUpIraAge50": 1100,
+    "rothCatchUpPriorYearFicaWageThreshold": 150000
+  },
+  "notes": [
+    "Elective deferral limit under section 402(g)(1).",
+    "Age 50 catch-up under section 414(v)(2)(B)(i).",
+    "Ages 60, 61, 62, or 63 catch-up under section 414(v)(2)(E).",
+    "Defined-contribution overall limit under section 415(c)(1)(A).",
+    "IRA limit and age-50 IRA catch-up under section 219.",
+    "Beginning in 2026, catch-up contributions for employees whose prior-year FICA wages exceeded the stated threshold must be Roth."
+  ]
+}

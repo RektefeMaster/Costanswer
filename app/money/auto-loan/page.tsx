@@ -1,4 +1,4 @@
-import { AutoLoanCalculator } from '@/components/calculators/FinanceExpansionCalculators';
+import { AutoLoanCalculator } from '@/components/calculators/AutoLoanCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

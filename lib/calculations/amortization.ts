@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
 import { addCalendarMonths, formatDateOnly, isValidDateOnly, parseDateOnly } from './datetime/calendar';
-import { amortizationSchedule, summarizeAmortization } from './finance/loan';
+import { amortizeLoan } from './finance/loan';
 import { AMORTIZATION_ENGINE_ID } from './finance/version';
 
 const optionalDate = z.string().refine((value) => value === '' || isValidDateOnly(value), 'Use a valid start date.');
@@ -32,9 +32,9 @@ export function calculateAmortization(rawInput: unknown): CalculationResult<{
 }> {
   const input = amortizationInputSchema.parse(rawInput);
   const extra = { recurringMonthly: input.extraMonthlyPayment };
-  const summary = summarizeAmortization(input.principal, input.annualRatePercent, input.termMonths, extra);
   const start = input.startDate ? parseDateOnly(input.startDate) : null;
-  const schedule = amortizationSchedule(input.principal, input.annualRatePercent, input.termMonths, extra).map((row) => ({
+  const simulated = amortizeLoan(input.principal, input.annualRatePercent, input.termMonths, extra);
+  const schedule = simulated.rows.map((row) => ({
     period: row.period,
     date: start ? formatDateOnly(addCalendarMonths(start, row.period - 1)) : undefined,
     payment: round(row.payment),
@@ -44,18 +44,18 @@ export function calculateAmortization(rawInput: unknown): CalculationResult<{
   }));
   return {
     value: {
-      monthlyPayment: round(summary.scheduledMonthlyPayment),
+      monthlyPayment: round(simulated.scheduledMonthlyPayment),
       totalPrincipal: round(input.principal),
-      totalInterest: round(summary.totalInterest),
-      actualPeriods: summary.actualPeriods,
+      totalInterest: round(simulated.totalInterest),
+      actualPeriods: simulated.actualPeriods,
       schedule,
     },
     calculationVersion: AMORTIZATION_ENGINE_ID,
     datasetSnapshotIds: [],
     breakdown: [
-      { label: 'Monthly payment', value: formatMoney(summary.scheduledMonthlyPayment), detail: `${formatNumber(input.annualRatePercent, { maximumFractionDigits: 3 })}% for ${input.termMonths} scheduled months` },
-      { label: 'Total interest', value: formatMoney(summary.totalInterest) },
-      { label: 'Payoff', value: `${summary.actualPeriods} payments`, detail: summary.periodsSaved > 0 ? `${summary.periodsSaved} months sooner with extra principal` : 'Scheduled term' },
+      { label: 'Monthly payment', value: formatMoney(simulated.scheduledMonthlyPayment), detail: `${formatNumber(input.annualRatePercent, { maximumFractionDigits: 3 })}% for ${input.termMonths} scheduled months` },
+      { label: 'Total interest', value: formatMoney(simulated.totalInterest) },
+      { label: 'Payoff', value: `${simulated.actualPeriods} payments`, detail: simulated.periodsSaved > 0 ? `${simulated.periodsSaved} months sooner with extra principal` : 'Scheduled term' },
     ],
     assumptions: [
       'The schedule uses the same fixed-rate amortization primitive as the Loan Calculator.',
