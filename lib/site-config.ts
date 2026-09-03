@@ -1,7 +1,18 @@
 const PRODUCTION_ORIGIN = 'https://costanswer.com';
 
-const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined)
+function httpOrigin(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value.includes('://') ? value : `https://${value}`);
+    if (url.protocol === 'http:' || url.protocol === 'https:') return url.origin;
+  } catch {
+    return undefined;
+  }
+  return undefined;
+}
+
+const configuredOrigin = httpOrigin(process.env.NEXT_PUBLIC_SITE_URL)
+  ?? httpOrigin(process.env.VERCEL_PROJECT_PRODUCTION_URL)
   ?? (process.env.NODE_ENV === 'production' ? PRODUCTION_ORIGIN : undefined);
 
 export const siteConfig = {
