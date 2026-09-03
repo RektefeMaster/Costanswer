@@ -1,7 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": null,
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build && node scripts/emit-vercel-output.mjs",
   "installCommand": "npm ci",
   "env": {
     "NEXT_PUBLIC_SITE_URL": "https://costanswer.com"
