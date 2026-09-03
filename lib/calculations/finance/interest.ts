@@ -9,6 +9,18 @@ export const PERIODS_PER_YEAR: Record<CompoundingFrequency, number> = {
   weekly: 52,
 };
 
+export type ContributionTiming = 'end' | 'beginning';
+
+export function apyGrowth(principal: number, apyPercent: number, years: number): number {
+  if (![principal, apyPercent, years].every(Number.isFinite)) {
+    throw new Error('APY growth inputs must be finite numbers.');
+  }
+  if (principal < 0 || apyPercent < 0 || years < 0) {
+    throw new Error('APY growth inputs cannot be negative.');
+  }
+  return principal * (1 + apyPercent / 100) ** years;
+}
+
 export function simpleInterest(principal: number, annualRatePercent: number, years: number): number {
   if (![principal, annualRatePercent, years].every(Number.isFinite)) {
     throw new Error('Simple interest inputs must be finite numbers.');
@@ -58,6 +70,21 @@ function closedFormCompound(
   return { endingBalance: principal * growth + annuity, totalContributions };
 }
 
+function closedFormAnnuityDue(
+  principal: number,
+  contribution: number,
+  periodicRate: number,
+  periods: number,
+): { endingBalance: number; totalContributions: number } {
+  const totalContributions = contribution * periods;
+  if (periodicRate === 0) {
+    return { endingBalance: principal + totalContributions, totalContributions };
+  }
+  const growth = (1 + periodicRate) ** periods;
+  const annuity = contribution * (1 + periodicRate) * (growth - 1) / periodicRate;
+  return { endingBalance: principal * growth + annuity, totalContributions };
+}
+
 function simulateMismatchedFrequencies(
   principal: number,
   contribution: number,
@@ -65,6 +92,7 @@ function simulateMismatchedFrequencies(
   years: number,
   compounding: CompoundingFrequency,
   contributionFrequency: CompoundingFrequency,
+  contributionTiming: ContributionTiming,
 ): CompoundInterestGrowth {
   const compoundPerYear = PERIODS_PER_YEAR[compounding];
   const contribPerYear = PERIODS_PER_YEAR[contributionFrequency];
@@ -77,8 +105,12 @@ function simulateMismatchedFrequencies(
   let balance = principal;
   let totalContributions = 0;
   for (let step = 1; step <= totalSteps; step += 1) {
+    if (contributionTiming === 'beginning' && step % contribEvery === 0) {
+      balance += contribution;
+      totalContributions += contribution;
+    }
     if (step % compoundEvery === 0) balance += balance * periodicRate;
-    if (step % contribEvery === 0) {
+    if (contributionTiming === 'end' && step % contribEvery === 0) {
       balance += contribution;
       totalContributions += contribution;
     }
@@ -101,8 +133,17 @@ export function compoundInterestGrowth(input: {
   contribution: number;
   compounding: CompoundingFrequency;
   contributionFrequency: CompoundingFrequency;
+  contributionTiming?: ContributionTiming;
 }): CompoundInterestGrowth {
-  const { principal, annualRatePercent, years, contribution, compounding, contributionFrequency } = input;
+  const {
+    principal,
+    annualRatePercent,
+    years,
+    contribution,
+    compounding,
+    contributionFrequency,
+    contributionTiming = 'end',
+  } = input;
   if (![principal, annualRatePercent, years, contribution].every(Number.isFinite)) {
     throw new Error('Compound interest inputs must be finite numbers.');
   }
@@ -126,7 +167,9 @@ export function compoundInterestGrowth(input: {
   if (compounding === contributionFrequency) {
     const periods = years * compoundPerYear;
     const periodicRate = (annualRatePercent / 100) / compoundPerYear;
-    const closed = closedFormCompound(principal, contribution, periodicRate, periods);
+    const closed = contributionTiming === 'beginning'
+      ? closedFormAnnuityDue(principal, contribution, periodicRate, periods)
+      : closedFormCompound(principal, contribution, periodicRate, periods);
     return {
       endingBalance: closed.endingBalance,
       startingPrincipal: principal,
@@ -144,5 +187,6 @@ export function compoundInterestGrowth(input: {
     years,
     compounding,
     contributionFrequency,
+    contributionTiming,
   );
 }

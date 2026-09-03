@@ -120,12 +120,14 @@ function closedFormFinalPayment(
   };
 }
 
+type SimulatedAmortization = AmortizationSummary & { rows: AmortizationPayment[] };
+
 function simulateAmortization(
   loanAmount: number,
   annualRatePercent: number,
   paymentCount: number,
   extra: ExtraPaymentPlan,
-): AmortizationSummary {
+): SimulatedAmortization {
   const scheduledMonthlyPayment = monthlyPrincipalAndInterest(loanAmount, annualRatePercent, paymentCount);
   const oneTimeByPeriod = new Map<number, number>();
   for (const item of extra.oneTime ?? []) {
@@ -140,8 +142,7 @@ function simulateAmortization(
   let totalInterest = 0;
   let totalPaid = 0;
   let period = 0;
-  let firstPayment: AmortizationPayment | undefined;
-  let finalPayment: AmortizationPayment | undefined;
+  const rows: AmortizationPayment[] = [];
 
   while (balance > BALANCE_EPSILON && period < maxPeriods) {
     period += 1;
@@ -156,18 +157,18 @@ function simulateAmortization(
     if (balance < BALANCE_EPSILON) balance = 0;
     totalInterest += interest;
     totalPaid += payment;
-    const row: AmortizationPayment = {
+    rows.push({
       period,
       payment,
       principal,
       interest,
       extraPrincipal,
       remainingBalance: balance,
-    };
-    firstPayment ??= row;
-    finalPayment = row;
+    });
   }
 
+  const firstPayment = rows[0];
+  const finalPayment = rows.at(-1);
   if (!firstPayment || !finalPayment) {
     throw new Error('The loan produced no payments.');
   }
@@ -183,7 +184,26 @@ function simulateAmortization(
     paidOff: balance <= BALANCE_EPSILON,
     firstPayment,
     finalPayment,
+    rows,
   };
+}
+
+export function amortizationSchedule(
+  loanAmount: number,
+  annualRatePercent: number,
+  paymentCount: number,
+  extra: ExtraPaymentPlan = {},
+): AmortizationPayment[] {
+  if (!(loanAmount > 0) || !Number.isFinite(loanAmount)) {
+    throw new Error('Loan amount must be a positive finite number.');
+  }
+  if (!Number.isFinite(annualRatePercent) || annualRatePercent < 0) {
+    throw new Error('Interest rate must be a finite number that is at least 0.');
+  }
+  if (!Number.isInteger(paymentCount) || paymentCount < 1) {
+    throw new Error('Loan term must include at least one payment.');
+  }
+  return simulateAmortization(loanAmount, annualRatePercent, paymentCount, extra).rows;
 }
 
 export function summarizeAmortization(

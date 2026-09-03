@@ -2,11 +2,22 @@ export {
   COMPOUND_INTEREST_ENGINE_ID,
   DEBT_PAYOFF_ENGINE_ID,
   LOAN_ENGINE_ID,
+  AUTO_LOAN_ENGINE_ID,
+  INVESTMENT_ENGINE_ID,
+  RETIREMENT_ENGINE_ID,
+  AMORTIZATION_ENGINE_ID,
+  CD_ENGINE_ID,
+  INTEREST_ENGINE_ID,
+  ROTH_IRA_ENGINE_ID,
+  K401_ENGINE_ID,
+  MORTGAGE_PAYOFF_ENGINE_ID,
+  CREDIT_CARD_PAYOFF_ENGINE_ID,
   pinnedEngineId,
 } from './version';
 export {
   LOAN_SIMULATION_MONTH_CAP,
   MONTHS_PER_YEAR,
+  amortizationSchedule,
   loanFromMonthlyPrincipalAndInterest,
   monthlyPaymentFactor,
   monthlyPrincipalAndInterest,
@@ -19,11 +30,20 @@ export {
 export {
   COMPOUNDING_FREQUENCIES,
   PERIODS_PER_YEAR,
+  apyGrowth,
   compoundInterestGrowth,
   simpleInterest,
   type CompoundInterestGrowth,
   type CompoundingFrequency,
+  type ContributionTiming,
 } from './interest';
+export {
+  CREDIT_CARD_MONTH_CAP,
+  creditCardPayoff,
+  type CreditCardPayoff,
+  type CreditCardPayoffStatus,
+  type CreditCardStopReason,
+} from './credit-card';
 export {
   DEBT_PAYOFF_MONTH_CAP,
   DEBT_PAYOFF_STRATEGIES,

@@ -1,19 +1,18 @@
 import { z } from 'zod';
 import { finiteNumber, type CalculationResult } from './contracts';
+import { addCalendarDays, DAY_MS, formatDateOnly, isValidDateOnly, parseDateOnly } from './datetime/calendar';
 
-function isValidDateOnly(value: string): boolean {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
-  const date = parseDateOnly(value);
-  return Number.isFinite(date.getTime()) && formatDateOnly(date) === value;
+export { parseDateOnly, formatDateOnly };
+
+function isInSupportedYear(value: string): boolean {
+  const year = Number(value.slice(0, 4));
+  return year >= 1900 && year <= 2200;
 }
 
 export const businessDateSchema = z.string().refine(
   isValidDateOnly,
   'Use a valid date in YYYY-MM-DD format.',
-).refine((value) => {
-  const year = Number(value.slice(0, 4));
-  return year >= 1900 && year <= 2200;
-}, 'Dates must be between 1900 and 2200.');
+).refine(isInSupportedYear, 'Dates must be between 1900 and 2200.');
 
 export const businessDaysBetweenInputSchema = z.object({
   startDate: businessDateSchema,
@@ -41,21 +40,6 @@ export const addBusinessDaysInputSchema = z.object({
 
 export type BusinessDaysBetweenInput = z.infer<typeof businessDaysBetweenInputSchema>;
 export type AddBusinessDaysInput = z.infer<typeof addBusinessDaysInputSchema>;
-
-const DAY_MS = 86_400_000;
-
-export function parseDateOnly(value: string): Date {
-  const [year, month, day] = value.split('-').map(Number);
-  return new Date(Date.UTC(year, month - 1, day));
-}
-
-export function formatDateOnly(date: Date): string {
-  return date.toISOString().slice(0, 10);
-}
-
-function addCalendarDays(date: Date, amount: number): Date {
-  return new Date(date.getTime() + amount * DAY_MS);
-}
 
 function observedFixedHoliday(year: number, monthIndex: number, day: number): Date {
   const holiday = new Date(Date.UTC(year, monthIndex, day));
