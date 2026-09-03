@@ -2,6 +2,8 @@ import path from 'node:path';
 import http from 'node:http';
 import { fileURLToPath } from 'node:url';
 
+process.env.NODE_ENV ??= 'production';
+process.env.NEXT_PUBLIC_SITE_URL ??= 'https://costanswer.com';
 process.env.VINEXT_TRUST_PROXY ??= '1';
 
 const { startProdServer } = await import('vinext/server/prod-server');

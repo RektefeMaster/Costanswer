@@ -1,9 +1,8 @@
-const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL
-  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined);
+const PRODUCTION_ORIGIN = 'https://costanswer.com';
 
-if (process.env.NODE_ENV === 'production' && !configuredOrigin) {
-  throw new Error('NEXT_PUBLIC_SITE_URL is required for production canonical, sitemap and social metadata.');
-}
+const configuredOrigin = process.env.NEXT_PUBLIC_SITE_URL
+  ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined)
+  ?? (process.env.NODE_ENV === 'production' ? PRODUCTION_ORIGIN : undefined);
 
 export const siteConfig = {
   name: 'CostAnswer',
