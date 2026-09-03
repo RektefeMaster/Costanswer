@@ -22,8 +22,12 @@ export const finiteNumber = (label: string, minimum: number, maximum: number) =>
     .max(maximum, `${label} must be no more than ${maximum}.`);
 
 export function round(value: number, digits = 2): number {
+  if (!Number.isFinite(value)) throw new Error('Rounded value must be finite.');
+  if (!Number.isInteger(digits) || digits < 0 || digits > 12) throw new Error('Rounding digits must be an integer from 0 to 12.');
   const factor = 10 ** digits;
-  return Math.round((value + Number.EPSILON) * factor) / factor;
+  const [coefficient, exponent = '0'] = Math.abs(value).toString().split('e');
+  const shifted = Number(`${coefficient}e${Number(exponent) + digits}`);
+  return Math.sign(value) * Math.round(shifted) / factor;
 }
 
 export function formatNumber(value: number, options?: Intl.NumberFormatOptions): string {
@@ -37,4 +41,3 @@ export function formatMoney(value: number, maximumFractionDigits = 2): string {
     maximumFractionDigits,
   }).format(value);
 }
-

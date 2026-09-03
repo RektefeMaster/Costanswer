@@ -4,11 +4,24 @@ export {};
 const htmlPaths = [
   '/',
   '/money/hourly-to-salary',
+  '/money/salary-after-tax',
+  '/money/paycheck',
+  '/money/mortgage-payment',
+  '/money/loan',
+  '/money/compound-interest',
+  '/money/debt-payoff',
+  '/money/home-affordability',
+  '/money/cost-of-living',
+  '/money/inflation',
   '/home/electricity-cost',
+  '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
   '/auto/ev-vs-gas',
+  '/auto/road-trip-fuel',
+  '/auto/car-affordability',
   '/everyday/business-days',
   '/shopping/unit-price',
+  '/shopping/where-cheaper',
   '/food/recipe-scaler',
   '/topics/money',
   '/topics/home',
@@ -53,14 +66,20 @@ if (robotsText.includes('Disallow: /search')) throw new Error('Crawlers must be 
 const sitemapIndex = await (await fetchWithTimeout('/sitemap.xml')).text();
 if (!sitemapIndex.includes('<sitemapindex') || !sitemapIndex.includes('/sitemaps/tools/1.xml')) throw new Error('Sitemap index is incomplete.');
 const toolsSitemap = await (await fetchWithTimeout('/sitemaps/tools/1.xml')).text();
-if (!toolsSitemap.includes('/home/electricity-cost') || toolsSitemap.includes('/search')) throw new Error('Tool sitemap membership is incorrect.');
+if (!toolsSitemap.includes('/home/electricity-cost') || !toolsSitemap.includes('/home/appliance-electricity-cost') || toolsSitemap.includes('/search')) throw new Error('Tool sitemap membership is incorrect.');
 const topicsSitemap = await (await fetchWithTimeout('/sitemaps/topics/1.xml')).text();
-if (!topicsSitemap.includes('/topics/home') || topicsSitemap.includes('/topics/money')) throw new Error('Thin topic hubs entered the sitemap.');
+if (!topicsSitemap.includes('/topics/home') || !topicsSitemap.includes('/topics/money') || topicsSitemap.includes('/topics/food')) throw new Error('Thin topic hubs entered the sitemap.');
 
 const moneyTopicHtml = await (await fetchWithTimeout('/topics/money')).text();
-if (!moneyTopicHtml.includes('noindex')) throw new Error('A one-tool topic hub must remain noindex.');
+if (moneyTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool money hub should be indexable.');
+const foodTopicHtml = await (await fetchWithTimeout('/topics/food')).text();
+if (!foodTopicHtml.includes('noindex')) throw new Error('A one-tool topic hub must remain noindex.');
 const homeTopicHtml = await (await fetchWithTimeout('/topics/home')).text();
 if (homeTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool topic hub should be indexable.');
+const shoppingTopicHtml = await (await fetchWithTimeout('/topics/shopping')).text();
+if (shoppingTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool shopping hub should be indexable.');
+const autoTopicHtml = await (await fetchWithTimeout('/topics/auto')).text();
+if (autoTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool auto hub should be indexable.');
 
 const rootResponse = await fetchWithTimeout('/');
 if (!rootResponse.headers.get('content-security-policy')?.includes("frame-ancestors 'none'")) throw new Error('Production security headers are missing.');

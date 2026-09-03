@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { calculateHourlySalary } from '@/lib/calculations/hourly-salary';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { emitAnalyticsEvent } from '@/lib/analytics';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 export function HourlySalaryCalculator() {
@@ -12,8 +11,6 @@ export function HourlySalaryCalculator() {
   const [overtimeHours, setOvertimeHours] = useState('0');
   const [overtimeMultiplier, setOvertimeMultiplier] = useState('1.5');
   const [weeks, setWeeks] = useState('52');
-
-  useEffect(() => emitAnalyticsEvent('tool_opened', { toolId: 'hourly-to-salary', category: 'money' }), []);
 
   const calculation = useMemo(() => {
     try {
@@ -32,19 +29,26 @@ export function HourlySalaryCalculator() {
   const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
   return (
-    <CalculatorPanel title="Build your gross-pay picture" intro="Change any value and the answer updates immediately.">
+    <CalculatorPanel
+      title="Hourly wage to annual salary"
+      intro="Put in your rate, hours, and how many weeks you get paid. This is before taxes."
+      toolId="hourly-to-salary"
+      category="money"
+      calculationState={calculation.result ? 'complete' : 'invalid'}
+      calculationSignature={JSON.stringify([hourlyRate, regularHours, overtimeHours, overtimeMultiplier, weeks])}
+    >
       <div className="calc-form-grid">
         <Field label="Hourly rate" htmlFor="hourly-rate">
           <InputShell prefix="$" suffix="/ hour">
             <input id="hourly-rate" type="number" min="0.01" step="0.25" inputMode="decimal" value={hourlyRate} onChange={(event) => setHourlyRate(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Regular hours" htmlFor="regular-hours" hint="Per week">
+        <Field label="Regular hours" htmlFor="regular-hours" hint="Hours per week at your base rate">
           <InputShell suffix="hours">
             <input id="regular-hours" type="number" min="0" max="168" step="0.5" inputMode="decimal" value={regularHours} onChange={(event) => setRegularHours(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Overtime hours" htmlFor="overtime-hours" hint="Only hours you expect to be paid as overtime">
+        <Field label="Overtime hours" htmlFor="overtime-hours" hint="Only hours paid at the overtime rate">
           <InputShell suffix="hours">
             <input id="overtime-hours" type="number" min="0" max="168" step="0.5" inputMode="decimal" value={overtimeHours} onChange={(event) => setOvertimeHours(event.target.value)} />
           </InputShell>
@@ -54,7 +58,7 @@ export function HourlySalaryCalculator() {
             <input id="overtime-rate" type="number" min="1" max="3" step="0.1" inputMode="decimal" value={overtimeMultiplier} onChange={(event) => setOvertimeMultiplier(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Paid weeks" htmlFor="paid-weeks" hint="52 assumes no unpaid weeks">
+        <Field label="Paid weeks" htmlFor="paid-weeks" hint="Use 52 if you are paid every week of the year">
           <InputShell suffix="/ year">
             <input id="paid-weeks" type="number" min="1" max="53" step="1" inputMode="numeric" value={weeks} onChange={(event) => setWeeks(event.target.value)} />
           </InputShell>

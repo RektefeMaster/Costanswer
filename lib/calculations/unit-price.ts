@@ -33,6 +33,13 @@ export const unitPriceInputSchema = z.object({
   if (dimensions.size > 1) {
     context.addIssue({ code: 'custom', message: 'Compare packages that use the same kind of unit (weight, volume, or count).' });
   }
+  const seen = new Set<string>();
+  input.options.forEach((option, index) => {
+    if (seen.has(option.id)) {
+      context.addIssue({ code: 'custom', path: ['options', index, 'id'], message: 'Package IDs must be unique.' });
+    }
+    seen.add(option.id);
+  });
 });
 
 export type UnitPriceInput = z.infer<typeof unitPriceInputSchema>;
@@ -40,6 +47,7 @@ export type UnitPriceInput = z.infer<typeof unitPriceInputSchema>;
 export type UnitPriceValue = {
   baseUnit: 'oz' | 'fl oz' | 'item';
   winnerId: string;
+  winnerIds: string[];
   ranked: Array<{
     id: string;
     label: string;
@@ -63,6 +71,12 @@ export function calculateUnitPrices(rawInput: unknown): CalculationResult<UnitPr
     };
   });
   const highest = Math.max(...calculated.map((option) => option.unitPrice));
+  const lowestExact = Math.min(...calculated.map((option) => option.unitPrice));
+  const lowestComparable = round(lowestExact, 10);
+  const winnerIds = calculated
+    .filter((option) => round(option.unitPrice, 10) === lowestComparable)
+    .map((option) => option.id)
+    .sort();
   const ranked = calculated
     .sort((a, b) => a.unitPrice - b.unitPrice || a.id.localeCompare(b.id))
     .map((option) => ({
@@ -73,18 +87,18 @@ export function calculateUnitPrices(rawInput: unknown): CalculationResult<UnitPr
     }));
 
   return {
-    value: { baseUnit, winnerId: ranked[0].id, ranked },
-    calculationVersion: 'unit-normalization-v1.0.0',
+    value: { baseUnit, winnerId: ranked[0].id, winnerIds, ranked },
+    calculationVersion: 'unit-normalization-v1.1.1',
     datasetSnapshotIds: [],
     breakdown: ranked.map((option) => ({
       label: option.label,
       value: `$${option.unitPrice.toFixed(option.unitPrice < 0.1 ? 4 : 2)} per ${baseUnit}`,
-      detail: `${option.baseQuantity.toLocaleString('en-US')} ${baseUnit} normalized quantity`,
+      detail: `${option.baseQuantity.toLocaleString('en-US')} ${baseUnit} after converting units`,
     })),
     assumptions: [
-      'Package prices are compared before tax unless your entered price includes tax.',
-      'Weight and volume are not treated as interchangeable.',
-      'Coupons, spoilage, membership fees and quality differences are not modeled unless included in your price.',
+      'Package prices are compared before tax, unless the price you typed already includes tax.',
+      'Weight and volume are not interchangeable.',
+      'Coupons, spoilage, membership fees, and quality are not in the math unless they are already in your price.',
     ],
   };
 }

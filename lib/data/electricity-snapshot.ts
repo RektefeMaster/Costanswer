@@ -1,24 +1,31 @@
-import electricitySnapshotJson from '@/data/eia/electricity-retail-sales.normalized.json';
-import electricityManifestJson from '@/data/eia/manifest.json';
+import currentElectricityJson from '@/data/eia/current.json';
 import { eiaElectricitySnapshotSchema, type ElectricityStateRate } from './eia-electricity';
+import { assertManifestMatchesSnapshot, assertNormalizedHash, snapshotRecordFromEnvelope } from './envelope';
 import type { StateCode } from '@/lib/location/states';
 import { z } from 'zod';
 
-export const electricitySnapshot = eiaElectricitySnapshotSchema.parse(electricitySnapshotJson);
-export const electricityManifest = z.object({
+const electricityManifestSchema = z.object({
   currentSnapshotId: z.string(),
   observationPeriod: z.string().regex(/^\d{4}-\d{2}$/),
   normalizedSha256: z.string().regex(/^[a-f0-9]{64}$/),
   validationStatus: z.literal('passed'),
-}).parse(electricityManifestJson);
+}).strict();
 
-if (
-  electricityManifest.currentSnapshotId !== electricitySnapshot.snapshotId
-  || electricityManifest.observationPeriod !== electricitySnapshot.observationPeriod
-  || electricityManifest.normalizedSha256 !== electricitySnapshot.normalizedSha256
-) {
-  throw new Error('EIA manifest does not match the promoted electricity snapshot. Publication is incomplete.');
+const currentElectricityEnvelopeSchema = z.object({
+  manifest: electricityManifestSchema,
+  snapshot: eiaElectricitySnapshotSchema,
+}).strict();
+
+export function validateElectricityEnvelope(rawEnvelope: unknown) {
+  const computedNormalizedHash = assertNormalizedHash(snapshotRecordFromEnvelope(rawEnvelope, 'Bundled EIA electricity'), 'Bundled EIA electricity data');
+  const envelope = currentElectricityEnvelopeSchema.parse(rawEnvelope);
+  assertManifestMatchesSnapshot(envelope.manifest, envelope.snapshot, computedNormalizedHash, 'EIA electricity');
+  return envelope;
 }
+
+const currentElectricityEnvelope = validateElectricityEnvelope(currentElectricityJson);
+export const electricitySnapshot = currentElectricityEnvelope.snapshot;
+export const electricityManifest = currentElectricityEnvelope.manifest;
 
 const ratesByState = new Map(electricitySnapshot.states.map((row) => [row.stateCode, row]));
 

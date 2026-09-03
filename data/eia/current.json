@@ -1,0 +1,396 @@
+{
+  "manifest": {
+    "currentSnapshotId": "eia-electricity-residential-2026-06-v1",
+    "observationPeriod": "2026-06",
+    "normalizedSha256": "e8587a4338cd18a24126e10350d3e48b7c9a1c34729b485bf120d3de97dad46d",
+    "validationStatus": "passed"
+  },
+  "snapshot": {
+    "schemaVersion": "1.0.0",
+    "adapterVersion": "eia-retail-sales-v1.0.0",
+    "snapshotId": "eia-electricity-residential-2026-06-v1",
+    "provider": "U.S. Energy Information Administration",
+    "datasetId": "electricity/retail-sales",
+    "sector": "residential",
+    "frequency": "monthly",
+    "observationPeriod": "2026-06",
+    "sourceStatus": "preliminary",
+    "fetchedAt": "2026-08-31T22:57:35.073Z",
+    "verifiedAt": "2026-08-31T22:57:35.073Z",
+    "publishedAt": "2026-08-31T22:57:35.073Z",
+    "sourceUrl": "https://api.eia.gov/v2/electricity/retail-sales/data/?frequency=monthly&sectorid=RES&period=2026-06",
+    "sourceDocumentationUrl": "https://www.eia.gov/opendata/documentation.php",
+    "termsUrl": "https://www.eia.gov/opendata/terms-of-service.php",
+    "attribution": "Source: U.S. Energy Information Administration, Form EIA-861M monthly estimates.",
+    "rawSha256": "54573bfaf6558090154006ad413452899011a00db8aecae4cbbd97370c8f12a0",
+    "validationStatus": "passed",
+    "validationReport": [
+      "Transport and API response schema passed.",
+      "Residential sector and expected units confirmed.",
+      "Exactly one row for each of 50 states and the District of Columbia.",
+      "All price, sales and revenue values are finite and positive.",
+      "Price approximately equals 100 × revenue ÷ sales for every geography."
+    ],
+    "states": [
+      {
+        "stateCode": "AK",
+        "stateName": "Alaska",
+        "priceCentsPerKwh": 28.21,
+        "salesMillionKwh": 139.78934,
+        "revenueMillionDollars": 39.42876
+      },
+      {
+        "stateCode": "AL",
+        "stateName": "Alabama",
+        "priceCentsPerKwh": 16.4,
+        "salesMillionKwh": 3019.97303,
+        "revenueMillionDollars": 495.41789
+      },
+      {
+        "stateCode": "AR",
+        "stateName": "Arkansas",
+        "priceCentsPerKwh": 14.12,
+        "salesMillionKwh": 1639.98572,
+        "revenueMillionDollars": 231.58523
+      },
+      {
+        "stateCode": "AZ",
+        "stateName": "Arizona",
+        "priceCentsPerKwh": 15.18,
+        "salesMillionKwh": 4633.13013,
+        "revenueMillionDollars": 703.26147
+      },
+      {
+        "stateCode": "CA",
+        "stateName": "California",
+        "priceCentsPerKwh": 34.74,
+        "salesMillionKwh": 6916.52788,
+        "revenueMillionDollars": 2402.75053
+      },
+      {
+        "stateCode": "CO",
+        "stateName": "Colorado",
+        "priceCentsPerKwh": 17.13,
+        "salesMillionKwh": 1910.58277,
+        "revenueMillionDollars": 327.27994
+      },
+      {
+        "stateCode": "CT",
+        "stateName": "Connecticut",
+        "priceCentsPerKwh": 24.32,
+        "salesMillionKwh": 1155.13507,
+        "revenueMillionDollars": 280.91722
+      },
+      {
+        "stateCode": "DC",
+        "stateName": "District of Columbia",
+        "priceCentsPerKwh": 24.39,
+        "salesMillionKwh": 194.18985,
+        "revenueMillionDollars": 47.36937
+      },
+      {
+        "stateCode": "DE",
+        "stateName": "Delaware",
+        "priceCentsPerKwh": 19.29,
+        "salesMillionKwh": 428.94418,
+        "revenueMillionDollars": 82.72789
+      },
+      {
+        "stateCode": "FL",
+        "stateName": "Florida",
+        "priceCentsPerKwh": 15.1,
+        "salesMillionKwh": 13941.77983,
+        "revenueMillionDollars": 2104.77733
+      },
+      {
+        "stateCode": "GA",
+        "stateName": "Georgia",
+        "priceCentsPerKwh": 16.36,
+        "salesMillionKwh": 5902.34388,
+        "revenueMillionDollars": 965.77409
+      },
+      {
+        "stateCode": "HI",
+        "stateName": "Hawaii",
+        "priceCentsPerKwh": 52.72,
+        "salesMillionKwh": 217.76897,
+        "revenueMillionDollars": 114.80921
+      },
+      {
+        "stateCode": "IA",
+        "stateName": "Iowa",
+        "priceCentsPerKwh": 15.93,
+        "salesMillionKwh": 1271.79381,
+        "revenueMillionDollars": 202.65623
+      },
+      {
+        "stateCode": "ID",
+        "stateName": "Idaho",
+        "priceCentsPerKwh": 14.37,
+        "salesMillionKwh": 719.58972,
+        "revenueMillionDollars": 103.3953
+      },
+      {
+        "stateCode": "IL",
+        "stateName": "Illinois",
+        "priceCentsPerKwh": 19.89,
+        "salesMillionKwh": 3891.78295,
+        "revenueMillionDollars": 773.89438
+      },
+      {
+        "stateCode": "IN",
+        "stateName": "Indiana",
+        "priceCentsPerKwh": 17.51,
+        "salesMillionKwh": 2845.86334,
+        "revenueMillionDollars": 498.3286
+      },
+      {
+        "stateCode": "KS",
+        "stateName": "Kansas",
+        "priceCentsPerKwh": 15.71,
+        "salesMillionKwh": 1413.80265,
+        "revenueMillionDollars": 222.05451
+      },
+      {
+        "stateCode": "KY",
+        "stateName": "Kentucky",
+        "priceCentsPerKwh": 14.26,
+        "salesMillionKwh": 2280.42559,
+        "revenueMillionDollars": 325.17625
+      },
+      {
+        "stateCode": "LA",
+        "stateName": "Louisiana",
+        "priceCentsPerKwh": 13.49,
+        "salesMillionKwh": 2977.28053,
+        "revenueMillionDollars": 401.65162
+      },
+      {
+        "stateCode": "MA",
+        "stateName": "Massachusetts",
+        "priceCentsPerKwh": 29.61,
+        "salesMillionKwh": 1731.09143,
+        "revenueMillionDollars": 512.51667
+      },
+      {
+        "stateCode": "MD",
+        "stateName": "Maryland",
+        "priceCentsPerKwh": 21.84,
+        "salesMillionKwh": 2289.30362,
+        "revenueMillionDollars": 499.9687
+      },
+      {
+        "stateCode": "ME",
+        "stateName": "Maine",
+        "priceCentsPerKwh": 29.59,
+        "salesMillionKwh": 339.39196,
+        "revenueMillionDollars": 100.41102
+      },
+      {
+        "stateCode": "MI",
+        "stateName": "Michigan",
+        "priceCentsPerKwh": 22.99,
+        "salesMillionKwh": 2985.94505,
+        "revenueMillionDollars": 686.58785
+      },
+      {
+        "stateCode": "MN",
+        "stateName": "Minnesota",
+        "priceCentsPerKwh": 17.52,
+        "salesMillionKwh": 1877.62288,
+        "revenueMillionDollars": 328.88795
+      },
+      {
+        "stateCode": "MO",
+        "stateName": "Missouri",
+        "priceCentsPerKwh": 16.22,
+        "salesMillionKwh": 3224.70689,
+        "revenueMillionDollars": 523.03665
+      },
+      {
+        "stateCode": "MS",
+        "stateName": "Mississippi",
+        "priceCentsPerKwh": 14.88,
+        "salesMillionKwh": 1753.49685,
+        "revenueMillionDollars": 260.93514
+      },
+      {
+        "stateCode": "MT",
+        "stateName": "Montana",
+        "priceCentsPerKwh": 15.14,
+        "salesMillionKwh": 388.08401,
+        "revenueMillionDollars": 58.73726
+      },
+      {
+        "stateCode": "NC",
+        "stateName": "North Carolina",
+        "priceCentsPerKwh": 14.74,
+        "salesMillionKwh": 5903.84631,
+        "revenueMillionDollars": 870.0842
+      },
+      {
+        "stateCode": "ND",
+        "stateName": "North Dakota",
+        "priceCentsPerKwh": 14.12,
+        "salesMillionKwh": 323.73413,
+        "revenueMillionDollars": 45.69515
+      },
+      {
+        "stateCode": "NE",
+        "stateName": "Nebraska",
+        "priceCentsPerKwh": 13.25,
+        "salesMillionKwh": 910.55432,
+        "revenueMillionDollars": 120.62695
+      },
+      {
+        "stateCode": "NH",
+        "stateName": "New Hampshire",
+        "priceCentsPerKwh": 27.01,
+        "salesMillionKwh": 407.10941,
+        "revenueMillionDollars": 109.97724
+      },
+      {
+        "stateCode": "NJ",
+        "stateName": "New Jersey",
+        "priceCentsPerKwh": 24.95,
+        "salesMillionKwh": 3180.9747,
+        "revenueMillionDollars": 793.6699
+      },
+      {
+        "stateCode": "NM",
+        "stateName": "New Mexico",
+        "priceCentsPerKwh": 15.06,
+        "salesMillionKwh": 748.72105,
+        "revenueMillionDollars": 112.76668
+      },
+      {
+        "stateCode": "NV",
+        "stateName": "Nevada",
+        "priceCentsPerKwh": 13.11,
+        "salesMillionKwh": 1732.99708,
+        "revenueMillionDollars": 227.12665
+      },
+      {
+        "stateCode": "NY",
+        "stateName": "New York",
+        "priceCentsPerKwh": 29.49,
+        "salesMillionKwh": 4317.31151,
+        "revenueMillionDollars": 1273.31932
+      },
+      {
+        "stateCode": "OH",
+        "stateName": "Ohio",
+        "priceCentsPerKwh": 19.19,
+        "salesMillionKwh": 4458.30772,
+        "revenueMillionDollars": 855.46036
+      },
+      {
+        "stateCode": "OK",
+        "stateName": "Oklahoma",
+        "priceCentsPerKwh": 14.33,
+        "salesMillionKwh": 2396.82353,
+        "revenueMillionDollars": 343.51302
+      },
+      {
+        "stateCode": "OR",
+        "stateName": "Oregon",
+        "priceCentsPerKwh": 16.32,
+        "salesMillionKwh": 1398.54337,
+        "revenueMillionDollars": 228.245
+      },
+      {
+        "stateCode": "PA",
+        "stateName": "Pennsylvania",
+        "priceCentsPerKwh": 21.73,
+        "salesMillionKwh": 4333.41272,
+        "revenueMillionDollars": 941.83957
+      },
+      {
+        "stateCode": "RI",
+        "stateName": "Rhode Island",
+        "priceCentsPerKwh": 29.23,
+        "salesMillionKwh": 229.23549,
+        "revenueMillionDollars": 67.01368
+      },
+      {
+        "stateCode": "SC",
+        "stateName": "South Carolina",
+        "priceCentsPerKwh": 15.55,
+        "salesMillionKwh": 3185.36374,
+        "revenueMillionDollars": 495.3251
+      },
+      {
+        "stateCode": "SD",
+        "stateName": "South Dakota",
+        "priceCentsPerKwh": 15.36,
+        "salesMillionKwh": 389.70708,
+        "revenueMillionDollars": 59.87306
+      },
+      {
+        "stateCode": "TN",
+        "stateName": "Tennessee",
+        "priceCentsPerKwh": 14.07,
+        "salesMillionKwh": 3773.46023,
+        "revenueMillionDollars": 531.1098
+      },
+      {
+        "stateCode": "TX",
+        "stateName": "Texas",
+        "priceCentsPerKwh": 15.94,
+        "salesMillionKwh": 16977.55096,
+        "revenueMillionDollars": 2706.71995
+      },
+      {
+        "stateCode": "UT",
+        "stateName": "Utah",
+        "priceCentsPerKwh": 13.37,
+        "salesMillionKwh": 1153.45309,
+        "revenueMillionDollars": 154.19366
+      },
+      {
+        "stateCode": "VA",
+        "stateName": "Virginia",
+        "priceCentsPerKwh": 17.22,
+        "salesMillionKwh": 4002.47731,
+        "revenueMillionDollars": 689.40771
+      },
+      {
+        "stateCode": "VT",
+        "stateName": "Vermont",
+        "priceCentsPerKwh": 24.44,
+        "salesMillionKwh": 160.5975,
+        "revenueMillionDollars": 39.25312
+      },
+      {
+        "stateCode": "WA",
+        "stateName": "Washington",
+        "priceCentsPerKwh": 14.91,
+        "salesMillionKwh": 2616.44047,
+        "revenueMillionDollars": 390.17545
+      },
+      {
+        "stateCode": "WI",
+        "stateName": "Wisconsin",
+        "priceCentsPerKwh": 19.56,
+        "salesMillionKwh": 1863.11874,
+        "revenueMillionDollars": 364.38528
+      },
+      {
+        "stateCode": "WV",
+        "stateName": "West Virginia",
+        "priceCentsPerKwh": 15.45,
+        "salesMillionKwh": 837.80618,
+        "revenueMillionDollars": 129.46915
+      },
+      {
+        "stateCode": "WY",
+        "stateName": "Wyoming",
+        "priceCentsPerKwh": 15.24,
+        "salesMillionKwh": 202.59069,
+        "revenueMillionDollars": 30.87798
+      }
+    ],
+    "normalizedSha256": "e8587a4338cd18a24126e10350d3e48b7c9a1c34729b485bf120d3de97dad46d"
+  }
+}
+

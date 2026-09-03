@@ -1,38 +1,41 @@
 import { z } from 'zod';
 import { finiteNumber, type CalculationResult } from './contracts';
 
-const dateOnlySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a date in YYYY-MM-DD format.').refine(
-  (value) => {
-    const date = parseDateOnly(value);
-    return formatDateOnly(date) === value;
-  },
-  'Enter a valid calendar date.',
+function isValidDateOnly(value: string): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = parseDateOnly(value);
+  return Number.isFinite(date.getTime()) && formatDateOnly(date) === value;
+}
+
+export const businessDateSchema = z.string().refine(
+  isValidDateOnly,
+  'Use a valid date in YYYY-MM-DD format.',
 ).refine((value) => {
   const year = Number(value.slice(0, 4));
   return year >= 1900 && year <= 2200;
 }, 'Dates must be between 1900 and 2200.');
 
 export const businessDaysBetweenInputSchema = z.object({
-  startDate: dateOnlySchema,
-  endDate: dateOnlySchema,
+  startDate: businessDateSchema,
+  endDate: businessDateSchema,
   includeStart: z.boolean(),
   includeEnd: z.boolean(),
   excludeFederalHolidays: z.boolean(),
 }).superRefine((input, context) => {
   if (input.excludeFederalHolidays && (Number(input.startDate.slice(0, 4)) < 1971 || Number(input.endDate.slice(0, 4)) < 1971)) {
-    context.addIssue({ code: 'custom', message: 'Federal-holiday mode supports dates from 1971 onward.' });
+    context.addIssue({ code: 'custom', message: 'Federal holidays in this calculator start in 1971.' });
   }
   const spanDays = Math.abs(parseDateOnly(input.endDate).getTime() - parseDateOnly(input.startDate).getTime()) / 86_400_000;
   if (spanDays > 36_600) context.addIssue({ code: 'custom', message: 'Date ranges cannot exceed 100 years.' });
 });
 
 export const addBusinessDaysInputSchema = z.object({
-  startDate: dateOnlySchema,
+  startDate: businessDateSchema,
   businessDays: finiteNumber('Business days', -10_000, 10_000).refine(Number.isInteger, 'Business days must be a whole number.'),
   excludeFederalHolidays: z.boolean(),
 }).superRefine((input, context) => {
   if (input.excludeFederalHolidays && Number(input.startDate.slice(0, 4)) < 1971) {
-    context.addIssue({ code: 'custom', message: 'Federal-holiday mode supports dates from 1971 onward.' });
+    context.addIssue({ code: 'custom', message: 'Federal holidays in this calculator start in 1971.' });
   }
 });
 
@@ -156,9 +159,9 @@ export function calculateBusinessDaysBetween(rawInput: unknown): CalculationResu
       { label: 'Federal holidays excluded', value: `${federalHolidays}`, detail: input.excludeFederalHolidays ? 'Observed U.S. federal holidays' : 'Holiday exclusion is off' },
     ],
     assumptions: [
-      'Saturday and Sunday are treated as non-business days.',
-      'Federal-holiday mode uses the generally observed federal schedule; private, state and local calendars can differ.',
-      'The start and end date rules shown in the form are applied exactly.',
+      'Saturday and Sunday are not counted as workdays.',
+      'Federal holidays follow the usual observed federal schedule. Private, state, and local calendars can differ.',
+      'The start and end date choices in the form are used as you set them.',
     ],
   };
 }
@@ -186,7 +189,7 @@ export function addBusinessDays(rawInput: unknown): CalculationResult<AddBusines
       throw new Error('The resulting date must be between 1900 and 2200.');
     }
     if (input.excludeFederalHolidays && date.getUTCFullYear() < 1971) {
-      throw new Error('Federal-holiday mode supports dates from 1971 onward.');
+      throw new Error('Federal holidays in this calculator start in 1971.');
     }
     calendarDaysMoved += direction;
     if (isBusinessDay(date, holidays)) counted += 1;
@@ -203,8 +206,8 @@ export function addBusinessDays(rawInput: unknown): CalculationResult<AddBusines
     ],
     assumptions: [
       'The starting date is not counted as day one.',
-      'Saturday and Sunday are treated as non-business days.',
-      'Federal-holiday mode supports the generally observed federal schedule from 1971 onward and projects current rules into future years.',
+      'Saturday and Sunday are not counted as workdays.',
+      'Federal holidays follow the usual observed federal schedule from 1971 on, including future years with the current rules.',
     ],
   };
 }

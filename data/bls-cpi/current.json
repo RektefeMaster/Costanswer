@@ -1,0 +1,5485 @@
+{
+  "manifest": {
+    "currentSnapshotId": "bls-cpi-u-nsa-2026-07-v1",
+    "observationPeriod": "2026-07",
+    "normalizedSha256": "5dfd9ad00a5aac077672ee18c31d6efa72834ebff32e7c1a24dd2e5335de2a22",
+    "validationStatus": "passed"
+  },
+  "snapshot": {
+    "schemaVersion": "1.0.0",
+    "adapterVersion": "bls-cpi-u-nsa-v1.0.0",
+    "snapshotId": "bls-cpi-u-nsa-2026-07-v1",
+    "provider": "U.S. Bureau of Labor Statistics",
+    "datasetId": "CU",
+    "seriesId": "CUUR0000SA0",
+    "frequency": "monthly",
+    "observationPeriod": "2026-07",
+    "sourceStatus": "preliminary",
+    "fetchedAt": "2026-09-02T22:10:57.763Z",
+    "verifiedAt": "2026-09-02T22:10:57.763Z",
+    "publishedAt": "2026-09-02T22:10:57.763Z",
+    "sourceUrl": "https://www.bls.gov/cpi/",
+    "sourceDocumentationUrl": "https://www.bls.gov/cpi/",
+    "termsUrl": "https://www.bls.gov/bls/linksite.htm",
+    "attribution": "Source: U.S. Bureau of Labor Statistics, Consumer Price Index for All Urban Consumers (CPI-U), U.S. city average, all items, not seasonally adjusted (CUUR0000SA0).",
+    "rawSha256": "43813281e158e0e298add33f1198ec7c802a64b555cd54eeb33409ebf0b9fe54",
+    "validationStatus": "passed",
+    "validationReport": [
+      "CPI-U NSA all-items observations are finite, positive, sorted, and unique.",
+      "Monthly observations run from 1913-01 through 2026-07.",
+      "1362 finite positive index values.",
+      "BLS omitted 1 month(s) (2025-09 → 2025-11); those months are not offered in the calculator."
+    ],
+    "observations": [
+      {
+        "period": "1913-01",
+        "index": 9.8
+      },
+      {
+        "period": "1913-02",
+        "index": 9.8
+      },
+      {
+        "period": "1913-03",
+        "index": 9.8
+      },
+      {
+        "period": "1913-04",
+        "index": 9.8
+      },
+      {
+        "period": "1913-05",
+        "index": 9.7
+      },
+      {
+        "period": "1913-06",
+        "index": 9.8
+      },
+      {
+        "period": "1913-07",
+        "index": 9.9
+      },
+      {
+        "period": "1913-08",
+        "index": 9.9
+      },
+      {
+        "period": "1913-09",
+        "index": 10
+      },
+      {
+        "period": "1913-10",
+        "index": 10
+      },
+      {
+        "period": "1913-11",
+        "index": 10.1
+      },
+      {
+        "period": "1913-12",
+        "index": 10
+      },
+      {
+        "period": "1914-01",
+        "index": 10
+      },
+      {
+        "period": "1914-02",
+        "index": 9.9
+      },
+      {
+        "period": "1914-03",
+        "index": 9.9
+      },
+      {
+        "period": "1914-04",
+        "index": 9.8
+      },
+      {
+        "period": "1914-05",
+        "index": 9.9
+      },
+      {
+        "period": "1914-06",
+        "index": 9.9
+      },
+      {
+        "period": "1914-07",
+        "index": 10
+      },
+      {
+        "period": "1914-08",
+        "index": 10.2
+      },
+      {
+        "period": "1914-09",
+        "index": 10.2
+      },
+      {
+        "period": "1914-10",
+        "index": 10.1
+      },
+      {
+        "period": "1914-11",
+        "index": 10.2
+      },
+      {
+        "period": "1914-12",
+        "index": 10.1
+      },
+      {
+        "period": "1915-01",
+        "index": 10.1
+      },
+      {
+        "period": "1915-02",
+        "index": 10
+      },
+      {
+        "period": "1915-03",
+        "index": 9.9
+      },
+      {
+        "period": "1915-04",
+        "index": 10
+      },
+      {
+        "period": "1915-05",
+        "index": 10.1
+      },
+      {
+        "period": "1915-06",
+        "index": 10.1
+      },
+      {
+        "period": "1915-07",
+        "index": 10.1
+      },
+      {
+        "period": "1915-08",
+        "index": 10.1
+      },
+      {
+        "period": "1915-09",
+        "index": 10.1
+      },
+      {
+        "period": "1915-10",
+        "index": 10.2
+      },
+      {
+        "period": "1915-11",
+        "index": 10.3
+      },
+      {
+        "period": "1915-12",
+        "index": 10.3
+      },
+      {
+        "period": "1916-01",
+        "index": 10.4
+      },
+      {
+        "period": "1916-02",
+        "index": 10.4
+      },
+      {
+        "period": "1916-03",
+        "index": 10.5
+      },
+      {
+        "period": "1916-04",
+        "index": 10.6
+      },
+      {
+        "period": "1916-05",
+        "index": 10.7
+      },
+      {
+        "period": "1916-06",
+        "index": 10.8
+      },
+      {
+        "period": "1916-07",
+        "index": 10.8
+      },
+      {
+        "period": "1916-08",
+        "index": 10.9
+      },
+      {
+        "period": "1916-09",
+        "index": 11.1
+      },
+      {
+        "period": "1916-10",
+        "index": 11.3
+      },
+      {
+        "period": "1916-11",
+        "index": 11.5
+      },
+      {
+        "period": "1916-12",
+        "index": 11.6
+      },
+      {
+        "period": "1917-01",
+        "index": 11.7
+      },
+      {
+        "period": "1917-02",
+        "index": 12
+      },
+      {
+        "period": "1917-03",
+        "index": 12
+      },
+      {
+        "period": "1917-04",
+        "index": 12.6
+      },
+      {
+        "period": "1917-05",
+        "index": 12.8
+      },
+      {
+        "period": "1917-06",
+        "index": 13
+      },
+      {
+        "period": "1917-07",
+        "index": 12.8
+      },
+      {
+        "period": "1917-08",
+        "index": 13
+      },
+      {
+        "period": "1917-09",
+        "index": 13.3
+      },
+      {
+        "period": "1917-10",
+        "index": 13.5
+      },
+      {
+        "period": "1917-11",
+        "index": 13.5
+      },
+      {
+        "period": "1917-12",
+        "index": 13.7
+      },
+      {
+        "period": "1918-01",
+        "index": 14
+      },
+      {
+        "period": "1918-02",
+        "index": 14.1
+      },
+      {
+        "period": "1918-03",
+        "index": 14
+      },
+      {
+        "period": "1918-04",
+        "index": 14.2
+      },
+      {
+        "period": "1918-05",
+        "index": 14.5
+      },
+      {
+        "period": "1918-06",
+        "index": 14.7
+      },
+      {
+        "period": "1918-07",
+        "index": 15.1
+      },
+      {
+        "period": "1918-08",
+        "index": 15.4
+      },
+      {
+        "period": "1918-09",
+        "index": 15.7
+      },
+      {
+        "period": "1918-10",
+        "index": 16
+      },
+      {
+        "period": "1918-11",
+        "index": 16.3
+      },
+      {
+        "period": "1918-12",
+        "index": 16.5
+      },
+      {
+        "period": "1919-01",
+        "index": 16.5
+      },
+      {
+        "period": "1919-02",
+        "index": 16.2
+      },
+      {
+        "period": "1919-03",
+        "index": 16.4
+      },
+      {
+        "period": "1919-04",
+        "index": 16.7
+      },
+      {
+        "period": "1919-05",
+        "index": 16.9
+      },
+      {
+        "period": "1919-06",
+        "index": 16.9
+      },
+      {
+        "period": "1919-07",
+        "index": 17.4
+      },
+      {
+        "period": "1919-08",
+        "index": 17.7
+      },
+      {
+        "period": "1919-09",
+        "index": 17.8
+      },
+      {
+        "period": "1919-10",
+        "index": 18.1
+      },
+      {
+        "period": "1919-11",
+        "index": 18.5
+      },
+      {
+        "period": "1919-12",
+        "index": 18.9
+      },
+      {
+        "period": "1920-01",
+        "index": 19.3
+      },
+      {
+        "period": "1920-02",
+        "index": 19.5
+      },
+      {
+        "period": "1920-03",
+        "index": 19.7
+      },
+      {
+        "period": "1920-04",
+        "index": 20.3
+      },
+      {
+        "period": "1920-05",
+        "index": 20.6
+      },
+      {
+        "period": "1920-06",
+        "index": 20.9
+      },
+      {
+        "period": "1920-07",
+        "index": 20.8
+      },
+      {
+        "period": "1920-08",
+        "index": 20.3
+      },
+      {
+        "period": "1920-09",
+        "index": 20
+      },
+      {
+        "period": "1920-10",
+        "index": 19.9
+      },
+      {
+        "period": "1920-11",
+        "index": 19.8
+      },
+      {
+        "period": "1920-12",
+        "index": 19.4
+      },
+      {
+        "period": "1921-01",
+        "index": 19
+      },
+      {
+        "period": "1921-02",
+        "index": 18.4
+      },
+      {
+        "period": "1921-03",
+        "index": 18.3
+      },
+      {
+        "period": "1921-04",
+        "index": 18.1
+      },
+      {
+        "period": "1921-05",
+        "index": 17.7
+      },
+      {
+        "period": "1921-06",
+        "index": 17.6
+      },
+      {
+        "period": "1921-07",
+        "index": 17.7
+      },
+      {
+        "period": "1921-08",
+        "index": 17.7
+      },
+      {
+        "period": "1921-09",
+        "index": 17.5
+      },
+      {
+        "period": "1921-10",
+        "index": 17.5
+      },
+      {
+        "period": "1921-11",
+        "index": 17.4
+      },
+      {
+        "period": "1921-12",
+        "index": 17.3
+      },
+      {
+        "period": "1922-01",
+        "index": 16.9
+      },
+      {
+        "period": "1922-02",
+        "index": 16.9
+      },
+      {
+        "period": "1922-03",
+        "index": 16.7
+      },
+      {
+        "period": "1922-04",
+        "index": 16.7
+      },
+      {
+        "period": "1922-05",
+        "index": 16.7
+      },
+      {
+        "period": "1922-06",
+        "index": 16.7
+      },
+      {
+        "period": "1922-07",
+        "index": 16.8
+      },
+      {
+        "period": "1922-08",
+        "index": 16.6
+      },
+      {
+        "period": "1922-09",
+        "index": 16.6
+      },
+      {
+        "period": "1922-10",
+        "index": 16.7
+      },
+      {
+        "period": "1922-11",
+        "index": 16.8
+      },
+      {
+        "period": "1922-12",
+        "index": 16.9
+      },
+      {
+        "period": "1923-01",
+        "index": 16.8
+      },
+      {
+        "period": "1923-02",
+        "index": 16.8
+      },
+      {
+        "period": "1923-03",
+        "index": 16.8
+      },
+      {
+        "period": "1923-04",
+        "index": 16.9
+      },
+      {
+        "period": "1923-05",
+        "index": 16.9
+      },
+      {
+        "period": "1923-06",
+        "index": 17
+      },
+      {
+        "period": "1923-07",
+        "index": 17.2
+      },
+      {
+        "period": "1923-08",
+        "index": 17.1
+      },
+      {
+        "period": "1923-09",
+        "index": 17.2
+      },
+      {
+        "period": "1923-10",
+        "index": 17.3
+      },
+      {
+        "period": "1923-11",
+        "index": 17.3
+      },
+      {
+        "period": "1923-12",
+        "index": 17.3
+      },
+      {
+        "period": "1924-01",
+        "index": 17.3
+      },
+      {
+        "period": "1924-02",
+        "index": 17.2
+      },
+      {
+        "period": "1924-03",
+        "index": 17.1
+      },
+      {
+        "period": "1924-04",
+        "index": 17
+      },
+      {
+        "period": "1924-05",
+        "index": 17
+      },
+      {
+        "period": "1924-06",
+        "index": 17
+      },
+      {
+        "period": "1924-07",
+        "index": 17.1
+      },
+      {
+        "period": "1924-08",
+        "index": 17
+      },
+      {
+        "period": "1924-09",
+        "index": 17.1
+      },
+      {
+        "period": "1924-10",
+        "index": 17.2
+      },
+      {
+        "period": "1924-11",
+        "index": 17.2
+      },
+      {
+        "period": "1924-12",
+        "index": 17.3
+      },
+      {
+        "period": "1925-01",
+        "index": 17.3
+      },
+      {
+        "period": "1925-02",
+        "index": 17.2
+      },
+      {
+        "period": "1925-03",
+        "index": 17.3
+      },
+      {
+        "period": "1925-04",
+        "index": 17.2
+      },
+      {
+        "period": "1925-05",
+        "index": 17.3
+      },
+      {
+        "period": "1925-06",
+        "index": 17.5
+      },
+      {
+        "period": "1925-07",
+        "index": 17.7
+      },
+      {
+        "period": "1925-08",
+        "index": 17.7
+      },
+      {
+        "period": "1925-09",
+        "index": 17.7
+      },
+      {
+        "period": "1925-10",
+        "index": 17.7
+      },
+      {
+        "period": "1925-11",
+        "index": 18
+      },
+      {
+        "period": "1925-12",
+        "index": 17.9
+      },
+      {
+        "period": "1926-01",
+        "index": 17.9
+      },
+      {
+        "period": "1926-02",
+        "index": 17.9
+      },
+      {
+        "period": "1926-03",
+        "index": 17.8
+      },
+      {
+        "period": "1926-04",
+        "index": 17.9
+      },
+      {
+        "period": "1926-05",
+        "index": 17.8
+      },
+      {
+        "period": "1926-06",
+        "index": 17.7
+      },
+      {
+        "period": "1926-07",
+        "index": 17.5
+      },
+      {
+        "period": "1926-08",
+        "index": 17.4
+      },
+      {
+        "period": "1926-09",
+        "index": 17.5
+      },
+      {
+        "period": "1926-10",
+        "index": 17.6
+      },
+      {
+        "period": "1926-11",
+        "index": 17.7
+      },
+      {
+        "period": "1926-12",
+        "index": 17.7
+      },
+      {
+        "period": "1927-01",
+        "index": 17.5
+      },
+      {
+        "period": "1927-02",
+        "index": 17.4
+      },
+      {
+        "period": "1927-03",
+        "index": 17.3
+      },
+      {
+        "period": "1927-04",
+        "index": 17.3
+      },
+      {
+        "period": "1927-05",
+        "index": 17.4
+      },
+      {
+        "period": "1927-06",
+        "index": 17.6
+      },
+      {
+        "period": "1927-07",
+        "index": 17.3
+      },
+      {
+        "period": "1927-08",
+        "index": 17.2
+      },
+      {
+        "period": "1927-09",
+        "index": 17.3
+      },
+      {
+        "period": "1927-10",
+        "index": 17.4
+      },
+      {
+        "period": "1927-11",
+        "index": 17.3
+      },
+      {
+        "period": "1927-12",
+        "index": 17.3
+      },
+      {
+        "period": "1928-01",
+        "index": 17.3
+      },
+      {
+        "period": "1928-02",
+        "index": 17.1
+      },
+      {
+        "period": "1928-03",
+        "index": 17.1
+      },
+      {
+        "period": "1928-04",
+        "index": 17.1
+      },
+      {
+        "period": "1928-05",
+        "index": 17.2
+      },
+      {
+        "period": "1928-06",
+        "index": 17.1
+      },
+      {
+        "period": "1928-07",
+        "index": 17.1
+      },
+      {
+        "period": "1928-08",
+        "index": 17.1
+      },
+      {
+        "period": "1928-09",
+        "index": 17.3
+      },
+      {
+        "period": "1928-10",
+        "index": 17.2
+      },
+      {
+        "period": "1928-11",
+        "index": 17.2
+      },
+      {
+        "period": "1928-12",
+        "index": 17.1
+      },
+      {
+        "period": "1929-01",
+        "index": 17.1
+      },
+      {
+        "period": "1929-02",
+        "index": 17.1
+      },
+      {
+        "period": "1929-03",
+        "index": 17
+      },
+      {
+        "period": "1929-04",
+        "index": 16.9
+      },
+      {
+        "period": "1929-05",
+        "index": 17
+      },
+      {
+        "period": "1929-06",
+        "index": 17.1
+      },
+      {
+        "period": "1929-07",
+        "index": 17.3
+      },
+      {
+        "period": "1929-08",
+        "index": 17.3
+      },
+      {
+        "period": "1929-09",
+        "index": 17.3
+      },
+      {
+        "period": "1929-10",
+        "index": 17.3
+      },
+      {
+        "period": "1929-11",
+        "index": 17.3
+      },
+      {
+        "period": "1929-12",
+        "index": 17.2
+      },
+      {
+        "period": "1930-01",
+        "index": 17.1
+      },
+      {
+        "period": "1930-02",
+        "index": 17
+      },
+      {
+        "period": "1930-03",
+        "index": 16.9
+      },
+      {
+        "period": "1930-04",
+        "index": 17
+      },
+      {
+        "period": "1930-05",
+        "index": 16.9
+      },
+      {
+        "period": "1930-06",
+        "index": 16.8
+      },
+      {
+        "period": "1930-07",
+        "index": 16.6
+      },
+      {
+        "period": "1930-08",
+        "index": 16.5
+      },
+      {
+        "period": "1930-09",
+        "index": 16.6
+      },
+      {
+        "period": "1930-10",
+        "index": 16.5
+      },
+      {
+        "period": "1930-11",
+        "index": 16.4
+      },
+      {
+        "period": "1930-12",
+        "index": 16.1
+      },
+      {
+        "period": "1931-01",
+        "index": 15.9
+      },
+      {
+        "period": "1931-02",
+        "index": 15.7
+      },
+      {
+        "period": "1931-03",
+        "index": 15.6
+      },
+      {
+        "period": "1931-04",
+        "index": 15.5
+      },
+      {
+        "period": "1931-05",
+        "index": 15.3
+      },
+      {
+        "period": "1931-06",
+        "index": 15.1
+      },
+      {
+        "period": "1931-07",
+        "index": 15.1
+      },
+      {
+        "period": "1931-08",
+        "index": 15.1
+      },
+      {
+        "period": "1931-09",
+        "index": 15
+      },
+      {
+        "period": "1931-10",
+        "index": 14.9
+      },
+      {
+        "period": "1931-11",
+        "index": 14.7
+      },
+      {
+        "period": "1931-12",
+        "index": 14.6
+      },
+      {
+        "period": "1932-01",
+        "index": 14.3
+      },
+      {
+        "period": "1932-02",
+        "index": 14.1
+      },
+      {
+        "period": "1932-03",
+        "index": 14
+      },
+      {
+        "period": "1932-04",
+        "index": 13.9
+      },
+      {
+        "period": "1932-05",
+        "index": 13.7
+      },
+      {
+        "period": "1932-06",
+        "index": 13.6
+      },
+      {
+        "period": "1932-07",
+        "index": 13.6
+      },
+      {
+        "period": "1932-08",
+        "index": 13.5
+      },
+      {
+        "period": "1932-09",
+        "index": 13.4
+      },
+      {
+        "period": "1932-10",
+        "index": 13.3
+      },
+      {
+        "period": "1932-11",
+        "index": 13.2
+      },
+      {
+        "period": "1932-12",
+        "index": 13.1
+      },
+      {
+        "period": "1933-01",
+        "index": 12.9
+      },
+      {
+        "period": "1933-02",
+        "index": 12.7
+      },
+      {
+        "period": "1933-03",
+        "index": 12.6
+      },
+      {
+        "period": "1933-04",
+        "index": 12.6
+      },
+      {
+        "period": "1933-05",
+        "index": 12.6
+      },
+      {
+        "period": "1933-06",
+        "index": 12.7
+      },
+      {
+        "period": "1933-07",
+        "index": 13.1
+      },
+      {
+        "period": "1933-08",
+        "index": 13.2
+      },
+      {
+        "period": "1933-09",
+        "index": 13.2
+      },
+      {
+        "period": "1933-10",
+        "index": 13.2
+      },
+      {
+        "period": "1933-11",
+        "index": 13.2
+      },
+      {
+        "period": "1933-12",
+        "index": 13.2
+      },
+      {
+        "period": "1934-01",
+        "index": 13.2
+      },
+      {
+        "period": "1934-02",
+        "index": 13.3
+      },
+      {
+        "period": "1934-03",
+        "index": 13.3
+      },
+      {
+        "period": "1934-04",
+        "index": 13.3
+      },
+      {
+        "period": "1934-05",
+        "index": 13.3
+      },
+      {
+        "period": "1934-06",
+        "index": 13.4
+      },
+      {
+        "period": "1934-07",
+        "index": 13.4
+      },
+      {
+        "period": "1934-08",
+        "index": 13.4
+      },
+      {
+        "period": "1934-09",
+        "index": 13.6
+      },
+      {
+        "period": "1934-10",
+        "index": 13.5
+      },
+      {
+        "period": "1934-11",
+        "index": 13.5
+      },
+      {
+        "period": "1934-12",
+        "index": 13.4
+      },
+      {
+        "period": "1935-01",
+        "index": 13.6
+      },
+      {
+        "period": "1935-02",
+        "index": 13.7
+      },
+      {
+        "period": "1935-03",
+        "index": 13.7
+      },
+      {
+        "period": "1935-04",
+        "index": 13.8
+      },
+      {
+        "period": "1935-05",
+        "index": 13.8
+      },
+      {
+        "period": "1935-06",
+        "index": 13.7
+      },
+      {
+        "period": "1935-07",
+        "index": 13.7
+      },
+      {
+        "period": "1935-08",
+        "index": 13.7
+      },
+      {
+        "period": "1935-09",
+        "index": 13.7
+      },
+      {
+        "period": "1935-10",
+        "index": 13.7
+      },
+      {
+        "period": "1935-11",
+        "index": 13.8
+      },
+      {
+        "period": "1935-12",
+        "index": 13.8
+      },
+      {
+        "period": "1936-01",
+        "index": 13.8
+      },
+      {
+        "period": "1936-02",
+        "index": 13.8
+      },
+      {
+        "period": "1936-03",
+        "index": 13.7
+      },
+      {
+        "period": "1936-04",
+        "index": 13.7
+      },
+      {
+        "period": "1936-05",
+        "index": 13.7
+      },
+      {
+        "period": "1936-06",
+        "index": 13.8
+      },
+      {
+        "period": "1936-07",
+        "index": 13.9
+      },
+      {
+        "period": "1936-08",
+        "index": 14
+      },
+      {
+        "period": "1936-09",
+        "index": 14
+      },
+      {
+        "period": "1936-10",
+        "index": 14
+      },
+      {
+        "period": "1936-11",
+        "index": 14
+      },
+      {
+        "period": "1936-12",
+        "index": 14
+      },
+      {
+        "period": "1937-01",
+        "index": 14.1
+      },
+      {
+        "period": "1937-02",
+        "index": 14.1
+      },
+      {
+        "period": "1937-03",
+        "index": 14.2
+      },
+      {
+        "period": "1937-04",
+        "index": 14.3
+      },
+      {
+        "period": "1937-05",
+        "index": 14.4
+      },
+      {
+        "period": "1937-06",
+        "index": 14.4
+      },
+      {
+        "period": "1937-07",
+        "index": 14.5
+      },
+      {
+        "period": "1937-08",
+        "index": 14.5
+      },
+      {
+        "period": "1937-09",
+        "index": 14.6
+      },
+      {
+        "period": "1937-10",
+        "index": 14.6
+      },
+      {
+        "period": "1937-11",
+        "index": 14.5
+      },
+      {
+        "period": "1937-12",
+        "index": 14.4
+      },
+      {
+        "period": "1938-01",
+        "index": 14.2
+      },
+      {
+        "period": "1938-02",
+        "index": 14.1
+      },
+      {
+        "period": "1938-03",
+        "index": 14.1
+      },
+      {
+        "period": "1938-04",
+        "index": 14.2
+      },
+      {
+        "period": "1938-05",
+        "index": 14.1
+      },
+      {
+        "period": "1938-06",
+        "index": 14.1
+      },
+      {
+        "period": "1938-07",
+        "index": 14.1
+      },
+      {
+        "period": "1938-08",
+        "index": 14.1
+      },
+      {
+        "period": "1938-09",
+        "index": 14.1
+      },
+      {
+        "period": "1938-10",
+        "index": 14
+      },
+      {
+        "period": "1938-11",
+        "index": 14
+      },
+      {
+        "period": "1938-12",
+        "index": 14
+      },
+      {
+        "period": "1939-01",
+        "index": 14
+      },
+      {
+        "period": "1939-02",
+        "index": 13.9
+      },
+      {
+        "period": "1939-03",
+        "index": 13.9
+      },
+      {
+        "period": "1939-04",
+        "index": 13.8
+      },
+      {
+        "period": "1939-05",
+        "index": 13.8
+      },
+      {
+        "period": "1939-06",
+        "index": 13.8
+      },
+      {
+        "period": "1939-07",
+        "index": 13.8
+      },
+      {
+        "period": "1939-08",
+        "index": 13.8
+      },
+      {
+        "period": "1939-09",
+        "index": 14.1
+      },
+      {
+        "period": "1939-10",
+        "index": 14
+      },
+      {
+        "period": "1939-11",
+        "index": 14
+      },
+      {
+        "period": "1939-12",
+        "index": 14
+      },
+      {
+        "period": "1940-01",
+        "index": 13.9
+      },
+      {
+        "period": "1940-02",
+        "index": 14
+      },
+      {
+        "period": "1940-03",
+        "index": 14
+      },
+      {
+        "period": "1940-04",
+        "index": 14
+      },
+      {
+        "period": "1940-05",
+        "index": 14
+      },
+      {
+        "period": "1940-06",
+        "index": 14.1
+      },
+      {
+        "period": "1940-07",
+        "index": 14
+      },
+      {
+        "period": "1940-08",
+        "index": 14
+      },
+      {
+        "period": "1940-09",
+        "index": 14
+      },
+      {
+        "period": "1940-10",
+        "index": 14
+      },
+      {
+        "period": "1940-11",
+        "index": 14
+      },
+      {
+        "period": "1940-12",
+        "index": 14.1
+      },
+      {
+        "period": "1941-01",
+        "index": 14.1
+      },
+      {
+        "period": "1941-02",
+        "index": 14.1
+      },
+      {
+        "period": "1941-03",
+        "index": 14.2
+      },
+      {
+        "period": "1941-04",
+        "index": 14.3
+      },
+      {
+        "period": "1941-05",
+        "index": 14.4
+      },
+      {
+        "period": "1941-06",
+        "index": 14.7
+      },
+      {
+        "period": "1941-07",
+        "index": 14.7
+      },
+      {
+        "period": "1941-08",
+        "index": 14.9
+      },
+      {
+        "period": "1941-09",
+        "index": 15.1
+      },
+      {
+        "period": "1941-10",
+        "index": 15.3
+      },
+      {
+        "period": "1941-11",
+        "index": 15.4
+      },
+      {
+        "period": "1941-12",
+        "index": 15.5
+      },
+      {
+        "period": "1942-01",
+        "index": 15.7
+      },
+      {
+        "period": "1942-02",
+        "index": 15.8
+      },
+      {
+        "period": "1942-03",
+        "index": 16
+      },
+      {
+        "period": "1942-04",
+        "index": 16.1
+      },
+      {
+        "period": "1942-05",
+        "index": 16.3
+      },
+      {
+        "period": "1942-06",
+        "index": 16.3
+      },
+      {
+        "period": "1942-07",
+        "index": 16.4
+      },
+      {
+        "period": "1942-08",
+        "index": 16.5
+      },
+      {
+        "period": "1942-09",
+        "index": 16.5
+      },
+      {
+        "period": "1942-10",
+        "index": 16.7
+      },
+      {
+        "period": "1942-11",
+        "index": 16.8
+      },
+      {
+        "period": "1942-12",
+        "index": 16.9
+      },
+      {
+        "period": "1943-01",
+        "index": 16.9
+      },
+      {
+        "period": "1943-02",
+        "index": 16.9
+      },
+      {
+        "period": "1943-03",
+        "index": 17.2
+      },
+      {
+        "period": "1943-04",
+        "index": 17.4
+      },
+      {
+        "period": "1943-05",
+        "index": 17.5
+      },
+      {
+        "period": "1943-06",
+        "index": 17.5
+      },
+      {
+        "period": "1943-07",
+        "index": 17.4
+      },
+      {
+        "period": "1943-08",
+        "index": 17.3
+      },
+      {
+        "period": "1943-09",
+        "index": 17.4
+      },
+      {
+        "period": "1943-10",
+        "index": 17.4
+      },
+      {
+        "period": "1943-11",
+        "index": 17.4
+      },
+      {
+        "period": "1943-12",
+        "index": 17.4
+      },
+      {
+        "period": "1944-01",
+        "index": 17.4
+      },
+      {
+        "period": "1944-02",
+        "index": 17.4
+      },
+      {
+        "period": "1944-03",
+        "index": 17.4
+      },
+      {
+        "period": "1944-04",
+        "index": 17.5
+      },
+      {
+        "period": "1944-05",
+        "index": 17.5
+      },
+      {
+        "period": "1944-06",
+        "index": 17.6
+      },
+      {
+        "period": "1944-07",
+        "index": 17.7
+      },
+      {
+        "period": "1944-08",
+        "index": 17.7
+      },
+      {
+        "period": "1944-09",
+        "index": 17.7
+      },
+      {
+        "period": "1944-10",
+        "index": 17.7
+      },
+      {
+        "period": "1944-11",
+        "index": 17.7
+      },
+      {
+        "period": "1944-12",
+        "index": 17.8
+      },
+      {
+        "period": "1945-01",
+        "index": 17.8
+      },
+      {
+        "period": "1945-02",
+        "index": 17.8
+      },
+      {
+        "period": "1945-03",
+        "index": 17.8
+      },
+      {
+        "period": "1945-04",
+        "index": 17.8
+      },
+      {
+        "period": "1945-05",
+        "index": 17.9
+      },
+      {
+        "period": "1945-06",
+        "index": 18.1
+      },
+      {
+        "period": "1945-07",
+        "index": 18.1
+      },
+      {
+        "period": "1945-08",
+        "index": 18.1
+      },
+      {
+        "period": "1945-09",
+        "index": 18.1
+      },
+      {
+        "period": "1945-10",
+        "index": 18.1
+      },
+      {
+        "period": "1945-11",
+        "index": 18.1
+      },
+      {
+        "period": "1945-12",
+        "index": 18.2
+      },
+      {
+        "period": "1946-01",
+        "index": 18.2
+      },
+      {
+        "period": "1946-02",
+        "index": 18.1
+      },
+      {
+        "period": "1946-03",
+        "index": 18.3
+      },
+      {
+        "period": "1946-04",
+        "index": 18.4
+      },
+      {
+        "period": "1946-05",
+        "index": 18.5
+      },
+      {
+        "period": "1946-06",
+        "index": 18.7
+      },
+      {
+        "period": "1946-07",
+        "index": 19.8
+      },
+      {
+        "period": "1946-08",
+        "index": 20.2
+      },
+      {
+        "period": "1946-09",
+        "index": 20.4
+      },
+      {
+        "period": "1946-10",
+        "index": 20.8
+      },
+      {
+        "period": "1946-11",
+        "index": 21.3
+      },
+      {
+        "period": "1946-12",
+        "index": 21.5
+      },
+      {
+        "period": "1947-01",
+        "index": 21.5
+      },
+      {
+        "period": "1947-02",
+        "index": 21.5
+      },
+      {
+        "period": "1947-03",
+        "index": 21.9
+      },
+      {
+        "period": "1947-04",
+        "index": 21.9
+      },
+      {
+        "period": "1947-05",
+        "index": 21.9
+      },
+      {
+        "period": "1947-06",
+        "index": 22
+      },
+      {
+        "period": "1947-07",
+        "index": 22.2
+      },
+      {
+        "period": "1947-08",
+        "index": 22.5
+      },
+      {
+        "period": "1947-09",
+        "index": 23
+      },
+      {
+        "period": "1947-10",
+        "index": 23
+      },
+      {
+        "period": "1947-11",
+        "index": 23.1
+      },
+      {
+        "period": "1947-12",
+        "index": 23.4
+      },
+      {
+        "period": "1948-01",
+        "index": 23.7
+      },
+      {
+        "period": "1948-02",
+        "index": 23.5
+      },
+      {
+        "period": "1948-03",
+        "index": 23.4
+      },
+      {
+        "period": "1948-04",
+        "index": 23.8
+      },
+      {
+        "period": "1948-05",
+        "index": 23.9
+      },
+      {
+        "period": "1948-06",
+        "index": 24.1
+      },
+      {
+        "period": "1948-07",
+        "index": 24.4
+      },
+      {
+        "period": "1948-08",
+        "index": 24.5
+      },
+      {
+        "period": "1948-09",
+        "index": 24.5
+      },
+      {
+        "period": "1948-10",
+        "index": 24.4
+      },
+      {
+        "period": "1948-11",
+        "index": 24.2
+      },
+      {
+        "period": "1948-12",
+        "index": 24.1
+      },
+      {
+        "period": "1949-01",
+        "index": 24
+      },
+      {
+        "period": "1949-02",
+        "index": 23.8
+      },
+      {
+        "period": "1949-03",
+        "index": 23.8
+      },
+      {
+        "period": "1949-04",
+        "index": 23.9
+      },
+      {
+        "period": "1949-05",
+        "index": 23.8
+      },
+      {
+        "period": "1949-06",
+        "index": 23.9
+      },
+      {
+        "period": "1949-07",
+        "index": 23.7
+      },
+      {
+        "period": "1949-08",
+        "index": 23.8
+      },
+      {
+        "period": "1949-09",
+        "index": 23.9
+      },
+      {
+        "period": "1949-10",
+        "index": 23.7
+      },
+      {
+        "period": "1949-11",
+        "index": 23.8
+      },
+      {
+        "period": "1949-12",
+        "index": 23.6
+      },
+      {
+        "period": "1950-01",
+        "index": 23.5
+      },
+      {
+        "period": "1950-02",
+        "index": 23.5
+      },
+      {
+        "period": "1950-03",
+        "index": 23.6
+      },
+      {
+        "period": "1950-04",
+        "index": 23.6
+      },
+      {
+        "period": "1950-05",
+        "index": 23.7
+      },
+      {
+        "period": "1950-06",
+        "index": 23.8
+      },
+      {
+        "period": "1950-07",
+        "index": 24.1
+      },
+      {
+        "period": "1950-08",
+        "index": 24.3
+      },
+      {
+        "period": "1950-09",
+        "index": 24.4
+      },
+      {
+        "period": "1950-10",
+        "index": 24.6
+      },
+      {
+        "period": "1950-11",
+        "index": 24.7
+      },
+      {
+        "period": "1950-12",
+        "index": 25
+      },
+      {
+        "period": "1951-01",
+        "index": 25.4
+      },
+      {
+        "period": "1951-02",
+        "index": 25.7
+      },
+      {
+        "period": "1951-03",
+        "index": 25.8
+      },
+      {
+        "period": "1951-04",
+        "index": 25.8
+      },
+      {
+        "period": "1951-05",
+        "index": 25.9
+      },
+      {
+        "period": "1951-06",
+        "index": 25.9
+      },
+      {
+        "period": "1951-07",
+        "index": 25.9
+      },
+      {
+        "period": "1951-08",
+        "index": 25.9
+      },
+      {
+        "period": "1951-09",
+        "index": 26.1
+      },
+      {
+        "period": "1951-10",
+        "index": 26.2
+      },
+      {
+        "period": "1951-11",
+        "index": 26.4
+      },
+      {
+        "period": "1951-12",
+        "index": 26.5
+      },
+      {
+        "period": "1952-01",
+        "index": 26.5
+      },
+      {
+        "period": "1952-02",
+        "index": 26.3
+      },
+      {
+        "period": "1952-03",
+        "index": 26.3
+      },
+      {
+        "period": "1952-04",
+        "index": 26.4
+      },
+      {
+        "period": "1952-05",
+        "index": 26.4
+      },
+      {
+        "period": "1952-06",
+        "index": 26.5
+      },
+      {
+        "period": "1952-07",
+        "index": 26.7
+      },
+      {
+        "period": "1952-08",
+        "index": 26.7
+      },
+      {
+        "period": "1952-09",
+        "index": 26.7
+      },
+      {
+        "period": "1952-10",
+        "index": 26.7
+      },
+      {
+        "period": "1952-11",
+        "index": 26.7
+      },
+      {
+        "period": "1952-12",
+        "index": 26.7
+      },
+      {
+        "period": "1953-01",
+        "index": 26.6
+      },
+      {
+        "period": "1953-02",
+        "index": 26.5
+      },
+      {
+        "period": "1953-03",
+        "index": 26.6
+      },
+      {
+        "period": "1953-04",
+        "index": 26.6
+      },
+      {
+        "period": "1953-05",
+        "index": 26.7
+      },
+      {
+        "period": "1953-06",
+        "index": 26.8
+      },
+      {
+        "period": "1953-07",
+        "index": 26.8
+      },
+      {
+        "period": "1953-08",
+        "index": 26.9
+      },
+      {
+        "period": "1953-09",
+        "index": 26.9
+      },
+      {
+        "period": "1953-10",
+        "index": 27
+      },
+      {
+        "period": "1953-11",
+        "index": 26.9
+      },
+      {
+        "period": "1953-12",
+        "index": 26.9
+      },
+      {
+        "period": "1954-01",
+        "index": 26.9
+      },
+      {
+        "period": "1954-02",
+        "index": 26.9
+      },
+      {
+        "period": "1954-03",
+        "index": 26.9
+      },
+      {
+        "period": "1954-04",
+        "index": 26.8
+      },
+      {
+        "period": "1954-05",
+        "index": 26.9
+      },
+      {
+        "period": "1954-06",
+        "index": 26.9
+      },
+      {
+        "period": "1954-07",
+        "index": 26.9
+      },
+      {
+        "period": "1954-08",
+        "index": 26.9
+      },
+      {
+        "period": "1954-09",
+        "index": 26.8
+      },
+      {
+        "period": "1954-10",
+        "index": 26.8
+      },
+      {
+        "period": "1954-11",
+        "index": 26.8
+      },
+      {
+        "period": "1954-12",
+        "index": 26.7
+      },
+      {
+        "period": "1955-01",
+        "index": 26.7
+      },
+      {
+        "period": "1955-02",
+        "index": 26.7
+      },
+      {
+        "period": "1955-03",
+        "index": 26.7
+      },
+      {
+        "period": "1955-04",
+        "index": 26.7
+      },
+      {
+        "period": "1955-05",
+        "index": 26.7
+      },
+      {
+        "period": "1955-06",
+        "index": 26.7
+      },
+      {
+        "period": "1955-07",
+        "index": 26.8
+      },
+      {
+        "period": "1955-08",
+        "index": 26.8
+      },
+      {
+        "period": "1955-09",
+        "index": 26.9
+      },
+      {
+        "period": "1955-10",
+        "index": 26.9
+      },
+      {
+        "period": "1955-11",
+        "index": 26.9
+      },
+      {
+        "period": "1955-12",
+        "index": 26.8
+      },
+      {
+        "period": "1956-01",
+        "index": 26.8
+      },
+      {
+        "period": "1956-02",
+        "index": 26.8
+      },
+      {
+        "period": "1956-03",
+        "index": 26.8
+      },
+      {
+        "period": "1956-04",
+        "index": 26.9
+      },
+      {
+        "period": "1956-05",
+        "index": 27
+      },
+      {
+        "period": "1956-06",
+        "index": 27.2
+      },
+      {
+        "period": "1956-07",
+        "index": 27.4
+      },
+      {
+        "period": "1956-08",
+        "index": 27.3
+      },
+      {
+        "period": "1956-09",
+        "index": 27.4
+      },
+      {
+        "period": "1956-10",
+        "index": 27.5
+      },
+      {
+        "period": "1956-11",
+        "index": 27.5
+      },
+      {
+        "period": "1956-12",
+        "index": 27.6
+      },
+      {
+        "period": "1957-01",
+        "index": 27.6
+      },
+      {
+        "period": "1957-02",
+        "index": 27.7
+      },
+      {
+        "period": "1957-03",
+        "index": 27.8
+      },
+      {
+        "period": "1957-04",
+        "index": 27.9
+      },
+      {
+        "period": "1957-05",
+        "index": 28
+      },
+      {
+        "period": "1957-06",
+        "index": 28.1
+      },
+      {
+        "period": "1957-07",
+        "index": 28.3
+      },
+      {
+        "period": "1957-08",
+        "index": 28.3
+      },
+      {
+        "period": "1957-09",
+        "index": 28.3
+      },
+      {
+        "period": "1957-10",
+        "index": 28.3
+      },
+      {
+        "period": "1957-11",
+        "index": 28.4
+      },
+      {
+        "period": "1957-12",
+        "index": 28.4
+      },
+      {
+        "period": "1958-01",
+        "index": 28.6
+      },
+      {
+        "period": "1958-02",
+        "index": 28.6
+      },
+      {
+        "period": "1958-03",
+        "index": 28.8
+      },
+      {
+        "period": "1958-04",
+        "index": 28.9
+      },
+      {
+        "period": "1958-05",
+        "index": 28.9
+      },
+      {
+        "period": "1958-06",
+        "index": 28.9
+      },
+      {
+        "period": "1958-07",
+        "index": 29
+      },
+      {
+        "period": "1958-08",
+        "index": 28.9
+      },
+      {
+        "period": "1958-09",
+        "index": 28.9
+      },
+      {
+        "period": "1958-10",
+        "index": 28.9
+      },
+      {
+        "period": "1958-11",
+        "index": 29
+      },
+      {
+        "period": "1958-12",
+        "index": 28.9
+      },
+      {
+        "period": "1959-01",
+        "index": 29
+      },
+      {
+        "period": "1959-02",
+        "index": 28.9
+      },
+      {
+        "period": "1959-03",
+        "index": 28.9
+      },
+      {
+        "period": "1959-04",
+        "index": 29
+      },
+      {
+        "period": "1959-05",
+        "index": 29
+      },
+      {
+        "period": "1959-06",
+        "index": 29.1
+      },
+      {
+        "period": "1959-07",
+        "index": 29.2
+      },
+      {
+        "period": "1959-08",
+        "index": 29.2
+      },
+      {
+        "period": "1959-09",
+        "index": 29.3
+      },
+      {
+        "period": "1959-10",
+        "index": 29.4
+      },
+      {
+        "period": "1959-11",
+        "index": 29.4
+      },
+      {
+        "period": "1959-12",
+        "index": 29.4
+      },
+      {
+        "period": "1960-01",
+        "index": 29.3
+      },
+      {
+        "period": "1960-02",
+        "index": 29.4
+      },
+      {
+        "period": "1960-03",
+        "index": 29.4
+      },
+      {
+        "period": "1960-04",
+        "index": 29.5
+      },
+      {
+        "period": "1960-05",
+        "index": 29.5
+      },
+      {
+        "period": "1960-06",
+        "index": 29.6
+      },
+      {
+        "period": "1960-07",
+        "index": 29.6
+      },
+      {
+        "period": "1960-08",
+        "index": 29.6
+      },
+      {
+        "period": "1960-09",
+        "index": 29.6
+      },
+      {
+        "period": "1960-10",
+        "index": 29.8
+      },
+      {
+        "period": "1960-11",
+        "index": 29.8
+      },
+      {
+        "period": "1960-12",
+        "index": 29.8
+      },
+      {
+        "period": "1961-01",
+        "index": 29.8
+      },
+      {
+        "period": "1961-02",
+        "index": 29.8
+      },
+      {
+        "period": "1961-03",
+        "index": 29.8
+      },
+      {
+        "period": "1961-04",
+        "index": 29.8
+      },
+      {
+        "period": "1961-05",
+        "index": 29.8
+      },
+      {
+        "period": "1961-06",
+        "index": 29.8
+      },
+      {
+        "period": "1961-07",
+        "index": 30
+      },
+      {
+        "period": "1961-08",
+        "index": 29.9
+      },
+      {
+        "period": "1961-09",
+        "index": 30
+      },
+      {
+        "period": "1961-10",
+        "index": 30
+      },
+      {
+        "period": "1961-11",
+        "index": 30
+      },
+      {
+        "period": "1961-12",
+        "index": 30
+      },
+      {
+        "period": "1962-01",
+        "index": 30
+      },
+      {
+        "period": "1962-02",
+        "index": 30.1
+      },
+      {
+        "period": "1962-03",
+        "index": 30.1
+      },
+      {
+        "period": "1962-04",
+        "index": 30.2
+      },
+      {
+        "period": "1962-05",
+        "index": 30.2
+      },
+      {
+        "period": "1962-06",
+        "index": 30.2
+      },
+      {
+        "period": "1962-07",
+        "index": 30.3
+      },
+      {
+        "period": "1962-08",
+        "index": 30.3
+      },
+      {
+        "period": "1962-09",
+        "index": 30.4
+      },
+      {
+        "period": "1962-10",
+        "index": 30.4
+      },
+      {
+        "period": "1962-11",
+        "index": 30.4
+      },
+      {
+        "period": "1962-12",
+        "index": 30.4
+      },
+      {
+        "period": "1963-01",
+        "index": 30.4
+      },
+      {
+        "period": "1963-02",
+        "index": 30.4
+      },
+      {
+        "period": "1963-03",
+        "index": 30.5
+      },
+      {
+        "period": "1963-04",
+        "index": 30.5
+      },
+      {
+        "period": "1963-05",
+        "index": 30.5
+      },
+      {
+        "period": "1963-06",
+        "index": 30.6
+      },
+      {
+        "period": "1963-07",
+        "index": 30.7
+      },
+      {
+        "period": "1963-08",
+        "index": 30.7
+      },
+      {
+        "period": "1963-09",
+        "index": 30.7
+      },
+      {
+        "period": "1963-10",
+        "index": 30.8
+      },
+      {
+        "period": "1963-11",
+        "index": 30.8
+      },
+      {
+        "period": "1963-12",
+        "index": 30.9
+      },
+      {
+        "period": "1964-01",
+        "index": 30.9
+      },
+      {
+        "period": "1964-02",
+        "index": 30.9
+      },
+      {
+        "period": "1964-03",
+        "index": 30.9
+      },
+      {
+        "period": "1964-04",
+        "index": 30.9
+      },
+      {
+        "period": "1964-05",
+        "index": 30.9
+      },
+      {
+        "period": "1964-06",
+        "index": 31
+      },
+      {
+        "period": "1964-07",
+        "index": 31.1
+      },
+      {
+        "period": "1964-08",
+        "index": 31
+      },
+      {
+        "period": "1964-09",
+        "index": 31.1
+      },
+      {
+        "period": "1964-10",
+        "index": 31.1
+      },
+      {
+        "period": "1964-11",
+        "index": 31.2
+      },
+      {
+        "period": "1964-12",
+        "index": 31.2
+      },
+      {
+        "period": "1965-01",
+        "index": 31.2
+      },
+      {
+        "period": "1965-02",
+        "index": 31.2
+      },
+      {
+        "period": "1965-03",
+        "index": 31.3
+      },
+      {
+        "period": "1965-04",
+        "index": 31.4
+      },
+      {
+        "period": "1965-05",
+        "index": 31.4
+      },
+      {
+        "period": "1965-06",
+        "index": 31.6
+      },
+      {
+        "period": "1965-07",
+        "index": 31.6
+      },
+      {
+        "period": "1965-08",
+        "index": 31.6
+      },
+      {
+        "period": "1965-09",
+        "index": 31.6
+      },
+      {
+        "period": "1965-10",
+        "index": 31.7
+      },
+      {
+        "period": "1965-11",
+        "index": 31.7
+      },
+      {
+        "period": "1965-12",
+        "index": 31.8
+      },
+      {
+        "period": "1966-01",
+        "index": 31.8
+      },
+      {
+        "period": "1966-02",
+        "index": 32
+      },
+      {
+        "period": "1966-03",
+        "index": 32.1
+      },
+      {
+        "period": "1966-04",
+        "index": 32.3
+      },
+      {
+        "period": "1966-05",
+        "index": 32.3
+      },
+      {
+        "period": "1966-06",
+        "index": 32.4
+      },
+      {
+        "period": "1966-07",
+        "index": 32.5
+      },
+      {
+        "period": "1966-08",
+        "index": 32.7
+      },
+      {
+        "period": "1966-09",
+        "index": 32.7
+      },
+      {
+        "period": "1966-10",
+        "index": 32.9
+      },
+      {
+        "period": "1966-11",
+        "index": 32.9
+      },
+      {
+        "period": "1966-12",
+        "index": 32.9
+      },
+      {
+        "period": "1967-01",
+        "index": 32.9
+      },
+      {
+        "period": "1967-02",
+        "index": 32.9
+      },
+      {
+        "period": "1967-03",
+        "index": 33
+      },
+      {
+        "period": "1967-04",
+        "index": 33.1
+      },
+      {
+        "period": "1967-05",
+        "index": 33.2
+      },
+      {
+        "period": "1967-06",
+        "index": 33.3
+      },
+      {
+        "period": "1967-07",
+        "index": 33.4
+      },
+      {
+        "period": "1967-08",
+        "index": 33.5
+      },
+      {
+        "period": "1967-09",
+        "index": 33.6
+      },
+      {
+        "period": "1967-10",
+        "index": 33.7
+      },
+      {
+        "period": "1967-11",
+        "index": 33.8
+      },
+      {
+        "period": "1967-12",
+        "index": 33.9
+      },
+      {
+        "period": "1968-01",
+        "index": 34.1
+      },
+      {
+        "period": "1968-02",
+        "index": 34.2
+      },
+      {
+        "period": "1968-03",
+        "index": 34.3
+      },
+      {
+        "period": "1968-04",
+        "index": 34.4
+      },
+      {
+        "period": "1968-05",
+        "index": 34.5
+      },
+      {
+        "period": "1968-06",
+        "index": 34.7
+      },
+      {
+        "period": "1968-07",
+        "index": 34.9
+      },
+      {
+        "period": "1968-08",
+        "index": 35
+      },
+      {
+        "period": "1968-09",
+        "index": 35.1
+      },
+      {
+        "period": "1968-10",
+        "index": 35.3
+      },
+      {
+        "period": "1968-11",
+        "index": 35.4
+      },
+      {
+        "period": "1968-12",
+        "index": 35.5
+      },
+      {
+        "period": "1969-01",
+        "index": 35.6
+      },
+      {
+        "period": "1969-02",
+        "index": 35.8
+      },
+      {
+        "period": "1969-03",
+        "index": 36.1
+      },
+      {
+        "period": "1969-04",
+        "index": 36.3
+      },
+      {
+        "period": "1969-05",
+        "index": 36.4
+      },
+      {
+        "period": "1969-06",
+        "index": 36.6
+      },
+      {
+        "period": "1969-07",
+        "index": 36.8
+      },
+      {
+        "period": "1969-08",
+        "index": 37
+      },
+      {
+        "period": "1969-09",
+        "index": 37.1
+      },
+      {
+        "period": "1969-10",
+        "index": 37.3
+      },
+      {
+        "period": "1969-11",
+        "index": 37.5
+      },
+      {
+        "period": "1969-12",
+        "index": 37.7
+      },
+      {
+        "period": "1970-01",
+        "index": 37.8
+      },
+      {
+        "period": "1970-02",
+        "index": 38
+      },
+      {
+        "period": "1970-03",
+        "index": 38.2
+      },
+      {
+        "period": "1970-04",
+        "index": 38.5
+      },
+      {
+        "period": "1970-05",
+        "index": 38.6
+      },
+      {
+        "period": "1970-06",
+        "index": 38.8
+      },
+      {
+        "period": "1970-07",
+        "index": 39
+      },
+      {
+        "period": "1970-08",
+        "index": 39
+      },
+      {
+        "period": "1970-09",
+        "index": 39.2
+      },
+      {
+        "period": "1970-10",
+        "index": 39.4
+      },
+      {
+        "period": "1970-11",
+        "index": 39.6
+      },
+      {
+        "period": "1970-12",
+        "index": 39.8
+      },
+      {
+        "period": "1971-01",
+        "index": 39.8
+      },
+      {
+        "period": "1971-02",
+        "index": 39.9
+      },
+      {
+        "period": "1971-03",
+        "index": 40
+      },
+      {
+        "period": "1971-04",
+        "index": 40.1
+      },
+      {
+        "period": "1971-05",
+        "index": 40.3
+      },
+      {
+        "period": "1971-06",
+        "index": 40.6
+      },
+      {
+        "period": "1971-07",
+        "index": 40.7
+      },
+      {
+        "period": "1971-08",
+        "index": 40.8
+      },
+      {
+        "period": "1971-09",
+        "index": 40.8
+      },
+      {
+        "period": "1971-10",
+        "index": 40.9
+      },
+      {
+        "period": "1971-11",
+        "index": 40.9
+      },
+      {
+        "period": "1971-12",
+        "index": 41.1
+      },
+      {
+        "period": "1972-01",
+        "index": 41.1
+      },
+      {
+        "period": "1972-02",
+        "index": 41.3
+      },
+      {
+        "period": "1972-03",
+        "index": 41.4
+      },
+      {
+        "period": "1972-04",
+        "index": 41.5
+      },
+      {
+        "period": "1972-05",
+        "index": 41.6
+      },
+      {
+        "period": "1972-06",
+        "index": 41.7
+      },
+      {
+        "period": "1972-07",
+        "index": 41.9
+      },
+      {
+        "period": "1972-08",
+        "index": 42
+      },
+      {
+        "period": "1972-09",
+        "index": 42.1
+      },
+      {
+        "period": "1972-10",
+        "index": 42.3
+      },
+      {
+        "period": "1972-11",
+        "index": 42.4
+      },
+      {
+        "period": "1972-12",
+        "index": 42.5
+      },
+      {
+        "period": "1973-01",
+        "index": 42.6
+      },
+      {
+        "period": "1973-02",
+        "index": 42.9
+      },
+      {
+        "period": "1973-03",
+        "index": 43.3
+      },
+      {
+        "period": "1973-04",
+        "index": 43.6
+      },
+      {
+        "period": "1973-05",
+        "index": 43.9
+      },
+      {
+        "period": "1973-06",
+        "index": 44.2
+      },
+      {
+        "period": "1973-07",
+        "index": 44.3
+      },
+      {
+        "period": "1973-08",
+        "index": 45.1
+      },
+      {
+        "period": "1973-09",
+        "index": 45.2
+      },
+      {
+        "period": "1973-10",
+        "index": 45.6
+      },
+      {
+        "period": "1973-11",
+        "index": 45.9
+      },
+      {
+        "period": "1973-12",
+        "index": 46.2
+      },
+      {
+        "period": "1974-01",
+        "index": 46.6
+      },
+      {
+        "period": "1974-02",
+        "index": 47.2
+      },
+      {
+        "period": "1974-03",
+        "index": 47.8
+      },
+      {
+        "period": "1974-04",
+        "index": 48
+      },
+      {
+        "period": "1974-05",
+        "index": 48.6
+      },
+      {
+        "period": "1974-06",
+        "index": 49
+      },
+      {
+        "period": "1974-07",
+        "index": 49.4
+      },
+      {
+        "period": "1974-08",
+        "index": 50
+      },
+      {
+        "period": "1974-09",
+        "index": 50.6
+      },
+      {
+        "period": "1974-10",
+        "index": 51.1
+      },
+      {
+        "period": "1974-11",
+        "index": 51.5
+      },
+      {
+        "period": "1974-12",
+        "index": 51.9
+      },
+      {
+        "period": "1975-01",
+        "index": 52.1
+      },
+      {
+        "period": "1975-02",
+        "index": 52.5
+      },
+      {
+        "period": "1975-03",
+        "index": 52.7
+      },
+      {
+        "period": "1975-04",
+        "index": 52.9
+      },
+      {
+        "period": "1975-05",
+        "index": 53.2
+      },
+      {
+        "period": "1975-06",
+        "index": 53.6
+      },
+      {
+        "period": "1975-07",
+        "index": 54.2
+      },
+      {
+        "period": "1975-08",
+        "index": 54.3
+      },
+      {
+        "period": "1975-09",
+        "index": 54.6
+      },
+      {
+        "period": "1975-10",
+        "index": 54.9
+      },
+      {
+        "period": "1975-11",
+        "index": 55.3
+      },
+      {
+        "period": "1975-12",
+        "index": 55.5
+      },
+      {
+        "period": "1976-01",
+        "index": 55.6
+      },
+      {
+        "period": "1976-02",
+        "index": 55.8
+      },
+      {
+        "period": "1976-03",
+        "index": 55.9
+      },
+      {
+        "period": "1976-04",
+        "index": 56.1
+      },
+      {
+        "period": "1976-05",
+        "index": 56.5
+      },
+      {
+        "period": "1976-06",
+        "index": 56.8
+      },
+      {
+        "period": "1976-07",
+        "index": 57.1
+      },
+      {
+        "period": "1976-08",
+        "index": 57.4
+      },
+      {
+        "period": "1976-09",
+        "index": 57.6
+      },
+      {
+        "period": "1976-10",
+        "index": 57.9
+      },
+      {
+        "period": "1976-11",
+        "index": 58
+      },
+      {
+        "period": "1976-12",
+        "index": 58.2
+      },
+      {
+        "period": "1977-01",
+        "index": 58.5
+      },
+      {
+        "period": "1977-02",
+        "index": 59.1
+      },
+      {
+        "period": "1977-03",
+        "index": 59.5
+      },
+      {
+        "period": "1977-04",
+        "index": 60
+      },
+      {
+        "period": "1977-05",
+        "index": 60.3
+      },
+      {
+        "period": "1977-06",
+        "index": 60.7
+      },
+      {
+        "period": "1977-07",
+        "index": 61
+      },
+      {
+        "period": "1977-08",
+        "index": 61.2
+      },
+      {
+        "period": "1977-09",
+        "index": 61.4
+      },
+      {
+        "period": "1977-10",
+        "index": 61.6
+      },
+      {
+        "period": "1977-11",
+        "index": 61.9
+      },
+      {
+        "period": "1977-12",
+        "index": 62.1
+      },
+      {
+        "period": "1978-01",
+        "index": 62.5
+      },
+      {
+        "period": "1978-02",
+        "index": 62.9
+      },
+      {
+        "period": "1978-03",
+        "index": 63.4
+      },
+      {
+        "period": "1978-04",
+        "index": 63.9
+      },
+      {
+        "period": "1978-05",
+        "index": 64.5
+      },
+      {
+        "period": "1978-06",
+        "index": 65.2
+      },
+      {
+        "period": "1978-07",
+        "index": 65.7
+      },
+      {
+        "period": "1978-08",
+        "index": 66
+      },
+      {
+        "period": "1978-09",
+        "index": 66.5
+      },
+      {
+        "period": "1978-10",
+        "index": 67.1
+      },
+      {
+        "period": "1978-11",
+        "index": 67.4
+      },
+      {
+        "period": "1978-12",
+        "index": 67.7
+      },
+      {
+        "period": "1979-01",
+        "index": 68.3
+      },
+      {
+        "period": "1979-02",
+        "index": 69.1
+      },
+      {
+        "period": "1979-03",
+        "index": 69.8
+      },
+      {
+        "period": "1979-04",
+        "index": 70.6
+      },
+      {
+        "period": "1979-05",
+        "index": 71.5
+      },
+      {
+        "period": "1979-06",
+        "index": 72.3
+      },
+      {
+        "period": "1979-07",
+        "index": 73.1
+      },
+      {
+        "period": "1979-08",
+        "index": 73.8
+      },
+      {
+        "period": "1979-09",
+        "index": 74.6
+      },
+      {
+        "period": "1979-10",
+        "index": 75.2
+      },
+      {
+        "period": "1979-11",
+        "index": 75.9
+      },
+      {
+        "period": "1979-12",
+        "index": 76.7
+      },
+      {
+        "period": "1980-01",
+        "index": 77.8
+      },
+      {
+        "period": "1980-02",
+        "index": 78.9
+      },
+      {
+        "period": "1980-03",
+        "index": 80.1
+      },
+      {
+        "period": "1980-04",
+        "index": 81
+      },
+      {
+        "period": "1980-05",
+        "index": 81.8
+      },
+      {
+        "period": "1980-06",
+        "index": 82.7
+      },
+      {
+        "period": "1980-07",
+        "index": 82.7
+      },
+      {
+        "period": "1980-08",
+        "index": 83.3
+      },
+      {
+        "period": "1980-09",
+        "index": 84
+      },
+      {
+        "period": "1980-10",
+        "index": 84.8
+      },
+      {
+        "period": "1980-11",
+        "index": 85.5
+      },
+      {
+        "period": "1980-12",
+        "index": 86.3
+      },
+      {
+        "period": "1981-01",
+        "index": 87
+      },
+      {
+        "period": "1981-02",
+        "index": 87.9
+      },
+      {
+        "period": "1981-03",
+        "index": 88.5
+      },
+      {
+        "period": "1981-04",
+        "index": 89.1
+      },
+      {
+        "period": "1981-05",
+        "index": 89.8
+      },
+      {
+        "period": "1981-06",
+        "index": 90.6
+      },
+      {
+        "period": "1981-07",
+        "index": 91.6
+      },
+      {
+        "period": "1981-08",
+        "index": 92.3
+      },
+      {
+        "period": "1981-09",
+        "index": 93.2
+      },
+      {
+        "period": "1981-10",
+        "index": 93.4
+      },
+      {
+        "period": "1981-11",
+        "index": 93.7
+      },
+      {
+        "period": "1981-12",
+        "index": 94
+      },
+      {
+        "period": "1982-01",
+        "index": 94.3
+      },
+      {
+        "period": "1982-02",
+        "index": 94.6
+      },
+      {
+        "period": "1982-03",
+        "index": 94.5
+      },
+      {
+        "period": "1982-04",
+        "index": 94.9
+      },
+      {
+        "period": "1982-05",
+        "index": 95.8
+      },
+      {
+        "period": "1982-06",
+        "index": 97
+      },
+      {
+        "period": "1982-07",
+        "index": 97.5
+      },
+      {
+        "period": "1982-08",
+        "index": 97.7
+      },
+      {
+        "period": "1982-09",
+        "index": 97.9
+      },
+      {
+        "period": "1982-10",
+        "index": 98.2
+      },
+      {
+        "period": "1982-11",
+        "index": 98
+      },
+      {
+        "period": "1982-12",
+        "index": 97.6
+      },
+      {
+        "period": "1983-01",
+        "index": 97.8
+      },
+      {
+        "period": "1983-02",
+        "index": 97.9
+      },
+      {
+        "period": "1983-03",
+        "index": 97.9
+      },
+      {
+        "period": "1983-04",
+        "index": 98.6
+      },
+      {
+        "period": "1983-05",
+        "index": 99.2
+      },
+      {
+        "period": "1983-06",
+        "index": 99.5
+      },
+      {
+        "period": "1983-07",
+        "index": 99.9
+      },
+      {
+        "period": "1983-08",
+        "index": 100.2
+      },
+      {
+        "period": "1983-09",
+        "index": 100.7
+      },
+      {
+        "period": "1983-10",
+        "index": 101
+      },
+      {
+        "period": "1983-11",
+        "index": 101.2
+      },
+      {
+        "period": "1983-12",
+        "index": 101.3
+      },
+      {
+        "period": "1984-01",
+        "index": 101.9
+      },
+      {
+        "period": "1984-02",
+        "index": 102.4
+      },
+      {
+        "period": "1984-03",
+        "index": 102.6
+      },
+      {
+        "period": "1984-04",
+        "index": 103.1
+      },
+      {
+        "period": "1984-05",
+        "index": 103.4
+      },
+      {
+        "period": "1984-06",
+        "index": 103.7
+      },
+      {
+        "period": "1984-07",
+        "index": 104.1
+      },
+      {
+        "period": "1984-08",
+        "index": 104.5
+      },
+      {
+        "period": "1984-09",
+        "index": 105
+      },
+      {
+        "period": "1984-10",
+        "index": 105.3
+      },
+      {
+        "period": "1984-11",
+        "index": 105.3
+      },
+      {
+        "period": "1984-12",
+        "index": 105.3
+      },
+      {
+        "period": "1985-01",
+        "index": 105.5
+      },
+      {
+        "period": "1985-02",
+        "index": 106
+      },
+      {
+        "period": "1985-03",
+        "index": 106.4
+      },
+      {
+        "period": "1985-04",
+        "index": 106.9
+      },
+      {
+        "period": "1985-05",
+        "index": 107.3
+      },
+      {
+        "period": "1985-06",
+        "index": 107.6
+      },
+      {
+        "period": "1985-07",
+        "index": 107.8
+      },
+      {
+        "period": "1985-08",
+        "index": 108
+      },
+      {
+        "period": "1985-09",
+        "index": 108.3
+      },
+      {
+        "period": "1985-10",
+        "index": 108.7
+      },
+      {
+        "period": "1985-11",
+        "index": 109
+      },
+      {
+        "period": "1985-12",
+        "index": 109.3
+      },
+      {
+        "period": "1986-01",
+        "index": 109.6
+      },
+      {
+        "period": "1986-02",
+        "index": 109.3
+      },
+      {
+        "period": "1986-03",
+        "index": 108.8
+      },
+      {
+        "period": "1986-04",
+        "index": 108.6
+      },
+      {
+        "period": "1986-05",
+        "index": 108.9
+      },
+      {
+        "period": "1986-06",
+        "index": 109.5
+      },
+      {
+        "period": "1986-07",
+        "index": 109.5
+      },
+      {
+        "period": "1986-08",
+        "index": 109.7
+      },
+      {
+        "period": "1986-09",
+        "index": 110.2
+      },
+      {
+        "period": "1986-10",
+        "index": 110.3
+      },
+      {
+        "period": "1986-11",
+        "index": 110.4
+      },
+      {
+        "period": "1986-12",
+        "index": 110.5
+      },
+      {
+        "period": "1987-01",
+        "index": 111.2
+      },
+      {
+        "period": "1987-02",
+        "index": 111.6
+      },
+      {
+        "period": "1987-03",
+        "index": 112.1
+      },
+      {
+        "period": "1987-04",
+        "index": 112.7
+      },
+      {
+        "period": "1987-05",
+        "index": 113.1
+      },
+      {
+        "period": "1987-06",
+        "index": 113.5
+      },
+      {
+        "period": "1987-07",
+        "index": 113.8
+      },
+      {
+        "period": "1987-08",
+        "index": 114.4
+      },
+      {
+        "period": "1987-09",
+        "index": 115
+      },
+      {
+        "period": "1987-10",
+        "index": 115.3
+      },
+      {
+        "period": "1987-11",
+        "index": 115.4
+      },
+      {
+        "period": "1987-12",
+        "index": 115.4
+      },
+      {
+        "period": "1988-01",
+        "index": 115.7
+      },
+      {
+        "period": "1988-02",
+        "index": 116
+      },
+      {
+        "period": "1988-03",
+        "index": 116.5
+      },
+      {
+        "period": "1988-04",
+        "index": 117.1
+      },
+      {
+        "period": "1988-05",
+        "index": 117.5
+      },
+      {
+        "period": "1988-06",
+        "index": 118
+      },
+      {
+        "period": "1988-07",
+        "index": 118.5
+      },
+      {
+        "period": "1988-08",
+        "index": 119
+      },
+      {
+        "period": "1988-09",
+        "index": 119.8
+      },
+      {
+        "period": "1988-10",
+        "index": 120.2
+      },
+      {
+        "period": "1988-11",
+        "index": 120.3
+      },
+      {
+        "period": "1988-12",
+        "index": 120.5
+      },
+      {
+        "period": "1989-01",
+        "index": 121.1
+      },
+      {
+        "period": "1989-02",
+        "index": 121.6
+      },
+      {
+        "period": "1989-03",
+        "index": 122.3
+      },
+      {
+        "period": "1989-04",
+        "index": 123.1
+      },
+      {
+        "period": "1989-05",
+        "index": 123.8
+      },
+      {
+        "period": "1989-06",
+        "index": 124.1
+      },
+      {
+        "period": "1989-07",
+        "index": 124.4
+      },
+      {
+        "period": "1989-08",
+        "index": 124.6
+      },
+      {
+        "period": "1989-09",
+        "index": 125
+      },
+      {
+        "period": "1989-10",
+        "index": 125.6
+      },
+      {
+        "period": "1989-11",
+        "index": 125.9
+      },
+      {
+        "period": "1989-12",
+        "index": 126.1
+      },
+      {
+        "period": "1990-01",
+        "index": 127.4
+      },
+      {
+        "period": "1990-02",
+        "index": 128
+      },
+      {
+        "period": "1990-03",
+        "index": 128.7
+      },
+      {
+        "period": "1990-04",
+        "index": 128.9
+      },
+      {
+        "period": "1990-05",
+        "index": 129.2
+      },
+      {
+        "period": "1990-06",
+        "index": 129.9
+      },
+      {
+        "period": "1990-07",
+        "index": 130.4
+      },
+      {
+        "period": "1990-08",
+        "index": 131.6
+      },
+      {
+        "period": "1990-09",
+        "index": 132.7
+      },
+      {
+        "period": "1990-10",
+        "index": 133.5
+      },
+      {
+        "period": "1990-11",
+        "index": 133.8
+      },
+      {
+        "period": "1990-12",
+        "index": 133.8
+      },
+      {
+        "period": "1991-01",
+        "index": 134.6
+      },
+      {
+        "period": "1991-02",
+        "index": 134.8
+      },
+      {
+        "period": "1991-03",
+        "index": 135
+      },
+      {
+        "period": "1991-04",
+        "index": 135.2
+      },
+      {
+        "period": "1991-05",
+        "index": 135.6
+      },
+      {
+        "period": "1991-06",
+        "index": 136
+      },
+      {
+        "period": "1991-07",
+        "index": 136.2
+      },
+      {
+        "period": "1991-08",
+        "index": 136.6
+      },
+      {
+        "period": "1991-09",
+        "index": 137.2
+      },
+      {
+        "period": "1991-10",
+        "index": 137.4
+      },
+      {
+        "period": "1991-11",
+        "index": 137.8
+      },
+      {
+        "period": "1991-12",
+        "index": 137.9
+      },
+      {
+        "period": "1992-01",
+        "index": 138.1
+      },
+      {
+        "period": "1992-02",
+        "index": 138.6
+      },
+      {
+        "period": "1992-03",
+        "index": 139.3
+      },
+      {
+        "period": "1992-04",
+        "index": 139.5
+      },
+      {
+        "period": "1992-05",
+        "index": 139.7
+      },
+      {
+        "period": "1992-06",
+        "index": 140.2
+      },
+      {
+        "period": "1992-07",
+        "index": 140.5
+      },
+      {
+        "period": "1992-08",
+        "index": 140.9
+      },
+      {
+        "period": "1992-09",
+        "index": 141.3
+      },
+      {
+        "period": "1992-10",
+        "index": 141.8
+      },
+      {
+        "period": "1992-11",
+        "index": 142
+      },
+      {
+        "period": "1992-12",
+        "index": 141.9
+      },
+      {
+        "period": "1993-01",
+        "index": 142.6
+      },
+      {
+        "period": "1993-02",
+        "index": 143.1
+      },
+      {
+        "period": "1993-03",
+        "index": 143.6
+      },
+      {
+        "period": "1993-04",
+        "index": 144
+      },
+      {
+        "period": "1993-05",
+        "index": 144.2
+      },
+      {
+        "period": "1993-06",
+        "index": 144.4
+      },
+      {
+        "period": "1993-07",
+        "index": 144.4
+      },
+      {
+        "period": "1993-08",
+        "index": 144.8
+      },
+      {
+        "period": "1993-09",
+        "index": 145.1
+      },
+      {
+        "period": "1993-10",
+        "index": 145.7
+      },
+      {
+        "period": "1993-11",
+        "index": 145.8
+      },
+      {
+        "period": "1993-12",
+        "index": 145.8
+      },
+      {
+        "period": "1994-01",
+        "index": 146.2
+      },
+      {
+        "period": "1994-02",
+        "index": 146.7
+      },
+      {
+        "period": "1994-03",
+        "index": 147.2
+      },
+      {
+        "period": "1994-04",
+        "index": 147.4
+      },
+      {
+        "period": "1994-05",
+        "index": 147.5
+      },
+      {
+        "period": "1994-06",
+        "index": 148
+      },
+      {
+        "period": "1994-07",
+        "index": 148.4
+      },
+      {
+        "period": "1994-08",
+        "index": 149
+      },
+      {
+        "period": "1994-09",
+        "index": 149.4
+      },
+      {
+        "period": "1994-10",
+        "index": 149.5
+      },
+      {
+        "period": "1994-11",
+        "index": 149.7
+      },
+      {
+        "period": "1994-12",
+        "index": 149.7
+      },
+      {
+        "period": "1995-01",
+        "index": 150.3
+      },
+      {
+        "period": "1995-02",
+        "index": 150.9
+      },
+      {
+        "period": "1995-03",
+        "index": 151.4
+      },
+      {
+        "period": "1995-04",
+        "index": 151.9
+      },
+      {
+        "period": "1995-05",
+        "index": 152.2
+      },
+      {
+        "period": "1995-06",
+        "index": 152.5
+      },
+      {
+        "period": "1995-07",
+        "index": 152.5
+      },
+      {
+        "period": "1995-08",
+        "index": 152.9
+      },
+      {
+        "period": "1995-09",
+        "index": 153.2
+      },
+      {
+        "period": "1995-10",
+        "index": 153.7
+      },
+      {
+        "period": "1995-11",
+        "index": 153.6
+      },
+      {
+        "period": "1995-12",
+        "index": 153.5
+      },
+      {
+        "period": "1996-01",
+        "index": 154.4
+      },
+      {
+        "period": "1996-02",
+        "index": 154.9
+      },
+      {
+        "period": "1996-03",
+        "index": 155.7
+      },
+      {
+        "period": "1996-04",
+        "index": 156.3
+      },
+      {
+        "period": "1996-05",
+        "index": 156.6
+      },
+      {
+        "period": "1996-06",
+        "index": 156.7
+      },
+      {
+        "period": "1996-07",
+        "index": 157
+      },
+      {
+        "period": "1996-08",
+        "index": 157.3
+      },
+      {
+        "period": "1996-09",
+        "index": 157.8
+      },
+      {
+        "period": "1996-10",
+        "index": 158.3
+      },
+      {
+        "period": "1996-11",
+        "index": 158.6
+      },
+      {
+        "period": "1996-12",
+        "index": 158.6
+      },
+      {
+        "period": "1997-01",
+        "index": 159.1
+      },
+      {
+        "period": "1997-02",
+        "index": 159.6
+      },
+      {
+        "period": "1997-03",
+        "index": 160
+      },
+      {
+        "period": "1997-04",
+        "index": 160.2
+      },
+      {
+        "period": "1997-05",
+        "index": 160.1
+      },
+      {
+        "period": "1997-06",
+        "index": 160.3
+      },
+      {
+        "period": "1997-07",
+        "index": 160.5
+      },
+      {
+        "period": "1997-08",
+        "index": 160.8
+      },
+      {
+        "period": "1997-09",
+        "index": 161.2
+      },
+      {
+        "period": "1997-10",
+        "index": 161.6
+      },
+      {
+        "period": "1997-11",
+        "index": 161.5
+      },
+      {
+        "period": "1997-12",
+        "index": 161.3
+      },
+      {
+        "period": "1998-01",
+        "index": 161.6
+      },
+      {
+        "period": "1998-02",
+        "index": 161.9
+      },
+      {
+        "period": "1998-03",
+        "index": 162.2
+      },
+      {
+        "period": "1998-04",
+        "index": 162.5
+      },
+      {
+        "period": "1998-05",
+        "index": 162.8
+      },
+      {
+        "period": "1998-06",
+        "index": 163
+      },
+      {
+        "period": "1998-07",
+        "index": 163.2
+      },
+      {
+        "period": "1998-08",
+        "index": 163.4
+      },
+      {
+        "period": "1998-09",
+        "index": 163.6
+      },
+      {
+        "period": "1998-10",
+        "index": 164
+      },
+      {
+        "period": "1998-11",
+        "index": 164
+      },
+      {
+        "period": "1998-12",
+        "index": 163.9
+      },
+      {
+        "period": "1999-01",
+        "index": 164.3
+      },
+      {
+        "period": "1999-02",
+        "index": 164.5
+      },
+      {
+        "period": "1999-03",
+        "index": 165
+      },
+      {
+        "period": "1999-04",
+        "index": 166.2
+      },
+      {
+        "period": "1999-05",
+        "index": 166.2
+      },
+      {
+        "period": "1999-06",
+        "index": 166.2
+      },
+      {
+        "period": "1999-07",
+        "index": 166.7
+      },
+      {
+        "period": "1999-08",
+        "index": 167.1
+      },
+      {
+        "period": "1999-09",
+        "index": 167.9
+      },
+      {
+        "period": "1999-10",
+        "index": 168.2
+      },
+      {
+        "period": "1999-11",
+        "index": 168.3
+      },
+      {
+        "period": "1999-12",
+        "index": 168.3
+      },
+      {
+        "period": "2000-01",
+        "index": 168.8
+      },
+      {
+        "period": "2000-02",
+        "index": 169.8
+      },
+      {
+        "period": "2000-03",
+        "index": 171.2
+      },
+      {
+        "period": "2000-04",
+        "index": 171.3
+      },
+      {
+        "period": "2000-05",
+        "index": 171.5
+      },
+      {
+        "period": "2000-06",
+        "index": 172.4
+      },
+      {
+        "period": "2000-07",
+        "index": 172.8
+      },
+      {
+        "period": "2000-08",
+        "index": 172.8
+      },
+      {
+        "period": "2000-09",
+        "index": 173.7
+      },
+      {
+        "period": "2000-10",
+        "index": 174
+      },
+      {
+        "period": "2000-11",
+        "index": 174.1
+      },
+      {
+        "period": "2000-12",
+        "index": 174
+      },
+      {
+        "period": "2001-01",
+        "index": 175.1
+      },
+      {
+        "period": "2001-02",
+        "index": 175.8
+      },
+      {
+        "period": "2001-03",
+        "index": 176.2
+      },
+      {
+        "period": "2001-04",
+        "index": 176.9
+      },
+      {
+        "period": "2001-05",
+        "index": 177.7
+      },
+      {
+        "period": "2001-06",
+        "index": 178
+      },
+      {
+        "period": "2001-07",
+        "index": 177.5
+      },
+      {
+        "period": "2001-08",
+        "index": 177.5
+      },
+      {
+        "period": "2001-09",
+        "index": 178.3
+      },
+      {
+        "period": "2001-10",
+        "index": 177.7
+      },
+      {
+        "period": "2001-11",
+        "index": 177.4
+      },
+      {
+        "period": "2001-12",
+        "index": 176.7
+      },
+      {
+        "period": "2002-01",
+        "index": 177.1
+      },
+      {
+        "period": "2002-02",
+        "index": 177.8
+      },
+      {
+        "period": "2002-03",
+        "index": 178.8
+      },
+      {
+        "period": "2002-04",
+        "index": 179.8
+      },
+      {
+        "period": "2002-05",
+        "index": 179.8
+      },
+      {
+        "period": "2002-06",
+        "index": 179.9
+      },
+      {
+        "period": "2002-07",
+        "index": 180.1
+      },
+      {
+        "period": "2002-08",
+        "index": 180.7
+      },
+      {
+        "period": "2002-09",
+        "index": 181
+      },
+      {
+        "period": "2002-10",
+        "index": 181.3
+      },
+      {
+        "period": "2002-11",
+        "index": 181.3
+      },
+      {
+        "period": "2002-12",
+        "index": 180.9
+      },
+      {
+        "period": "2003-01",
+        "index": 181.7
+      },
+      {
+        "period": "2003-02",
+        "index": 183.1
+      },
+      {
+        "period": "2003-03",
+        "index": 184.2
+      },
+      {
+        "period": "2003-04",
+        "index": 183.8
+      },
+      {
+        "period": "2003-05",
+        "index": 183.5
+      },
+      {
+        "period": "2003-06",
+        "index": 183.7
+      },
+      {
+        "period": "2003-07",
+        "index": 183.9
+      },
+      {
+        "period": "2003-08",
+        "index": 184.6
+      },
+      {
+        "period": "2003-09",
+        "index": 185.2
+      },
+      {
+        "period": "2003-10",
+        "index": 185
+      },
+      {
+        "period": "2003-11",
+        "index": 184.5
+      },
+      {
+        "period": "2003-12",
+        "index": 184.3
+      },
+      {
+        "period": "2004-01",
+        "index": 185.2
+      },
+      {
+        "period": "2004-02",
+        "index": 186.2
+      },
+      {
+        "period": "2004-03",
+        "index": 187.4
+      },
+      {
+        "period": "2004-04",
+        "index": 188
+      },
+      {
+        "period": "2004-05",
+        "index": 189.1
+      },
+      {
+        "period": "2004-06",
+        "index": 189.7
+      },
+      {
+        "period": "2004-07",
+        "index": 189.4
+      },
+      {
+        "period": "2004-08",
+        "index": 189.5
+      },
+      {
+        "period": "2004-09",
+        "index": 189.9
+      },
+      {
+        "period": "2004-10",
+        "index": 190.9
+      },
+      {
+        "period": "2004-11",
+        "index": 191
+      },
+      {
+        "period": "2004-12",
+        "index": 190.3
+      },
+      {
+        "period": "2005-01",
+        "index": 190.7
+      },
+      {
+        "period": "2005-02",
+        "index": 191.8
+      },
+      {
+        "period": "2005-03",
+        "index": 193.3
+      },
+      {
+        "period": "2005-04",
+        "index": 194.6
+      },
+      {
+        "period": "2005-05",
+        "index": 194.4
+      },
+      {
+        "period": "2005-06",
+        "index": 194.5
+      },
+      {
+        "period": "2005-07",
+        "index": 195.4
+      },
+      {
+        "period": "2005-08",
+        "index": 196.4
+      },
+      {
+        "period": "2005-09",
+        "index": 198.8
+      },
+      {
+        "period": "2005-10",
+        "index": 199.2
+      },
+      {
+        "period": "2005-11",
+        "index": 197.6
+      },
+      {
+        "period": "2005-12",
+        "index": 196.8
+      },
+      {
+        "period": "2006-01",
+        "index": 198.3
+      },
+      {
+        "period": "2006-02",
+        "index": 198.7
+      },
+      {
+        "period": "2006-03",
+        "index": 199.8
+      },
+      {
+        "period": "2006-04",
+        "index": 201.5
+      },
+      {
+        "period": "2006-05",
+        "index": 202.5
+      },
+      {
+        "period": "2006-06",
+        "index": 202.9
+      },
+      {
+        "period": "2006-07",
+        "index": 203.5
+      },
+      {
+        "period": "2006-08",
+        "index": 203.9
+      },
+      {
+        "period": "2006-09",
+        "index": 202.9
+      },
+      {
+        "period": "2006-10",
+        "index": 201.8
+      },
+      {
+        "period": "2006-11",
+        "index": 201.5
+      },
+      {
+        "period": "2006-12",
+        "index": 201.8
+      },
+      {
+        "period": "2007-01",
+        "index": 202.416
+      },
+      {
+        "period": "2007-02",
+        "index": 203.499
+      },
+      {
+        "period": "2007-03",
+        "index": 205.352
+      },
+      {
+        "period": "2007-04",
+        "index": 206.686
+      },
+      {
+        "period": "2007-05",
+        "index": 207.949
+      },
+      {
+        "period": "2007-06",
+        "index": 208.352
+      },
+      {
+        "period": "2007-07",
+        "index": 208.299
+      },
+      {
+        "period": "2007-08",
+        "index": 207.917
+      },
+      {
+        "period": "2007-09",
+        "index": 208.49
+      },
+      {
+        "period": "2007-10",
+        "index": 208.936
+      },
+      {
+        "period": "2007-11",
+        "index": 210.177
+      },
+      {
+        "period": "2007-12",
+        "index": 210.036
+      },
+      {
+        "period": "2008-01",
+        "index": 211.08
+      },
+      {
+        "period": "2008-02",
+        "index": 211.693
+      },
+      {
+        "period": "2008-03",
+        "index": 213.528
+      },
+      {
+        "period": "2008-04",
+        "index": 214.823
+      },
+      {
+        "period": "2008-05",
+        "index": 216.632
+      },
+      {
+        "period": "2008-06",
+        "index": 218.815
+      },
+      {
+        "period": "2008-07",
+        "index": 219.964
+      },
+      {
+        "period": "2008-08",
+        "index": 219.086
+      },
+      {
+        "period": "2008-09",
+        "index": 218.783
+      },
+      {
+        "period": "2008-10",
+        "index": 216.573
+      },
+      {
+        "period": "2008-11",
+        "index": 212.425
+      },
+      {
+        "period": "2008-12",
+        "index": 210.228
+      },
+      {
+        "period": "2009-01",
+        "index": 211.143
+      },
+      {
+        "period": "2009-02",
+        "index": 212.193
+      },
+      {
+        "period": "2009-03",
+        "index": 212.709
+      },
+      {
+        "period": "2009-04",
+        "index": 213.24
+      },
+      {
+        "period": "2009-05",
+        "index": 213.856
+      },
+      {
+        "period": "2009-06",
+        "index": 215.693
+      },
+      {
+        "period": "2009-07",
+        "index": 215.351
+      },
+      {
+        "period": "2009-08",
+        "index": 215.834
+      },
+      {
+        "period": "2009-09",
+        "index": 215.969
+      },
+      {
+        "period": "2009-10",
+        "index": 216.177
+      },
+      {
+        "period": "2009-11",
+        "index": 216.33
+      },
+      {
+        "period": "2009-12",
+        "index": 215.949
+      },
+      {
+        "period": "2010-01",
+        "index": 216.687
+      },
+      {
+        "period": "2010-02",
+        "index": 216.741
+      },
+      {
+        "period": "2010-03",
+        "index": 217.631
+      },
+      {
+        "period": "2010-04",
+        "index": 218.009
+      },
+      {
+        "period": "2010-05",
+        "index": 218.178
+      },
+      {
+        "period": "2010-06",
+        "index": 217.965
+      },
+      {
+        "period": "2010-07",
+        "index": 218.011
+      },
+      {
+        "period": "2010-08",
+        "index": 218.312
+      },
+      {
+        "period": "2010-09",
+        "index": 218.439
+      },
+      {
+        "period": "2010-10",
+        "index": 218.711
+      },
+      {
+        "period": "2010-11",
+        "index": 218.803
+      },
+      {
+        "period": "2010-12",
+        "index": 219.179
+      },
+      {
+        "period": "2011-01",
+        "index": 220.223
+      },
+      {
+        "period": "2011-02",
+        "index": 221.309
+      },
+      {
+        "period": "2011-03",
+        "index": 223.467
+      },
+      {
+        "period": "2011-04",
+        "index": 224.906
+      },
+      {
+        "period": "2011-05",
+        "index": 225.964
+      },
+      {
+        "period": "2011-06",
+        "index": 225.722
+      },
+      {
+        "period": "2011-07",
+        "index": 225.922
+      },
+      {
+        "period": "2011-08",
+        "index": 226.545
+      },
+      {
+        "period": "2011-09",
+        "index": 226.889
+      },
+      {
+        "period": "2011-10",
+        "index": 226.421
+      },
+      {
+        "period": "2011-11",
+        "index": 226.23
+      },
+      {
+        "period": "2011-12",
+        "index": 225.672
+      },
+      {
+        "period": "2012-01",
+        "index": 226.665
+      },
+      {
+        "period": "2012-02",
+        "index": 227.663
+      },
+      {
+        "period": "2012-03",
+        "index": 229.392
+      },
+      {
+        "period": "2012-04",
+        "index": 230.085
+      },
+      {
+        "period": "2012-05",
+        "index": 229.815
+      },
+      {
+        "period": "2012-06",
+        "index": 229.478
+      },
+      {
+        "period": "2012-07",
+        "index": 229.104
+      },
+      {
+        "period": "2012-08",
+        "index": 230.379
+      },
+      {
+        "period": "2012-09",
+        "index": 231.407
+      },
+      {
+        "period": "2012-10",
+        "index": 231.317
+      },
+      {
+        "period": "2012-11",
+        "index": 230.221
+      },
+      {
+        "period": "2012-12",
+        "index": 229.601
+      },
+      {
+        "period": "2013-01",
+        "index": 230.28
+      },
+      {
+        "period": "2013-02",
+        "index": 232.166
+      },
+      {
+        "period": "2013-03",
+        "index": 232.773
+      },
+      {
+        "period": "2013-04",
+        "index": 232.531
+      },
+      {
+        "period": "2013-05",
+        "index": 232.945
+      },
+      {
+        "period": "2013-06",
+        "index": 233.504
+      },
+      {
+        "period": "2013-07",
+        "index": 233.596
+      },
+      {
+        "period": "2013-08",
+        "index": 233.877
+      },
+      {
+        "period": "2013-09",
+        "index": 234.149
+      },
+      {
+        "period": "2013-10",
+        "index": 233.546
+      },
+      {
+        "period": "2013-11",
+        "index": 233.069
+      },
+      {
+        "period": "2013-12",
+        "index": 233.049
+      },
+      {
+        "period": "2014-01",
+        "index": 233.916
+      },
+      {
+        "period": "2014-02",
+        "index": 234.781
+      },
+      {
+        "period": "2014-03",
+        "index": 236.293
+      },
+      {
+        "period": "2014-04",
+        "index": 237.072
+      },
+      {
+        "period": "2014-05",
+        "index": 237.9
+      },
+      {
+        "period": "2014-06",
+        "index": 238.343
+      },
+      {
+        "period": "2014-07",
+        "index": 238.25
+      },
+      {
+        "period": "2014-08",
+        "index": 237.852
+      },
+      {
+        "period": "2014-09",
+        "index": 238.031
+      },
+      {
+        "period": "2014-10",
+        "index": 237.433
+      },
+      {
+        "period": "2014-11",
+        "index": 236.151
+      },
+      {
+        "period": "2014-12",
+        "index": 234.812
+      },
+      {
+        "period": "2015-01",
+        "index": 233.707
+      },
+      {
+        "period": "2015-02",
+        "index": 234.722
+      },
+      {
+        "period": "2015-03",
+        "index": 236.119
+      },
+      {
+        "period": "2015-04",
+        "index": 236.599
+      },
+      {
+        "period": "2015-05",
+        "index": 237.805
+      },
+      {
+        "period": "2015-06",
+        "index": 238.638
+      },
+      {
+        "period": "2015-07",
+        "index": 238.654
+      },
+      {
+        "period": "2015-08",
+        "index": 238.316
+      },
+      {
+        "period": "2015-09",
+        "index": 237.945
+      },
+      {
+        "period": "2015-10",
+        "index": 237.838
+      },
+      {
+        "period": "2015-11",
+        "index": 237.336
+      },
+      {
+        "period": "2015-12",
+        "index": 236.525
+      },
+      {
+        "period": "2016-01",
+        "index": 236.916
+      },
+      {
+        "period": "2016-02",
+        "index": 237.111
+      },
+      {
+        "period": "2016-03",
+        "index": 238.132
+      },
+      {
+        "period": "2016-04",
+        "index": 239.261
+      },
+      {
+        "period": "2016-05",
+        "index": 240.229
+      },
+      {
+        "period": "2016-06",
+        "index": 241.018
+      },
+      {
+        "period": "2016-07",
+        "index": 240.628
+      },
+      {
+        "period": "2016-08",
+        "index": 240.849
+      },
+      {
+        "period": "2016-09",
+        "index": 241.428
+      },
+      {
+        "period": "2016-10",
+        "index": 241.729
+      },
+      {
+        "period": "2016-11",
+        "index": 241.353
+      },
+      {
+        "period": "2016-12",
+        "index": 241.432
+      },
+      {
+        "period": "2017-01",
+        "index": 242.839
+      },
+      {
+        "period": "2017-02",
+        "index": 243.603
+      },
+      {
+        "period": "2017-03",
+        "index": 243.801
+      },
+      {
+        "period": "2017-04",
+        "index": 244.524
+      },
+      {
+        "period": "2017-05",
+        "index": 244.733
+      },
+      {
+        "period": "2017-06",
+        "index": 244.955
+      },
+      {
+        "period": "2017-07",
+        "index": 244.786
+      },
+      {
+        "period": "2017-08",
+        "index": 245.519
+      },
+      {
+        "period": "2017-09",
+        "index": 246.819
+      },
+      {
+        "period": "2017-10",
+        "index": 246.663
+      },
+      {
+        "period": "2017-11",
+        "index": 246.669
+      },
+      {
+        "period": "2017-12",
+        "index": 246.524
+      },
+      {
+        "period": "2018-01",
+        "index": 247.867
+      },
+      {
+        "period": "2018-02",
+        "index": 248.991
+      },
+      {
+        "period": "2018-03",
+        "index": 249.554
+      },
+      {
+        "period": "2018-04",
+        "index": 250.546
+      },
+      {
+        "period": "2018-05",
+        "index": 251.588
+      },
+      {
+        "period": "2018-06",
+        "index": 251.989
+      },
+      {
+        "period": "2018-07",
+        "index": 252.006
+      },
+      {
+        "period": "2018-08",
+        "index": 252.146
+      },
+      {
+        "period": "2018-09",
+        "index": 252.439
+      },
+      {
+        "period": "2018-10",
+        "index": 252.885
+      },
+      {
+        "period": "2018-11",
+        "index": 252.038
+      },
+      {
+        "period": "2018-12",
+        "index": 251.233
+      },
+      {
+        "period": "2019-01",
+        "index": 251.712
+      },
+      {
+        "period": "2019-02",
+        "index": 252.776
+      },
+      {
+        "period": "2019-03",
+        "index": 254.202
+      },
+      {
+        "period": "2019-04",
+        "index": 255.548
+      },
+      {
+        "period": "2019-05",
+        "index": 256.092
+      },
+      {
+        "period": "2019-06",
+        "index": 256.143
+      },
+      {
+        "period": "2019-07",
+        "index": 256.571
+      },
+      {
+        "period": "2019-08",
+        "index": 256.558
+      },
+      {
+        "period": "2019-09",
+        "index": 256.759
+      },
+      {
+        "period": "2019-10",
+        "index": 257.346
+      },
+      {
+        "period": "2019-11",
+        "index": 257.208
+      },
+      {
+        "period": "2019-12",
+        "index": 256.974
+      },
+      {
+        "period": "2020-01",
+        "index": 257.971
+      },
+      {
+        "period": "2020-02",
+        "index": 258.678
+      },
+      {
+        "period": "2020-03",
+        "index": 258.115
+      },
+      {
+        "period": "2020-04",
+        "index": 256.389
+      },
+      {
+        "period": "2020-05",
+        "index": 256.394
+      },
+      {
+        "period": "2020-06",
+        "index": 257.797
+      },
+      {
+        "period": "2020-07",
+        "index": 259.101
+      },
+      {
+        "period": "2020-08",
+        "index": 259.918
+      },
+      {
+        "period": "2020-09",
+        "index": 260.28
+      },
+      {
+        "period": "2020-10",
+        "index": 260.388
+      },
+      {
+        "period": "2020-11",
+        "index": 260.229
+      },
+      {
+        "period": "2020-12",
+        "index": 260.474
+      },
+      {
+        "period": "2021-01",
+        "index": 261.582
+      },
+      {
+        "period": "2021-02",
+        "index": 263.014
+      },
+      {
+        "period": "2021-03",
+        "index": 264.877
+      },
+      {
+        "period": "2021-04",
+        "index": 267.054
+      },
+      {
+        "period": "2021-05",
+        "index": 269.195
+      },
+      {
+        "period": "2021-06",
+        "index": 271.696
+      },
+      {
+        "period": "2021-07",
+        "index": 273.003
+      },
+      {
+        "period": "2021-08",
+        "index": 273.567
+      },
+      {
+        "period": "2021-09",
+        "index": 274.31
+      },
+      {
+        "period": "2021-10",
+        "index": 276.589
+      },
+      {
+        "period": "2021-11",
+        "index": 277.948
+      },
+      {
+        "period": "2021-12",
+        "index": 278.802
+      },
+      {
+        "period": "2022-01",
+        "index": 281.148
+      },
+      {
+        "period": "2022-02",
+        "index": 283.716
+      },
+      {
+        "period": "2022-03",
+        "index": 287.504
+      },
+      {
+        "period": "2022-04",
+        "index": 289.109
+      },
+      {
+        "period": "2022-05",
+        "index": 292.296
+      },
+      {
+        "period": "2022-06",
+        "index": 296.311
+      },
+      {
+        "period": "2022-07",
+        "index": 296.276
+      },
+      {
+        "period": "2022-08",
+        "index": 296.171
+      },
+      {
+        "period": "2022-09",
+        "index": 296.808
+      },
+      {
+        "period": "2022-10",
+        "index": 298.012
+      },
+      {
+        "period": "2022-11",
+        "index": 297.711
+      },
+      {
+        "period": "2022-12",
+        "index": 296.797
+      },
+      {
+        "period": "2023-01",
+        "index": 299.17
+      },
+      {
+        "period": "2023-02",
+        "index": 300.84
+      },
+      {
+        "period": "2023-03",
+        "index": 301.836
+      },
+      {
+        "period": "2023-04",
+        "index": 303.363
+      },
+      {
+        "period": "2023-05",
+        "index": 304.127
+      },
+      {
+        "period": "2023-06",
+        "index": 305.109
+      },
+      {
+        "period": "2023-07",
+        "index": 305.691
+      },
+      {
+        "period": "2023-08",
+        "index": 307.026
+      },
+      {
+        "period": "2023-09",
+        "index": 307.789
+      },
+      {
+        "period": "2023-10",
+        "index": 307.671
+      },
+      {
+        "period": "2023-11",
+        "index": 307.051
+      },
+      {
+        "period": "2023-12",
+        "index": 306.746
+      },
+      {
+        "period": "2024-01",
+        "index": 308.417
+      },
+      {
+        "period": "2024-02",
+        "index": 310.326
+      },
+      {
+        "period": "2024-03",
+        "index": 312.332
+      },
+      {
+        "period": "2024-04",
+        "index": 313.548
+      },
+      {
+        "period": "2024-05",
+        "index": 314.069
+      },
+      {
+        "period": "2024-06",
+        "index": 314.175
+      },
+      {
+        "period": "2024-07",
+        "index": 314.54
+      },
+      {
+        "period": "2024-08",
+        "index": 314.796
+      },
+      {
+        "period": "2024-09",
+        "index": 315.301
+      },
+      {
+        "period": "2024-10",
+        "index": 315.664
+      },
+      {
+        "period": "2024-11",
+        "index": 315.493
+      },
+      {
+        "period": "2024-12",
+        "index": 315.605
+      },
+      {
+        "period": "2025-01",
+        "index": 317.671
+      },
+      {
+        "period": "2025-02",
+        "index": 319.082
+      },
+      {
+        "period": "2025-03",
+        "index": 319.799
+      },
+      {
+        "period": "2025-04",
+        "index": 320.795
+      },
+      {
+        "period": "2025-05",
+        "index": 321.465
+      },
+      {
+        "period": "2025-06",
+        "index": 322.561
+      },
+      {
+        "period": "2025-07",
+        "index": 323.048
+      },
+      {
+        "period": "2025-08",
+        "index": 323.976
+      },
+      {
+        "period": "2025-09",
+        "index": 324.8
+      },
+      {
+        "period": "2025-11",
+        "index": 324.122
+      },
+      {
+        "period": "2025-12",
+        "index": 324.054
+      },
+      {
+        "period": "2026-01",
+        "index": 325.252
+      },
+      {
+        "period": "2026-02",
+        "index": 326.785
+      },
+      {
+        "period": "2026-03",
+        "index": 330.213
+      },
+      {
+        "period": "2026-04",
+        "index": 333.02
+      },
+      {
+        "period": "2026-05",
+        "index": 335.123
+      },
+      {
+        "period": "2026-06",
+        "index": 333.952
+      },
+      {
+        "period": "2026-07",
+        "index": 333.918
+      }
+    ],
+    "normalizedSha256": "5dfd9ad00a5aac077672ee18c31d6efa72834ebff32e7c1a24dd2e5335de2a22"
+  }
+}

@@ -10,14 +10,14 @@ export default function HourlyToSalaryPage() {
   return (
     <ToolPage
       tool={tool}
-      caution="Gross pay is not take-home pay. Confirm your paid hours, overtime eligibility, benefits, taxes and unpaid time before using this result for a budget."
+      caution="This is gross pay, not what hits your bank. Check hours, overtime rules, benefits, taxes, and unpaid time before you budget with it."
       methodology={[
-        { title: 'Separate regular and overtime hours', body: 'Regular weekly pay uses your base hourly rate. Overtime pay uses only the hours and multiplier you enter, so the two remain visible.' },
-        { title: 'Annualize the week', body: 'Weekly regular and overtime pay are multiplied by your chosen paid weeks. This avoids silently assuming every worker is paid for all 52 weeks.' },
-        { title: 'Normalize pay periods', body: 'Monthly, semimonthly and biweekly figures come from annual gross pay, keeping every view internally consistent.' },
+        { title: 'Regular hours and overtime', body: 'Regular weekly pay uses your base rate. Overtime uses only the hours and multiplier you enter.' },
+        { title: 'A week into a year', body: 'Weekly pay is multiplied by the paid weeks you choose. 52 weeks is not assumed.' },
+        { title: 'Other pay periods', body: 'Monthly, twice a month, and every two weeks are divided from the same yearly total.' },
       ]}
       sources={[
-        { name: 'U.S. Department of Labor', detail: 'Federal overtime overview and eligibility caveats.', href: 'https://www.dol.gov/agencies/whd/overtime', dateLabel: 'Official guidance' },
+        { name: 'U.S. Department of Labor', detail: 'Federal overtime rules and who they cover.', href: 'https://www.dol.gov/agencies/whd/overtime', dateLabel: 'Official guidance' },
       ]}
     >
       <HourlySalaryCalculator />

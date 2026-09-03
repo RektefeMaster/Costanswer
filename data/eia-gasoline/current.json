@@ -1,0 +1,180 @@
+{
+  "manifest": {
+    "currentSnapshotId": "eia-gasoline-regular-weekly-2026-08-31-v1",
+    "observationPeriod": "2026-08-31",
+    "normalizedSha256": "ba47c4110e8b146dbfdf4479188caa0d37eb893819181abe1d5a5834152a5eae",
+    "validationStatus": "passed"
+  },
+  "snapshot": {
+    "schemaVersion": "1.0.0",
+    "adapterVersion": "eia-gasoline-weekly-v1.0.0",
+    "snapshotId": "eia-gasoline-regular-weekly-2026-08-31-v1",
+    "provider": "U.S. Energy Information Administration",
+    "datasetId": "petroleum/pri/gnd",
+    "product": "regular-all-formulations",
+    "frequency": "weekly",
+    "observationPeriod": "2026-08-31",
+    "releaseDate": "2026-09-01",
+    "sourceStatus": "preliminary",
+    "fetchedAt": "2026-09-02T21:18:45.291Z",
+    "verifiedAt": "2026-09-02T21:18:45.291Z",
+    "publishedAt": "2026-09-02T21:18:45.291Z",
+    "sourceUrl": "https://www.eia.gov/dnav/pet/pet_pri_gnd_a_epmr_pte_dpgal_w.htm",
+    "sourceDocumentationUrl": "https://www.eia.gov/petroleum/gasdiesel/",
+    "termsUrl": "https://www.eia.gov/about/copyrights_reuse.php",
+    "attribution": "Source: U.S. Energy Information Administration, weekly retail gasoline prices, regular all formulations.",
+    "rawSha256": "0abf6e6c7b700ecfc3b27c891c965dac098f2d8edc806c57db6376965937a816",
+    "validationStatus": "passed",
+    "validationReport": [
+      "EIA weekly regular gasoline HTML table parsed.",
+      "Release date and latest week-ending date are present.",
+      "Required PADD, selected-state and U.S. series are present with positive dollar-per-gallon prices.",
+      "City rows are ignored; they are not used as state substitutes."
+    ],
+    "geographies": [
+      {
+        "code": "NUS",
+        "name": "U.S.",
+        "kind": "nation",
+        "seriesId": "EMM_EPMR_PTE_NUS_DPG",
+        "dollarsPerGallon": 4.071
+      },
+      {
+        "code": "R10",
+        "name": "East Coast (PADD 1)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R10_DPG",
+        "dollarsPerGallon": 3.937
+      },
+      {
+        "code": "R1X",
+        "name": "New England (PADD 1A)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R1X_DPG",
+        "dollarsPerGallon": 4.096
+      },
+      {
+        "code": "R1Y",
+        "name": "Central Atlantic (PADD 1B)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R1Y_DPG",
+        "dollarsPerGallon": 4.117
+      },
+      {
+        "code": "R1Z",
+        "name": "Lower Atlantic (PADD 1C)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R1Z_DPG",
+        "dollarsPerGallon": 3.783
+      },
+      {
+        "code": "R20",
+        "name": "Midwest (PADD 2)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R20_DPG",
+        "dollarsPerGallon": 3.847
+      },
+      {
+        "code": "R30",
+        "name": "Gulf Coast (PADD 3)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R30_DPG",
+        "dollarsPerGallon": 3.618
+      },
+      {
+        "code": "R40",
+        "name": "Rocky Mountain (PADD 4)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R40_DPG",
+        "dollarsPerGallon": 4.266
+      },
+      {
+        "code": "R50",
+        "name": "West Coast (PADD 5)",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R50_DPG",
+        "dollarsPerGallon": 5.206
+      },
+      {
+        "code": "R5XCA",
+        "name": "West Coast less California",
+        "kind": "padd",
+        "seriesId": "EMM_EPMR_PTE_R5XCA_DPG",
+        "dollarsPerGallon": 4.823
+      },
+      {
+        "code": "SCA",
+        "name": "California",
+        "kind": "state",
+        "stateCode": "CA",
+        "seriesId": "EMM_EPMR_PTE_SCA_DPG",
+        "dollarsPerGallon": 5.52
+      },
+      {
+        "code": "SCO",
+        "name": "Colorado",
+        "kind": "state",
+        "stateCode": "CO",
+        "seriesId": "EMM_EPMR_PTE_SCO_DPG",
+        "dollarsPerGallon": 4.132
+      },
+      {
+        "code": "SFL",
+        "name": "Florida",
+        "kind": "state",
+        "stateCode": "FL",
+        "seriesId": "EMM_EPMR_PTE_SFL_DPG",
+        "dollarsPerGallon": 3.825
+      },
+      {
+        "code": "SMA",
+        "name": "Massachusetts",
+        "kind": "state",
+        "stateCode": "MA",
+        "seriesId": "EMM_EPMR_PTE_SMA_DPG",
+        "dollarsPerGallon": 4.068
+      },
+      {
+        "code": "SMN",
+        "name": "Minnesota",
+        "kind": "state",
+        "stateCode": "MN",
+        "seriesId": "EMM_EPMR_PTE_SMN_DPG",
+        "dollarsPerGallon": 3.955
+      },
+      {
+        "code": "SNY",
+        "name": "New York",
+        "kind": "state",
+        "stateCode": "NY",
+        "seriesId": "EMM_EPMR_PTE_SNY_DPG",
+        "dollarsPerGallon": 4.126
+      },
+      {
+        "code": "SOH",
+        "name": "Ohio",
+        "kind": "state",
+        "stateCode": "OH",
+        "seriesId": "EMM_EPMR_PTE_SOH_DPG",
+        "dollarsPerGallon": 3.797
+      },
+      {
+        "code": "STX",
+        "name": "Texas",
+        "kind": "state",
+        "stateCode": "TX",
+        "seriesId": "EMM_EPMR_PTE_STX_DPG",
+        "dollarsPerGallon": 3.577
+      },
+      {
+        "code": "SWA",
+        "name": "Washington",
+        "kind": "state",
+        "stateCode": "WA",
+        "seriesId": "EMM_EPMR_PTE_SWA_DPG",
+        "dollarsPerGallon": 5.259
+      }
+    ],
+    "normalizedSha256": "ba47c4110e8b146dbfdf4479188caa0d37eb893819181abe1d5a5834152a5eae"
+  }
+}

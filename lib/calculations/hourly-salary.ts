@@ -43,7 +43,7 @@ export function calculateHourlySalary(rawInput: unknown): CalculationResult<Hour
       regularAnnual: round(regularAnnual),
       overtimeAnnual: round(overtimeAnnual),
     },
-    calculationVersion: 'compensation-v1.0.0',
+    calculationVersion: 'compensation-v1.1.0',
     datasetSnapshotIds: [],
     breakdown: [
       {
@@ -63,10 +63,9 @@ export function calculateHourlySalary(rawInput: unknown): CalculationResult<Hour
       },
     ],
     assumptions: [
-      'Results are gross pay before taxes, benefits, unpaid time off, or deductions.',
-      'The overtime multiplier is applied only to hours you identify as overtime.',
-      'This tool does not determine whether a worker is legally eligible for overtime.',
+      'This is pay before taxes, benefits, unpaid time off, or deductions.',
+      'Overtime uses only the hours you mark as overtime.',
+      'This does not say whether you are legally eligible for overtime.',
     ],
   };
 }
-

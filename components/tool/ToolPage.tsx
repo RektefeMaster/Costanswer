@@ -1,10 +1,12 @@
 import type { ReactNode } from 'react';
 import { categories, getRelatedTools, type ToolDefinition } from '@/lib/tool-registry';
+import { siteConfig } from '@/lib/site-config';
 import { breadcrumbJsonLd, toolJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { AdSlot } from '@/components/monetization/AdSlot';
+import { RelatedToolLink } from '@/components/analytics/RelatedToolLink';
 
 export type SourceItem = {
   name: string;
@@ -25,7 +27,7 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
   const category = categories[tool.category];
   const related = getRelatedTools(tool);
   const breadcrumbs = [
-    { name: 'Home', path: '/' },
+    { name: siteConfig.name, path: '/' },
     { name: category.name, path: `/topics/${tool.category}` },
     { name: tool.shortTitle, path: tool.path },
   ];
@@ -34,7 +36,7 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
     <>
       <JsonLd data={[toolJsonLd(tool), breadcrumbJsonLd(breadcrumbs)]} />
       <SiteHeader />
-      <main>
+      <main id="main-content" tabIndex={-1}>
         <header className={`tool-hero accent-${tool.accent}`}>
           <nav className="breadcrumbs" aria-label="Breadcrumb">
             {breadcrumbs.map((item, index) => (
@@ -51,11 +53,6 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
             </div>
             <div className="tool-intro">
               <p>{tool.description}</p>
-              <ul>
-                <li>Calculation logic is versioned</li>
-                <li>Assumptions stay visible</li>
-                <li>No account or personal data required</li>
-              </ul>
             </div>
           </div>
         </header>
@@ -64,9 +61,9 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
           <div className="tool-main-column">{children}</div>
           <aside className="tool-rail" aria-label="Tool information">
             <div className="rail-card">
-              <p className="rail-kicker">BEFORE YOU DECIDE</p>
-              <h2>Use the result as a starting point.</h2>
-              <p>{caution ?? 'Check the inputs that matter most, review the assumptions, and compare the result with a real quote or statement when available.'}</p>
+              <p className="rail-kicker">Note</p>
+              <h2>This is an estimate.</h2>
+              <p>{caution ?? 'Check the numbers that matter. Open what we assumed. Compare with a bill or a quote if you have one.'}</p>
             </div>
             <AdSlot placement="desktop-rail" />
           </aside>
@@ -74,8 +71,8 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
 
         <section className="method-section" aria-labelledby="method-title">
           <div className="method-heading">
-            <p className="eyebrow muted"><span /> Transparent by design</p>
-            <h2 id="method-title">How this answer works.</h2>
+            <p className="eyebrow muted"><span /> Method</p>
+            <h2 id="method-title">How this works</h2>
           </div>
           <div className="method-grid">
             {methodology.map((item, index) => (
@@ -91,14 +88,14 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
         {sources.length > 0 && (
           <section className="sources-section" aria-labelledby="sources-title">
             <div>
-              <p className="eyebrow muted"><span /> Provenance</p>
-              <h2 id="sources-title">Sources you can inspect.</h2>
+              <p className="eyebrow muted"><span /> Sources</p>
+              <h2 id="sources-title">Where this data comes from</h2>
             </div>
             <div className="source-list">
               {sources.map((source) => (
                 <a href={source.href} key={source.href} target="_blank" rel="noreferrer">
                   <span><strong>{source.name}</strong><small>{source.detail}</small></span>
-                  <span>{source.dateLabel ?? 'Open source'} ↗</span>
+                  <span>{source.dateLabel ?? 'View source'} ↗</span>
                 </a>
               ))}
             </div>
@@ -106,16 +103,16 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
         )}
 
         <section className="related-section" aria-labelledby="related-title">
-          <p className="eyebrow muted"><span /> Keep going</p>
-          <h2 id="related-title">Related decisions</h2>
+          <p className="eyebrow muted"><span /> Next</p>
+          <h2 id="related-title">Related calculators</h2>
           <div className="related-grid">
             {related.map((relatedTool) => (
-              <a href={relatedTool.path} key={relatedTool.id}>
+              <RelatedToolLink href={relatedTool.path} toolId={tool.id} category={tool.category} relatedToolId={relatedTool.id} key={relatedTool.id}>
                 <span>{categories[relatedTool.category].name}</span>
                 <strong>{relatedTool.shortTitle}</strong>
                 <small>{relatedTool.description}</small>
                 <b aria-hidden="true">→</b>
-              </a>
+              </RelatedToolLink>
             ))}
           </div>
         </section>
@@ -124,4 +121,3 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
     </>
   );
 }
-

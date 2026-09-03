@@ -1,4 +1,4 @@
-# HowMuchUSA implementation roadmap
+# CostAnswer implementation roadmap
 
 ## Phase 0 — Repository and product baseline
 
@@ -51,18 +51,21 @@ Acceptance criteria:
 
 ## Expansion wave 1 — Data-led traffic
 
+- BLS CPI-U inflation/value-over-time tool with a versioned time-series adapter. **Shipped.**
+- Freddie Mac PMMS mortgage payment estimator with national weekly averages. **Shipped.**
+- Home affordability decision screen (this house vs. how much house) on take-home pay. **Shipped.**
 - BLS OEWS salary explorer plus 20 high-intent national occupation pages.
 - 51 state/DC salary hubs only after each page passes the quality gate.
-- BLS CPI-U inflation/value-over-time tool with a versioned time-series adapter.
 - Search Console import and opportunity scoring.
 
 Do not launch occupation × state × metro combinations in this wave.
 
 ## Expansion wave 2 — Reuse-led tools
 
-- Road-trip fuel cost using supported EIA geographies plus manual override.
+- Road-trip fuel cost using supported EIA geographies plus manual override. **Shipped.**
 - IRS mileage reimbursement with effective-date rules.
-- Appliance running cost and home charging cost using the energy engine.
+- Appliance running cost using the energy engine. **Shipped.**
+- Car affordability / true monthly vehicle cost composing the finance, tax and energy engines, with home charging covered by its EV mode. **Shipped.**
 - Additional concrete shapes and material estimators.
 - FoodData Central-backed ingredient density mappings.
 

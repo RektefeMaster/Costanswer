@@ -58,6 +58,14 @@ export const recipeScalerInputSchema = z.object({
   originalServings: finiteNumber('Original servings', 0.1, 10_000),
   desiredServings: finiteNumber('Desired servings', 0.1, 10_000),
   ingredients: z.array(ingredientSchema).min(1).max(30),
+}).superRefine((input, context) => {
+  const seen = new Set<string>();
+  input.ingredients.forEach((ingredient, index) => {
+    if (seen.has(ingredient.id)) {
+      context.addIssue({ code: 'custom', path: ['ingredients', index, 'id'], message: 'Ingredient IDs must be unique.' });
+    }
+    seen.add(ingredient.id);
+  });
 });
 
 export type RecipeScalerInput = z.infer<typeof recipeScalerInputSchema>;
@@ -91,7 +99,7 @@ export function scaleRecipe(rawInput: unknown): CalculationResult<RecipeScalerVa
 
   return {
     value: { scaleFactor: round(scaleFactor, 4), ingredients },
-    calculationVersion: 'quantity-scaling-v1.0.0',
+    calculationVersion: 'quantity-scaling-v1.1.0',
     datasetSnapshotIds: [],
     breakdown: ingredients.map((ingredient) => ({
       label: ingredient.name,
@@ -99,9 +107,9 @@ export function scaleRecipe(rawInput: unknown): CalculationResult<RecipeScalerVa
       detail: `Scaled by ${round(scaleFactor, 3)}×`,
     })),
     assumptions: [
-      'Ingredient quantities scale linearly; pan size, cooking time and seasoning may not.',
-      'Displayed fractions are rounded to the nearest 1/16 for kitchen use; smaller positive amounts are labeled “< 1/16”.',
-      'This tool does not convert volume to weight because ingredient densities differ.',
+      'Ingredient amounts scale in a straight line. Pan size, cook time, and seasoning might not.',
+      'Displayed fractions round to the nearest 1/16. Smaller positive amounts show as “< 1/16”.',
+      'This does not turn cups into ounces. Densities differ.',
     ],
   };
 }

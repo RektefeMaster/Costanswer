@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { STATE_CODES, US_STATES, type StateCode } from '@/lib/location/states';
+import { isStateCode, STATE_CODES, US_STATES, type StateCode } from '@/lib/location/states';
 
 const eiaRowSchema = z.object({
   period: z.string().regex(/^\d{4}-\d{2}$/),
@@ -25,12 +25,12 @@ export const eiaApiResponseSchema = z.object({
 });
 
 export const electricityStateRateSchema = z.object({
-  stateCode: z.string().refine((value): value is StateCode => value in US_STATES),
+  stateCode: z.string().refine(isStateCode, 'Unknown U.S. state code.'),
   stateName: z.string(),
   priceCentsPerKwh: z.number().finite().positive(),
   salesMillionKwh: z.number().finite().positive(),
   revenueMillionDollars: z.number().finite().positive(),
-});
+}).strict();
 
 export const eiaElectricitySnapshotSchema = z.object({
   schemaVersion: z.literal('1.0.0'),
@@ -54,8 +54,21 @@ export const eiaElectricitySnapshotSchema = z.object({
   validationStatus: z.literal('passed'),
   validationReport: z.array(z.string()).min(1),
   states: z.array(electricityStateRateSchema).length(51),
-}).superRefine((snapshot, context) => {
+}).strict().superRefine((snapshot, context) => {
+  const expectedSnapshotId = `eia-electricity-residential-${snapshot.observationPeriod}-v1`;
+  if (snapshot.snapshotId !== expectedSnapshotId) {
+    context.addIssue({ code: 'custom', path: ['snapshotId'], message: `Snapshot ID must be ${expectedSnapshotId}.` });
+  }
+  try {
+    const sourcePeriod = new URL(snapshot.sourceUrl).searchParams.get('period');
+    if (sourcePeriod !== snapshot.observationPeriod) {
+      context.addIssue({ code: 'custom', path: ['sourceUrl'], message: 'Source URL period does not match the observation period.' });
+    }
+  } catch {
+    context.addIssue({ code: 'custom', path: ['sourceUrl'], message: 'Source URL is invalid.' });
+  }
   const seen = new Set<StateCode>();
+  const sortedCodes = [...snapshot.states].map((row) => row.stateCode).sort();
   for (const [index, row] of snapshot.states.entries()) {
     if (seen.has(row.stateCode)) {
       context.addIssue({ code: 'custom', path: ['states', index, 'stateCode'], message: `Duplicate state code: ${row.stateCode}` });
@@ -63,6 +76,13 @@ export const eiaElectricitySnapshotSchema = z.object({
     seen.add(row.stateCode);
     if (row.stateName !== US_STATES[row.stateCode]) {
       context.addIssue({ code: 'custom', path: ['states', index, 'stateName'], message: `State name does not match ${row.stateCode}.` });
+    }
+    const derivedPrice = 100 * row.revenueMillionDollars / row.salesMillionKwh;
+    if (Math.abs(row.priceCentsPerKwh - derivedPrice) > 0.06) {
+      context.addIssue({ code: 'custom', path: ['states', index, 'priceCentsPerKwh'], message: `Revenue/sales invariant failed for ${row.stateCode}.` });
+    }
+    if (row.stateCode !== sortedCodes[index]) {
+      context.addIssue({ code: 'custom', path: ['states', index, 'stateCode'], message: 'State rows must be sorted by state code.' });
     }
   }
   const missing = STATE_CODES.filter((stateCode) => !seen.has(stateCode));

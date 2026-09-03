@@ -1,4 +1,8 @@
+import { CategoryArt } from '@/components/site/CategoryArt';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { HeroDemo } from '@/components/site/HeroDemo';
+import { HeroHeadline } from '@/components/site/HeroHeadline';
+import { PopularPicks } from '@/components/site/PopularPicks';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { categories, getTool, type CategoryId } from '@/lib/tool-registry';
@@ -8,7 +12,11 @@ const categoryOrder: CategoryId[] = ['money', 'home', 'auto', 'everyday', 'food'
 const toneByCategory: Record<CategoryId, string> = {
   money: 'mint', home: 'amber', auto: 'blue', everyday: 'rose', food: 'coral', shopping: 'violet',
 };
-const featuredTools = ['hourly-to-salary', 'electricity-cost', 'unit-price'].map(getTool);
+const exploreQuestions = [
+  { tool: getTool('hourly-to-salary'), label: 'How much is $28 an hour a year?' },
+  { tool: getTool('mortgage-payment'), label: 'What’s a $400,000 mortgage this week?' },
+  { tool: getTool('where-cheaper'), label: 'Where are power, gas, and groceries cheaper?' },
+];
 
 export default function Home() {
   return (
@@ -17,6 +25,7 @@ export default function Home() {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
         name: siteConfig.name,
+        alternateName: siteConfig.seoTitle,
         url: siteConfig.origin,
         description: siteConfig.description,
         potentialAction: {
@@ -26,87 +35,74 @@ export default function Home() {
         },
       }} />
       <SiteHeader />
-      <main>
+      <main id="main-content" tabIndex={-1}>
 
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow"><span /> Practical answers for life in America</p>
-          <h1>Make the numbers<br />make <em>sense.</em></h1>
+          <p className="eyebrow"><span /> Free calculators</p>
+          <HeroHeadline />
           <p className="hero-lede">
-            Costs, paychecks, projects, purchases and everyday math—clear answers,
-            transparent assumptions, and sources you can check.
+            Need a mortgage payment from this week’s rate? What $100 in 1990 buys today? A yearly salary from an hourly wage?
+            Change the numbers until they look like yours.
           </p>
 
           <form id="answer-search" className="answer-search" action="/search" role="search">
-            <label className="sr-only" htmlFor="q">What do you want to figure out?</label>
+            <label className="sr-only" htmlFor="q">Search calculators</label>
             <span className="search-icon" aria-hidden="true" />
-            <input id="q" name="q" type="search" placeholder="What do you want to figure out?" />
-            <button type="submit">Find my answer <span aria-hidden="true">→</span></button>
+            <input id="q" name="q" type="search" placeholder="Search calculators, e.g. hourly to salary" />
+            <button type="submit">Search <span aria-hidden="true">→</span></button>
           </form>
-          <p className="search-hint">Try “hourly wage to salary” or “how much paint do I need?”</p>
+          <p className="search-hint">Try “can I afford this house” or “what is $100 in 1990 worth today.”</p>
         </div>
 
-        <div className="hero-demo" aria-label="Example calculation">
-          <div className="demo-topline">
-            <span className="live-dot">LIVE EXAMPLE</span>
-            <span>Updated instantly</span>
-          </div>
-          <p className="demo-kicker">$28 an hour is how much a year?</p>
-          <div className="demo-answer">
-            <span>$58,240</span>
-            <small>per year</small>
-          </div>
-          <div className="demo-math">
-            <span>$28.00/hour</span><b>×</b><span>40 hours</span><b>×</b><span>52 weeks</span>
-          </div>
-          <div className="demo-footer">
-            <span>Before taxes · 2,080 work hours</span>
-            <a href="/money/hourly-to-salary">Open calculator →</a>
-          </div>
-        </div>
+        <HeroDemo />
       </section>
 
       <section id="explore" className="category-strip" aria-labelledby="category-title">
         <div className="section-intro">
-          <p className="eyebrow muted"><span /> Start with a topic</p>
-          <h2 id="category-title">Answers built around<br />real decisions.</h2>
+          <h2 id="category-title">What this actually costs.</h2>
+          <p className="section-lede">
+            A mortgage payment from this week’s national rate. Take-home pay after federal and state tax. An electric bill against your state’s average. What $100 in 1990 still buys.
+          </p>
+          <p className="section-lede">
+            When a page uses Freddie Mac, EIA, BLS, or IRS figures, the source and date sit next to the answer. Open the steps. Change the inputs until they look like yours.
+          </p>
+          <ul className="topic-prompts">
+            {exploreQuestions.map((item) => (
+              <li key={item.tool.id}>
+                <a href={item.tool.path}>
+                  <span>{item.label}</span>
+                  <span aria-hidden="true">→</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
         <div className="category-grid">
           {categoryOrder.map((categoryId, index) => (
             <a className={`category-card ${toneByCategory[categoryId]}`} href={`/topics/${categoryId}`} key={categoryId}>
-              <span className="category-number">0{index + 1}</span>
-              <span className="category-arrow" aria-hidden="true">↗</span>
-              <strong>{categories[categoryId].name}</strong>
-              <small>{categories[categoryId].description}</small>
+              <CategoryArt category={categoryId} />
+              <span className="category-topline">
+                <span className="category-number">0{index + 1}</span>
+                <span className="category-arrow" aria-hidden="true">↗</span>
+              </span>
+              <span className="category-copy">
+                <strong>{categories[categoryId].name}</strong>
+                <small>{categories[categoryId].blurb}</small>
+              </span>
             </a>
           ))}
         </div>
       </section>
 
-      <section id="popular" className="popular-section" aria-labelledby="popular-title">
-        <div>
-          <p className="eyebrow muted"><span /> Popular right now</p>
-          <h2 id="popular-title">A useful answer<br />is a few inputs away.</h2>
-          <p>Every result shows the math, the assumptions, and when the underlying data was updated.</p>
-        </div>
-        <div className="question-list">
-          {featuredTools.map((tool, index) => (
-            <a href={tool.path} key={tool.id}>
-              <span className="question-index">0{index + 1}</span>
-              <span><strong>{tool.shortTitle}</strong><small>{tool.description}</small></span>
-              <span className="question-category">{categories[tool.category].name}</span>
-              <span className="question-arrow" aria-hidden="true">→</span>
-            </a>
-          ))}
-        </div>
-      </section>
+      <PopularPicks />
 
       <section id="method" className="trust-bar">
-        <p>Built for decisions, not clicks.</p>
+        <p>These are estimates.</p>
         <ul>
-          <li><span>01</span> Sources you can inspect</li>
-          <li><span>02</span> Assumptions made visible</li>
-          <li><span>03</span> Mobile-first by default</li>
+          <li><span>01</span> Public U.S. data when we use it</li>
+          <li><span>02</span> The steps sit under the answer</li>
+          <li><span>03</span> Works on a phone</li>
         </ul>
       </section>
       </main>

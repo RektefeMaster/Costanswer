@@ -1,5 +1,5 @@
 {
-  "name": "howmuchusa",
+  "name": "costanswer",
   "version": "0.1.0-m1",
   "private": true,
   "engines": {
@@ -15,8 +15,17 @@
     "test:watch": "vitest",
     "test:routes": "tsx tests/e2e/routes.ts",
     "test:e2e": "playwright test",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run build && npm run test:e2e",
-    "data:eia": "tsx scripts/ingest-eia-electricity.ts"
+    "verify:data": "tsx scripts/verify-eia-data.ts",
+    "verify:tax": "tsx scripts/validate-tax-data.ts",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run verify:data && npm run verify:tax && npm run build && npm run test:e2e",
+    "data:eia": "tsx scripts/ingest-eia-electricity.ts",
+    "data:eia-gasoline": "tsx scripts/ingest-eia-gasoline.ts",
+    "data:bls-grocery": "tsx scripts/ingest-bls-grocery.ts",
+    "data:bls-cpi": "tsx scripts/ingest-bls-cpi.ts",
+    "data:pmms": "tsx scripts/ingest-freddie-mac-pmms.ts",
+    "data:refresh": "tsx scripts/refresh-snapshots.ts",
+    "data:location": "tsx scripts/promote-phase7-snapshots.ts",
+    "data:tax": "tsx scripts/update-tax-snapshot.ts"
   },
   "dependencies": {
     "next": "16.3.4",
@@ -35,6 +44,7 @@
     "@types/react-dom": "19.2.3",
     "@vitejs/plugin-react": "6.1.1",
     "@vitejs/plugin-rsc": "0.5.34",
+    "axe-core": "4.13.0",
     "eslint": "9.39.4",
     "eslint-config-next": "16.3.4",
     "react-server-dom-webpack": "19.2.8",

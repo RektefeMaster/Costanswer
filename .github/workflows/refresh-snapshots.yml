@@ -1,0 +1,53 @@
+name: Refresh official snapshots
+
+on:
+  schedule:
+    - cron: '0 15 * * 2'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Fetch and promote official datasets
+        env:
+          EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
+        run: npm run data:refresh
+      - run: npm run verify:data
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: data/official-snapshots
+          delete-branch: true
+          title: Update official EIA, BLS, and Freddie Mac snapshots
+          commit-message: |
+            Update official EIA, BLS, and Freddie Mac snapshots
+
+            Scheduled ingest promoted a newer observation period. User-facing
+            pages still read checked-in snapshots, not live APIs.
+          body: |
+            Official ingest found a newer EIA, BLS, or Freddie Mac observation period.
+
+            - Electricity: EIA monthly residential averages
+            - Gasoline: EIA weekly regular retail
+            - Groceries: BLS Average Price Data
+            - CPI-U: BLS all-items index
+            - Mortgage rates: Freddie Mac PMMS weekly averages
+
+            Review the diff, then merge so the next deploy ships the new snapshot.
+          add-paths: |
+            data/eia/**
+            data/eia-gasoline/**
+            data/bls/**
+            data/bls-cpi/**
+            data/freddie-mac/**

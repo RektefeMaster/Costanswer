@@ -1,6 +1,6 @@
-# HowMuchUSA
+# CostAnswer
 
-HowMuchUSA is a U.S.-focused answer-engine platform for practical quantitative decisions. The first milestone proves a reusable architecture across deterministic pay, authoritative location data, estimates, comparisons, dates, shopping units and recipe quantities.
+CostAnswer is a U.S.-focused answer-engine for how much practical things cost. It covers pay, mortgage payments, inflation, energy, materials, dates, shopping units and recipe quantities.
 
 ## Requirements
 
@@ -31,7 +31,7 @@ npm run test:e2e
 browser, and accepts `E2E_BASE_URL`. CI should install Playwright Chromium;
 local runs may set `PLAYWRIGHT_EXECUTABLE_PATH` to an existing browser binary.
 Production builds also require the public canonical origin, for example
-`NEXT_PUBLIC_SITE_URL=https://howmuchusa.safe-bat-8800.chatgpt.site npm run build`. The build fails
+`NEXT_PUBLIC_SITE_URL=https://costanswer.com npm run build`. The build fails
 closed when that value is missing so localhost canonicals cannot be published.
 
 ## Data refresh
@@ -39,10 +39,10 @@ closed when that value is missing so localhost canonicals cannot be published.
 Create a free EIA key, keep it outside source control, then run:
 
 ```text
-EIA_API_KEY=your-key npm run data:eia
+EIA_API_KEY=your-key npm run data:refresh
 ```
 
-The adapter validates all 50 states plus DC, units, duplicates, positive values and the revenue/sales price invariant. Suspicious revisions are rejected instead of replacing the promoted snapshot.
+Electricity ingest needs the EIA key. Gasoline, grocery, CPI-U, and Freddie Mac PMMS ingest use public pages or APIs and do not. Suspicious revisions are rejected instead of replacing the promoted snapshot.
 
 ## Documentation
 

@@ -6,7 +6,7 @@ export function InfoPage({ eyebrow, title, intro, children }: { eyebrow: string;
   return (
     <>
       <SiteHeader />
-      <main className="info-page">
+      <main id="main-content" tabIndex={-1} className="info-page">
         <header>
           <p className="eyebrow"><span /> {eyebrow}</p>
           <h1>{title}</h1>
@@ -18,4 +18,3 @@ export function InfoPage({ eyebrow, title, intro, children }: { eyebrow: string;
     </>
   );
 }
-

@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { addBusinessDays, calculateBusinessDaysBetween, parseDateOnly } from '@/lib/calculations/business-days';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { emitAnalyticsEvent } from '@/lib/analytics';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type Mode = 'between' | 'add';
@@ -20,8 +19,17 @@ export function BusinessDaysCalculator({ initialDate }: { initialDate: string })
   const [includeStart, setIncludeStart] = useState(false);
   const [includeEnd, setIncludeEnd] = useState(true);
   const [excludeFederalHolidays, setExcludeFederalHolidays] = useState(true);
+  const dateWasEdited = useRef(false);
 
-  useEffect(() => emitAnalyticsEvent('tool_opened', { toolId: 'business-days', category: 'everyday' }), []);
+  useEffect(() => {
+    const now = new Date();
+    const localDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    if (localDate === initialDate || dateWasEdited.current) return;
+    const localEnd = parseDateOnly(localDate);
+    localEnd.setUTCDate(localEnd.getUTCDate() + 30);
+    setStartDate(localDate);
+    setEndDate(localEnd.toISOString().slice(0, 10));
+  }, [initialDate]);
 
   const calculation = useMemo(() => {
     try {
@@ -39,34 +47,41 @@ export function BusinessDaysCalculator({ initialDate }: { initialDate: string })
   const readableDate = addResult ? new Intl.DateTimeFormat('en-US', { dateStyle: 'long', timeZone: 'UTC' }).format(parseDateOnly(addResult.value.resultDate)) : '';
 
   return (
-    <CalculatorPanel title="Work with the calendar you mean" intro="Choose whether to count a span or move forward or backward by workdays.">
+    <CalculatorPanel
+      title="Workdays"
+      intro="Count workdays between two dates, or add workdays to a date. Federal holidays are optional."
+      toolId="business-days"
+      category="everyday"
+      calculationState={calculation.result ? 'complete' : 'invalid'}
+      calculationSignature={JSON.stringify([mode, startDate, endDate, daysToAdd, includeStart, includeEnd, excludeFederalHolidays])}
+    >
       <div className="mode-tabs" role="group" aria-label="Calculation mode">
-        <button type="button" className={mode === 'between' ? 'active' : ''} onClick={() => setMode('between')}>Between two dates</button>
-        <button type="button" className={mode === 'add' ? 'active' : ''} onClick={() => setMode('add')}>Add or subtract days</button>
+        <button type="button" aria-pressed={mode === 'between'} className={mode === 'between' ? 'active' : ''} onClick={() => setMode('between')}>Between two dates</button>
+        <button type="button" aria-pressed={mode === 'add'} className={mode === 'add' ? 'active' : ''} onClick={() => setMode('add')}>Add or subtract days</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Start date" htmlFor="business-start"><span className="input-shell"><input id="business-start" type="date" min="1900-01-01" max="2200-12-31" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
+        <Field label="Start date" htmlFor="business-start"><span className="input-shell"><input id="business-start" type="date" min="1900-01-01" max="2200-12-31" value={startDate} onChange={(event) => { dateWasEdited.current = true; setStartDate(event.target.value); }} /></span></Field>
         {mode === 'between' ? (
-          <Field label="End date" htmlFor="business-end"><span className="input-shell"><input id="business-end" type="date" min="1900-01-01" max="2200-12-31" value={endDate} onChange={(event) => setEndDate(event.target.value)} /></span></Field>
+          <Field label="End date" htmlFor="business-end"><span className="input-shell"><input id="business-end" type="date" min="1900-01-01" max="2200-12-31" value={endDate} onChange={(event) => { dateWasEdited.current = true; setEndDate(event.target.value); }} /></span></Field>
         ) : (
-          <Field label="Business days to move" htmlFor="business-add" hint="Use a negative number to move backward"><InputShell suffix="days"><input id="business-add" type="number" min="-10000" max="10000" step="1" value={daysToAdd} onChange={(event) => setDaysToAdd(event.target.value)} /></InputShell></Field>
+          <Field label="Business days to add" htmlFor="business-add" hint="Use a negative number to move backward"><InputShell suffix="days"><input id="business-add" type="number" min="-10000" max="10000" step="1" value={daysToAdd} onChange={(event) => setDaysToAdd(event.target.value)} /></InputShell></Field>
         )}
       </div>
       <div className="check-row">
-        <label><input type="checkbox" checked={excludeFederalHolidays} onChange={(event) => setExcludeFederalHolidays(event.target.checked)} /> Exclude observed U.S. federal holidays</label>
+        <label><input type="checkbox" checked={excludeFederalHolidays} onChange={(event) => setExcludeFederalHolidays(event.target.checked)} /> Skip observed U.S. federal holidays</label>
         {mode === 'between' && <>
-          <label><input type="checkbox" checked={includeStart} onChange={(event) => setIncludeStart(event.target.checked)} /> Count start date</label>
-          <label><input type="checkbox" checked={includeEnd} onChange={(event) => setIncludeEnd(event.target.checked)} /> Count end date</label>
+          <label><input type="checkbox" checked={includeStart} onChange={(event) => setIncludeStart(event.target.checked)} /> Include the start date</label>
+          <label><input type="checkbox" checked={includeEnd} onChange={(event) => setIncludeEnd(event.target.checked)} /> Include the end date</label>
         </>}
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {betweenResult && (
         <div className="calculation-output">
-          <PrimaryResult label="Business days" value={Math.abs(betweenResult.value.businessDays).toLocaleString('en-US')} note={betweenResult.value.direction === 'backward' ? 'The end date is before the start date' : 'Using your endpoint and holiday settings'} tone="rose" />
+          <PrimaryResult label="Business days" value={Math.abs(betweenResult.value.businessDays).toLocaleString('en-US')} note={betweenResult.value.direction === 'backward' ? 'The end date is before the start date' : 'Using the holiday and date choices above'} tone="rose" />
           <StatGrid items={[
-            { label: 'Calendar-day span', value: `${betweenResult.value.calendarDays}`, note: 'Elapsed days' },
-            { label: 'Weekend days excluded', value: `${betweenResult.value.weekendDays}`, note: 'Saturday + Sunday' },
-            { label: 'Federal holidays excluded', value: `${betweenResult.value.federalHolidays}`, note: excludeFederalHolidays ? 'Observed dates' : 'Holiday mode off' },
+            { label: 'Calendar days', value: `${betweenResult.value.calendarDays}`, note: 'Elapsed days' },
+            { label: 'Weekends skipped', value: `${betweenResult.value.weekendDays}`, note: 'Saturday and Sunday' },
+            { label: 'Federal holidays skipped', value: `${betweenResult.value.federalHolidays}`, note: excludeFederalHolidays ? 'Observed dates' : 'Holiday filter off' },
           ]} />
           <ResultDetails breakdown={betweenResult.breakdown} assumptions={betweenResult.assumptions} calculationVersion={betweenResult.calculationVersion} datasetSnapshotIds={betweenResult.datasetSnapshotIds} />
         </div>

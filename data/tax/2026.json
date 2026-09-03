@@ -1,0 +1,1160 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterVersion": "us-tax-v1.0.0",
+  "snapshotId": "us-tax-2026-v1",
+  "taxYear": 2026,
+  "provider": "IRS, SSA, and state tax agencies",
+  "publishedAt": "2026-09-03T00:00:00.000Z",
+  "verifiedAt": "2026-09-03T00:00:00.000Z",
+  "sourceStatus": "verified",
+  "version": "1.0.0",
+  "federal": {
+    "taxYear": 2026,
+    "provider": "Internal Revenue Service",
+    "sourceName": "Revenue Procedure 2025-32",
+    "sourceUrl": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+    "publishedAt": "2025-10-09T00:00:00.000Z",
+    "verifiedAt": "2026-09-03T00:00:00.000Z",
+    "sourceStatus": "verified",
+    "version": "1.0.0",
+    "standardDeductionByFilingStatus": {
+      "single": 16100,
+      "marriedFilingJointly": 32200,
+      "marriedFilingSeparately": 16100,
+      "headOfHousehold": 24150
+    },
+    "bracketsByFilingStatus": {
+      "single": [
+        {
+          "notOver": 12400,
+          "rate": 0.1
+        },
+        {
+          "notOver": 50400,
+          "rate": 0.12
+        },
+        {
+          "notOver": 105700,
+          "rate": 0.22
+        },
+        {
+          "notOver": 201775,
+          "rate": 0.24
+        },
+        {
+          "notOver": 256225,
+          "rate": 0.32
+        },
+        {
+          "notOver": 640600,
+          "rate": 0.35
+        },
+        {
+          "notOver": null,
+          "rate": 0.37
+        }
+      ],
+      "marriedFilingJointly": [
+        {
+          "notOver": 24800,
+          "rate": 0.1
+        },
+        {
+          "notOver": 100800,
+          "rate": 0.12
+        },
+        {
+          "notOver": 211400,
+          "rate": 0.22
+        },
+        {
+          "notOver": 403550,
+          "rate": 0.24
+        },
+        {
+          "notOver": 512450,
+          "rate": 0.32
+        },
+        {
+          "notOver": 768700,
+          "rate": 0.35
+        },
+        {
+          "notOver": null,
+          "rate": 0.37
+        }
+      ],
+      "marriedFilingSeparately": [
+        {
+          "notOver": 12400,
+          "rate": 0.1
+        },
+        {
+          "notOver": 50400,
+          "rate": 0.12
+        },
+        {
+          "notOver": 105700,
+          "rate": 0.22
+        },
+        {
+          "notOver": 201775,
+          "rate": 0.24
+        },
+        {
+          "notOver": 256225,
+          "rate": 0.32
+        },
+        {
+          "notOver": 384350,
+          "rate": 0.35
+        },
+        {
+          "notOver": null,
+          "rate": 0.37
+        }
+      ],
+      "headOfHousehold": [
+        {
+          "notOver": 17700,
+          "rate": 0.1
+        },
+        {
+          "notOver": 67450,
+          "rate": 0.12
+        },
+        {
+          "notOver": 105700,
+          "rate": 0.22
+        },
+        {
+          "notOver": 201750,
+          "rate": 0.24
+        },
+        {
+          "notOver": 256200,
+          "rate": 0.32
+        },
+        {
+          "notOver": 640600,
+          "rate": 0.35
+        },
+        {
+          "notOver": null,
+          "rate": 0.37
+        }
+      ]
+    }
+  },
+  "fica": {
+    "taxYear": 2026,
+    "provider": "Social Security Administration",
+    "sourceName": "OASDI contribution and benefit base",
+    "sourceUrl": "https://www.ssa.gov/oact/cola/cbb.html",
+    "additionalMedicareSourceUrl": "https://www.irs.gov/businesses/small-businesses-self-employed/questions-and-answers-for-the-additional-medicare-tax",
+    "publishedAt": "2025-10-24T00:00:00.000Z",
+    "verifiedAt": "2026-09-03T00:00:00.000Z",
+    "sourceStatus": "verified",
+    "version": "1.0.0",
+    "socialSecurityWageBase": 184500,
+    "socialSecurityRate": 0.062,
+    "medicareRate": 0.0145,
+    "additionalMedicareRate": 0.009,
+    "additionalMedicareThresholdByFilingStatus": {
+      "single": 200000,
+      "marriedFilingJointly": 250000,
+      "marriedFilingSeparately": 125000,
+      "headOfHousehold": 200000
+    }
+  },
+  "states": [
+    {
+      "stateCode": "AK",
+      "provider": "Alaska Department of Revenue",
+      "sourceName": "Alaska Department of Revenue",
+      "sourceUrl": "https://www.tax.alaska.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Alaska does not levy a personal income tax on wages."
+      ]
+    },
+    {
+      "stateCode": "AL",
+      "provider": "Alabama Department of Revenue",
+      "sourceName": "Alabama Department of Revenue",
+      "sourceUrl": "https://www.revenue.alabama.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Alabama. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "AR",
+      "provider": "Arkansas Department of Finance and Administration",
+      "sourceName": "Arkansas Department of Finance and Administration",
+      "sourceUrl": "https://www.dfa.arkansas.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Arkansas. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "AZ",
+      "provider": "Arizona Department of Revenue",
+      "sourceName": "Arizona Department of Revenue",
+      "sourceUrl": "https://azdor.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Arizona. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "CA",
+      "provider": "California Franchise Tax Board",
+      "sourceName": "California Franchise Tax Board",
+      "sourceUrl": "https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2025/10.html",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "standardDeductionByFilingStatus": {
+        "single": 5706,
+        "marriedFilingJointly": 11412,
+        "marriedFilingSeparately": 5706,
+        "headOfHousehold": 11412
+      },
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 11079,
+            "rate": 0.01
+          },
+          {
+            "notOver": 26264,
+            "rate": 0.02
+          },
+          {
+            "notOver": 41452,
+            "rate": 0.04
+          },
+          {
+            "notOver": 57542,
+            "rate": 0.06
+          },
+          {
+            "notOver": 72724,
+            "rate": 0.08
+          },
+          {
+            "notOver": 371479,
+            "rate": 0.093
+          },
+          {
+            "notOver": 445771,
+            "rate": 0.103
+          },
+          {
+            "notOver": 742953,
+            "rate": 0.113
+          },
+          {
+            "notOver": null,
+            "rate": 0.123
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 11079,
+            "rate": 0.01
+          },
+          {
+            "notOver": 26264,
+            "rate": 0.02
+          },
+          {
+            "notOver": 41452,
+            "rate": 0.04
+          },
+          {
+            "notOver": 57542,
+            "rate": 0.06
+          },
+          {
+            "notOver": 72724,
+            "rate": 0.08
+          },
+          {
+            "notOver": 371479,
+            "rate": 0.093
+          },
+          {
+            "notOver": 445771,
+            "rate": 0.103
+          },
+          {
+            "notOver": 742953,
+            "rate": 0.113
+          },
+          {
+            "notOver": null,
+            "rate": 0.123
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 22158,
+            "rate": 0.01
+          },
+          {
+            "notOver": 52528,
+            "rate": 0.02
+          },
+          {
+            "notOver": 82904,
+            "rate": 0.04
+          },
+          {
+            "notOver": 115084,
+            "rate": 0.06
+          },
+          {
+            "notOver": 145448,
+            "rate": 0.08
+          },
+          {
+            "notOver": 742958,
+            "rate": 0.093
+          },
+          {
+            "notOver": 891542,
+            "rate": 0.103
+          },
+          {
+            "notOver": 1485906,
+            "rate": 0.113
+          },
+          {
+            "notOver": null,
+            "rate": 0.123
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 22173,
+            "rate": 0.01
+          },
+          {
+            "notOver": 52530,
+            "rate": 0.02
+          },
+          {
+            "notOver": 67716,
+            "rate": 0.04
+          },
+          {
+            "notOver": 83805,
+            "rate": 0.06
+          },
+          {
+            "notOver": 98990,
+            "rate": 0.08
+          },
+          {
+            "notOver": 505208,
+            "rate": 0.093
+          },
+          {
+            "notOver": 606251,
+            "rate": 0.103
+          },
+          {
+            "notOver": 1010417,
+            "rate": 0.113
+          },
+          {
+            "notOver": null,
+            "rate": 0.123
+          }
+        ]
+      },
+      "additionalTax": {
+        "name": "Mental Health Services Tax",
+        "threshold": 1000000,
+        "rate": 0.01
+      },
+      "notes": [
+        "California 2026 Form 540 rate schedules were not published at verification. This snapshot uses the official 2025 FTB indexed tax rate schedules and 2025 standard deduction.",
+        "Mental Health Services Tax is 1% of taxable income over $1,000,000 (Cal. Rev. & Tax. Code § 17043).",
+        "California credits, itemized deductions, and locality taxes are not modeled."
+      ]
+    },
+    {
+      "stateCode": "CO",
+      "provider": "Colorado Department of Revenue",
+      "sourceName": "Colorado Department of Revenue",
+      "sourceUrl": "https://tax.colorado.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Colorado. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "CT",
+      "provider": "Connecticut Department of Revenue Services",
+      "sourceName": "Connecticut Department of Revenue Services",
+      "sourceUrl": "https://portal.ct.gov/drs",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Connecticut. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "DC",
+      "provider": "D.C. Office of Tax and Revenue",
+      "sourceName": "D.C. Office of Tax and Revenue",
+      "sourceUrl": "https://otr.cfo.dc.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for District of Columbia. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "DE",
+      "provider": "Delaware Division of Revenue",
+      "sourceName": "Delaware Division of Revenue",
+      "sourceUrl": "https://revenue.delaware.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Delaware. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "FL",
+      "provider": "Florida Department of Revenue",
+      "sourceName": "Florida Department of Revenue",
+      "sourceUrl": "https://floridarevenue.com/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Florida does not levy a personal income tax on wages."
+      ]
+    },
+    {
+      "stateCode": "GA",
+      "provider": "Georgia Department of Revenue",
+      "sourceName": "Georgia Department of Revenue",
+      "sourceUrl": "https://dor.georgia.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Georgia. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "HI",
+      "provider": "Hawaii Department of Taxation",
+      "sourceName": "Hawaii Department of Taxation",
+      "sourceUrl": "https://tax.hawaii.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Hawaii. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "IA",
+      "provider": "Iowa Department of Revenue",
+      "sourceName": "Iowa Department of Revenue",
+      "sourceUrl": "https://tax.iowa.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Iowa. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "ID",
+      "provider": "Idaho State Tax Commission",
+      "sourceName": "Idaho State Tax Commission",
+      "sourceUrl": "https://tax.idaho.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Idaho. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "IL",
+      "provider": "Illinois Department of Revenue",
+      "sourceName": "Illinois Department of Revenue",
+      "sourceUrl": "https://tax.illinois.gov/research/taxrates/income.html",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "rate": 0.0495,
+      "exemptionByFilingStatus": {
+        "single": 2925,
+        "marriedFilingJointly": 5850,
+        "marriedFilingSeparately": 2925,
+        "headOfHousehold": 2925
+      },
+      "notes": [
+        "Illinois individual income tax is 4.95% of net income (IDOR; rate effective July 1, 2017).",
+        "Tax year 2026 personal exemption is $2,925 per taxpayer (IDOR FY 2026-15). Joint returns use two taxpayer exemptions. Dependents are not modeled.",
+        "Illinois additions, subtractions, and credits are not modeled. The starting point is gross wages minus the personal exemption."
+      ]
+    },
+    {
+      "stateCode": "IN",
+      "provider": "Indiana Department of Revenue",
+      "sourceName": "Indiana Department of Revenue",
+      "sourceUrl": "https://www.in.gov/dor/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Indiana. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "KS",
+      "provider": "Kansas Department of Revenue",
+      "sourceName": "Kansas Department of Revenue",
+      "sourceUrl": "https://www.ksrevenue.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Kansas. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "KY",
+      "provider": "Kentucky Department of Revenue",
+      "sourceName": "Kentucky Department of Revenue",
+      "sourceUrl": "https://revenue.ky.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Kentucky. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "LA",
+      "provider": "Louisiana Department of Revenue",
+      "sourceName": "Louisiana Department of Revenue",
+      "sourceUrl": "https://revenue.louisiana.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Louisiana. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "MA",
+      "provider": "Massachusetts Department of Revenue",
+      "sourceName": "Massachusetts Department of Revenue",
+      "sourceUrl": "https://www.mass.gov/info-details/massachusetts-tax-rates",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "flatWithSurtax",
+      "sourceStatus": "verified",
+      "rate": 0.05,
+      "surtaxRate": 0.04,
+      "surtaxThreshold": 1107750,
+      "notes": [
+        "Massachusetts Part B income (including wages) is taxed at 5% for tax year 2026 (Massachusetts DOR tax rates page, updated December 30, 2025).",
+        "Income exceeding $1,107,750 is subject to an additional 4% surtax in tax year 2026.",
+        "Massachusetts deductions, exemptions, and the short-term capital gains rate are not modeled."
+      ]
+    },
+    {
+      "stateCode": "MD",
+      "provider": "Comptroller of Maryland",
+      "sourceName": "Comptroller of Maryland",
+      "sourceUrl": "https://www.marylandtaxes.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Maryland. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "ME",
+      "provider": "Maine Revenue Services",
+      "sourceName": "Maine Revenue Services",
+      "sourceUrl": "https://www.maine.gov/revenue/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Maine. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "MI",
+      "provider": "Michigan Department of Treasury",
+      "sourceName": "Michigan Department of Treasury",
+      "sourceUrl": "https://www.michigan.gov/taxes",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Michigan. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "MN",
+      "provider": "Minnesota Department of Revenue",
+      "sourceName": "Minnesota Department of Revenue",
+      "sourceUrl": "https://www.revenue.state.mn.us/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Minnesota. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "MO",
+      "provider": "Missouri Department of Revenue",
+      "sourceName": "Missouri Department of Revenue",
+      "sourceUrl": "https://dor.mo.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Missouri. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "MS",
+      "provider": "Mississippi Department of Revenue",
+      "sourceName": "Mississippi Department of Revenue",
+      "sourceUrl": "https://www.dor.ms.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Mississippi. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "MT",
+      "provider": "Montana Department of Revenue",
+      "sourceName": "Montana Department of Revenue",
+      "sourceUrl": "https://mtrevenue.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Montana. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "NC",
+      "provider": "North Carolina Department of Revenue",
+      "sourceName": "North Carolina Department of Revenue",
+      "sourceUrl": "https://www.ncdor.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for North Carolina. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "ND",
+      "provider": "North Dakota Office of State Tax Commissioner",
+      "sourceName": "North Dakota Office of State Tax Commissioner",
+      "sourceUrl": "https://www.tax.nd.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for North Dakota. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "NE",
+      "provider": "Nebraska Department of Revenue",
+      "sourceName": "Nebraska Department of Revenue",
+      "sourceUrl": "https://revenue.nebraska.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Nebraska. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "NH",
+      "provider": "New Hampshire Department of Revenue Administration",
+      "sourceName": "New Hampshire Department of Revenue Administration",
+      "sourceUrl": "https://www.revenue.nh.gov/interest-dividends-tax",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "New Hampshire does not tax wages.",
+        "The Interest and Dividends Tax is repealed for taxable periods beginning after December 31, 2024 (NH DRA)."
+      ]
+    },
+    {
+      "stateCode": "NJ",
+      "provider": "New Jersey Division of Taxation",
+      "sourceName": "New Jersey Division of Taxation",
+      "sourceUrl": "https://www.nj.gov/treasury/taxation/nj1040faqs.shtml",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "standardDeductionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 20000,
+            "rate": 0.014
+          },
+          {
+            "notOver": 35000,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.035
+          },
+          {
+            "notOver": 75000,
+            "rate": 0.05525
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0637
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0897
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 20000,
+            "rate": 0.014
+          },
+          {
+            "notOver": 35000,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.035
+          },
+          {
+            "notOver": 75000,
+            "rate": 0.05525
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0637
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0897
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 20000,
+            "rate": 0.014
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 70000,
+            "rate": 0.0245
+          },
+          {
+            "notOver": 80000,
+            "rate": 0.035
+          },
+          {
+            "notOver": 150000,
+            "rate": 0.05525
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0637
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0897
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 20000,
+            "rate": 0.014
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 70000,
+            "rate": 0.0245
+          },
+          {
+            "notOver": 80000,
+            "rate": 0.035
+          },
+          {
+            "notOver": 150000,
+            "rate": 0.05525
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0637
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0897
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ]
+      },
+      "notes": [
+        "New Jersey Division of Taxation stated that GIT rates did not change for tax year 2025. 2026 NJ-1040 rate schedules were not separately located at verification; the latest published 2025 GIT rate schedules are used.",
+        "New Jersey personal exemptions, retirement exclusions, and credits are not modeled. The starting point is gross wages."
+      ]
+    },
+    {
+      "stateCode": "NM",
+      "provider": "New Mexico Taxation and Revenue Department",
+      "sourceName": "New Mexico Taxation and Revenue Department",
+      "sourceUrl": "https://www.tax.newmexico.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for New Mexico. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "NV",
+      "provider": "Nevada Department of Taxation",
+      "sourceName": "Nevada Department of Taxation",
+      "sourceUrl": "https://tax.nv.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Nevada does not levy a personal income tax on wages."
+      ]
+    },
+    {
+      "stateCode": "NY",
+      "provider": "New York State Department of Taxation and Finance",
+      "sourceName": "New York State Department of Taxation and Finance",
+      "sourceUrl": "https://www.tax.ny.gov/pit/file/tax_tables.htm",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "New York 2026 Form IT-201 resident tax rate schedules were not published at verification. 2026 withholding tables are not used as annual tax liability. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "OH",
+      "provider": "Ohio Department of Taxation",
+      "sourceName": "Ohio Department of Taxation",
+      "sourceUrl": "https://tax.ohio.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Ohio. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "OK",
+      "provider": "Oklahoma Tax Commission",
+      "sourceName": "Oklahoma Tax Commission",
+      "sourceUrl": "https://oklahoma.gov/tax.html",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Oklahoma. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "OR",
+      "provider": "Oregon Department of Revenue",
+      "sourceName": "Oregon Department of Revenue",
+      "sourceUrl": "https://www.oregon.gov/dor",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Oregon. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "PA",
+      "provider": "Pennsylvania Department of Revenue",
+      "sourceName": "Pennsylvania Department of Revenue",
+      "sourceUrl": "https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "rate": 0.0307,
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "notes": [
+        "Pennsylvania personal income tax is 3.07% (Tax Reform Code of 1971, Section 302, as amended by Act 46 of 2003).",
+        "No standard deduction is applied. Local earned income taxes are not included."
+      ]
+    },
+    {
+      "stateCode": "RI",
+      "provider": "Rhode Island Division of Taxation",
+      "sourceName": "Rhode Island Division of Taxation",
+      "sourceUrl": "https://tax.ri.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Rhode Island. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "SC",
+      "provider": "South Carolina Department of Revenue",
+      "sourceName": "South Carolina Department of Revenue",
+      "sourceUrl": "https://dor.sc.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for South Carolina. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "SD",
+      "provider": "South Dakota Department of Revenue",
+      "sourceName": "South Dakota Department of Revenue",
+      "sourceUrl": "https://dor.sd.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "South Dakota does not levy a personal income tax on wages."
+      ]
+    },
+    {
+      "stateCode": "TN",
+      "provider": "Tennessee Department of Revenue",
+      "sourceName": "Tennessee Department of Revenue",
+      "sourceUrl": "https://www.tn.gov/revenue/taxes/hall-income-tax.html",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Tennessee does not tax wages.",
+        "The Hall income tax on investment income is fully repealed."
+      ]
+    },
+    {
+      "stateCode": "TX",
+      "provider": "Texas Comptroller of Public Accounts",
+      "sourceName": "Texas Comptroller of Public Accounts",
+      "sourceUrl": "https://comptroller.texas.gov/economy/fiscal-notes/archive/2016/february/starting.php",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Texas does not have a personal income tax (Texas Comptroller Fiscal Notes).",
+        "Texas Constitution Article 8, Section 24 requires voter approval before a personal income tax on natural persons can be imposed."
+      ]
+    },
+    {
+      "stateCode": "UT",
+      "provider": "Utah State Tax Commission",
+      "sourceName": "Utah State Tax Commission",
+      "sourceUrl": "https://tax.utah.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Utah. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "VA",
+      "provider": "Virginia Department of Taxation",
+      "sourceName": "Virginia Department of Taxation",
+      "sourceUrl": "https://www.tax.virginia.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Virginia. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "VT",
+      "provider": "Vermont Department of Taxes",
+      "sourceName": "Vermont Department of Taxes",
+      "sourceUrl": "https://tax.vermont.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Vermont. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "WA",
+      "provider": "Washington Department of Revenue",
+      "sourceName": "Washington Department of Revenue",
+      "sourceUrl": "https://dor.wa.gov/taxes-rates/income-tax",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Washington does not currently have an individual income tax on wages (Washington DOR).",
+        "Washington capital gains tax is not included.",
+        "A new high-income tax enacted in 2026 takes effect January 1, 2028 and is outside this tax year."
+      ]
+    },
+    {
+      "stateCode": "WI",
+      "provider": "Wisconsin Department of Revenue",
+      "sourceName": "Wisconsin Department of Revenue",
+      "sourceUrl": "https://www.revenue.wi.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for Wisconsin. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "WV",
+      "provider": "West Virginia State Tax Department",
+      "sourceName": "West Virginia State Tax Department",
+      "sourceUrl": "https://tax.wv.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "unsupported",
+      "sourceStatus": "unsupported",
+      "reason": "This release does not include a verified 2026 wage income tax schedule for West Virginia. Federal income tax and FICA are still estimated."
+    },
+    {
+      "stateCode": "WY",
+      "provider": "Wyoming Department of Revenue",
+      "sourceName": "Wyoming Department of Revenue",
+      "sourceUrl": "https://revenue.wyo.gov/",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "none",
+      "sourceStatus": "verified",
+      "notes": [
+        "Wyoming does not levy a personal income tax on wages."
+      ]
+    }
+  ],
+  "normalizedSha256": "d1418ef1a593e51e56fe753bb5c8dec3285dea99b1e72594355ab4a7dabf70a5"
+}

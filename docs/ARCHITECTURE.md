@@ -1,22 +1,28 @@
-# HowMuchUSA architecture
+# CostAnswer architecture
 
 Status: accepted for milestone 1 · 2026-09-01
 
 ## Product boundary
 
-HowMuchUSA is an answer-engine platform, not a calculator directory. Milestone 1 proves six technical classes across Money, Home, Auto, Everyday, Food, and Shopping:
+CostAnswer is an answer-engine platform, not a calculator directory. The live catalog covers Money, Home, Auto, Everyday, Food, and Shopping:
 
 | Tool | Class | Shared capability proved |
 | --- | --- | --- |
 | Hourly to salary | deterministic financial math | money, frequency, scenarios |
+| Mortgage payment | external rate + amortizing math | Freddie Mac PMMS weekly averages, YMYL labeling |
+| Home affordability | inverse amortizing math + take-home bands | Comfortable / stretch / risky on net pay, stress cases |
+| Inflation / buying power | external time series | BLS CPI-U NSA monthly index since 1913 |
 | Electricity cost by state | external data + location | versioned EIA snapshots, geography |
 | Concrete estimator | uncertain estimate | ranges, waste, material units |
 | EV vs. gas energy cost | comparison | shared energy/location data, scenarios |
+| Road-trip fuel cost | external price + quantity | EIA weekly gasoline geographies, manual override |
+| Appliance electricity cost | reusable energy engine | watts to kWh, weekly usage pattern, EIA state rate or manual |
+| Car affordability | composed engines + decision | Finance, Tax and Energy in one screen; take-home bands; forward and inverse |
 | Business-days calculator | date utility | calendars, federal holidays |
 | Unit-price comparator | shopping comparison | normalized units, ranked options |
 | Recipe scaler | food/unit utility | rational quantities, ingredient units |
 
-The release intentionally defers after-tax pay, mortgages, retirement advice, ZIP-level gas prices, local contractor-price pages, and occupation × state salary pages. Those either carry higher YMYL risk, need data we do not yet have, or would tempt thin programmatic expansion.
+The release now includes a mortgage payment estimator, a home-affordability planning screen, and a CPI-U inflation calculator. Housing tools are labeled as estimates: rates are a national weekly average, not a lender quote, and affordability bands use take-home pay rather than the classic gross-pay 28/36 rule. After-tax pay, ZIP-level gas prices, local contractor-price pages, and occupation × state salary pages remain deferred.
 
 ## Decision record
 
@@ -73,6 +79,16 @@ type CalculationResult<T> = {
 };
 ```
 
+### Vehicle ownership layer
+
+**Chosen:** `lib/calculations/vehicle/` composes the existing engines instead of adding vehicle math of its own. It has four small parts: `financing.ts` turns price, taxes and fees, down payment and trade-in into an amount financed and hands it to the Finance Engine; `operating.ts` prices driving energy through the Energy Engine (gasoline or EV battery and charging loss) and adds insurance, upkeep and registration; `ownership.ts` composes those into a monthly and yearly cash cost; `affordability.ts` holds the take-home thresholds, the verdict, and the inverse that turns a budget back into a sticker price.
+
+**Alternatives considered:** a standalone auto-loan calculator, and a generic "asset ownership" framework covering vehicles, homes and equipment.
+
+**Why:** the interesting product question is the whole monthly cost against take-home pay, not the payment. Every number it needs already existed — amortization, fuel, battery and wall energy, period normalization, take-home estimation — so the layer is composition, not new formulas. A generic ownership framework would have to abstract over cost structures that do not actually match; housing already has its own screen with its own thresholds.
+
+**Known limits:** there is no vehicle-price, insurance or depreciation provider, so price, insurance and upkeep are user inputs and resale value is out of the model. The result is cash out of pocket, not total cost of ownership. Affordability bands are a documented product assumption (`VEHICLE_AFFORDABILITY_BANDS`), centralized in the rules layer and never inlined in a component.
+
 ### Location
 
 Milestone 1 uses canonical two-letter state codes and a single typed state registry. Tools receive a state code, then resolve data by snapshot and geography. ZIP, county and city are future adapters over the same location identity rather than fields copied into each calculator.
@@ -116,7 +132,7 @@ All inputs are validated at runtime and bounded before calculation. There is no 
 
 Every external snapshot records provider, dataset/series, observation range, source status, fetched/verified/published timestamps, adapter/schema versions, validation status, source URL without secrets, attribution, and raw/normalized hashes where available. Calculation results retain `snapshotId` and `calculationVersion`.
 
-Milestone 1 uses EIA monthly residential electricity prices by state. It labels them as state residential averages—not utility quotes—and exposes a manual override. Abnormal, incomplete, duplicate, unit-changed or historically rewritten candidates are quarantined.
+Milestone 1 uses EIA monthly residential electricity prices by state, EIA weekly regular gasoline, BLS grocery averages, BLS CPI-U, and Freddie Mac PMMS weekly mortgage rates. Each is labeled as a published average—not a personal quote—and exposes a manual override where that is the honest next step. Abnormal, incomplete, duplicate, unit-changed or historically rewritten candidates are quarantined.
 
 ## Testing strategy
 

@@ -5,8 +5,8 @@ import { siteConfig } from '@/lib/site-config';
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.origin),
   title: {
-    default: 'HowMuchUSA — Clear answers for everyday decisions',
-    template: '%s | HowMuchUSA',
+    default: `${siteConfig.seoTitle} | ${siteConfig.name}`,
+    template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   applicationName: siteConfig.name,
@@ -15,15 +15,18 @@ export const metadata: Metadata = {
     type: 'website',
     url: '/',
     siteName: siteConfig.name,
-    title: 'HowMuchUSA — Make the numbers make sense.',
+    title: `${siteConfig.seoTitle} | ${siteConfig.name}`,
     description: siteConfig.description,
-    images: [{ url: '/og.png', width: 1200, height: 630, alt: 'HowMuchUSA — Make the numbers make sense.' }],
+    images: [{ url: '/og.png', width: 1200, height: 630, alt: `${siteConfig.seoTitle} ${siteConfig.name} calculators for the U.S.` }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'HowMuchUSA — Make the numbers make sense.',
+    title: `${siteConfig.seoTitle} | ${siteConfig.name}`,
     description: siteConfig.description,
     images: ['/og.png'],
+  },
+  icons: {
+    icon: '/favicon.svg',
   },
   robots: { index: true, follow: true },
   manifest: '/manifest.webmanifest',
@@ -32,7 +35,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <a className="skip-link" href="#main-content">Skip to main content</a>
+        {children}
+      </body>
     </html>
   );
 }

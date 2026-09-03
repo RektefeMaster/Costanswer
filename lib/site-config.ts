@@ -5,7 +5,8 @@ if (process.env.NODE_ENV === 'production' && !configuredOrigin) {
 }
 
 export const siteConfig = {
-  name: 'HowMuchUSA',
-  description: 'Practical calculators and transparent answers for costs, pay, home projects, cars, shopping, food and everyday life in the USA.',
+  name: 'CostAnswer',
+  seoTitle: 'How much will it cost in the U.S.?',
+  description: 'How much will it cost in the U.S.? Free calculators for pay, bills, home projects, and everyday prices.',
   origin: configuredOrigin ?? 'http://localhost:3000',
 } as const;

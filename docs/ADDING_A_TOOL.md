@@ -1,4 +1,4 @@
-# Adding a HowMuchUSA tool
+# Adding a CostAnswer tool
 
 The goal is to add an answer experience, not merely another route.
 

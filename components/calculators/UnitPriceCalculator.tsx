@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { calculateUnitPrices, UNIT_DEFINITIONS, type UnitId } from '@/lib/calculations/unit-price';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { emitAnalyticsEvent } from '@/lib/analytics';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type PackageOption = { id: string; label: string; price: string; quantity: string; unit: UnitId };
@@ -20,8 +19,6 @@ export function UnitPriceCalculator() {
     { id: 'b', label: 'Option B', price: '12.49', quantity: '2', unit: 'lb' },
   ]);
 
-  useEffect(() => emitAnalyticsEvent('tool_opened', { toolId: 'unit-price', category: 'shopping' }), []);
-
   const updatePackage = (id: string, patch: Partial<PackageOption>) => {
     setPackages((current) => current.map((option) => option.id === id ? { ...option, ...patch } : option));
   };
@@ -36,18 +33,27 @@ export function UnitPriceCalculator() {
 
   const winner = calculation.result?.value.ranked[0];
   const unitPriceLabel = (price: number, unit: string) => `$${price.toFixed(price < 0.1 ? 4 : 2)} / ${unit}`;
+  const savingsLabel = (value: number) => value > 0 && value < 0.1 ? '<0.1%' : `${value}%`;
+  const winningOptions = calculation.result?.value.ranked.filter((option) => calculation.result?.value.winnerIds.includes(option.id)) ?? [];
 
   return (
-    <CalculatorPanel title="Put every package on equal terms" intro="Weight, volume and count stay separate so the comparison remains valid.">
+    <CalculatorPanel
+      title="Which pack is cheaper?"
+      intro="Works even if one label says ounces and the other says pounds."
+      toolId="unit-price"
+      category="shopping"
+      calculationState={calculation.result ? 'complete' : 'invalid'}
+      calculationSignature={JSON.stringify(packages)}
+    >
       <div className="package-grid">
         {packages.map((option, index) => (
-          <section className="package-card" key={option.id}>
-            <p>OPTION {String.fromCharCode(65 + index)}</p>
-            <Field label="Label" htmlFor={`package-${option.id}-label`}><span className="input-shell"><input id={`package-${option.id}-label`} value={option.label} maxLength={60} onChange={(event) => updatePackage(option.id, { label: event.target.value })} /></span></Field>
-            <Field label="Package price" htmlFor={`package-${option.id}-price`}><InputShell prefix="$"><input id={`package-${option.id}-price`} type="number" min="0.01" step="0.01" value={option.price} onChange={(event) => updatePackage(option.id, { price: event.target.value })} /></InputShell></Field>
+          <section className="package-card" role="group" key={option.id} aria-labelledby={`package-${option.id}-heading`}>
+            <p id={`package-${option.id}-heading`}>OPTION {String.fromCharCode(65 + index)}</p>
+            <Field label="Label" htmlFor={`package-${option.id}-label`}><span className="input-shell"><input aria-label={`Option ${String.fromCharCode(65 + index)} label`} id={`package-${option.id}-label`} value={option.label} maxLength={60} onChange={(event) => updatePackage(option.id, { label: event.target.value })} /></span></Field>
+            <Field label="Package price" htmlFor={`package-${option.id}-price`}><InputShell prefix="$"><input aria-label={`Option ${String.fromCharCode(65 + index)} package price`} id={`package-${option.id}-price`} type="number" min="0.01" step="0.01" value={option.price} onChange={(event) => updatePackage(option.id, { price: event.target.value })} /></InputShell></Field>
             <div className="quantity-unit-row">
-              <Field label="Quantity" htmlFor={`package-${option.id}-quantity`}><span className="input-shell"><input id={`package-${option.id}-quantity`} type="number" min="0.0001" step="0.01" value={option.quantity} onChange={(event) => updatePackage(option.id, { quantity: event.target.value })} /></span></Field>
-              <Field label="Unit" htmlFor={`package-${option.id}-unit`}><span className="input-shell select-shell"><select id={`package-${option.id}-unit`} value={option.unit} onChange={(event) => updatePackage(option.id, { unit: event.target.value as UnitId })}>{unitGroups.map((group) => <optgroup label={group.label} key={group.label}>{group.units.map((unit) => <option value={unit} key={unit}>{UNIT_DEFINITIONS[unit].label}</option>)}</optgroup>)}</select></span></Field>
+              <Field label="Quantity" htmlFor={`package-${option.id}-quantity`}><InputShell><input aria-label={`Option ${String.fromCharCode(65 + index)} quantity`} id={`package-${option.id}-quantity`} type="number" min="0.0001" step="0.01" value={option.quantity} onChange={(event) => updatePackage(option.id, { quantity: event.target.value })} /></InputShell></Field>
+              <Field label="Unit" htmlFor={`package-${option.id}-unit`}><span className="input-shell select-shell"><select aria-label={`Option ${String.fromCharCode(65 + index)} unit`} id={`package-${option.id}-unit`} value={option.unit} onChange={(event) => updatePackage(option.id, { unit: event.target.value as UnitId })}>{unitGroups.map((group) => <optgroup label={group.label} key={group.label}>{group.units.map((unit) => <option value={unit} key={unit}>{UNIT_DEFINITIONS[unit].label}</option>)}</optgroup>)}</select></span></Field>
             </div>
           </section>
         ))}
@@ -55,11 +61,18 @@ export function UnitPriceCalculator() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && winner && (
         <div className="calculation-output">
-          <PrimaryResult label="Best unit price" value={winner.label} note={`${unitPriceLabel(winner.unitPrice, calculation.result.value.baseUnit)} · ${winner.savingsVsHighestPercent}% less than the higher unit price`} tone="violet" />
+          <PrimaryResult
+            label={winningOptions.length > 1 ? 'Same lowest unit price' : 'Best unit price'}
+            value={winningOptions.length > 1 ? winningOptions.map((option) => option.label).join(' & ') : winner.label}
+            note={winningOptions.length > 1
+              ? `${unitPriceLabel(winner.unitPrice, calculation.result.value.baseUnit)} for each tied option`
+              : `${unitPriceLabel(winner.unitPrice, calculation.result.value.baseUnit)} · ${savingsLabel(winner.savingsVsHighestPercent)} less than the other option`}
+            tone="violet"
+          />
           <StatGrid items={calculation.result.value.ranked.map((option) => ({
             label: option.label,
             value: unitPriceLabel(option.unitPrice, calculation.result.value.baseUnit),
-            note: option.id === calculation.result?.value.winnerId ? 'Lowest price per unit' : `${option.baseQuantity} ${calculation.result?.value.baseUnit} total`,
+            note: calculation.result?.value.winnerIds.includes(option.id) ? 'Lowest price per unit' : `${option.baseQuantity} ${calculation.result?.value.baseUnit} total`,
           }))} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>

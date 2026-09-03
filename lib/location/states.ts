@@ -57,10 +57,9 @@ export const US_STATES = {
 export const STATE_CODES = Object.keys(US_STATES) as StateCode[];
 
 export function isStateCode(value: string): value is StateCode {
-  return value in US_STATES;
+  return Object.hasOwn(US_STATES, value);
 }
 
 export function getStateName(code: StateCode): string {
   return US_STATES[code];
 }
-

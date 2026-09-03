@@ -52,7 +52,7 @@ export function calculateConcrete(rawInput: unknown): CalculationResult<Concrete
       highCubicYards: round((exactCubicFeet * highFactor) / 27, 3),
       ...(typicalMaterialCost === undefined ? {} : { typicalMaterialCost }),
     },
-    calculationVersion: 'material-volume-v1.0.0',
+    calculationVersion: 'material-volume-v1.1.0',
     datasetSnapshotIds: ['quikrete-packaged-concrete-yields-2026-09'],
     breakdown: [
       {
@@ -77,11 +77,10 @@ export function calculateConcrete(rawInput: unknown): CalculationResult<Concrete
       }]),
     ],
     assumptions: [
-      'The shape is a rectangular slab with uniform dimensions.',
-      'Packaged-concrete yields are approximate and can vary with product and water content; verify the bag label.',
-      'The range runs from measured volume to five percentage points above your waste allowance.',
-      'This is a quantity estimate, not structural or building-code advice.',
+      'The shape is a rectangular slab with even thickness.',
+      'Bag yields are approximate. Check the bag you buy.',
+      'The range goes from measured volume to a little more than your waste percent.',
+      'This is a quantity estimate, not structural advice.',
     ],
   };
 }
-

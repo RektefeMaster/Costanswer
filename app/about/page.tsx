@@ -1,17 +1,25 @@
 import { InfoPage } from '@/components/site/InfoPage';
 import { pageMetadata } from '@/lib/seo';
 
-export const metadata = pageMetadata('About', 'Why HowMuchUSA exists and what makes its answers different.', '/about');
+export const metadata = pageMetadata(
+  'About',
+  'CostAnswer is a small set of free U.S. calculators for how much pay, bills, home projects, and everyday prices cost.',
+  '/about',
+);
 
 export default function AboutPage() {
   return (
-    <InfoPage eyebrow="About HowMuchUSA" title="Practical questions deserve more than a mystery number." intro="We build small decision tools around transparent math, trustworthy source data and the context needed to use an answer well.">
-      <h2>One coherent answer platform</h2>
-      <p>Money, home projects, cars, dates, food and shopping look unrelated on a menu. Underneath, they reuse the same capabilities: units, dates, location, prices, ranges, comparisons and source provenance.</p>
-      <h2>What we will not do</h2>
-      <p>We do not invent local market prices, publish thousands of place-name swaps, call an average a personal quote, or hide uncertainty to make a result look more precise.</p>
-      <h2>What comes next</h2>
-      <p>Expansion follows measured demand and reusable engines. Salary and inflation datasets, more energy decisions, material estimators and carefully qualified local benchmarks are planned only after their data pipelines and quality gates are ready.</p>
+    <InfoPage
+      eyebrow="About CostAnswer"
+      title="A few calculators for how much things cost in the U.S."
+      intro="Pay, bills, a concrete slab, a grocery package. Free, and the steps sit under the answer."
+    >
+      <h2>What is on the site</h2>
+      <p>You can turn an hourly wage into yearly pay, estimate a mortgage payment from this week’s national average rate, see whether a house fits take-home pay, check buying power since 1913, check an electric bill against a state average, size a concrete slab, compare EV charging with gasoline, price a road trip’s fuel, count workdays, scale a recipe, or see which package looks cheaper. There is also a state comparison that uses government averages.</p>
+      <h2>A note on prices</h2>
+      <p>A state average is not your bill. A grocery average is not the shelf at your store. If the number is an estimate, the page says so.</p>
+      <h2>What we are adding</h2>
+      <p>More pay, housing, and energy tools are coming, once the numbers are in good shape.</p>
     </InfoPage>
   );
 }

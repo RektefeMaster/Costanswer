@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { finiteNumber, formatMoney, round, type CalculationResult } from './contracts';
+import { energyCostFromKwh, periodQuantitiesFromMonthly } from './energy';
 
 export const electricityCostInputSchema = z.object({
   monthlyKwh: finiteNumber('Monthly electricity use', 0, 100_000),
@@ -19,15 +20,16 @@ export function calculateElectricityCost(
   datasetSnapshotId?: string,
 ): CalculationResult<ElectricityCostValue> {
   const input = electricityCostInputSchema.parse(rawInput);
-  const monthlyEnergyCost = input.monthlyKwh * (input.rateCentsPerKwh / 100);
+  const monthly = energyCostFromKwh({ kwh: input.monthlyKwh, centsPerKwh: input.rateCentsPerKwh });
+  const periods = periodQuantitiesFromMonthly(monthly.cost);
 
   return {
     value: {
-      monthlyEnergyCost: round(monthlyEnergyCost),
-      annualEnergyCost: round(monthlyEnergyCost * 12),
-      dailyEnergyCost: round((monthlyEnergyCost * 12) / 365),
+      monthlyEnergyCost: round(periods.monthly),
+      annualEnergyCost: round(periods.annual),
+      dailyEnergyCost: round(periods.daily),
     },
-    calculationVersion: 'energy-cost-v1.0.0',
+    calculationVersion: 'energy-cost-v1.1.0',
     datasetSnapshotIds: datasetSnapshotId ? [datasetSnapshotId] : [],
     breakdown: [
       {
@@ -41,16 +43,15 @@ export function calculateElectricityCost(
         detail: datasetSnapshotId ? 'Published state residential average or your override' : 'Your entered rate',
       },
       {
-        label: 'Estimated energy charge',
-        value: formatMoney(monthlyEnergyCost),
+        label: 'Estimated electric bill',
+        value: formatMoney(monthly.cost),
         detail: 'kWh × cents per kWh ÷ 100',
       },
     ],
     assumptions: [
-      'This multiplies usage by an average energy price; it is not a utility bill quote.',
-      'Fixed customer charges, demand charges, tiered rates, taxes, credits and time-of-use pricing are not modeled.',
-      'A state average may differ materially from your utility tariff. Enter your bill rate for a personal estimate.',
+      'This multiplies your kWh by a price. It is not a copy of your utility bill.',
+      'Fixed charges, demand charges, tiers, taxes, credits, and time of use rates are left out.',
+      'A state average can differ a lot from your rate. Type the number from your bill if you have it.',
     ],
   };
 }
-

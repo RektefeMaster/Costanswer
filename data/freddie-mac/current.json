@@ -1,0 +1,35 @@
+{
+  "manifest": {
+    "currentSnapshotId": "freddie-mac-pmms-2026-08-27-v1",
+    "observationPeriod": "2026-08-27",
+    "normalizedSha256": "784e62458063b0e6dc8cd3ba844c141ff21e0293e549160565067064fef216cc",
+    "validationStatus": "passed"
+  },
+  "snapshot": {
+    "schemaVersion": "1.0.0",
+    "adapterVersion": "freddie-mac-pmms-v1.0.0",
+    "snapshotId": "freddie-mac-pmms-2026-08-27-v1",
+    "provider": "Freddie Mac",
+    "datasetId": "pmms",
+    "frequency": "weekly",
+    "observationPeriod": "2026-08-27",
+    "sourceStatus": "preliminary",
+    "fetchedAt": "2026-09-02T22:06:04.654Z",
+    "verifiedAt": "2026-09-02T22:06:04.654Z",
+    "publishedAt": "2026-09-02T22:06:04.654Z",
+    "sourceUrl": "https://www.freddiemac.com/pmms",
+    "sourceDocumentationUrl": "https://www.freddiemac.com/pmms",
+    "termsUrl": "https://www.freddiemac.com/about/legal",
+    "attribution": "Source: Freddie Mac Primary Mortgage Market Survey (PMMS), national weekly averages for 30-year and 15-year fixed-rate mortgages.",
+    "rawSha256": "c034a6249c27f3ee6d1d718a54bc11bf1571f00b243160e94348d6ff24f1f43e",
+    "validationStatus": "passed",
+    "validationReport": [
+      "Freddie Mac PMMS HTML contained FinancialProduct JSON-LD for 15-year and 30-year fixed rates.",
+      "Both averages are dated 2026-08-27.",
+      "Rates are finite percentages inside the 1–20 percent sanity bounds."
+    ],
+    "thirtyYearFixedPercent": 6.66,
+    "fifteenYearFixedPercent": 5.98,
+    "normalizedSha256": "784e62458063b0e6dc8cd3ba844c141ff21e0293e549160565067064fef216cc"
+  }
+}

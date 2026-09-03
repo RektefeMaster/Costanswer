@@ -11,11 +11,11 @@ export default function BusinessDaysPage() {
   return (
     <ToolPage
       tool={tool}
-      caution="Federal, state, local, bank, court and employer calendars can differ. Confirm the controlling calendar before relying on a deadline."
+      caution="Federal, state, bank, court, and company calendars are not always the same. Check the calendar that actually applies to your deadline."
       methodology={[
-        { title: 'Use date-only UTC math', body: 'Dates are represented without local clock time, which prevents daylight-saving transitions from adding or removing a day.' },
-        { title: 'Apply the endpoint rules', body: 'You decide whether the start and end dates count. Weekend and holiday exclusions are then applied to the included dates.' },
-        { title: 'Observe fixed holidays', body: 'When a fixed federal holiday falls on Saturday it is generally observed Friday; when it falls on Sunday it is generally observed Monday.' },
+        { title: 'Dates, not clock times', body: 'Dates are stored without a local time. Daylight saving cannot add or drop a day.' },
+        { title: 'Start and end dates', body: 'You choose whether the start and end dates count. Then weekends and holidays come out.' },
+        { title: 'Federal holidays', body: 'If a fixed holiday falls on Saturday it is usually observed Friday. If it falls on Sunday it is usually observed Monday.' },
       ]}
       sources={[
         { name: 'U.S. Office of Personnel Management', detail: 'Federal holiday schedules and observed-date rules.', href: 'https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/', dateLabel: 'Official calendar' },

@@ -1,0 +1,534 @@
+{
+  "manifest": {
+    "currentSnapshotId": "bls-apu-grocery-2026-07-v2",
+    "observationPeriod": "2026-07",
+    "normalizedSha256": "19f5034c68c41f0cca8bd72c8b4eb9f495df4403f4dcee385b76847423f2c102",
+    "validationStatus": "passed"
+  },
+  "snapshot": {
+    "schemaVersion": "1.0.0",
+    "adapterVersion": "bls-apu-grocery-v1.1.0",
+    "snapshotId": "bls-apu-grocery-2026-07-v2",
+    "provider": "U.S. Bureau of Labor Statistics",
+    "datasetId": "AP",
+    "frequency": "monthly",
+    "observationPeriod": "2026-07",
+    "sourceStatus": "preliminary",
+    "fetchedAt": "2026-09-02T22:01:10.535Z",
+    "verifiedAt": "2026-09-02T22:01:10.535Z",
+    "publishedAt": "2026-09-02T22:01:10.535Z",
+    "sourceUrl": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
+    "sourceDocumentationUrl": "https://www.bls.gov/help/hlpforma.htm#AP",
+    "termsUrl": "https://www.bls.gov/bls/linksite.htm",
+    "attribution": "Source: U.S. Bureau of Labor Statistics, Average Price Data, U.S. city average and census regions.",
+    "rawSha256": "9b0081da7f09447b967bd32167b5e9fa4ae4230eee9d75d52790c3398add4879",
+    "validationStatus": "passed",
+    "validationReport": [
+      "BLS public API response schema passed.",
+      "25 national staple series share observation month 2026-07.",
+      "9 items have complete same-month prices for all four census regions.",
+      "Missing or stale regional series are omitted rather than filled with national substitutes."
+    ],
+    "items": [
+      {
+        "id": "milk-whole-gallon",
+        "name": "Milk, fresh, whole",
+        "unit": "gallon",
+        "unitLabel": "gallon",
+        "itemCode": "709112",
+        "national": {
+          "seriesId": "APU0000709112",
+          "observationPeriod": "2026-07",
+          "dollars": 4.313
+        }
+      },
+      {
+        "id": "bread-white-lb",
+        "name": "Bread, white, pan",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "702111",
+        "national": {
+          "seriesId": "APU0000702111",
+          "observationPeriod": "2026-07",
+          "dollars": 1.82
+        }
+      },
+      {
+        "id": "eggs-grade-a-dozen",
+        "name": "Eggs, grade A, large",
+        "unit": "dozen",
+        "unitLabel": "dozen",
+        "itemCode": "708111",
+        "national": {
+          "seriesId": "APU0000708111",
+          "observationPeriod": "2026-07",
+          "dollars": 2.189
+        }
+      },
+      {
+        "id": "ground-beef-lb",
+        "name": "Ground beef, 100% beef",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "703112",
+        "national": {
+          "seriesId": "APU0000703112",
+          "observationPeriod": "2026-07",
+          "dollars": 6.885
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100703112",
+            "observationPeriod": "2026-07",
+            "dollars": 6.896
+          },
+          "Midwest": {
+            "seriesId": "APU0200703112",
+            "observationPeriod": "2026-07",
+            "dollars": 6.766
+          },
+          "South": {
+            "seriesId": "APU0300703112",
+            "observationPeriod": "2026-07",
+            "dollars": 6.449
+          },
+          "West": {
+            "seriesId": "APU0400703112",
+            "observationPeriod": "2026-07",
+            "dollars": 7.356
+          }
+        }
+      },
+      {
+        "id": "chicken-whole-lb",
+        "name": "Chicken, fresh, whole",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "706111",
+        "national": {
+          "seriesId": "APU0000706111",
+          "observationPeriod": "2026-07",
+          "dollars": 2.005
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100706111",
+            "observationPeriod": "2026-07",
+            "dollars": 2.187
+          },
+          "Midwest": {
+            "seriesId": "APU0200706111",
+            "observationPeriod": "2026-07",
+            "dollars": 2.095
+          },
+          "South": {
+            "seriesId": "APU0300706111",
+            "observationPeriod": "2026-07",
+            "dollars": 1.898
+          },
+          "West": {
+            "seriesId": "APU0400706111",
+            "observationPeriod": "2026-07",
+            "dollars": 2.012
+          }
+        }
+      },
+      {
+        "id": "chicken-breast-lb",
+        "name": "Chicken breast, boneless",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "FF1101",
+        "national": {
+          "seriesId": "APU0000FF1101",
+          "observationPeriod": "2026-07",
+          "dollars": 4.153
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100FF1101",
+            "observationPeriod": "2026-07",
+            "dollars": 3.839
+          },
+          "Midwest": {
+            "seriesId": "APU0200FF1101",
+            "observationPeriod": "2026-07",
+            "dollars": 3.923
+          },
+          "South": {
+            "seriesId": "APU0300FF1101",
+            "observationPeriod": "2026-07",
+            "dollars": 4.105
+          },
+          "West": {
+            "seriesId": "APU0400FF1101",
+            "observationPeriod": "2026-07",
+            "dollars": 4.652
+          }
+        }
+      },
+      {
+        "id": "bananas-lb",
+        "name": "Bananas",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "711211",
+        "national": {
+          "seriesId": "APU0000711211",
+          "observationPeriod": "2026-07",
+          "dollars": 0.65
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100711211",
+            "observationPeriod": "2026-07",
+            "dollars": 0.692
+          },
+          "Midwest": {
+            "seriesId": "APU0200711211",
+            "observationPeriod": "2026-07",
+            "dollars": 0.616
+          },
+          "South": {
+            "seriesId": "APU0300711211",
+            "observationPeriod": "2026-07",
+            "dollars": 0.617
+          },
+          "West": {
+            "seriesId": "APU0400711211",
+            "observationPeriod": "2026-07",
+            "dollars": 0.701
+          }
+        }
+      },
+      {
+        "id": "potatoes-white-lb",
+        "name": "Potatoes, white",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "712112",
+        "national": {
+          "seriesId": "APU0000712112",
+          "observationPeriod": "2026-07",
+          "dollars": 0.942
+        }
+      },
+      {
+        "id": "flour-all-purpose-lb",
+        "name": "Flour, white, all purpose",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "701111",
+        "national": {
+          "seriesId": "APU0000701111",
+          "observationPeriod": "2026-07",
+          "dollars": 0.543
+        }
+      },
+      {
+        "id": "bacon-sliced-lb",
+        "name": "Bacon, sliced",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "704111",
+        "national": {
+          "seriesId": "APU0000704111",
+          "observationPeriod": "2026-07",
+          "dollars": 6.584
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100704111",
+            "observationPeriod": "2026-07",
+            "dollars": 7.415
+          },
+          "Midwest": {
+            "seriesId": "APU0200704111",
+            "observationPeriod": "2026-07",
+            "dollars": 6.391
+          },
+          "South": {
+            "seriesId": "APU0300704111",
+            "observationPeriod": "2026-07",
+            "dollars": 6.183
+          },
+          "West": {
+            "seriesId": "APU0400704111",
+            "observationPeriod": "2026-07",
+            "dollars": 6.778
+          }
+        }
+      },
+      {
+        "id": "pork-chops-boneless-lb",
+        "name": "Chops, boneless",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "704212",
+        "national": {
+          "seriesId": "APU0000704212",
+          "observationPeriod": "2026-07",
+          "dollars": 4.573
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100704212",
+            "observationPeriod": "2026-07",
+            "dollars": 4.367
+          },
+          "Midwest": {
+            "seriesId": "APU0200704212",
+            "observationPeriod": "2026-07",
+            "dollars": 4.428
+          },
+          "South": {
+            "seriesId": "APU0300704212",
+            "observationPeriod": "2026-07",
+            "dollars": 4.672
+          },
+          "West": {
+            "seriesId": "APU0400704212",
+            "observationPeriod": "2026-07",
+            "dollars": 4.649
+          }
+        }
+      },
+      {
+        "id": "ham-boneless-lb",
+        "name": "Ham, boneless",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "704312",
+        "national": {
+          "seriesId": "APU0000704312",
+          "observationPeriod": "2026-07",
+          "dollars": 5.492
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100704312",
+            "observationPeriod": "2026-07",
+            "dollars": 5.363
+          },
+          "Midwest": {
+            "seriesId": "APU0200704312",
+            "observationPeriod": "2026-07",
+            "dollars": 5.518
+          },
+          "South": {
+            "seriesId": "APU0300704312",
+            "observationPeriod": "2026-07",
+            "dollars": 5.581
+          },
+          "West": {
+            "seriesId": "APU0400704312",
+            "observationPeriod": "2026-07",
+            "dollars": 5.394
+          }
+        }
+      },
+      {
+        "id": "chuck-roast-lb",
+        "name": "Chuck roast, USDA Choice, boneless",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "703213",
+        "national": {
+          "seriesId": "APU0000703213",
+          "observationPeriod": "2026-07",
+          "dollars": 9.631
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100703213",
+            "observationPeriod": "2026-07",
+            "dollars": 9.396
+          },
+          "Midwest": {
+            "seriesId": "APU0200703213",
+            "observationPeriod": "2026-07",
+            "dollars": 9.278
+          },
+          "South": {
+            "seriesId": "APU0300703213",
+            "observationPeriod": "2026-07",
+            "dollars": 9.387
+          },
+          "West": {
+            "seriesId": "APU0400703213",
+            "observationPeriod": "2026-07",
+            "dollars": 10.709
+          }
+        }
+      },
+      {
+        "id": "tomatoes-field-lb",
+        "name": "Tomatoes, field grown",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "712311",
+        "national": {
+          "seriesId": "APU0000712311",
+          "observationPeriod": "2026-07",
+          "dollars": 2.003
+        }
+      },
+      {
+        "id": "lemons-lb",
+        "name": "Lemons",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "711412",
+        "national": {
+          "seriesId": "APU0000711412",
+          "observationPeriod": "2026-07",
+          "dollars": 2.127
+        }
+      },
+      {
+        "id": "lettuce-iceberg-lb",
+        "name": "Lettuce, iceberg",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "712211",
+        "national": {
+          "seriesId": "APU0000712211",
+          "observationPeriod": "2026-07",
+          "dollars": 1.753
+        }
+      },
+      {
+        "id": "potato-chips-16oz",
+        "name": "Potato chips",
+        "unit": "16-oz",
+        "unitLabel": "16 oz",
+        "itemCode": "718311",
+        "national": {
+          "seriesId": "APU0000718311",
+          "observationPeriod": "2026-07",
+          "dollars": 6.559
+        },
+        "regions": {
+          "Northeast": {
+            "seriesId": "APU0100718311",
+            "observationPeriod": "2026-07",
+            "dollars": 7.299
+          },
+          "Midwest": {
+            "seriesId": "APU0200718311",
+            "observationPeriod": "2026-07",
+            "dollars": 6.336
+          },
+          "South": {
+            "seriesId": "APU0300718311",
+            "observationPeriod": "2026-07",
+            "dollars": 6.95
+          },
+          "West": {
+            "seriesId": "APU0400718311",
+            "observationPeriod": "2026-07",
+            "dollars": 5.509
+          }
+        }
+      },
+      {
+        "id": "rice-white-lb",
+        "name": "Rice, white, long grain, uncooked",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "701312",
+        "national": {
+          "seriesId": "APU0000701312",
+          "observationPeriod": "2026-07",
+          "dollars": 1.1
+        }
+      },
+      {
+        "id": "spaghetti-lb",
+        "name": "Spaghetti and macaroni",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "701322",
+        "national": {
+          "seriesId": "APU0000701322",
+          "observationPeriod": "2026-07",
+          "dollars": 1.381
+        }
+      },
+      {
+        "id": "cheddar-cheese-lb",
+        "name": "Cheddar cheese, natural",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "710212",
+        "national": {
+          "seriesId": "APU0000710212",
+          "observationPeriod": "2026-07",
+          "dollars": 5.741
+        }
+      },
+      {
+        "id": "butter-stick-lb",
+        "name": "Butter, stick",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "FS1101",
+        "national": {
+          "seriesId": "APU0000FS1101",
+          "observationPeriod": "2026-07",
+          "dollars": 3.922
+        }
+      },
+      {
+        "id": "yogurt-8oz",
+        "name": "Yogurt",
+        "unit": "8-oz",
+        "unitLabel": "8 oz",
+        "itemCode": "FJ4101",
+        "national": {
+          "seriesId": "APU0000FJ4101",
+          "observationPeriod": "2026-07",
+          "dollars": 1.553
+        }
+      },
+      {
+        "id": "coffee-ground-lb",
+        "name": "Coffee, 100%, ground roast",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "717311",
+        "national": {
+          "seriesId": "APU0000717311",
+          "observationPeriod": "2026-07",
+          "dollars": 9.317
+        }
+      },
+      {
+        "id": "sugar-white-lb",
+        "name": "Sugar, white",
+        "unit": "pound",
+        "unitLabel": "pound",
+        "itemCode": "715211",
+        "national": {
+          "seriesId": "APU0000715211",
+          "observationPeriod": "2026-07",
+          "dollars": 1.024
+        }
+      },
+      {
+        "id": "orange-juice-16oz",
+        "name": "Orange juice, frozen concentrate",
+        "unit": "16-oz",
+        "unitLabel": "16 oz",
+        "itemCode": "713111",
+        "national": {
+          "seriesId": "APU0000713111",
+          "observationPeriod": "2026-07",
+          "dollars": 4.817
+        }
+      }
+    ],
+    "normalizedSha256": "19f5034c68c41f0cca8bd72c8b4eb9f495df4403f4dcee385b76847423f2c102"
+  }
+}
