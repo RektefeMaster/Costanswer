@@ -12,6 +12,8 @@ import { parsePublishingDate, PUBLISHING_SNAPSHOT_DATE } from './publishing';
 
 export const CATEGORY_IDS = ['money', 'home', 'auto', 'everyday', 'food', 'shopping', 'health', 'math', 'education'] as const;
 export type CategoryId = (typeof CATEGORY_IDS)[number];
+/** Header keeps the original launch set so new topics do not worsen the known mobile-nav overflow. */
+export const HEADER_CATEGORY_IDS: readonly CategoryId[] = ['money', 'home', 'auto', 'everyday', 'food', 'shopping'];
 
 export type ToolRelationship = {
   toolId: string;

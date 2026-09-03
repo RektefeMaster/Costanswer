@@ -5,7 +5,7 @@
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
-import { categories, CATEGORY_IDS, type CategoryId } from '@/lib/tool-registry';
+import { categories, HEADER_CATEGORY_IDS, type CategoryId } from '@/lib/tool-registry';
 import { CategoryChip } from '@/components/site/CategoryArt';
 
 function isCategoryActive(pathname: string, categoryId: CategoryId) {
@@ -56,7 +56,7 @@ export function SiteHeader() {
           <span>Cost<span>Answer</span></span>
         </a>
         <nav className="top-nav" aria-label="Primary navigation">
-          {CATEGORY_IDS.map((categoryId) => (
+          {HEADER_CATEGORY_IDS.map((categoryId) => (
             <a
               href={`/topics/${categoryId}`}
               key={categoryId}
@@ -72,7 +72,7 @@ export function SiteHeader() {
           <summary aria-label="Open site navigation">Menu</summary>
           <nav aria-label="Mobile navigation">
             <a className="mobile-search-link" href="/search" aria-current={searchCurrent}>Search calculators</a>
-            {CATEGORY_IDS.map((categoryId) => (
+            {HEADER_CATEGORY_IDS.map((categoryId) => (
               <a
                 href={`/topics/${categoryId}`}
                 key={categoryId}
