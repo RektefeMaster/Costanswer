@@ -1,4 +1,4 @@
-import { COMPOUND_INTEREST_ENGINE_ID, DEBT_PAYOFF_ENGINE_ID, LOAN_ENGINE_ID, AUTO_LOAN_ENGINE_ID, INVESTMENT_ENGINE_ID, RETIREMENT_ENGINE_ID, AMORTIZATION_ENGINE_ID, CD_ENGINE_ID, INTEREST_ENGINE_ID, ROTH_IRA_ENGINE_ID, K401_ENGINE_ID, MORTGAGE_PAYOFF_ENGINE_ID, CREDIT_CARD_PAYOFF_ENGINE_ID } from './calculations/finance/version';
+import { REFINANCE_ENGINE_ID, COMPOUND_INTEREST_ENGINE_ID, DEBT_PAYOFF_ENGINE_ID, LOAN_ENGINE_ID, AUTO_LOAN_ENGINE_ID, INVESTMENT_ENGINE_ID, RETIREMENT_ENGINE_ID, AMORTIZATION_ENGINE_ID, CD_ENGINE_ID, INTEREST_ENGINE_ID, ROTH_IRA_ENGINE_ID, K401_ENGINE_ID, MORTGAGE_PAYOFF_ENGINE_ID, CREDIT_CARD_PAYOFF_ENGINE_ID } from './calculations/finance/version';
 import { APPLIANCE_ENERGY_ENGINE_ID } from './calculations/energy/version';
 import { CAR_AFFORDABILITY_ENGINE_ID } from './calculations/vehicle/version';
 import { COST_OF_LIVING_ENGINE_ID } from './calculations/col/version';
@@ -1278,6 +1278,37 @@ export const tools: ToolDefinition[] = [
       { toolId: 'roth-ira', type: 'sibling' },
       { toolId: 'retirement', type: 'next-decision' },
       { toolId: 'salary-after-tax', type: 'sibling' },
+    ],
+  },
+  {
+    id: 'refinance',
+    path: '/money/refinance',
+    title: 'Mortgage Refinance Calculator',
+    shortTitle: 'Refinance',
+    description: 'Compare the mortgage you have with one you could replace it with: the new payment, how many months of savings it takes to cover closing costs, and whether a lower payment costs more interest overall.',
+    category: 'money',
+    engine: REFINANCE_ENGINE_ID,
+    searchTerms: [
+      'refinance calculator',
+      'mortgage refinance calculator',
+      'should i refinance',
+      'refinance break even',
+      'refinance savings calculator',
+      'is refinancing worth it',
+      'refinance closing costs',
+      'new mortgage payment after refinancing',
+      'break even on refinancing',
+    ],
+    eyebrow: 'Break-even on a refinance',
+    accent: 'mint',
+    featured: false,
+    resultNature: 'planning-model',
+    indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 12, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
+    relationships: [
+      { toolId: 'mortgage-payment', type: 'sibling' },
+      { toolId: 'mortgage-payoff', type: 'next-decision' },
+      { toolId: 'amortization', type: 'uses-engine' },
+      { toolId: 'home-affordability', type: 'sibling' },
     ],
   },
   {

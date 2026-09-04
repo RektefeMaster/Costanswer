@@ -15,4 +15,5 @@ export const INTEREST_ENGINE_ID = pinnedEngineId('interest-v1.0.0');
 export const ROTH_IRA_ENGINE_ID = pinnedEngineId('roth-ira-v1.0.0');
 export const K401_ENGINE_ID = pinnedEngineId('401k-v1.0.0');
 export const MORTGAGE_PAYOFF_ENGINE_ID = pinnedEngineId('mortgage-payoff-v1.0.0');
+export const REFINANCE_ENGINE_ID = pinnedEngineId('refinance-v1.0.0');
 export const CREDIT_CARD_PAYOFF_ENGINE_ID = pinnedEngineId('credit-card-payoff-v1.0.0');

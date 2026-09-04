@@ -24,11 +24,11 @@ export const TOOL_CLUSTERS = {
   },
   'home-buying': {
     label: 'Buying a home',
-    toolIds: ['mortgage-payment', 'home-affordability', 'mortgage-payoff', 'amortization', 'cost-of-living'],
+    toolIds: ['mortgage-payment', 'home-affordability', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
   },
   debt: {
     label: 'Borrowing and paying off debt',
-    toolIds: ['loan', 'debt-payoff', 'credit-card-payoff', 'auto-loan', 'amortization'],
+    toolIds: ['loan', 'debt-payoff', 'credit-card-payoff', 'auto-loan', 'amortization', 'refinance'],
   },
   vehicle: {
     label: 'Running a car',

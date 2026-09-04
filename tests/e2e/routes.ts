@@ -22,6 +22,7 @@ const htmlPaths = [
   '/money/roth-ira',
   '/money/401k',
   '/money/mortgage-payoff',
+  '/money/refinance',
   '/money/credit-card-payoff',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',

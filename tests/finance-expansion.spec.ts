@@ -16,6 +16,52 @@ import { calculateSimpleInterest } from '@/lib/calculations/simple-interest';
 import { irsRetirementLimits, irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { calculateLoan } from '@/lib/calculations/loan';
 import { calculateCompoundInterest } from '@/lib/calculations/compound-interest';
+import { calculateRefinance } from '@/lib/calculations/refinance';
+
+describe('refinance break-even', () => {
+  it('reconstructs the current payment from the balance and compares both loans', () => {
+    // Someone refinancing knows what they owe, not what they borrowed, so the
+    // payment they are on has to come back out of the balance.
+    const result = calculateRefinance({
+      currentBalance: 290_000, currentRatePercent: 7.5, currentTermYears: 30, monthsAlreadyPaid: 36,
+      newRatePercent: 6, newTermYears: 30, closingCosts: 5_000, financeClosingCosts: false,
+    });
+    expect(result.value.monthsLeftOnCurrentLoan).toBe(324);
+    expect(result.value.newMonthlyPayment).toBe(round(monthlyPrincipalAndInterest(290_000, 6, 360)));
+    expect(result.value.currentMonthlyPayment).toBeGreaterThan(result.value.newMonthlyPayment);
+    // Closing costs over the monthly saving, rounded up to whole months.
+    expect(result.value.breakEvenMonths).toBe(Math.ceil(5_000 / result.value.monthlyChange));
+    expect(result.value.cashOutlay).toBe(5_000);
+    expect(result.value.newLoanAmount).toBe(290_000);
+    expect(result.calculationVersion).toBe('refinance-v1.0.0');
+  });
+
+  it('shows a lower payment that costs more interest, and refuses a break-even that does not exist', () => {
+    // Fifteen years in, restarting a thirty-year term cuts the payment and adds
+    // years of interest. A payment calculator alone hides that entirely.
+    const stretched = calculateRefinance({
+      currentBalance: 200_000, currentRatePercent: 6, currentTermYears: 30, monthsAlreadyPaid: 180,
+      newRatePercent: 5.9, newTermYears: 30, closingCosts: 4_000, financeClosingCosts: true,
+    });
+    expect(stretched.value.monthlyChange).toBeGreaterThan(0);
+    expect(stretched.value.lifetimeInterestChange).toBeGreaterThan(0);
+    expect(stretched.value.lowerPaymentHigherInterest).toBe(true);
+
+    // Financed costs are borrowed, not avoided: the loan grows and break-even
+    // still counts the whole amount.
+    expect(stretched.value.newLoanAmount).toBe(204_000);
+    expect(stretched.value.cashOutlay).toBe(0);
+    expect(stretched.value.breakEvenMonths).toBe(Math.ceil(4_000 / stretched.value.monthlyChange));
+
+    const worse = calculateRefinance({
+      currentBalance: 200_000, currentRatePercent: 4, currentTermYears: 30, monthsAlreadyPaid: 12,
+      newRatePercent: 7, newTermYears: 30, closingCosts: 4_000, financeClosingCosts: false,
+    });
+    expect(worse.value.monthlyChange).toBeLessThan(0);
+    expect(worse.value.breakEvenMonths).toBeNull();
+    expect(worse.value.lowerPaymentHigherInterest).toBe(false);
+  });
+});
 
 describe('auto loan and amortization reuse', () => {
   it('locks $24,000 at 6% for 60 months near $463.99 using the shared factor', () => {
