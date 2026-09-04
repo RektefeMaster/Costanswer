@@ -1,3 +1,4 @@
+import { round } from '@/lib/calculations/contracts';
 import { calculateProgressiveTax } from '@/lib/calculations/tax/brackets';
 import { calculateFederalIncomeTax } from '@/lib/calculations/tax/federal';
 import { calculateFica } from '@/lib/calculations/tax/fica';
@@ -6,7 +7,8 @@ import { calculateSalaryAfterTax, estimateAnnualTaxLiability } from '@/lib/calcu
 import { calculatePaycheck } from '@/lib/calculations/paycheck';
 import { calculateHourlySalary } from '@/lib/calculations/hourly-salary';
 import { PAYCHECK_ENGINE_ID, SALARY_AFTER_TAX_ENGINE_ID } from '@/lib/calculations/tax/version';
-import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
+import { getTaxYearSnapshot, taxSnapshot } from '@/lib/data/tax/snapshot';
+import { calculateBonusTax } from '@/lib/calculations/tax/bonus';
 import { validateTaxYearSnapshot } from '@/lib/data/verify';
 import { taxYearSnapshotSchema } from '@/lib/data/tax/schema';
 import type { TaxBracket } from '@/lib/calculations/tax/types';
@@ -271,6 +273,84 @@ describe('paycheck', () => {
     });
     expect(paycheck.value.annualGross).toBe(hourlyGross.value.annual);
     expect(paycheck.value.grossPaycheck).toBe(hourlyGross.value.weekly);
+  });
+});
+
+describe('bonus withholding', () => {
+  it('applies the IRS flat supplemental rate and splits at the yearly threshold', () => {
+    const { supplemental, fica } = taxSnapshot;
+    // Pub. 15 section 7: a separately paid bonus may be withheld at a flat 22%.
+    const simple = calculateBonusTax({
+      bonusAmount: 10_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 60_000,
+      state: 'TX', filingStatus: 'single',
+    }).value;
+    expect(simple.federalWithholding).toBe(round(10_000 * supplemental.optionalFlatRate));
+    expect(simple.socialSecurity).toBe(round(10_000 * fica.socialSecurityRate));
+    expect(simple.medicare).toBe(round(10_000 * fica.medicareRate));
+    expect(simple.crossesMandatoryThreshold).toBe(false);
+    expect(simple.takeHome).toBe(round(10_000 - simple.totalWithheld));
+
+    // Only the part above the yearly threshold takes the mandatory rate, and
+    // bonuses paid earlier in the same year count towards it.
+    const crossing = calculateBonusTax({
+      bonusAmount: 500_000, priorSupplementalWagesThisYear: 800_000, regularWagesToDate: 300_000,
+      state: 'TX', filingStatus: 'single',
+    }).value;
+    expect(crossing.amountAtOptionalRate).toBe(200_000);
+    expect(crossing.amountAtMandatoryRate).toBe(300_000);
+    expect(crossing.federalWithholding).toBe(round(
+      200_000 * supplemental.optionalFlatRate + 300_000 * supplemental.mandatoryFlatRate,
+    ));
+    expect(crossing.crossesMandatoryThreshold).toBe(true);
+  });
+
+  it('continues FICA from wages already paid rather than flat-rating it', () => {
+    const { fica } = taxSnapshot;
+    // Past the Social Security wage base there is nothing left to withhold,
+    // while Medicare has no cap and the additional Medicare tax has started.
+    const capped = calculateBonusTax({
+      bonusAmount: 10_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 250_000,
+      state: 'TX', filingStatus: 'single',
+    }).value;
+    expect(capped.socialSecurity).toBe(0);
+    expect(capped.socialSecurityCapped).toBe(true);
+    expect(capped.additionalMedicare).toBe(round(10_000 * fica.additionalMedicareRate));
+
+    // Straddling the wage base only charges the room that was left.
+    const straddling = calculateBonusTax({
+      bonusAmount: 10_000, priorSupplementalWagesThisYear: 0,
+      regularWagesToDate: fica.socialSecurityWageBase - 4_000,
+      state: 'TX', filingStatus: 'single',
+    }).value;
+    expect(straddling.socialSecurity).toBe(round(4_000 * fica.socialSecurityRate));
+  });
+
+  it('says so instead of silently dropping an unmodelled state', () => {
+    const modelled = calculateBonusTax({
+      bonusAmount: 10_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 60_000,
+      state: 'CA', filingStatus: 'single',
+    }).value;
+    expect(modelled.stateTaxStatus).toBe('supported');
+    expect(modelled.stateWithholding).toBeGreaterThan(0);
+
+    const notModelled = calculateBonusTax({
+      bonusAmount: 10_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 60_000,
+      state: 'NY', filingStatus: 'single',
+    }).value;
+    expect(notModelled.stateTaxStatus).toBe('unsupported');
+    expect(notModelled.stateWithholding).toBe(0);
+    expect(notModelled.stateNote).toMatch(/not modeled/i);
+  });
+
+  it('cites the tax snapshot and calls the result withholding, not tax', () => {
+    const result = calculateBonusTax({
+      bonusAmount: 5_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 60_000,
+      state: 'TX', filingStatus: 'single',
+    });
+    expect(result.datasetSnapshotIds).toEqual([taxSnapshot.snapshotId]);
+    expect(result.calculationVersion).toBe('bonus-tax-v1.0.0');
+    expect(result.assumptions.join(' ')).toMatch(/withholding, not tax/i);
+    expect(result.assumptions.join(' ')).toMatch(/Publication 15/);
   });
 });
 

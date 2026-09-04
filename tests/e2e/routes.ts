@@ -23,6 +23,7 @@ const htmlPaths = [
   '/money/401k',
   '/money/mortgage-payoff',
   '/money/refinance',
+  '/money/bonus-tax',
   '/money/credit-card-payoff',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',

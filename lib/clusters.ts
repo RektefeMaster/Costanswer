@@ -16,7 +16,7 @@ export const TOOL_CLUSTERS = {
     label: 'Pay and take-home',
     // A 401(k) deferral comes out of the same paycheck, and take-home pay is
     // what an affordability screen is built on, so both sit in this journey.
-    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'time-card', '401k', 'home-affordability'],
+    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'home-affordability'],
   },
   retirement: {
     label: 'Saving and retirement',

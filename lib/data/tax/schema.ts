@@ -148,6 +148,31 @@ export const ficaTaxYearSchema = z.object({
   additionalMedicareThresholdByFilingStatus: filingStatusNumberSchema,
 }).strict();
 
+/**
+ * Flat-rate withholding on supplemental wages: bonuses, commissions, severance.
+ *
+ * This is a withholding rule, not a tax rate. An employer withholds a flat
+ * percentage at payout and the year's real liability is settled on the return,
+ * which is why a bonus so often looks over-taxed on the stub.
+ */
+export const supplementalWithholdingSchema = z.object({
+  taxYear: z.number().int().min(2000).max(2100),
+  provider: z.literal('Internal Revenue Service'),
+  sourceName: z.string().min(1),
+  sourceUrl,
+  publishedAt: isoDateTime,
+  verifiedAt: isoDateTime,
+  sourceStatus: z.literal('verified'),
+  version: z.string().min(1),
+  /** Optional flat rate, allowed up to the yearly threshold. No other percentage is permitted. */
+  optionalFlatRate: z.number().finite().min(0).max(1),
+  /** Mandatory rate on supplemental wages above the threshold, applied regardless of Form W-4. */
+  mandatoryFlatRate: z.number().finite().min(0).max(1),
+  /** Cumulative supplemental wages in the calendar year above which the mandatory rate applies. */
+  mandatoryRateThreshold: z.number().finite().positive(),
+  notes: z.array(z.string().min(1)).min(1),
+}).strict();
+
 export const taxYearSnapshotSchema = z.object({
   schemaVersion: z.literal('1.0.0'),
   adapterVersion: z.literal('us-tax-v1.0.0'),
@@ -160,6 +185,7 @@ export const taxYearSnapshotSchema = z.object({
   version: z.string().min(1),
   federal: federalTaxYearSchema,
   fica: ficaTaxYearSchema,
+  supplemental: supplementalWithholdingSchema,
   states: z.array(stateTaxPolicySchema).length(51),
   normalizedSha256: sha256Hex,
 }).strict().superRefine((snapshot, context) => {
@@ -172,6 +198,16 @@ export const taxYearSnapshotSchema = z.object({
   }
   if (snapshot.fica.taxYear !== snapshot.taxYear) {
     context.addIssue({ code: 'custom', path: ['fica', 'taxYear'], message: 'FICA tax year must match the snapshot tax year.' });
+  }
+  if (snapshot.supplemental.taxYear !== snapshot.taxYear) {
+    context.addIssue({ code: 'custom', path: ['supplemental', 'taxYear'], message: 'Supplemental withholding tax year must match the snapshot tax year.' });
+  }
+  if (snapshot.supplemental.mandatoryFlatRate < snapshot.supplemental.optionalFlatRate) {
+    context.addIssue({
+      code: 'custom',
+      path: ['supplemental', 'mandatoryFlatRate'],
+      message: 'The mandatory rate above the threshold cannot be lower than the optional flat rate below it.',
+    });
   }
   if (snapshot.fica.socialSecurityWageBase <= 0) {
     context.addIssue({ code: 'custom', path: ['fica', 'socialSecurityWageBase'], message: 'Social Security wage base must be positive.' });
@@ -201,6 +237,7 @@ export const taxYearSnapshotSchema = z.object({
 export type TaxYearSnapshot = z.infer<typeof taxYearSnapshotSchema>;
 export type StateTaxPolicy = z.infer<typeof stateTaxPolicySchema>;
 export type FederalTaxYear = z.infer<typeof federalTaxYearSchema>;
+export type SupplementalWithholding = z.infer<typeof supplementalWithholdingSchema>;
 export type FicaTaxYear = z.infer<typeof ficaTaxYearSchema>;
 export type SupportedStatePolicy = Extract<StateTaxPolicy, { status: 'supported' }>;
 

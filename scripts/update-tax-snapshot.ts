@@ -9,6 +9,8 @@ import type { FilingStatus, TaxBracket } from '../lib/calculations/tax/types';
 const TAX_YEAR = 2026;
 const VERIFIED_AT = '2026-09-03T00:00:00.000Z';
 const VERSION = '1.0.0';
+/** Date the IRS source for supplemental withholding was read, not the site's release date. */
+const SUPPLEMENTAL_VERIFIED_AT = '2026-09-04T00:00:00.000Z';
 
 function brackets(rows: Array<readonly [number | null, number]>): TaxBracket[] {
   return rows.map(([notOver, rate]) => ({ notOver, rate }));
@@ -292,6 +294,27 @@ async function main(): Promise<void> {
           [256_200, 0.32], [640_600, 0.35], [null, 0.37],
         ]),
       },
+    },
+    supplemental: {
+      taxYear: TAX_YEAR,
+      provider: 'Internal Revenue Service' as const,
+      sourceName: 'Publication 15 (2026), (Circular E), Employer\u2019s Tax Guide, section 7',
+      sourceUrl: 'https://www.irs.gov/publications/p15',
+      publishedAt: '2026-01-01T00:00:00.000Z',
+      verifiedAt: SUPPLEMENTAL_VERIFIED_AT,
+      sourceStatus: 'verified' as const,
+      version: VERSION,
+      optionalFlatRate: 0.22,
+      mandatoryFlatRate: 0.37,
+      mandatoryRateThreshold: 1_000_000,
+      notes: [
+        'Pub. 15 section 7: when supplemental wages are identified separately from regular wages, an employer may "withhold a flat 22% (no other percentage allowed)".',
+        'Pub. 15 section 7: where supplemental wages paid to one employee during the calendar year exceed $1 million, "the excess is subject to withholding at 37% (or the highest rate of income tax for the year)", withheld without regard to the employee\u2019s Form W-4.',
+        'Pub. 15 (2026) states the 22% and 37% rates remain in place because P.L. 119-21 permanently extended the individual rates enacted in P.L. 115-97.',
+        'The $1 million threshold counts cumulative supplemental wages for the calendar year, including payments from all businesses under common control.',
+        'These are withholding rates, not tax rates. Final liability for the year is settled on the tax return.',
+        'The aggregate method, in which the bonus is combined with regular wages and withheld from the Pub. 15-T tables, is an alternative this snapshot does not model.',
+      ],
     },
     fica: {
       taxYear: TAX_YEAR,

@@ -2,7 +2,7 @@ import { REFINANCE_ENGINE_ID, COMPOUND_INTEREST_ENGINE_ID, DEBT_PAYOFF_ENGINE_ID
 import { APPLIANCE_ENERGY_ENGINE_ID } from './calculations/energy/version';
 import { CAR_AFFORDABILITY_ENGINE_ID } from './calculations/vehicle/version';
 import { COST_OF_LIVING_ENGINE_ID } from './calculations/col/version';
-import { PAYCHECK_ENGINE_ID, SALARY_AFTER_TAX_ENGINE_ID } from './calculations/tax/version';
+import { BONUS_TAX_ENGINE_ID, PAYCHECK_ENGINE_ID, SALARY_AFTER_TAX_ENGINE_ID } from './calculations/tax/version';
 import { BMI_ENGINE_ID, BMR_ENGINE_ID, BODY_FAT_ENGINE_ID, CALORIE_ENGINE_ID, TDEE_ENGINE_ID } from './calculations/health/formulas';
 import { AGE_ENGINE_ID, DATE_ENGINE_ID, DAYS_FROM_TODAY_ENGINE_ID, TIME_CARD_ENGINE_ID, TIME_ENGINE_ID } from './calculations/datetime/version';
 import { FRACTION_ENGINE_ID, PERCENT_CHANGE_ENGINE_ID, PERCENTAGE_ENGINE_ID, RANDOM_NUMBER_ENGINE_ID, SCIENTIFIC_ENGINE_ID, TIP_ENGINE_ID } from './calculations/math/version';
@@ -188,6 +188,38 @@ export const tools: ToolDefinition[] = [
     relationships: [
       { toolId: 'salary-after-tax', type: 'uses-engine' },
       { toolId: 'home-affordability', type: 'next-decision' },
+    ],
+  },
+  {
+    id: 'bonus-tax',
+    path: '/money/bonus-tax',
+    title: 'Bonus Tax Calculator',
+    shortTitle: 'Bonus tax',
+    description: 'What actually lands from a bonus. Employers withhold a flat IRS supplemental rate on a separately paid bonus, not the rate your salary implies, which is why it looks over-taxed.',
+    category: 'money',
+    engine: BONUS_TAX_ENGINE_ID,
+    searchTerms: [
+      'bonus tax calculator',
+      'bonus tax',
+      'how much is my bonus after taxes',
+      'bonus after tax',
+      'why is my bonus taxed so much',
+      'supplemental wage withholding',
+      'bonus withholding rate',
+      'commission tax calculator',
+      'severance tax calculator',
+      'signing bonus after taxes',
+    ],
+    eyebrow: 'Flat supplemental withholding',
+    accent: 'mint',
+    featured: false,
+    resultNature: 'official-data-estimate',
+    indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 13, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
+    relationships: [
+      { toolId: 'salary-after-tax', type: 'uses-dataset' },
+      { toolId: 'paycheck', type: 'sibling' },
+      { toolId: 'hourly-to-salary', type: 'sibling' },
+      { toolId: '401k', type: 'next-decision' },
     ],
   },
   {
