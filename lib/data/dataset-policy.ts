@@ -11,6 +11,7 @@ export const DATASET_IDS = [
   'bea-rpp',
   'usda-food-plans',
   'irs-retirement-limits',
+  'gsa-perdiem',
 ] as const;
 
 export type DatasetId = (typeof DATASET_IDS)[number];
@@ -186,6 +187,18 @@ export const DATASET_POLICIES: Record<DatasetId, DatasetPolicy> = {
     releaseIntervalDays: 30,
     publicationLagDays: 1,
     releaseSchedule: 'Monthly food plan cost reports',
+  },
+  'gsa-perdiem': {
+    datasetId: 'gsa-perdiem',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 90,
+    refreshMode: 'scheduled',
+    providerShort: 'GSA',
+    periodKind: 'fiscal-year',
+    freshnessAnchor: 'published-at',
+    releaseIntervalDays: 365,
+    publicationLagDays: 0,
+    releaseSchedule: 'Per diem rates for the coming federal fiscal year, effective each 1 October',
   },
   'irs-retirement-limits': {
     datasetId: 'irs-retirement-limits',

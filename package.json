@@ -30,7 +30,8 @@
     "data:pmms": "tsx scripts/ingest-freddie-mac-pmms.ts",
     "data:refresh": "tsx scripts/refresh-snapshots.ts",
     "data:location": "tsx scripts/promote-phase7-snapshots.ts",
-    "data:tax": "tsx scripts/update-tax-snapshot.ts"
+    "data:tax": "tsx scripts/update-tax-snapshot.ts",
+    "data:perdiem": "tsx scripts/ingest-gsa-perdiem.ts"
   },
   "dependencies": {
     "next": "16.3.4",

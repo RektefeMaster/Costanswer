@@ -150,8 +150,8 @@
     "taxYear": 2026,
     "provider": "Internal Revenue Service",
     "sourceName": "Publication 15 (2026), (Circular E), Employer’s Tax Guide, section 7",
-    "sourceUrl": "https://www.irs.gov/publications/p15",
-    "publishedAt": "2026-01-01T00:00:00.000Z",
+    "sourceUrl": "https://www.irs.gov/pub/irs-pdf/p15.pdf",
+    "publishedAt": "2025-12-16T00:00:00.000Z",
     "verifiedAt": "2026-09-04T00:00:00.000Z",
     "sourceStatus": "verified",
     "version": "1.0.0",
@@ -164,6 +164,7 @@
       "Pub. 15 (2026) states the 22% and 37% rates remain in place because P.L. 119-21 permanently extended the individual rates enacted in P.L. 115-97.",
       "The $1 million threshold counts cumulative supplemental wages for the calendar year, including payments from all businesses under common control.",
       "These are withholding rates, not tax rates. Final liability for the year is settled on the tax return.",
+      "Publication date is the document date of the 2026 PDF edition (dc:title \"2026 Publication 15\", produced 2025-12-16). The publication carries no \"(Rev. Month Year)\" line, only \"For use in 2026\".",
       "The aggregate method, in which the bonus is combined with regular wages and withheld from the Pub. 15-T tables, is an alternative this snapshot does not model."
     ]
   },
@@ -1177,5 +1178,5 @@
       ]
     }
   ],
-  "normalizedSha256": "79b70d5c6df72499b1cd62225df88819aa7bb0ee5cbb9e2c72d58531dda21303"
+  "normalizedSha256": "5d9585ad87997719e9634ccd5a113afc9252aad74692fd68b614d701184b44ea"
 }

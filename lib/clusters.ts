@@ -52,7 +52,7 @@ export const TOOL_CLUSTERS = {
   },
   'date-time': {
     label: 'Dates and hours',
-    toolIds: ['date', 'days-from-today', 'business-days', 'age', 'time', 'time-card'],
+    toolIds: ['date', 'days-from-today', 'business-days', 'per-diem', 'age', 'time', 'time-card'],
   },
   arithmetic: {
     label: 'Everyday arithmetic',

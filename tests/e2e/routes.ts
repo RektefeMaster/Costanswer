@@ -24,6 +24,7 @@ const htmlPaths = [
   '/money/mortgage-payoff',
   '/money/refinance',
   '/money/bonus-tax',
+  '/everyday/per-diem',
   '/money/credit-card-payoff',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',

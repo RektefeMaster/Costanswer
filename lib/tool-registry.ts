@@ -7,6 +7,7 @@ import { BMI_ENGINE_ID, BMR_ENGINE_ID, BODY_FAT_ENGINE_ID, CALORIE_ENGINE_ID, TD
 import { AGE_ENGINE_ID, DATE_ENGINE_ID, DAYS_FROM_TODAY_ENGINE_ID, TIME_CARD_ENGINE_ID, TIME_ENGINE_ID } from './calculations/datetime/version';
 import { FRACTION_ENGINE_ID, PERCENT_CHANGE_ENGINE_ID, PERCENTAGE_ENGINE_ID, RANDOM_NUMBER_ENGINE_ID, SCIENTIFIC_ENGINE_ID, TIP_ENGINE_ID } from './calculations/math/version';
 import { CONVERSION_ENGINE_ID } from './calculations/conversion/units';
+import { PER_DIEM_ENGINE_ID } from './calculations/travel/version';
 import { GPA_ENGINE_ID, GRADE_ENGINE_ID, SQUARE_FOOTAGE_ENGINE_ID } from './calculations/education/formulas';
 import { CATEGORY_IDS, categories, type CategoryAccent, type CategoryId } from './categories';
 import { CLUSTER_IDS, TOOL_CLUSTERS, clusterNeighbours, clustersForTool } from './clusters';
@@ -582,6 +583,37 @@ export const tools: ToolDefinition[] = [
       { toolId: 'ev-vs-gas', type: 'sibling' },
       { toolId: 'home-affordability', type: 'next-decision' },
       { toolId: 'cost-of-living', type: 'sibling' },
+    ],
+  },
+  {
+    id: 'per-diem',
+    path: '/everyday/per-diem',
+    title: 'GSA Per Diem Trip Calculator',
+    shortTitle: 'Per diem',
+    description: 'Federal travel per diem for a trip in the continental U.S.: the GSA lodging ceiling for every night, meals and incidentals for every day, and the reduced rate on the first and last day of travel.',
+    category: 'everyday',
+    engine: PER_DIEM_ENGINE_ID,
+    searchTerms: [
+      'per diem calculator',
+      'gsa per diem',
+      'federal per diem rates',
+      'travel per diem calculator',
+      'per diem for a business trip',
+      'gsa lodging rate',
+      'meals and incidental expenses',
+      'm&ie rate',
+      'first and last day per diem',
+      'government travel reimbursement',
+    ],
+    eyebrow: 'GSA rates for federal travel',
+    accent: 'rose',
+    featured: false,
+    resultNature: 'official-data-estimate',
+    indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 13, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
+    relationships: [
+      { toolId: 'business-days', type: 'sibling' },
+      { toolId: 'road-trip-fuel', type: 'next-decision' },
+      { toolId: 'date', type: 'uses-engine' },
     ],
   },
   {

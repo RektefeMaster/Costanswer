@@ -11,6 +11,7 @@ import { acsSnapshot } from '@/lib/data/acs-snapshot';
 import { beaRppSnapshot } from '@/lib/data/bea-rpp-snapshot';
 import { resolveHudFmrSnapshot, hudLatestPublishedSnapshot } from '@/lib/data/hud-fmr-snapshot';
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
+import { gsaPerDiemSnapshot } from '@/lib/data/gsa-perdiem-snapshot';
 import { irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
 import { datasetSourceDisplay, officialDatasetJsonLd } from '@/lib/data/source-display';
@@ -103,6 +104,14 @@ const usdaSource = datasetSourceDisplay({
   publishedAt: usdaFoodSnapshot.publishedAt,
   verifiedAt: usdaFoodSnapshot.verifiedAt,
   fetchedAt: usdaFoodSnapshot.fetchedAt,
+});
+const perDiemSource = datasetSourceDisplay({
+  datasetId: 'gsa-perdiem',
+  observationPeriod: gsaPerDiemSnapshot.observationPeriod,
+  sourceStatus: gsaPerDiemSnapshot.sourceStatus,
+  publishedAt: gsaPerDiemSnapshot.publishedAt,
+  verifiedAt: gsaPerDiemSnapshot.verifiedAt,
+  fetchedAt: gsaPerDiemSnapshot.fetchedAt,
 });
 const irsRetirementSource = datasetSourceDisplay({
   datasetId: 'irs-retirement-limits',
@@ -232,6 +241,7 @@ const ALL_SOURCES = [
   { label: 'HUD Fair Market Rents', source: hudSource },
   { label: 'BEA Regional Price Parities', source: beaSource },
   { label: 'USDA Food Plans', source: usdaSource },
+  { label: 'GSA travel per diem', source: perDiemSource },
 ];
 
 export default function DataSourcesPage() {
@@ -493,6 +503,30 @@ export default function DataSourcesPage() {
       <p>Electricity prices are average residential rates, not your utility rate. Gasoline prices are EIA weekly regular averages for a state or PADD region, not a pump. Grocery staples are BLS average retail prices for the U.S. city average or a census region; they are not a household food budget. Mortgage rates are Freddie Mac national weekly averages, not a lender quote. CPI-U is the average urban price level, not your personal basket. Tax results are estimated annual liability from published IRS, SSA, and state schedules, not a prepared return or employer withholding. HUD FMR is a gross-rent benchmark, not listing rent. BEA RPP is a spatial price index, not inflation. USDA Food Plans are food at home. None of this is Walmart, Kroger, Costco, or a weekly circular.</p>
       <h2>When it updates</h2>
       <p>A normal new period can go live after the checks pass. Odd unit changes, missing states, duplicates, or big jumps wait for a person to look. If a check fails, the last good copy stays on the site. Tax snapshots and IRS retirement-limit copies are yearly official releases, not a weekly fetch. Census, HUD, and BEA are annual; an old reference year is not automatically stale. HUD effectiveness is separate from publication: a future fiscal year can be on file without becoming the default. Source status (preliminary, final, revised, or verified) is not the same as freshness (fresh or stale).</p>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>GSA travel per diem, continental U.S.</h2>
+        <dl>
+          <div><dt>Observation period</dt><dd>FY{gsaPerDiemSnapshot.fiscalYear}</dd></div>
+          {freshnessRows(perDiemSource)}
+          <div><dt>Source status</dt><dd>{gsaPerDiemSnapshot.sourceStatus}</dd></div>
+          <div><dt>Effective</dt><dd>{gsaPerDiemSnapshot.effectiveFrom} to {gsaPerDiemSnapshot.effectiveTo}</dd></div>
+          <div><dt>Destinations</dt><dd>{gsaPerDiemSnapshot.destinations.length} CONUS localities and state standard rates</dd></div>
+          <div><dt>M&amp;IE tiers</dt><dd>{gsaPerDiemSnapshot.mieBreakdowns.map((tier) => `$${tier.total}`).join(' · ')}</dd></div>
+          <div><dt>First and last day</dt><dd>75% of the daily M&amp;IE rate, as published by GSA</dd></div>
+        </dl>
+        <p>{gsaPerDiemSnapshot.attribution}</p>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{gsaPerDiemSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{gsaPerDiemSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{gsaPerDiemSnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{gsaPerDiemSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
+        <p className="dataset-links"><a href={gsaPerDiemSnapshot.sourceDocumentationUrl}>GSA per diem rates ↗</a><a href={gsaPerDiemSnapshot.mieBreakdownUrl}>M&amp;IE breakdown ↗</a></p>
+      </section>
     </InfoPage>
   );
 }
