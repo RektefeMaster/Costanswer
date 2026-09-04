@@ -146,14 +146,33 @@ describe('appliance electricity calculator', () => {
     expect(result.breakdown.find((step) => step.label === 'Electricity rate')?.detail).toBe('Manual electricity rate');
   });
 
-  it('still computes when the official electricity snapshot is stale', () => {
+  it('counts only the hours a cycling appliance actually draws power', () => {
+    // A fridge is plugged in 24 hours a day but its compressor is not. Counting
+    // nameplate watts for every clock hour put a 150 W fridge at about
+    // 1,300 kWh a year, roughly three times a real one.
+    const continuous = calculateApplianceElectricity({
+      watts: 150, hoursPerDay: 24, daysPerWeek: 7, rateCentsPerKwh: 15,
+    });
+    const cycling = calculateApplianceElectricity({
+      watts: 150, hoursPerDay: 24, daysPerWeek: 7, dutyCyclePercent: 35, rateCentsPerKwh: 15,
+    });
+    expect(continuous.value.dutyCyclePercent).toBe(100);
+    expect(cycling.value.dutyCyclePercent).toBe(35);
+    expect(cycling.value.kwhPerYear).toBeCloseTo(continuous.value.kwhPerYear * 0.35, 5);
+    expect(cycling.value.kwhPerYear).toBeGreaterThan(300);
+    expect(cycling.value.kwhPerYear).toBeLessThan(600);
+    expect(cycling.assumptions.join(' ')).toMatch(/cycle rather than running continuously/);
+  });
+
+  it('still computes when the official electricity snapshot has fallen behind', () => {
     const source = datasetSourceDisplay({
       datasetId: 'eia-electricity',
       observationPeriod: electricitySnapshot.observationPeriod,
       sourceStatus: electricitySnapshot.sourceStatus,
+      asOf: '2026-11-15',
     });
     expect(source.freshness).toBe('stale');
-    expect(source.freshnessNote).toBe('Latest available official data');
+    expect(source.freshnessLabel).toBe('Older than the expected update window');
     expect(source.sourceStatus).toBe('preliminary');
     const result = calculateApplianceElectricity({
       watts: 1000,

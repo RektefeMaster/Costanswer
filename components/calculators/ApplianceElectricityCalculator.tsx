@@ -14,16 +14,20 @@ type ApplianceExample = {
   label: string;
   watts: string;
   hoursPerDay: string;
+  /** Share of the on-hours the compressor or element actually draws power. */
+  dutyCyclePercent: string;
   daysPerWeek: string;
 };
 
 const APPLIANCE_EXAMPLES: ApplianceExample[] = [
-  { id: 'air-conditioner', label: 'Air conditioner', watts: '1500', hoursPerDay: '8', daysPerWeek: '7' },
-  { id: 'space-heater', label: 'Space heater', watts: '1500', hoursPerDay: '4', daysPerWeek: '7' },
-  { id: 'gaming-pc', label: 'Gaming PC', watts: '400', hoursPerDay: '5', daysPerWeek: '7' },
-  { id: 'refrigerator', label: 'Refrigerator', watts: '150', hoursPerDay: '24', daysPerWeek: '7' },
-  { id: 'clothes-dryer', label: 'Clothes dryer', watts: '3000', hoursPerDay: '1', daysPerWeek: '3' },
-  { id: 'pool-pump', label: 'Pool pump', watts: '1500', hoursPerDay: '8', daysPerWeek: '7' },
+  // Thermostat-controlled appliances cycle. Counting nameplate watts for every
+  // clock hour overstated a refrigerator by roughly three times.
+  { id: 'air-conditioner', label: 'Air conditioner', watts: '1500', hoursPerDay: '8', daysPerWeek: '7', dutyCyclePercent: '60' },
+  { id: 'space-heater', label: 'Space heater', watts: '1500', hoursPerDay: '4', daysPerWeek: '7', dutyCyclePercent: '70' },
+  { id: 'gaming-pc', label: 'Gaming PC', watts: '400', hoursPerDay: '5', daysPerWeek: '7', dutyCyclePercent: '100' },
+  { id: 'refrigerator', label: 'Refrigerator', watts: '150', hoursPerDay: '24', daysPerWeek: '7', dutyCyclePercent: '35' },
+  { id: 'clothes-dryer', label: 'Clothes dryer', watts: '3000', hoursPerDay: '1', daysPerWeek: '3', dutyCyclePercent: '100' },
+  { id: 'pool-pump', label: 'Pool pump', watts: '1500', hoursPerDay: '8', daysPerWeek: '7', dutyCyclePercent: '100' },
 ];
 
 export function ApplianceElectricityCalculator({
@@ -39,6 +43,7 @@ export function ApplianceElectricityCalculator({
   const [watts, setWatts] = useState('1500');
   const [hoursPerDay, setHoursPerDay] = useState('8');
   const [daysPerWeek, setDaysPerWeek] = useState('7');
+  const [dutyCyclePercent, setDutyCyclePercent] = useState('60');
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [customRate, setCustomRate] = useState('');
   const selected = rates.find((rate) => rate.stateCode === stateCode) ?? rates[0];
@@ -56,6 +61,7 @@ export function ApplianceElectricityCalculator({
     setWatts(example.watts);
     setHoursPerDay(example.hoursPerDay);
     setDaysPerWeek(example.daysPerWeek);
+    setDutyCyclePercent(example.dutyCyclePercent);
   };
 
   const editWatts = (value: string) => {
@@ -71,6 +77,7 @@ export function ApplianceElectricityCalculator({
             watts: Number(watts),
             hoursPerDay: Number(hoursPerDay),
             daysPerWeek: Number(daysPerWeek),
+            dutyCyclePercent: Number(dutyCyclePercent),
             rateCentsPerKwh: effectiveRate,
           },
           usingManualRate
@@ -82,7 +89,7 @@ export function ApplianceElectricityCalculator({
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [watts, hoursPerDay, daysPerWeek, effectiveRate, usingManualRate, snapshotId]);
+  }, [watts, hoursPerDay, daysPerWeek, dutyCyclePercent, effectiveRate, usingManualRate, snapshotId]);
 
   const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
   const kwh = (value: number) => `${value.toLocaleString('en-US')} kWh`;
@@ -94,7 +101,7 @@ export function ApplianceElectricityCalculator({
       toolId="appliance-electricity"
       category="home"
       calculationState={calculation.result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([watts, hoursPerDay, daysPerWeek, stateCode, customRate])}
+      calculationSignature={JSON.stringify([watts, hoursPerDay, daysPerWeek, dutyCyclePercent, stateCode, customRate])}
     >
       <div className="data-callout">
         <span>EIA MONTHLY DATA</span>
@@ -102,7 +109,7 @@ export function ApplianceElectricityCalculator({
           <strong>{selected.stateName}: {selected.priceCentsPerKwh.toFixed(2)}¢/kWh</strong>
           <small>
             {source.line}
-            {source.freshnessNote ? ` · ${source.freshnessNote}` : ''}
+            {source.freshness !== 'current' ? ` · ${source.freshnessLabel}` : ''}
           </small>
         </p>
       </div>
@@ -140,6 +147,15 @@ export function ApplianceElectricityCalculator({
             <input id="appliance-days" type="number" min="0" max="7" step="1" inputMode="decimal" value={daysPerWeek} onChange={(event) => { setExampleId(''); setDaysPerWeek(event.target.value); }} />
           </InputShell>
         </Field>
+        <Field
+          label="Running share of those hours"
+          htmlFor="appliance-duty"
+          hint="Fridges, freezers, and air conditioners cycle on and off. 100% means it draws full power the whole time."
+        >
+          <InputShell suffix="%">
+            <input id="appliance-duty" type="number" min="1" max="100" step="5" inputMode="decimal" value={dutyCyclePercent} onChange={(event) => { setExampleId(''); setDutyCyclePercent(event.target.value); }} />
+          </InputShell>
+        </Field>
         <Field label="State" htmlFor="appliance-state">
           <span className="input-shell select-shell">
             <select id="appliance-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomRate(''); }}>
@@ -173,7 +189,7 @@ export function ApplianceElectricityCalculator({
           <p className="data-footnote">
             {usingManualRate
               ? 'Electricity: your entered rate. The EIA state average is not used in this result.'
-              : `Electricity: EIA ${selected.stateName} residential average for ${source.periodLabel}${source.freshnessNote ? `. ${source.freshnessNote}.` : '.'}`}
+              : `Electricity: EIA ${selected.stateName} residential average for ${source.periodLabel}${source.freshnessNote ? `. ${source.freshnessNote}` : '.'}`}
           </p>
           <ResultDetails
             breakdown={calculation.result.breakdown}

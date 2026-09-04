@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateMortgagePayoff } from '@/lib/calculations/mortgage-payoff';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 import { money } from './finance-format';
 
 export function MortgagePayoffCalculator() {
@@ -43,7 +44,7 @@ export function MortgagePayoffCalculator() {
         <div className="calculation-output">
           <PrimaryResult
             label="Pay off sooner by"
-            value={`${Math.floor(calculation.result.value.monthsSaved / 12)} years ${calculation.result.value.monthsSaved % 12} months`}
+            value={`${pluralize(Math.floor(calculation.result.value.monthsSaved / 12), 'year', 'years')} ${pluralize(calculation.result.value.monthsSaved % 12, 'month', 'months')}`}
             note={calculation.result.value.acceleratedPayoffDate ? `Estimated payoff ${calculation.result.value.acceleratedPayoffDate}` : `${calculation.result.value.acceleratedMonths} remaining payments`}
             tone="mint"
           />

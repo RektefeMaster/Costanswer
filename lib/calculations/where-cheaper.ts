@@ -62,6 +62,26 @@ export type WhereCheaperValue = {
   mostExpensive: RankedPlace;
   ranked: RankedPlace[];
   uniqueGeographies: Array<{ label: string; amount: number; rank: number; stateCount: number }>;
+  /**
+   * Where the home place sits among the *published* geographies.
+   *
+   * Ranking states was misleading wherever the provider does not publish by
+   * state. BLS prices these staples for four census regions, so all 17 southern
+   * states carry one number; saying "Texas ranks 13 of 51" implied 51
+   * measurements where there are four. This ranks the geography that was
+   * actually measured, and names it.
+   */
+  geographyRanking: {
+    /** What one rank position represents, e.g. "census regions". */
+    unitLabel: string;
+    /** The measured geography the home state belongs to. */
+    homeLabel: string;
+    homeRank: number;
+    total: number;
+    /** True when several states share the home geography's single published figure. */
+    sharedAcrossStates: boolean;
+    statesSharing: number;
+  };
   groceryStaples: GroceryStapleRow[];
   benchmarkLabel: string;
   benchmarkAmount: number;
@@ -85,6 +105,41 @@ function rankPlaces(rows: PlaceSeed[]): RankedPlace[] {
     if (index > 0 && sorted[index - 1].amount !== row.amount) rank = index + 1;
     return { ...row, rank, tiedCount: tiedCountByAmount.get(row.amount) ?? 1 };
   });
+}
+
+const GEOGRAPHY_UNIT_LABELS: Record<RankedPlace['geographyKind'], string> = {
+  state: 'states',
+  padd: 'published fuel regions',
+  'census-region': 'census regions',
+};
+
+function geographyRanking(
+  ranked: RankedPlace[],
+  home: RankedPlace,
+  geographies: WhereCheaperValue['uniqueGeographies'],
+): WhereCheaperValue['geographyRanking'] {
+  const ordered = [...geographies].sort((left, right) => left.amount - right.amount || left.label.localeCompare(right.label));
+  let position = 1;
+  const positions = ordered.map((row, index) => {
+    if (index > 0 && ordered[index - 1].amount !== row.amount) position = index + 1;
+    return { ...row, position };
+  });
+  const homeRow = positions.find((row) => row.label === home.geographyLabel);
+  if (!homeRow) throw new Error(`Home geography ${home.geographyLabel} is missing from the ranked set.`);
+  // A mixed set (some states priced directly, some folded into a fuel region)
+  // has no single honest unit, so it falls back to naming the places compared.
+  const kinds = new Set(ranked.map((row) => row.geographyKind));
+  const unitLabel = kinds.size === 1
+    ? GEOGRAPHY_UNIT_LABELS[[...kinds][0]]
+    : 'published price areas';
+  return {
+    unitLabel,
+    homeLabel: home.geographyLabel,
+    homeRank: homeRow.position,
+    total: positions.length,
+    sharedAcrossStates: homeRow.stateCount > 1,
+    statesSharing: homeRow.stateCount,
+  };
 }
 
 function uniqueGeographies(ranked: RankedPlace[]): WhereCheaperValue['uniqueGeographies'] {
@@ -320,6 +375,7 @@ export function compareWhereCheaper(rawInput: unknown, datasets: WhereCheaperDat
   if (!home || !compare) throw new Error('The selected states are missing from the published snapshot.');
   const cheapest = ranked[0];
   const mostExpensive = ranked[ranked.length - 1];
+  const geographies = uniqueGeographies(ranked);
   const savings = round(compare.amount - home.amount);
   const cheaperPlace = savings > 0 ? 'home' : savings < 0 ? 'compare' : 'tie';
   const comparison = benchmark(input.kind, ranked, datasets, input);
@@ -346,7 +402,8 @@ export function compareWhereCheaper(rawInput: unknown, datasets: WhereCheaperDat
       cheapest,
       mostExpensive,
       ranked,
-      uniqueGeographies: uniqueGeographies(ranked),
+      uniqueGeographies: geographies,
+      geographyRanking: geographyRanking(ranked, home, geographies),
       groceryStaples: groceryStaples(datasets.grocery, input.homeState, input.compareState),
       benchmarkLabel: comparison.label,
       benchmarkAmount: comparison.amount,

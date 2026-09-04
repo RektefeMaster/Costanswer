@@ -14,7 +14,7 @@ export default function DaysFromTodayPage() {
       caution="This adds whole calendar days to today. It does not skip weekends or federal holidays."
       methodology={[
         { title: 'Today plus N', body: 'The only offset is a whole number of calendar days forward or back from an injected today date.' },
-        { title: 'Why a separate page', body: 'Queries like “30 days from today” want this short path, not the general Date Calculator with months and years.' },
+        { title: 'When to use this one', body: 'Use this when you only need a number of calendar days from today. For months, years, or a span between two dates, use the Date Calculator.' },
         { title: 'Timezone', body: 'Today is a calendar date, not a timestamp, so DST cannot drop or add a day.' },
       ]}
     >

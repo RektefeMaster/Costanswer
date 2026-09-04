@@ -99,6 +99,25 @@ function winnerLabel(board: WhereCheaperValue): string {
   return board.cheaperPlace === 'home' ? `${board.home.stateName} is lower` : `${board.compare.stateName} is lower`;
 }
 
+/**
+ * Rank the geography the provider actually measured.
+ *
+ * BLS publishes these grocery staples for four census regions, so seventeen
+ * southern states share one figure. Reporting a 1-of-51 position off that
+ * shared number read as a state-level measurement that does not exist.
+ */
+function rankingNote(
+  homeName: string,
+  ranking: WhereCheaperValue['geographyRanking'],
+  kindLabel: string,
+): string {
+  const place = ranking.sharedAcrossStates ? ranking.homeLabel : homeName;
+  const shared = ranking.sharedAcrossStates
+    ? ` One published figure covers ${ranking.statesSharing} states, including ${homeName}.`
+    : '';
+  return `${kindLabel} · ${place} ranks ${ranking.homeRank} of ${ranking.total} ${ranking.unitLabel}.${shared}`;
+}
+
 export function WhereCheaperCalculator({
   electricity,
   electricitySnapshotId,
@@ -318,7 +337,7 @@ export function WhereCheaperCalculator({
           <PrimaryResult
             label={headline}
             value={selected.value.cheaperPlace === 'tie' ? 'Same published average' : `${money(Math.abs(selected.value.savings))} ${selected.value.cheaperPlace === 'home' ? 'less' : 'more'} in ${homeName}`}
-            note={`${KIND_LABELS[kind]} · ${homeName} ranks ${selected.value.home.rank} of ${selected.value.ranked.length}. ${selected.value.home.geographyLabel}.`}
+            note={rankingNote(homeName, selected.value.geographyRanking, KIND_LABELS[kind])}
             tone="violet"
           />
           <div className="rank-table-wrap">

@@ -5,6 +5,7 @@ import { gasolineSnapshot } from '@/lib/data/gasoline-snapshot';
 import { grocerySnapshot } from '@/lib/data/grocery-snapshot';
 import { mortgageRateSnapshot } from '@/lib/data/mortgage-rate-snapshot';
 import { cpiSnapshot } from '@/lib/data/cpi-snapshot';
+import { describeCpiMonths, missingCpiMonths } from '@/lib/data/bls-cpi';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { acsSnapshot } from '@/lib/data/acs-snapshot';
 import { beaRppSnapshot } from '@/lib/data/bea-rpp-snapshot';
@@ -207,10 +208,14 @@ function freshnessRows(source: ReturnType<typeof datasetSourceDisplay>) {
   return (
     <>
       <div><dt>Source line</dt><dd>{source.line}</dd></div>
-      <div><dt>Freshness</dt><dd>{source.freshness}{source.freshnessNote ? ` · ${source.freshnessNote}` : ''}</dd></div>
+      <div><dt>Freshness</dt><dd>{source.freshnessLabel}</dd></div>
+      <div><dt>Provider schedule</dt><dd>{source.releaseSchedule}. Next release expected {source.nextExpectedRelease}.</dd></div>
+      {source.freshnessNote && <div><dt>Note</dt><dd>{source.freshnessNote}</dd></div>}
     </>
   );
 }
+
+const cpiGaps = missingCpiMonths(cpiSnapshot.observations);
 
 export default function DataSourcesPage() {
   return (
@@ -220,93 +225,127 @@ export default function DataSourcesPage() {
         <p><span className="status-dot" /> Current copy</p>
         <h2>Freddie Mac weekly mortgage rate averages</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{mortgageRateSnapshot.snapshotId}</dd></div>
           <div><dt>Observation period</dt><dd>{mortgageRateSnapshot.observationPeriod}</dd></div>
           {freshnessRows(mortgageSource)}
           <div><dt>Source status</dt><dd>{mortgageRateSnapshot.sourceStatus}</dd></div>
           <div><dt>Cadence</dt><dd>{DATASET_POLICIES['freddie-mac-pmms'].expectedCadence}</dd></div>
           <div><dt>30-year fixed</dt><dd>{mortgageRateSnapshot.thirtyYearFixedPercent.toFixed(2)}%</dd></div>
           <div><dt>15-year fixed</dt><dd>{mortgageRateSnapshot.fifteenYearFixedPercent.toFixed(2)}%</dd></div>
-          <div><dt>Adapter</dt><dd>{mortgageRateSnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{mortgageRateSnapshot.schemaVersion}</dd></div>
         </dl>
         <p>{mortgageRateSnapshot.attribution}</p>
-        <ul>{mortgageRateSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{mortgageRateSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{mortgageRateSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{mortgageRateSnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{mortgageRateSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
         <p className="dataset-links"><a href={mortgageRateSnapshot.sourceDocumentationUrl}>PMMS page ↗</a><a href={mortgageRateSnapshot.termsUrl}>Legal ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>BLS CPI-U all-items index</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{cpiSnapshot.snapshotId}</dd></div>
           <div><dt>Observation period</dt><dd>{cpiSnapshot.observationPeriod}</dd></div>
           {freshnessRows(cpiSource)}
           <div><dt>Source status</dt><dd>{cpiSnapshot.sourceStatus}</dd></div>
           <div><dt>Cadence</dt><dd>{DATASET_POLICIES['bls-cpi'].expectedCadence}</dd></div>
           <div><dt>Months</dt><dd>{cpiSnapshot.observations.length} published months since 1913</dd></div>
-          <div><dt>Adapter</dt><dd>{cpiSnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{cpiSnapshot.schemaVersion}</dd></div>
         </dl>
         <p>{cpiSnapshot.attribution}</p>
-        <ul>{cpiSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        {/*
+          The stored snapshot carries the wording it was hashed with. Coverage
+          is derived from the observations instead so the page reads correctly
+          without reopening a sealed dataset.
+        */}
+        <ul>
+          {cpiSnapshot.validationReport.slice(0, -1).map((item) => <li key={item}>{item}</li>)}
+          <li>{cpiGaps.length === 0
+            ? 'Every month in the range has a published CPI-U value.'
+            : `${describeCpiMonths(cpiGaps)} not published by BLS, so ${cpiGaps.length === 1 ? 'it is' : 'they are'} not offered as a starting month.`}</li>
+        </ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{cpiSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{cpiSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{cpiSnapshot.schemaVersion}</dd></div>
+          </dl>
+        </details>
         <p className="dataset-links"><a href={cpiSnapshot.sourceDocumentationUrl}>CPI overview ↗</a><a href={cpiSnapshot.termsUrl}>Linking policy ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>EIA residential electricity prices by state</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{electricitySnapshot.snapshotId}</dd></div>
           <div><dt>Observation period</dt><dd>{electricitySnapshot.observationPeriod}</dd></div>
           {freshnessRows(electricitySource)}
           <div><dt>Source status</dt><dd>{electricitySnapshot.sourceStatus}</dd></div>
           <div><dt>Cadence</dt><dd>{DATASET_POLICIES['eia-electricity'].expectedCadence}</dd></div>
           <div><dt>Geographies</dt><dd>{electricitySnapshot.states.length} states/DC rows</dd></div>
-          <div><dt>Adapter</dt><dd>{electricitySnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{electricitySnapshot.schemaVersion}</dd></div>
         </dl>
         <p>{electricitySnapshot.attribution}</p>
-        <ul>{electricitySnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{electricitySnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{electricitySnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{electricitySnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{electricitySnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
         <p className="dataset-links"><a href={electricitySnapshot.sourceDocumentationUrl}>API documentation ↗</a><a href={electricitySnapshot.termsUrl}>Terms of service ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>EIA weekly regular gasoline prices</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{gasolineSnapshot.snapshotId}</dd></div>
           <div><dt>Observation period</dt><dd>{gasolineSnapshot.observationPeriod}</dd></div>
           {freshnessRows(gasolineSource)}
           <div><dt>Source status</dt><dd>{gasolineSnapshot.sourceStatus}</dd></div>
           <div><dt>Cadence</dt><dd>{DATASET_POLICIES['eia-gasoline'].expectedCadence}</dd></div>
           <div><dt>Geographies</dt><dd>{gasolineSnapshot.geographies.length} U.S., PADD and selected-state series</dd></div>
-          <div><dt>Adapter</dt><dd>{gasolineSnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{gasolineSnapshot.schemaVersion}</dd></div>
         </dl>
         <p>{gasolineSnapshot.attribution}</p>
-        <ul>{gasolineSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{gasolineSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{gasolineSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{gasolineSnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{gasolineSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
         <p className="dataset-links"><a href={gasolineSnapshot.sourceDocumentationUrl}>Weekly gasoline page ↗</a><a href={gasolineSnapshot.termsUrl}>Reuse policy ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>BLS average grocery staple prices</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{grocerySnapshot.snapshotId}</dd></div>
           <div><dt>Observation period</dt><dd>{grocerySnapshot.observationPeriod}</dd></div>
           {freshnessRows(grocerySource)}
           <div><dt>Source status</dt><dd>{grocerySnapshot.sourceStatus}</dd></div>
           <div><dt>Cadence</dt><dd>{DATASET_POLICIES['bls-grocery'].expectedCadence}</dd></div>
           <div><dt>Items</dt><dd>{grocerySnapshot.items.length} national staples</dd></div>
-          <div><dt>Adapter</dt><dd>{grocerySnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{grocerySnapshot.schemaVersion}</dd></div>
         </dl>
         <p>{grocerySnapshot.attribution}</p>
-        <ul>{grocerySnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{grocerySnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{grocerySnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{grocerySnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{grocerySnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
         <p className="dataset-links"><a href={grocerySnapshot.sourceDocumentationUrl}>Average price documentation ↗</a><a href={grocerySnapshot.termsUrl}>Linking policy ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>U.S. tax year snapshots</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{taxSnapshot.snapshotId}</dd></div>
           <div><dt>Tax year</dt><dd>{taxSnapshot.taxYear}</dd></div>
           {freshnessRows(taxSource)}
           <div><dt>Source status</dt><dd>{taxSnapshot.sourceStatus}</dd></div>
@@ -314,17 +353,22 @@ export default function DataSourcesPage() {
           <div><dt>Federal</dt><dd>{taxSnapshot.federal.sourceName}</dd></div>
           <div><dt>Social Security wage base</dt><dd>${taxSnapshot.fica.socialSecurityWageBase.toLocaleString('en-US')}</dd></div>
           <div><dt>Supported states</dt><dd>{taxSnapshot.states.filter((row) => row.status === 'supported').length} of {taxSnapshot.states.length}</dd></div>
-          <div><dt>Adapter</dt><dd>{taxSnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{taxSnapshot.schemaVersion}</dd></div>
         </dl>
         <p>Federal brackets and the standard deduction come from the IRS. The Social Security wage base comes from SSA. State rows are either a verified agency/statute schedule or an explicit unsupported marker. Unsupported states are omitted from the state tax line; they are not guessed. A later tax year is a new year-keyed file; it does not replace 2026.</p>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{taxSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{taxSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{taxSnapshot.schemaVersion}</dd></div>
+          </dl>
+        </details>
         <p className="dataset-links"><a href={taxSnapshot.federal.sourceUrl}>IRS source ↗</a><a href={taxSnapshot.fica.sourceUrl}>SSA wage base ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>IRS retirement contribution limits</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{irsRetirementSnapshot.snapshotId}</dd></div>
           <div><dt>Tax year</dt><dd>{irsRetirementSnapshot.observationPeriod}</dd></div>
           {freshnessRows(irsRetirementSource)}
           <div><dt>Source status</dt><dd>{irsRetirementSnapshot.sourceStatus}</dd></div>
@@ -335,11 +379,17 @@ export default function DataSourcesPage() {
           <div><dt>Defined-contribution overall</dt><dd>${irsRetirementSnapshot.limits.definedContributionOverall.toLocaleString('en-US')}</dd></div>
           <div><dt>IRA</dt><dd>${irsRetirementSnapshot.limits.iraLimit.toLocaleString('en-US')} + ${irsRetirementSnapshot.limits.catchUpIraAge50.toLocaleString('en-US')} age 50+</dd></div>
           <div><dt>Roth catch-up wage threshold</dt><dd>${irsRetirementSnapshot.limits.rothCatchUpPriorYearFicaWageThreshold.toLocaleString('en-US')} prior-year FICA</dd></div>
-          <div><dt>Adapter</dt><dd>{irsRetirementSnapshot.adapterVersion}</dd></div>
-          <div><dt>Schema</dt><dd>{irsRetirementSnapshot.schemaVersion}</dd></div>
         </dl>
         <p>{irsRetirementSnapshot.attribution}</p>
-        <ul>{irsRetirementSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{irsRetirementSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{irsRetirementSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{irsRetirementSnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{irsRetirementSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
         <p className="dataset-links"><a href={irsRetirementSnapshot.sourceUrl}>IR-2025-111 ↗</a><a href={irsRetirementSnapshot.colaTableUrl}>COLA table ↗</a><a href={irsRetirementSnapshot.noticeUrl}>Notice 2025-67 ↗</a></p>
       </section>
       <section className="dataset-card">
@@ -371,24 +421,34 @@ export default function DataSourcesPage() {
         <p><span className="status-dot" /> Current copy</p>
         <h2>BEA Regional Price Parities</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{beaRppSnapshot.snapshotId}</dd></div>
           <div><dt>Reference year</dt><dd>{beaRppSnapshot.referenceYear}</dd></div>
           {freshnessRows(beaSource)}
           <div><dt>National</dt><dd>{beaRppSnapshot.national}</dd></div>
         </dl>
         <p>RPP is a regional price-level index for a given year. 100 is the U.S. average for that year. 106 means prices in BEA’s consumption mix are about 6% above the national level. It is not a household budget, and a change from 2023 to 2024 is not an inflation rate. The cost-of-living model shows RPP as context. It does not multiply HUD, EIA, or USDA dollar amounts by RPP.</p>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{beaRppSnapshot.snapshotId}</dd></div>
+          </dl>
+        </details>
         <p className="dataset-links"><a href={beaRppSnapshot.sourceUrl}>BEA state RPP ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>USDA Food Plans</h2>
         <dl>
-          <div><dt>Snapshot</dt><dd>{usdaFoodSnapshot.snapshotId}</dd></div>
           <div><dt>Report month</dt><dd>{usdaFoodSnapshot.reportMonth}</dd></div>
           {freshnessRows(usdaSource)}
           <div><dt>Default plan</dt><dd>Moderate-Cost</dd></div>
         </dl>
         <p>Food Plans are official food-at-home planning baskets, not restaurant spending and not all household food. Household-size adjustments are USDA’s published factors. Alaska and Hawaii official extras in this copy are for the Thrifty reference family only. BLS grocery staples remain a separate item-price dataset; they do not include household quantities, so they are not used as a city grocery budget.</p>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{usdaFoodSnapshot.snapshotId}</dd></div>
+          </dl>
+        </details>
         <p className="dataset-links"><a href={usdaFoodSnapshot.sourceUrl}>USDA monthly reports ↗</a></p>
       </section>
       <h2>How to read this</h2>

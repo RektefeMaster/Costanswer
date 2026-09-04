@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { categories, getRelatedTools, type ToolDefinition } from '@/lib/tool-registry';
+import { categories, getRelatedTools, type ResultNature, type ToolDefinition } from '@/lib/tool-registry';
 import { siteConfig } from '@/lib/site-config';
 import { breadcrumbJsonLd, toolJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -22,6 +22,41 @@ type ToolPageProps = {
   methodology: Array<{ title: string; body: string }>;
   sources?: SourceItem[];
   caution?: string;
+};
+
+/**
+ * What the note beside a result should say, per kind of result.
+ *
+ * A single "This is an estimate" heading sat over exact fraction arithmetic and
+ * a random number generator as readily as over a modelled cost. Each kind gets
+ * a heading that is true of it, so the word "estimate" keeps its meaning on the
+ * pages that need it.
+ */
+const RESULT_NOTES: Record<ResultNature, { heading: string; body: string }> = {
+  exact: {
+    heading: 'This is an exact calculation.',
+    body: 'The arithmetic is exact for the numbers you enter. Open the steps to see it worked through.',
+  },
+  'official-data-estimate': {
+    heading: 'This uses published official data.',
+    body: 'An official average is not your bill or your quote. The source and its date sit next to the answer. Compare with a real one if you have it.',
+  },
+  projection: {
+    heading: 'This is a projection, not a forecast.',
+    body: 'It shows what the return and contributions you entered would produce. Real markets do not deliver a steady rate.',
+  },
+  'planning-model': {
+    heading: 'This is a planning guideline.',
+    body: 'The bands here are our own thresholds, not a lender or dealer decision. Treat the ranges as rough.',
+  },
+  'formula-estimate': {
+    heading: 'This is a published formula, not a measurement.',
+    body: 'The equation is applied exactly, but it estimates a quantity it cannot measure. Open what we assumed.',
+  },
+  random: {
+    heading: 'These numbers are generated.',
+    body: 'Each result is new and is not a calculation of anything. Not for lotteries, prize draws, or security keys.',
+  },
 };
 
 export function ToolPage({ tool, children, methodology, sources = [], caution }: ToolPageProps) {
@@ -63,8 +98,8 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
           <aside className="tool-rail" aria-label="Tool information">
             <div className="rail-card">
               <p className="rail-kicker">Note</p>
-              <h2>This is an estimate.</h2>
-              <p>{caution ?? 'Check the numbers that matter. Open what we assumed. Compare with a bill or a quote if you have one.'}</p>
+              <h2>{RESULT_NOTES[tool.resultNature].heading}</h2>
+              <p>{caution ?? RESULT_NOTES[tool.resultNature].body}</p>
             </div>
             <AdSlot placement="desktop-rail" />
           </aside>

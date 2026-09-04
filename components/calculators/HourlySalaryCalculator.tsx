@@ -71,6 +71,7 @@ export function HourlySalaryCalculator() {
           <PrimaryResult label="Estimated annual gross pay" value={money(calculation.result.value.annual)} note="Before taxes and deductions" tone="mint" />
           <StatGrid items={[
             { label: 'Monthly', value: money(calculation.result.value.monthly), note: 'Annual ÷ 12' },
+            { label: 'Twice a month', value: money(calculation.result.value.semimonthly), note: '24 pay periods' },
             { label: 'Biweekly', value: money(calculation.result.value.biweekly), note: '26 pay periods' },
             { label: 'Weekly', value: money(calculation.result.value.weekly), note: 'Regular + overtime' },
           ]} />

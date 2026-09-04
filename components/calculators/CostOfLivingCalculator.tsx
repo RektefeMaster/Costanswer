@@ -388,6 +388,34 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && value && (
         <>
+          {/*
+            What a cost-of-living number leaves out matters as much as what it
+            contains. These lines used to sit in the methodology below the fold,
+            where a reader comparing this with a full cost-of-living index would
+            not meet them until after trusting the total.
+          */}
+          <div className="model-coverage">
+            <div>
+              <p className="model-coverage-head">Counted here</p>
+              <ul>
+                {value.housing.included && <li>Housing ({value.housing.calculationSource === 'manual' ? 'your figure' : 'HUD Fair Market Rent'})</li>}
+                {value.food.included && <li>Food at home (USDA Food Plan)</li>}
+                {value.transportation.included && <li>Transportation</li>}
+                {value.otherEssentials.included && <li>Other essentials you entered</li>}
+              </ul>
+            </div>
+            <div>
+              <p className="model-coverage-head">Not counted</p>
+              <ul>
+                {!value.housing.included && <li>Housing</li>}
+                {!value.transportation.included && <li>Transportation</li>}
+                <li>Healthcare and insurance</li>
+                <li>Childcare</li>
+                <li>Debt payments</li>
+                <li>Restaurants and discretionary spending</li>
+              </ul>
+            </div>
+          </div>
           <PrimaryResult
             label={value.comparison.comparable ? 'Estimated modeled monthly living cost' : 'Modeled monthly living cost is not comparable'}
             value={value.comparison.comparable ? money(value.totalModeledMonthlyCost) : '—'}

@@ -16,6 +16,7 @@ export type ApplianceEnergyUse = {
   watts: number;
   hoursPerDay: number;
   daysPerWeek: number;
+  dutyCyclePercent: number;
   kwhPerUsageDay: number;
   kwhPerWeek: number;
   quantities: PeriodQuantities;
@@ -47,18 +48,31 @@ export function applianceEnergyFromWeeklyPattern(input: {
   watts: number;
   hoursPerDay: number;
   daysPerWeek: number;
+  /**
+   * Share of the plugged-in hours the appliance actually draws its rated power.
+   *
+   * Anything thermostat-controlled cycles: a fridge is "on" 24 hours a day but
+   * its compressor runs a fraction of that, and nameplate watts times clock
+   * hours overstates a fridge by roughly three times. Defaults to 100 so an
+   * appliance that runs flat out while on is unaffected.
+   */
+  dutyCyclePercent?: number;
 }): ApplianceEnergyUse {
   assertFiniteNonNegative(input.watts, 'Wattage');
+  const dutyCyclePercent = input.dutyCyclePercent ?? 100;
+  assertFiniteNonNegative(dutyCyclePercent, 'Duty cycle');
+  const dutyCycle = dutyCyclePercent / 100;
   const weeklyHours = weeklyHoursFromPattern({
     hoursPerDay: input.hoursPerDay,
     daysPerWeek: input.daysPerWeek,
   });
-  const kwhPerUsageDay = energyUseFromPower({ watts: input.watts, hours: input.hoursPerDay }).kwh;
-  const kwhPerWeek = energyUseFromPower({ watts: input.watts, hours: weeklyHours }).kwh;
+  const kwhPerUsageDay = energyUseFromPower({ watts: input.watts, hours: input.hoursPerDay }).kwh * dutyCycle;
+  const kwhPerWeek = energyUseFromPower({ watts: input.watts, hours: weeklyHours }).kwh * dutyCycle;
   return {
     watts: input.watts,
     hoursPerDay: input.hoursPerDay,
     daysPerWeek: input.daysPerWeek,
+    dutyCyclePercent,
     kwhPerUsageDay,
     kwhPerWeek,
     quantities: periodQuantitiesFromWeekly(kwhPerWeek),

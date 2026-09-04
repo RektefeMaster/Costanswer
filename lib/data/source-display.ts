@@ -3,6 +3,7 @@ import { DATASET_POLICIES, type DatasetId, type DatasetPeriodKind } from './data
 import {
   evaluateFreshness,
   isPublicationSourceStatus,
+  nextExpectedReleaseDate,
   type FreshnessInput,
   type FreshnessStatus,
   type PublicationSourceStatus,
@@ -14,8 +15,32 @@ export type DatasetSourceDisplay = {
   periodLabel: string;
   line: string;
   freshness: FreshnessStatus;
+  /** Reader-facing wording for `freshness`; never the raw status word. */
+  freshnessLabel: string;
   freshnessNote: string | null;
+  nextExpectedRelease: string | null;
+  releaseSchedule: string;
   sourceStatus: PublicationSourceStatus | string;
+};
+
+/**
+ * Reader-facing freshness wording.
+ *
+ * The status word alone was being printed next to its own explanation, which
+ * produced "stale · Latest available official data" — two claims that
+ * contradict each other. Availability and age are separate facts, so each state
+ * gets one sentence that says only what is true.
+ */
+const FRESHNESS_LABELS: Record<FreshnessStatus, string> = {
+  current: 'Latest official release',
+  'update-due': 'A newer release is expected',
+  stale: 'Older than the expected update window',
+};
+
+const FRESHNESS_NOTES: Record<FreshnessStatus, string | null> = {
+  current: null,
+  'update-due': 'The provider was due to publish again. This copy has not caught up yet.',
+  stale: 'This copy is past its expected update window. Treat it as a reference point, not a current figure.',
 };
 
 const MONTH_NAMES = [
@@ -92,7 +117,10 @@ export function datasetSourceDisplay(input: {
     periodLabel,
     line: `${policy.providerShort} · ${periodLabel}`,
     freshness,
-    freshnessNote: freshness === 'stale' ? 'Latest available official data' : null,
+    freshnessLabel: FRESHNESS_LABELS[freshness],
+    freshnessNote: FRESHNESS_NOTES[freshness],
+    nextExpectedRelease: nextExpectedReleaseDate(policy, freshnessInput),
+    releaseSchedule: policy.releaseSchedule,
     sourceStatus,
   };
 }

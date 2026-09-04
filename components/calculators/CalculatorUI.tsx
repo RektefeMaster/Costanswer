@@ -319,10 +319,18 @@ export function ResultDetails({
         <summary onClick={() => emitInteraction('assumptions_toggle')}>What we assumed</summary>
         <ul>{assumptions.map((assumption) => <li key={assumption}>{assumption}</li>)}</ul>
       </details>
-      <p className="result-audit">
-        <span>Method {calculationVersion}</span>
-        <span>{datasetSnapshotIds.length > 0 ? `Data ${datasetSnapshotIds.join(', ')}` : 'Data Manual inputs / fixed rules'}</span>
-      </p>
+      {/*
+        Version and snapshot ids are what make a result checkable, so they stay
+        on the page. Sitting open in the main flow they read as internal QA, so
+        they fold away behind a summary anyone who wants them can open.
+      */}
+      <details className="result-audit-details">
+        <summary>Technical details</summary>
+        <p className="result-audit">
+          <span>Method {calculationVersion}</span>
+          <span>{datasetSnapshotIds.length > 0 ? `Data ${datasetSnapshotIds.join(', ')}` : 'Data Manual inputs / fixed rules'}</span>
+        </p>
+      </details>
     </div>
   );
 }

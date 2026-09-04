@@ -169,15 +169,11 @@ export function normalizeBlsCpiObservations(
   }
   if (sorted.length < 1_200) throw new Error('CPI series is missing historical months.');
   const seen = new Set<string>();
-  const gaps: string[] = [];
-  for (const [index, row] of sorted.entries()) {
+  for (const row of sorted) {
     if (seen.has(row.period)) throw new Error(`Duplicate CPI month: ${row.period}`);
     seen.add(row.period);
-    if (index > 0) {
-      const expected = nextMonthPeriod(sorted[index - 1].period);
-      if (row.period !== expected) gaps.push(`${sorted[index - 1].period} → ${row.period}`);
-    }
   }
+  const gaps = missingCpiMonths(sorted);
   if (gaps.length > 24) throw new Error(`CPI series has too many missing months: ${gaps.join(', ')}`);
   return {
     schemaVersion: '1.0.0',
@@ -204,10 +200,48 @@ export function normalizeBlsCpiObservations(
       `${sorted.length} finite positive index values.`,
       gaps.length === 0
         ? 'Every month in the range has a published CPI-U value.'
-        : `BLS omitted ${gaps.length} month(s) (${gaps.join('; ')}); those months are not offered in the calculator.`,
+        : `${describeCpiMonths(gaps)} not published by BLS, so ${gaps.length === 1 ? 'it is' : 'they are'} not offered as a starting month.`,
     ],
     observations: sorted,
   };
+}
+
+const CPI_MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+] as const;
+
+/**
+ * Months inside the covered range that BLS never published.
+ *
+ * The report used to name the months on either side of a hole — "2025-09 →
+ * 2025-11" — which reads as two months being wrong rather than one being
+ * absent. Naming the missing month is the fact a reader needs.
+ */
+export function missingCpiMonths(observations: CpiObservation[]): string[] {
+  const sorted = [...observations].sort((left, right) => left.period.localeCompare(right.period));
+  const missing: string[] = [];
+  for (const [index, row] of sorted.entries()) {
+    if (index === 0) continue;
+    let expected = nextMonthPeriod(sorted[index - 1].period);
+    while (expected !== row.period) {
+      missing.push(expected);
+      expected = nextMonthPeriod(expected);
+    }
+  }
+  return missing;
+}
+
+/** "October 2025" / "October 2025 and March 2026" / "4 months between ... and ...". */
+export function describeCpiMonths(periods: string[]): string {
+  const named = periods.map((period) => {
+    const [year, month] = period.split('-');
+    return `${CPI_MONTH_NAMES[Number(month) - 1]} ${year}`;
+  });
+  if (named.length === 0) return 'No months are';
+  if (named.length === 1) return `${named[0]} was`;
+  if (named.length === 2) return `${named[0]} and ${named[1]} were`;
+  return `${named.length} months between ${named[0]} and ${named[named.length - 1]} were`;
 }
 
 export function cpiIndexForPeriod(observations: CpiObservation[], period: string): number {

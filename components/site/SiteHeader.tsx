@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
-import { categories, HEADER_CATEGORY_IDS, type CategoryId } from '@/lib/categories';
+import { categories, CATEGORY_IDS, HEADER_CATEGORY_IDS, type CategoryId } from '@/lib/categories';
 import { CategoryChip } from '@/components/site/CategoryArt';
 
 function isCategoryActive(pathname: string, categoryId: CategoryId) {
@@ -74,7 +74,8 @@ export function SiteHeader() {
           <summary aria-label="Open site navigation">Menu</summary>
           <nav aria-label="Mobile navigation">
             <Link className="mobile-search-link" href="/search" aria-current={searchCurrent}>Search calculators</Link>
-            {HEADER_CATEGORY_IDS.map((categoryId) => (
+            {/* The drawer has room for the whole catalogue; the top bar does not. */}
+            {CATEGORY_IDS.map((categoryId) => (
               <Link
                 href={`/topics/${categoryId}`}
                 key={categoryId}

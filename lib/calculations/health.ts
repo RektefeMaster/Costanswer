@@ -116,9 +116,14 @@ export const bmrInputSchema = energyBodySchema;
 export const tdeeInputSchema = energyBodySchema;
 export const calorieInputSchema = energyBodySchema.extend({ goal: goalSchema });
 
-const ENERGY_ASSUMPTIONS = [
+const BMR_ASSUMPTIONS = [
   ...HEALTH_ASSUMPTIONS,
   'Estimated BMR uses the Mifflin–St Jeor equation for adults. It is not a measured metabolic rate.',
+];
+
+/** Only the calculators that actually multiply by an activity level say so. */
+const ENERGY_ASSUMPTIONS = [
+  ...BMR_ASSUMPTIONS,
   'Activity multipliers are conventional planning factors, not individualized physiology.',
 ];
 
@@ -133,7 +138,7 @@ export function calculateBmr(rawInput: unknown): CalculationResult<{ bmrKcal: nu
       { label: 'Equation', value: 'Mifflin–St Jeor', detail: input.sex === 'male' ? '10×kg + 6.25×cm − 5×age + 5' : '10×kg + 6.25×cm − 5×age − 161' },
       { label: 'Estimated BMR', value: `${formatNumber(bmr, { maximumFractionDigits: 0 })} kcal/day` },
     ],
-    assumptions: ENERGY_ASSUMPTIONS,
+    assumptions: BMR_ASSUMPTIONS,
   };
 }
 

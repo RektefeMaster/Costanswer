@@ -10,7 +10,7 @@ export default function UnitConversionPage() {
   return (
     <ToolPage
       tool={tool}
-      caution="This is one general converter. Pair pages such as kg-to-lbs are not generated here."
+      caution="One converter for every pair. Pick the two units you need and the result updates as you type."
       methodology={[
         { title: 'Base units', body: 'A value converts into a category base, then out. Length uses meters, mass kilograms, volume cubic meters, area square meters, speed meters per second.' },
         { title: 'Exact SI ties', body: '1 inch = 2.54 cm exactly, 1 foot = 0.3048 m, 1 mile = 1609.344 m, 1 pound = 0.45359237 kg.' },

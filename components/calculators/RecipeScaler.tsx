@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { scaleRecipe } from '@/lib/calculations/recipe-scaler';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 
 type Ingredient = { id: string; name: string; quantity: string; unit: string };
 
@@ -61,7 +62,7 @@ export function RecipeScaler() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Scale factor" value={`${calculation.result.value.scaleFactor}×`} note={`${originalServings} servings → ${desiredServings} servings`} tone="coral" />
+          <PrimaryResult label="Scale factor" value={`${calculation.result.value.scaleFactor}×`} note={`${pluralize(Number(originalServings), 'serving', 'servings')} → ${pluralize(Number(desiredServings), 'serving', 'servings')}`} tone="coral" />
           <div className="scaled-ingredients">
             {calculation.result.value.ingredients.map((ingredient) => (
               <div key={ingredient.id}><strong>{ingredient.displayQuantity}{ingredient.unit ? ` ${ingredient.unit}` : ''}</strong><span>{ingredient.name}</span></div>

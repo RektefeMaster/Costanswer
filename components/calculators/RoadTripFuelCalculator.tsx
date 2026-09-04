@@ -49,7 +49,7 @@ export function RoadTripFuelCalculator({
   return (
     <CalculatorPanel
       title="Road-trip fuel cost"
-      intro="Miles, MPG, and a gas price. The default price is this week’s EIA average for your state or region."
+      intro="Miles, MPG, and a gas price. The default price is the most recent EIA weekly average for your state or region."
       toolId="road-trip-fuel"
       category="auto"
       calculationState={calculation.result ? 'complete' : 'invalid'}

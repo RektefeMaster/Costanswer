@@ -14,6 +14,7 @@ import { defaultRateForTerm, type MortgageTermYears } from '@/lib/calculations/m
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { approxMoney, roundedGuidelineMoney } from './finance-format';
 
 type RateSnapshot = {
   snapshotId: string;
@@ -98,6 +99,15 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
   const result = calculation.result?.value;
   const thisHouse = result?.mode === 'this-house' ? result : null;
   const howMuch = result?.mode === 'how-much-house' ? result : null;
+
+  // Property tax, insurance and HOA are optional inputs that go straight into
+  // the monthly housing total. Leaving them blank does not make them zero, so
+  // the result names what is missing instead of presenting a partial total as
+  // the whole cost.
+  const missingHousingCosts = [
+    annualPropertyTax.trim() === '' || Number(annualPropertyTax) === 0 ? 'property tax' : null,
+    annualHomeInsurance.trim() === '' || Number(annualHomeInsurance) === 0 ? 'home insurance' : null,
+  ].filter((label): label is string => label !== null);
 
   return (
     <CalculatorPanel
@@ -213,15 +223,24 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
             note={`${percent(thisHouse.housingShare)} of take-home would go to housing`}
             tone={verdictTone(thisHouse.verdict)}
           />
+          {missingHousingCosts.length > 0 && (
+            <div className="data-callout">
+              <span>INCOMPLETE</span>
+              <p>
+                <strong>No {missingHousingCosts.join(' or ')} entered</strong>
+                <small>The monthly housing figure below leaves {missingHousingCosts.length === 1 ? 'that cost' : 'those costs'} out. A real payment will be higher.</small>
+              </p>
+            </div>
+          )}
           <StatGrid items={[
-            { label: 'True monthly housing cost', value: money(thisHouse.monthlyHousingTotal), note: 'P&I, tax, insurance, HOA, PMI, repairs' },
+            { label: 'Modeled monthly housing cost', value: money(thisHouse.monthlyHousingTotal), note: 'P&I plus the tax, insurance, HOA, PMI, and repair figures used' },
             { label: '6-month emergency fund', value: money(thisHouse.emergencyFundSixMonths, 0), note: 'Housing, debts, and other expenses' },
             { label: 'Cash to close', value: money(thisHouse.cashToClose ?? 0, 0), note: 'Down payment plus closing-cost rate' },
           ]} />
           <StatGrid items={[
-            { label: 'Comfortable home price', value: thisHouse.comfortableHomePrice > 0 ? money(thisHouse.comfortableHomePrice, 0) : 'None', note: `≤ ${AFFORDABILITY_BANDS.comfortable.maxHousingShare * 100}% of take-home` },
+            { label: 'Comfortable home price', value: thisHouse.comfortableHomePrice > 0 ? approxMoney(thisHouse.comfortableHomePrice) : 'None', note: `Our guideline: ≤ ${AFFORDABILITY_BANDS.comfortable.maxHousingShare * 100}% of take-home` },
             { label: 'This house', value: money(thisHouse.homePrice, 0), note: `${thisHouse.housing.loanToValuePercent}% loan-to-value` },
-            { label: thisHouse.priceGap > 0 ? 'Above comfortable' : thisHouse.priceGap < 0 ? 'Below comfortable' : 'Gap', value: money(Math.abs(thisHouse.priceGap), 0), note: 'Versus the comfortable price' },
+            { label: thisHouse.priceGap > 0 ? 'Above comfortable' : thisHouse.priceGap < 0 ? 'Below comfortable' : 'Gap', value: approxMoney(Math.abs(thisHouse.priceGap)), note: 'Versus the comfortable price' },
           ]} />
           <div className="decision-note">
             <p>
@@ -233,10 +252,10 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
               <p>Nothing has to change for the comfortable band.</p>
             )}
             {thisHouse.pathToComfortable.priceCut !== null && thisHouse.pathToComfortable.priceCut > 0 && (
-              <p>Cut the price by <strong>{money(thisHouse.pathToComfortable.priceCut, 0)}</strong> to reach the comfortable band with this down payment.</p>
+              <p>Cut the price by <strong>{approxMoney(thisHouse.pathToComfortable.priceCut)}</strong> to reach the comfortable band with this down payment.</p>
             )}
             {thisHouse.pathToComfortable.extraDownPayment !== null && thisHouse.pathToComfortable.extraDownPayment > 0 && (
-              <p>Or raise the down payment by <strong>{money(thisHouse.pathToComfortable.extraDownPayment, 0)}</strong> and keep this price.</p>
+              <p>Or raise the down payment by <strong>{approxMoney(thisHouse.pathToComfortable.extraDownPayment)}</strong> and keep this price.</p>
             )}
             {thisHouse.verdict !== 'comfortable' && thisHouse.pathToComfortable.extraDownPayment === null && (
               <p>Raising the down payment alone does not reach the comfortable band at this price.</p>
@@ -270,17 +289,17 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
         <div className="calculation-output">
           <PrimaryResult
             label="Comfortable home price"
-            value={howMuch.comfortableHomePrice > 0 ? money(howMuch.comfortableHomePrice, 0) : 'None'}
-            note="The price that stays inside the comfortable caps"
+            value={howMuch.comfortableHomePrice > 0 ? roundedGuidelineMoney(howMuch.comfortableHomePrice) : 'None'}
+            note="Rounded. The price that stays inside our comfortable caps"
             tone="mint"
           />
           <StatGrid items={[
-            { label: 'Comfortable', value: howMuch.comfortableHomePrice > 0 ? money(howMuch.comfortableHomePrice, 0) : 'None', note: `≤ ${AFFORDABILITY_BANDS.comfortable.maxHousingShare * 100}% of take-home` },
-            { label: 'Reasonable', value: howMuch.reasonableHomePrice > 0 ? money(howMuch.reasonableHomePrice, 0) : 'None', note: `≤ ${AFFORDABILITY_BANDS.reasonable.maxHousingShare * 100}% of take-home` },
-            { label: 'Aggressive', value: howMuch.aggressiveHomePrice > 0 ? money(howMuch.aggressiveHomePrice, 0) : 'None', note: `≤ ${AFFORDABILITY_BANDS.aggressive.maxHousingShare * 100}% of take-home` },
+            { label: 'Comfortable', value: howMuch.comfortableHomePrice > 0 ? approxMoney(howMuch.comfortableHomePrice) : 'None', note: `≤ ${AFFORDABILITY_BANDS.comfortable.maxHousingShare * 100}% of take-home` },
+            { label: 'Reasonable', value: howMuch.reasonableHomePrice > 0 ? approxMoney(howMuch.reasonableHomePrice) : 'None', note: `≤ ${AFFORDABILITY_BANDS.reasonable.maxHousingShare * 100}% of take-home` },
+            { label: 'Aggressive', value: howMuch.aggressiveHomePrice > 0 ? approxMoney(howMuch.aggressiveHomePrice) : 'None', note: `≤ ${AFFORDABILITY_BANDS.aggressive.maxHousingShare * 100}% of take-home` },
           ]} />
           {howMuch.cashToClose !== null && howMuch.comfortableHomePrice > 0 && (
-            <p className="decision-note">Cash to close at the comfortable price is about {money(howMuch.cashToClose, 0)} (down payment plus the closing-cost rate).</p>
+            <p className="decision-note">Cash to close at the comfortable price is {approxMoney(howMuch.cashToClose)} (down payment plus the closing-cost rate).</p>
           )}
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>

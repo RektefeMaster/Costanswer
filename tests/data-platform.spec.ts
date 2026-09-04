@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { DATASET_POLICIES, scheduledDatasetIds } from '@/lib/data/dataset-policy';
-import { addUtcDays, evaluateDatasetFreshness, evaluateFreshness, observationPeriodEndDate } from '@/lib/data/freshness';
+import { addUtcDays, evaluateDatasetFreshness, evaluateFreshness, nextExpectedReleaseDate, observationPeriodEndDate } from '@/lib/data/freshness';
 import { datasetSourceDisplay, formatObservationPeriod } from '@/lib/data/source-display';
 import {
   EIA_GASOLINE_SERIES_BY_CODE,
@@ -40,22 +40,43 @@ async function tempDir(): Promise<string> {
 }
 
 describe('dataset freshness policy', () => {
-  it('keeps sourceStatus distinct from freshness and uses observation period boundaries', () => {
+  it('measures freshness against the provider release calendar, not raw age', () => {
     const electricity = DATASET_POLICIES['eia-electricity'];
-    expect(evaluateFreshness(electricity, { observationPeriod: '2026-06' }, '2026-08-14')).toBe('fresh');
-    expect(evaluateFreshness(electricity, { observationPeriod: '2026-06' }, '2026-08-15')).toBe('stale');
+    // EIA runs about two months behind, so June data is still the newest thing
+    // EIA has published all through August. Calling it stale on age alone was
+    // the site contradicting itself: "stale · latest available official data".
+    expect(nextExpectedReleaseDate(electricity, { observationPeriod: '2026-06' })).toBe('2026-09-30');
+    expect(evaluateFreshness(electricity, { observationPeriod: '2026-06' }, '2026-08-15')).toBe('current');
+    expect(evaluateFreshness(electricity, { observationPeriod: '2026-06' }, '2026-09-29')).toBe('current');
+    expect(evaluateFreshness(electricity, { observationPeriod: '2026-06' }, '2026-09-30')).toBe('update-due');
+    expect(evaluateFreshness(electricity, { observationPeriod: '2026-06' }, '2026-10-30')).toBe('stale');
     expect(observationPeriodEndDate('2026-06', 'monthly')).toBe('2026-06-30');
     expect(addUtcDays('2026-06-30', 45)).toBe('2026-08-14');
   });
 
   it('treats weekly and yearly cadences from their observation dates', () => {
-    expect(evaluateDatasetFreshness('eia-gasoline', { observationPeriod: '2026-08-31' }, '2026-09-14')).toBe('fresh');
+    expect(evaluateDatasetFreshness('eia-gasoline', { observationPeriod: '2026-08-31' }, '2026-09-07')).toBe('current');
+    // One release interval past the survey week: a newer weekly figure is out.
+    expect(evaluateDatasetFreshness('eia-gasoline', { observationPeriod: '2026-08-31' }, '2026-09-08')).toBe('update-due');
+    expect(evaluateDatasetFreshness('eia-gasoline', { observationPeriod: '2026-08-31' }, '2026-09-14')).toBe('update-due');
     expect(evaluateDatasetFreshness('eia-gasoline', { observationPeriod: '2026-08-31' }, '2026-09-15')).toBe('stale');
-    expect(evaluateDatasetFreshness('freddie-mac-pmms', { observationPeriod: '2026-08-27' }, '2026-09-10')).toBe('fresh');
-    expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2027-02-04')).toBe('fresh');
-    expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2028-02-05')).toBe('stale');
-    expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2027-02-04')).toBe('fresh');
-    expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2028-02-05')).toBe('stale');
+    expect(evaluateDatasetFreshness('freddie-mac-pmms', { observationPeriod: '2026-08-27' }, '2026-09-10')).toBe('stale');
+    // PMMS publishes every Thursday, so the Aug 27 survey is superseded on Sep 3.
+    expect(evaluateDatasetFreshness('freddie-mac-pmms', { observationPeriod: '2026-08-27' }, '2026-09-02')).toBe('current');
+    expect(evaluateDatasetFreshness('freddie-mac-pmms', { observationPeriod: '2026-08-27' }, '2026-09-03')).toBe('update-due');
+    expect(evaluateDatasetFreshness('freddie-mac-pmms', { observationPeriod: '2026-08-27' }, '2026-09-09')).toBe('update-due');
+    expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2027-02-04')).toBe('current');
+    expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2028-04-01')).toBe('stale');
+    expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2027-02-04')).toBe('current');
+    expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2028-04-01')).toBe('stale');
+
+    // OMB issues metro delineation bulletins on no fixed schedule, so Bulletin
+    // 23-01 stays current rather than aging into a warning nobody can act on.
+    expect(DATASET_POLICIES['census-omb-geography'].releaseIntervalDays).toBeNull();
+    expect(evaluateDatasetFreshness('census-omb-geography', {
+      observationPeriod: '2024',
+      publishedAt: '2023-07-21T00:00:00.000Z',
+    }, '2026-09-04')).toBe('current');
   });
 
   it('does not weekly-refresh tax and keeps year-keyed history', () => {
@@ -72,11 +93,11 @@ describe('dataset freshness policy', () => {
     expect(evaluateDatasetFreshness('bea-rpp', {
       observationPeriod: '2024',
       publishedAt: '2026-02-19T00:00:00.000Z',
-    }, '2026-09-02')).toBe('fresh');
+    }, '2026-09-02')).toBe('current');
     expect(evaluateDatasetFreshness('census-acs5', {
       observationPeriod: '2024',
       publishedAt: '2025-12-11T00:00:00.000Z',
-    }, '2026-09-02')).toBe('fresh');
+    }, '2026-09-02')).toBe('current');
     expect(formatObservationPeriod('2026', 'yearly')).toBe('Tax year 2026');
     expect(formatObservationPeriod('2026', 'fiscal-year')).toBe('FY 2026');
     expect(formatObservationPeriod('2024', 'reference-year')).toBe('2024');
@@ -103,7 +124,7 @@ describe('source display helper', () => {
       asOf: '2026-07-15',
     });
     expect(electricity.line).toBe('EIA · June 2026');
-    expect(electricity.freshness).toBe('fresh');
+    expect(electricity.freshness).toBe('current');
     expect(electricity.freshnessNote).toBeNull();
     expect(electricity.sourceStatus).toBe('preliminary');
 
@@ -111,10 +132,11 @@ describe('source display helper', () => {
       datasetId: 'eia-electricity',
       observationPeriod: '2026-06',
       sourceStatus: 'preliminary',
-      asOf: '2026-09-02',
+      asOf: '2026-11-15',
     });
     expect(stale.freshness).toBe('stale');
-    expect(stale.freshnessNote).toBe('Latest available official data');
+    expect(stale.freshnessLabel).toBe('Older than the expected update window');
+    expect(stale.freshnessNote).toContain('past its expected update window');
 
     expect(formatObservationPeriod('2026-08-27', 'weekly')).toBe('Aug 27, 2026');
     expect(formatObservationPeriod('2026', 'yearly')).toBe('Tax year 2026');

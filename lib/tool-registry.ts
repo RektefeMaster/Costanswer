@@ -43,6 +43,16 @@ export type IndexabilityEvidence = {
   reviewValidUntil: string;
 };
 
+export const RESULT_NATURES = [
+  'exact',
+  'official-data-estimate',
+  'projection',
+  'planning-model',
+  'formula-estimate',
+  'random',
+] as const;
+export type ResultNature = (typeof RESULT_NATURES)[number];
+
 export type ToolDefinition = {
   id: string;
   path: `/${string}`;
@@ -55,6 +65,15 @@ export type ToolDefinition = {
   eyebrow: string;
   accent: CategoryAccent;
   featured: boolean;
+  /**
+   * What kind of thing this tool's result is.
+   *
+   * Every tool page used to carry the same "This is an estimate" note, which
+   * sat under exact fraction arithmetic, a calendar date, and a random number
+   * generator alike. Saying "estimate" where the answer is exact undercuts the
+   * pages where the word is doing real work.
+   */
+  resultNature: ResultNature;
   indexability: IndexabilityEvidence;
   relationships: ToolRelationship[];
 };
@@ -94,6 +113,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Hourly wage to annual pay',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'salary-after-tax', type: 'next-decision' },
@@ -120,6 +140,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Estimated take-home on a salary',
     accent: 'mint',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'paycheck', type: 'next-decision' },
@@ -130,9 +151,9 @@ export const tools: ToolDefinition[] = [
   {
     id: 'paycheck',
     path: '/money/paycheck',
-    title: 'Paycheck Calculator',
+    title: 'Estimated Paycheck Calculator',
     shortTitle: 'Paycheck',
-    description: 'Estimate a net paycheck from annualized federal, FICA, and state tax. This is not employer payroll withholding.',
+    description: 'Estimate take-home pay per paycheck by spreading a full-year federal, FICA, and state tax estimate across your pay periods. Your employer withholds from a W-4 and IRS tables instead, so a real stub will differ.',
     category: 'money',
     engine: PAYCHECK_ENGINE_ID,
     searchTerms: [
@@ -146,6 +167,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Estimated net paycheck',
     accent: 'mint',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'salary-after-tax', type: 'uses-engine' },
@@ -157,7 +179,7 @@ export const tools: ToolDefinition[] = [
     path: '/money/mortgage-payment',
     title: 'Mortgage Payment Calculator',
     shortTitle: 'Mortgage payment',
-    description: 'Monthly principal and interest from the home price, down payment, term, and this week’s Freddie Mac national average rate. You can type a quote instead.',
+    description: 'Monthly principal and interest from the home price, down payment, term, and the most recent Freddie Mac national average rate. You can type a quote instead.',
     category: 'money',
     engine: 'mortgage-amortization-v1',
     searchTerms: [
@@ -173,6 +195,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'National average mortgage payment',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'home-affordability', type: 'next-decision' },
@@ -202,6 +225,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Fixed-rate loan payment',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'mortgage-payment', type: 'sibling' },
@@ -229,6 +253,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Savings growth over time',
     accent: 'mint',
     featured: true,
+    resultNature: 'projection',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'investment', type: 'next-decision' },
@@ -256,6 +281,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Snowball vs avalanche',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'loan', type: 'sibling' },
@@ -283,6 +309,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'CPI-U buying power',
     accent: 'mint',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'hourly-to-salary', type: 'sibling' },
@@ -294,7 +321,7 @@ export const tools: ToolDefinition[] = [
     path: '/money/home-affordability',
     title: 'Can I Afford This House?',
     shortTitle: 'Afford this house',
-    description: 'A planning screen for a specific house, or a comfortable / reasonable / aggressive price from take-home pay, debts, and this week’s national average rate.',
+    description: 'A planning screen for a specific house, or a comfortable / reasonable / aggressive price from take-home pay, debts, and the most recent national average rate.',
     category: 'money',
     engine: 'home-affordability-v1',
     searchTerms: [
@@ -309,6 +336,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Take-home pay vs. a house',
     accent: 'mint',
     featured: true,
+    resultNature: 'planning-model',
     indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'mortgage-payment', type: 'uses-engine' },
@@ -338,6 +366,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Modeled monthly living costs',
     accent: 'mint',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 25, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'salary-after-tax', type: 'uses-engine' },
@@ -358,6 +387,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'State average electric bill',
     accent: 'amber',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'appliance-electricity', type: 'next-decision' },
@@ -386,6 +416,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'What a device costs to run',
     accent: 'amber',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'electricity-cost', type: 'uses-dataset' },
@@ -405,6 +436,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Slab volume and bag count',
     accent: 'amber',
     featured: true,
+    resultNature: 'formula-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'electricity-cost', type: 'sibling' },
@@ -424,6 +456,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'EV charging vs. gasoline',
     accent: 'blue',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'electricity-cost', type: 'uses-dataset' },
@@ -437,7 +470,7 @@ export const tools: ToolDefinition[] = [
     path: '/auto/road-trip-fuel',
     title: 'Road Trip Fuel Cost Calculator',
     shortTitle: 'Road-trip fuel',
-    description: 'Fuel cost for a drive from your miles, MPG, and this week’s EIA regular-gas average for your state or region. You can type a pump price instead.',
+    description: 'Fuel cost for a drive from your miles, MPG, and the most recent EIA regular-gas average for your state or region. You can type a pump price instead.',
     category: 'auto',
     engine: 'road-trip-fuel-v1',
     searchTerms: [
@@ -452,6 +485,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Fuel for the miles you drive',
     accent: 'blue',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 13, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'ev-vs-gas', type: 'sibling' },
@@ -464,7 +498,7 @@ export const tools: ToolDefinition[] = [
     path: '/auto/car-affordability',
     title: 'Car Affordability Calculator',
     shortTitle: 'Car affordability',
-    description: 'The real monthly cost of a car \u2014 loan payment, fuel or charging, insurance, upkeep, registration \u2014 and how much of your take-home pay it would take.',
+    description: 'Monthly cash cost of a car \u2014 loan payment, fuel or charging, insurance, upkeep, registration \u2014 and how much of your take-home pay it would take. Depreciation is not included, so this is out-of-pocket cost, not total cost of ownership.',
     category: 'auto',
     engine: CAR_AFFORDABILITY_ENGINE_ID,
     searchTerms: [
@@ -480,6 +514,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'True monthly cost vs. take-home pay',
     accent: 'blue',
     featured: true,
+    resultNature: 'planning-model',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 12, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'loan', type: 'uses-engine' },
@@ -502,6 +537,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Workdays and federal holidays',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 13, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'date', type: 'sibling' },
@@ -521,6 +557,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Price per ounce, pound, or item',
     accent: 'violet',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'recipe-scaler', type: 'uses-engine' },
@@ -549,6 +586,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Compare two states',
     accent: 'violet',
     featured: true,
+    resultNature: 'official-data-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'electricity-cost', type: 'uses-dataset' },
@@ -569,6 +607,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Scale servings and ingredients',
     accent: 'coral',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'unit-price', type: 'uses-engine' },
@@ -587,6 +626,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Height and weight ratio',
     accent: 'rose',
     featured: true,
+    resultNature: 'formula-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'bmr', type: 'sibling' },
@@ -605,6 +645,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Estimated daily calories',
     accent: 'rose',
     featured: true,
+    resultNature: 'formula-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'tdee', type: 'uses-engine' },
@@ -623,6 +664,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'BMR × activity factor',
     accent: 'rose',
     featured: true,
+    resultNature: 'formula-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'bmr', type: 'uses-engine' },
@@ -641,6 +683,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Estimated basal calories',
     accent: 'rose',
     featured: true,
+    resultNature: 'formula-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'tdee', type: 'next-decision' },
@@ -659,6 +702,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Circumference estimate',
     accent: 'rose',
     featured: true,
+    resultNature: 'formula-estimate',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'bmi', type: 'sibling' },
@@ -677,6 +721,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Tip and split',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'percentage', type: 'uses-engine' },
@@ -695,6 +740,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Exact completed age',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'date', type: 'sibling' },
@@ -713,6 +759,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Duration arithmetic',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'time-card', type: 'sibling' },
@@ -731,6 +778,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Numbers in a range',
     accent: 'rose',
     featured: true,
+    resultNature: 'random',
     indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'percentage', type: 'sibling' },
@@ -749,6 +797,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Hours after breaks',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'time', type: 'sibling' },
@@ -767,6 +816,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Calendar date offset',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'days-from-today', type: 'sibling' },
@@ -786,6 +836,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Today plus N days',
     accent: 'rose',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'date', type: 'sibling' },
@@ -804,6 +855,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Three percent questions',
     accent: 'violet',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'percent-change', type: 'sibling' },
@@ -823,6 +875,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Old value to new value',
     accent: 'violet',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'percentage', type: 'sibling' },
@@ -834,13 +887,14 @@ export const tools: ToolDefinition[] = [
     path: '/math/scientific',
     title: 'Scientific Calculator',
     shortTitle: 'Scientific',
-    description: 'Safe scientific arithmetic with a keypad: powers, roots, logs, and trig in degrees or radians. No JavaScript evaluation.',
+    description: 'Powers, roots, logs, factorials, and trig in degrees or radians, with π and e, on a keypad that follows the normal order of operations.',
     category: 'math',
     engine: SCIENTIFIC_ENGINE_ID,
     searchTerms: ['scientific calculator', 'online scientific calculator', 'sin cos tan calculator', 'log calculator'],
-    eyebrow: 'Bounded expression parser',
+    eyebrow: 'Trig, logs, powers and roots',
     accent: 'violet',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'percentage', type: 'sibling' },
@@ -859,6 +913,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Exact fraction arithmetic',
     accent: 'violet',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'percentage', type: 'sibling' },
@@ -870,13 +925,14 @@ export const tools: ToolDefinition[] = [
     path: '/math/unit-conversion',
     title: 'Unit Conversion Calculator',
     shortTitle: 'Unit conversion',
-    description: 'Convert length, mass, volume, area, temperature, and speed through canonical base units. One general converter, not thousands of pair pages.',
+    description: 'Convert length, mass, volume, area, temperature, and speed through canonical base units, so every conversion runs through one tested path.',
     category: 'math',
     engine: CONVERSION_ENGINE_ID,
     searchTerms: ['unit converter', 'conversion calculator', 'measurement converter', 'inch to cm', 'celsius to fahrenheit'],
     eyebrow: 'Base-unit conversions',
     accent: 'violet',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'square-footage', type: 'next-decision' },
@@ -895,6 +951,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Weighted course grade',
     accent: 'coral',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'gpa', type: 'next-decision' },
@@ -913,6 +970,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Credits × grade points',
     accent: 'coral',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'grade', type: 'sibling' },
@@ -931,6 +989,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Length × width, then total',
     accent: 'amber',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'concrete', type: 'next-decision' },
@@ -957,6 +1016,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Vehicle loan payment',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'car-affordability', type: 'next-decision' },
@@ -976,6 +1036,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Contributions and assumed return',
     accent: 'mint',
     featured: true,
+    resultNature: 'projection',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'compound-interest', type: 'sibling' },
@@ -995,6 +1056,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Modeled balance at retirement',
     accent: 'mint',
     featured: true,
+    resultNature: 'projection',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: '401k', type: 'sibling' },
@@ -1014,6 +1076,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Schedule of principal and interest',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'loan', type: 'uses-engine' },
@@ -1033,6 +1096,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'APY you type, not a quote',
     accent: 'mint',
     featured: true,
+    resultNature: 'projection',
     indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'interest', type: 'sibling' },
@@ -1051,6 +1115,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Simple interest only',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'compound-interest', type: 'next-decision' },
@@ -1069,6 +1134,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Roth contribution growth',
     accent: 'mint',
     featured: true,
+    resultNature: 'projection',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: '401k', type: 'sibling' },
@@ -1087,6 +1153,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Deferral plus employer match',
     accent: 'mint',
     featured: true,
+    resultNature: 'projection',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'roth-ira', type: 'sibling' },
@@ -1106,6 +1173,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'Extra principal vs remaining interest',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'mortgage-payment', type: 'uses-engine' },
@@ -1124,6 +1192,7 @@ export const tools: ToolDefinition[] = [
     eyebrow: 'One revolving balance',
     accent: 'mint',
     featured: true,
+    resultNature: 'exact',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'debt-payoff', type: 'next-decision' },
@@ -1160,10 +1229,27 @@ export function getToolsByCategory(category: CategoryId): ToolDefinition[] {
   return tools.filter((tool) => tool.category === category);
 }
 
-export function getRelatedTools(tool: ToolDefinition): ToolDefinition[] {
-  return tool.relationships
-    .map((relationship) => toolById.get(relationship.toolId))
-    .filter((candidate): candidate is ToolDefinition => Boolean(candidate));
+/**
+ * Related tools, read as an undirected graph.
+ *
+ * Relationships are authored one way, so a link declared on the salary page
+ * pointed at the paycheck page but not back. Thirty-four pairs were one-way
+ * like that, which left readers on the far side of a real relationship with no
+ * route back. Declared links come first, then the tools that point here.
+ */
+export function getRelatedTools(tool: ToolDefinition, limit = 6): ToolDefinition[] {
+  const seen = new Set<string>([tool.id]);
+  const related: ToolDefinition[] = [];
+  const add = (candidate: ToolDefinition | undefined) => {
+    if (!candidate || seen.has(candidate.id) || related.length >= limit) return;
+    seen.add(candidate.id);
+    related.push(candidate);
+  };
+  for (const relationship of tool.relationships) add(toolById.get(relationship.toolId));
+  for (const candidate of tools) {
+    if (candidate.relationships.some((relationship) => relationship.toolId === tool.id)) add(candidate);
+  }
+  return related;
 }
 
 export function isCategoryId(value: string): value is CategoryId {

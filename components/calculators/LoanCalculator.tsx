@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateLoan } from '@/lib/calculations/loan';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 
 function money(value: number, digits = 2) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: digits });
@@ -93,7 +94,7 @@ export function LoanCalculator() {
             tone="mint"
           />
           <StatGrid items={[
-            { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0), note: calculation.result.value.interestSaved > 0 ? `${money(calculation.result.value.interestSaved, 0)} saved with extra payments` : `${calculation.result.value.actualPeriods} payments` },
+            { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0), note: calculation.result.value.interestSaved > 0 ? `${money(calculation.result.value.interestSaved, 0)} saved with extra payments` : pluralize(calculation.result.value.actualPeriods, 'payment', 'payments') },
             { label: 'Total repayment', value: money(calculation.result.value.totalRepayment, 0), note: `${money(calculation.result.value.totalPrincipal, 0)} principal` },
             { label: 'First payment interest', value: money(calculation.result.value.firstPayment.interest), note: `${money(calculation.result.value.firstPayment.principal)} to principal` },
           ]} />

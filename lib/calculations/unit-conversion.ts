@@ -59,7 +59,7 @@ export function calculateUnitConversion(rawInput: unknown): CalculationResult<{
     assumptions: [
       'Linear units convert through a canonical base unit. Temperature uses an affine Kelvin path.',
       'Inch, foot, mile, and pound use the international yard and pound exact constants.',
-      'This page is one general converter. Dedicated unit-pair URLs are not generated here.',
+      'Every pair converts through a canonical base unit, so kilograms to pounds and pounds to kilograms use the same tested factor.',
     ],
   };
 }

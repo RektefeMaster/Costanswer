@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateTip } from '@/lib/calculations/everyday';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 
 function money(value: number) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -37,7 +38,7 @@ export function TipCalculator() {
           <PrimaryResult label="Total" value={money(calculation.result.value.total)} note={`${money(calculation.result.value.tipAmount)} tip`} tone="rose" />
           <StatGrid items={[
             { label: 'Tip', value: money(calculation.result.value.tipAmount) },
-            { label: 'Each person', value: money(calculation.result.value.perPerson), note: `${calculation.result.value.people} people` },
+            { label: 'Each person', value: money(calculation.result.value.perPerson), note: pluralize(calculation.result.value.people, 'person', 'people') },
           ]} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>

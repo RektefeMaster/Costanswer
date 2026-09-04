@@ -74,9 +74,9 @@ export default async function TopicPage({ params }: { params: Promise<{ category
           </div>
         </section>
         <section className="quality-note">
-          <p>Why only {categoryTools.length}?</p>
-          <h2>This list will get longer.</h2>
-          <p>A calculator goes up when we can explain it. If it uses data, we link to the source.</p>
+          <p>How these are built</p>
+          <h2>Every calculator shows its work.</h2>
+          <p>Each one names the formula it used, and the dated official source behind any figure it did not get from you.</p>
           <Link href="/methodology">How the numbers work →</Link>
         </section>
       </main>

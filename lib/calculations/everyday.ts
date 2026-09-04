@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluralize } from '@/lib/plural';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
 import {
   addCalendarOffset,
@@ -102,7 +103,7 @@ export function calculateAge(rawInput: unknown): CalculationResult<{
     calculationVersion: AGE_ENGINE_ID,
     datasetSnapshotIds: [],
     breakdown: [
-      { label: 'Completed age', value: `${age.years} years, ${age.months} months, ${age.days} days` },
+      { label: 'Completed age', value: `${pluralize(age.years, 'year', 'years')}, ${pluralize(age.months, 'month', 'months')}, ${pluralize(age.days, 'day', 'days')}` },
       { label: 'Total days', value: formatNumber(age.totalDays) },
       { label: 'Next birthday', value: formatDateLongUtc(parseDateOnly(age.nextBirthday)), detail: `${age.daysUntilNextBirthday} day${age.daysUntilNextBirthday === 1 ? '' : 's'}` },
     ],

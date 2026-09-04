@@ -10,11 +10,12 @@ export default function ScientificPage() {
   return (
     <ToolPage
       tool={tool}
-      caution="This parser never runs JavaScript. Unknown names, oversized expressions, and unbounded factorials are rejected."
+      caution="Type an expression or use the keypad. Order of operations is standard, and unrecognised input is rejected rather than guessed at."
       methodology={[
-        { title: 'Safe grammar', body: 'A recursive-descent parser tokenizes numbers, + − × ÷, powers, parentheses, sqrt/log/ln/sin/cos/tan/abs, π, and e. eval and Function are not used.' },
+        { title: 'What it understands', body: 'Numbers, + − × ÷, powers, parentheses, sqrt, log, ln, sin, cos, tan, abs, factorial, π, and e. Anything else is rejected instead of guessed at.' },
         { title: 'Order of operations', body: '2 + 3 × 4 = 14. Parentheses change that: (2 + 3) × 4 = 20.' },
-        { title: 'Angles and bounds', body: 'Trigonometry follows the selected radians or degrees mode. Factorial stops at 18. Expression length and nesting are capped.' },
+        { title: 'Angles and limits', body: 'Trigonometry follows the radians or degrees mode you pick. Factorial stops at 18, and very long or deeply nested expressions are refused rather than run.' },
+        { title: 'How it is evaluated', body: 'Expressions are parsed by a purpose-built grammar. JavaScript’s eval and Function are never used, so nothing you type can execute as code.' },
       ]}
     >
       <ScientificCalculator />

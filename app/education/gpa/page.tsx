@@ -14,7 +14,7 @@ export default function GpaPage() {
       methodology={[
         { title: 'Quality points', body: 'GPA = Σ(grade points × credits) ÷ Σ credits. An A at 4.0 with 3 credits plus a B at 3.0 with 3 credits is 3.5.' },
         { title: 'Visible scale', body: 'Each letter’s point value is shown in the grade menu. It is a common U.S. unweighted mapping, not every school’s catalog.' },
-        { title: 'Not weighted GPA theater', body: 'This page does not invent a nationwide weighted-GPA standard. Weighted course grades belong on the Grade Calculator.' },
+        { title: 'Weighted GPA policies vary by school', body: 'There is no nationwide weighted-GPA standard to apply, so this page uses the unweighted 4.0 scale it shows. Weighted course grades belong on the Grade Calculator.' },
       ]}
     >
       <GpaCalculator />

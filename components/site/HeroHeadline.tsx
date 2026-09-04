@@ -56,11 +56,18 @@ export function HeroHeadline() {
   const outgoing = previous == null ? null : HERO_NOUNS[previous];
 
   return (
-    <h1 ref={headlineRef}>
-      <span className="sr-only">How much will it cost in the U.S.?</span>
-      <span className="hero-headline" aria-hidden="true">
+    /*
+      One sentence, with the noun swapping inside it.
+      A screen-reader-only copy of the headline used to sit beside the animated
+      one in the same <h1>. Assistive tech read the right thing, but anything
+      reading raw text — crawlers, previews, extraction — saw both copies run
+      together as a single doubled title. The stable name now comes from
+      aria-label, so the heading holds exactly one readable sentence.
+    */
+    <h1 ref={headlineRef} aria-label="How much will it cost in the U.S.?">
+      <span className="hero-headline">
         <span className="hero-kicker">How much will</span>
-        <span className="hero-rotate">
+        <span className="hero-rotate" aria-hidden="true">
           {outgoing == null ? (
             <span className="hero-noun">{noun}</span>
           ) : (

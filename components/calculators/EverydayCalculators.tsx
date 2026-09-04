@@ -10,6 +10,7 @@ import {
 } from '@/lib/calculations/everyday';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 
 export function TimeCalculator() {
   const [operation, setOperation] = useState<'add' | 'subtract'>('add');
@@ -129,7 +130,7 @@ export function DaysFromTodayCalculator({ today }: { today: string }) {
           <PrimaryResult label="Resulting calendar date" value={calculation.result.value.resultDate} note={calculation.result.value.weekday} tone="rose" />
           <StatGrid items={[
             { label: 'Today', value: calculation.result.value.today },
-            { label: 'Offset', value: `${calculation.result.value.signedDays} days` },
+            { label: 'Offset', value: pluralize(calculation.result.value.signedDays, 'day', 'days') },
           ]} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>

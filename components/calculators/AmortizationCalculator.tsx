@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateAmortization } from '@/lib/calculations/amortization';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 import { money } from './finance-format';
 
 export function AmortizationCalculator() {
@@ -34,7 +35,7 @@ export function AmortizationCalculator() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Monthly payment" value={money(calculation.result.value.monthlyPayment)} note={`${calculation.result.value.actualPeriods} payments`} tone="mint" />
+          <PrimaryResult label="Monthly payment" value={money(calculation.result.value.monthlyPayment)} note={pluralize(calculation.result.value.actualPeriods, 'payment', 'payments')} tone="mint" />
           <StatGrid items={[
             { label: 'Total principal', value: money(calculation.result.value.totalPrincipal, 0) },
             { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0) },
@@ -69,7 +70,7 @@ export function AmortizationCalculator() {
           {calculation.result.value.schedule.length > 12 && (
             <div className="schedule-toggle">
               <button type="button" className="add-row-button" onClick={() => setShowAll((current) => !current)}>
-                {showAll ? 'Show first 12 payments' : `Show all ${calculation.result.value.schedule.length} payments`}
+                {showAll ? 'Show first 12 payments' : `Show all ${pluralize(calculation.result.value.schedule.length, 'payment', 'payments')}`}
               </button>
             </div>
           )}

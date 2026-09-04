@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateAge } from '@/lib/calculations/everyday';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 
 export function AgeCalculator({ initialDate }: { initialDate: string }) {
   const [birthDate, setBirthDate] = useState('1990-06-15');
@@ -28,13 +29,13 @@ export function AgeCalculator({ initialDate }: { initialDate: string }) {
         <div className="calculation-output">
           <PrimaryResult
             label="Completed age"
-            value={`${calculation.result.value.years} years`}
-            note={`${calculation.result.value.months} months, ${calculation.result.value.days} days`}
+            value={pluralize(calculation.result.value.years, 'year', 'years')}
+            note={`${pluralize(calculation.result.value.months, 'month', 'months')}, ${pluralize(calculation.result.value.days, 'day', 'days')}`}
             tone="rose"
           />
           <StatGrid items={[
             { label: 'Total days', value: calculation.result.value.totalDays.toLocaleString('en-US') },
-            { label: 'Next birthday', value: calculation.result.value.nextBirthday, note: `${calculation.result.value.daysUntilNextBirthday} days` },
+            { label: 'Next birthday', value: calculation.result.value.nextBirthday, note: pluralize(calculation.result.value.daysUntilNextBirthday, 'day', 'days') },
           ]} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>

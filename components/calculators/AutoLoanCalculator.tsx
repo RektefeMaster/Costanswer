@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateAutoLoan } from '@/lib/calculations/auto-loan';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 import { money } from './finance-format';
 
 export function AutoLoanCalculator() {
@@ -58,7 +59,7 @@ export function AutoLoanCalculator() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Estimated monthly loan payment" value={money(calculation.result.value.monthlyPayment)} note={`${calculation.result.value.termMonths} months`} tone="mint" />
+          <PrimaryResult label="Estimated monthly loan payment" value={money(calculation.result.value.monthlyPayment)} note={pluralize(calculation.result.value.termMonths, 'month', 'months')} tone="mint" />
           <StatGrid items={[
             { label: 'Amount financed', value: money(calculation.result.value.amountFinanced) },
             { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0) },

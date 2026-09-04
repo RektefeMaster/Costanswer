@@ -164,14 +164,56 @@ describe('retirement family', () => {
       years: 1,
       assumedReturnPercent: 0,
       salaryGrowthPercent: 0,
+      currentAge: 35,
+      payFrequency: 'biweekly',
     });
     expect(result.value.firstYearEmployee).toBe(4_800);
     expect(result.value.firstYearEmployer).toBe(2_400);
-    expect(result.datasetSnapshotIds).toEqual([]);
-    expect(result.assumptions.join(' ')).toMatch(/does not cap/i);
+    expect(result.value.periodsPerYear).toBe(26);
+    expect(result.datasetSnapshotIds).toEqual([irsRetirementSnapshot.snapshotId]);
     expect(result.assumptions.join(' ')).toMatch(/11,250/);
     expect(result.assumptions.join(' ')).toMatch(/150,000/);
     expect(result.assumptions.join(' ')).toMatch(/irs-retirement-limits-2026-v1/);
+  });
+
+  it('caps deferrals at the IRS limit for the projected age and compounds each paycheck', () => {
+    // 40% of $200,000 is $80,000, far past the elective-deferral limit. The old
+    // engine printed the limit in its assumptions and then ignored it.
+    const capped = calculate401k({
+      currentBalance: 0,
+      salary: 200_000,
+      employeePercent: 40,
+      matchRatePercent: 0,
+      matchSalaryCapPercent: 0,
+      years: 1,
+      assumedReturnPercent: 0,
+      salaryGrowthPercent: 0,
+      currentAge: 35,
+      payFrequency: 'monthly',
+    });
+    expect(capped.value.firstYearEmployee).toBe(irsRetirementLimits.electiveDeferral401k);
+    expect(capped.value.yearsDeferralLimited).toBe(1);
+
+    // At 61 the ages 60-63 catch-up applies on top of the base limit.
+    const catchUp = calculate401k({
+      currentBalance: 0, salary: 200_000, employeePercent: 40, matchRatePercent: 0,
+      matchSalaryCapPercent: 0, years: 1, assumedReturnPercent: 0, salaryGrowthPercent: 0,
+      currentAge: 61, payFrequency: 'monthly',
+    });
+    expect(catchUp.value.firstYearEmployee).toBe(
+      irsRetirementLimits.electiveDeferral401k + irsRetirementLimits.catchUp401kAges60to63,
+    );
+
+    // Money paid in monthly earns a return during the year, so it beats the
+    // same total dropped in at year end.
+    const monthly = calculate401k({
+      currentBalance: 0, salary: 100_000, employeePercent: 12, matchRatePercent: 0,
+      matchSalaryCapPercent: 0, years: 1, assumedReturnPercent: 7, salaryGrowthPercent: 0,
+      currentAge: 35, payFrequency: 'monthly',
+    });
+    expect(monthly.value.totalEmployee).toBe(12_000);
+    expect(monthly.value.endingBalance).toBeGreaterThan(12_000);
+    expect(monthly.value.endingBalance).toBeLessThan(12_000 * 1.07);
   });
 
   it('projects Roth growth without an eligibility verdict', () => {
@@ -180,10 +222,40 @@ describe('retirement family', () => {
       monthlyContribution: 0,
       years: 1,
       assumedReturnPercent: 0,
+      currentAge: 35,
     });
     expect(result.value.endingBalance).toBe(0);
     expect(result.assumptions.join(' ')).not.toMatch(/you are eligible/i);
-    expect(result.datasetSnapshotIds).toEqual([]);
+    expect(result.datasetSnapshotIds).toEqual([irsRetirementSnapshot.snapshotId]);
+  });
+
+  it('holds Roth contributions to the IRA limit for the age being projected', () => {
+    // $2,000 a month is $24,000 a year against a $7,500 limit. Projecting the
+    // typed amount modelled a contribution the IRS does not permit.
+    const over = calculateRothIra({
+      currentBalance: 0, monthlyContribution: 2_000, years: 1,
+      assumedReturnPercent: 0, currentAge: 35,
+    });
+    expect(over.value.requestedAnnualContribution).toBe(24_000);
+    expect(over.value.totalContributions).toBe(irsRetirementLimits.iraLimit);
+    expect(over.value.yearsLimited).toBe(1);
+
+    // Catch-up lifts the ceiling from 50.
+    const catchUp = calculateRothIra({
+      currentBalance: 0, monthlyContribution: 2_000, years: 1,
+      assumedReturnPercent: 0, currentAge: 55,
+    });
+    expect(catchUp.value.totalContributions).toBe(
+      irsRetirementLimits.iraLimit + irsRetirementLimits.catchUpIraAge50,
+    );
+
+    // Someone under the limit is unaffected.
+    const under = calculateRothIra({
+      currentBalance: 0, monthlyContribution: 500, years: 1,
+      assumedReturnPercent: 0, currentAge: 35,
+    });
+    expect(under.value.totalContributions).toBe(6_000);
+    expect(under.value.yearsLimited).toBe(0);
   });
 
   it('compares a retirement projection with a modeled goal, not a readiness label', () => {

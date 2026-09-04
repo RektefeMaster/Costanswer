@@ -10,7 +10,7 @@ export function SiteFooter() {
           <span className="brand-mark" aria-hidden="true">C</span>
           <span>Cost<span>Answer</span></span>
         </Link>
-        <p>How much everyday things cost in the U.S.</p>
+        <p>Practical U.S. calculators with the math and the sources shown.</p>
       </div>
       <nav aria-label="Footer topics">
         {CATEGORY_IDS.map((categoryId) => (
@@ -23,7 +23,7 @@ export function SiteFooter() {
         <Link href="/about">About</Link>
         <Link href="/privacy">Privacy</Link>
       </nav>
-      <p className="footer-legal">© {new Date().getUTCFullYear()} {siteConfig.name}. Estimates only. Not legal, tax, or financial advice.</p>
+      <p className="footer-legal">© {new Date().getUTCFullYear()} {siteConfig.name}. Calculations and estimates for informational use. Not legal, tax, medical, or financial advice.</p>
     </footer>
   );
 }

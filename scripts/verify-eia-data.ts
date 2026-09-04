@@ -20,7 +20,7 @@ import {
   validateTaxYearSnapshot,
   validateUsdaFoodEnvelope,
 } from '../lib/data/verify';
-import { DATASET_POLICIES } from '../lib/data/dataset-policy';
+import { DATASET_IDS, DATASET_POLICIES } from '../lib/data/dataset-policy';
 import { geographySnapshotSchema } from '../lib/data/geography';
 import { censusAcsSnapshotSchema } from '../lib/data/census-acs';
 import { resolveHudFmrSnapshot } from '../lib/data/hud-fmr-snapshot';
@@ -169,8 +169,15 @@ async function verifyLocationDatasets(): Promise<string[]> {
   if (current.snapshot.rawSha256 !== fy2027Hash) throw new Error('FY2027 HUD workbook hash does not match current.json.');
   const effective = resolveHudFmrSnapshot(PUBLISHING_SNAPSHOT_DATE);
   if (effective.fiscalYear !== 2026) throw new Error(`HUD currently-effective snapshot on ${PUBLISHING_SNAPSHOT_DATE} must be FY2026, got FY${effective.fiscalYear}.`);
-  if (DATASET_POLICIES['hud-fmr'].freshnessAnchor !== 'published-at' || DATASET_POLICIES['census-acs5'].staleAfterDays < 400) {
-    throw new Error('Annual location datasets must not use the 45-day monthly stale threshold.');
+  if (DATASET_POLICIES['hud-fmr'].freshnessAnchor !== 'published-at' || DATASET_POLICIES['census-acs5'].freshnessAnchor !== 'published-at') {
+    throw new Error('Annual location datasets must anchor freshness on the provider release date, not the observation period.');
+  }
+  for (const datasetId of DATASET_IDS) {
+    const policy = DATASET_POLICIES[datasetId];
+    const interval = policy.releaseIntervalDays;
+    if (interval !== null && interval <= 0) throw new Error(`${datasetId} needs a positive release interval or null for no fixed schedule.`);
+    if (policy.publicationLagDays < 0) throw new Error(`${datasetId} cannot have a negative publication lag.`);
+    if (policy.staleAfterMissedDays <= 0) throw new Error(`${datasetId} needs a positive grace period after a missed release.`);
   }
   const gazetteerCounties = new Set(geographySnapshot.counties.map((row) => row.geoid));
   const extraHudCounties = [...new Set(effective.countyMaps.map((row) => row.countyGeoid).filter((geoid) => !gazetteerCounties.has(geoid)))];

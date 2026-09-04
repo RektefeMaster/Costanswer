@@ -20,6 +20,7 @@ import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { siteConfig } from '@/lib/site-config';
 import type { StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { approxMoney, roundedGuidelineMoney } from './finance-format';
 
 export type VehicleStateEnergy = {
   stateCode: StateCode;
@@ -180,12 +181,20 @@ export function CarAffordabilityCalculator({
       : 'Charging: the electricity rate you entered. No EIA state average is used in this result.'
     : powertrain === 'gas'
       ? `Fuel: EIA regular-gasoline average for ${selected.stateName} (${selected.gasolineGeographyLabel}), ${gasolineSource.periodLabel}.`
-      : `Charging: EIA ${selected.stateName} residential average for ${electricitySource.periodLabel}${electricitySource.freshnessNote ? `. ${electricitySource.freshnessNote}.` : '.'}`;
+      : `Charging: EIA ${selected.stateName} residential average for ${electricitySource.periodLabel}${electricitySource.freshnessNote ? `. ${electricitySource.freshnessNote}` : '.'}`;
+
+  // Insurance and upkeep ship with planning defaults, and both feed the
+  // Comfortable / Stretch / Risky verdict. A verdict computed from numbers the
+  // reader never entered should say so rather than read as their own result.
+  const placeholderInputs = [
+    Number(monthlyInsurance) === EXAMPLE_MONTHLY_INSURANCE ? 'insurance' : null,
+    Number(monthlyMaintenance) === EXAMPLE_MONTHLY_MAINTENANCE ? 'upkeep' : null,
+  ].filter((label): label is string => label !== null);
 
   return (
     <CalculatorPanel
       title="Car affordability"
-      intro="What a car really costs each month, and how much of your take-home pay that would be."
+      intro="What a car costs you out of pocket each month, and how much of your take-home pay that would be. Depreciation is not included."
       toolId="car-affordability"
       category="auto"
       calculationState={calculation.result ? 'complete' : 'invalid'}
@@ -207,7 +216,7 @@ export function CarAffordabilityCalculator({
           <small>
             {powertrain === 'gas' ? `${selected.gasolineGeographyLabel} · ` : ''}
             {energySource.line}
-            {energySource.freshnessNote ? ` · ${energySource.freshnessNote}` : ''}
+            {energySource.freshness !== 'current' ? ` · ${energySource.freshnessLabel}` : ''}
           </small>
         </p>
       </div>
@@ -362,8 +371,13 @@ export function CarAffordabilityCalculator({
             <p>
               Those percentages are {siteConfig.name} planning thresholds on take-home pay, not a lender decision and not a rule that fits every household.
             </p>
+            {placeholderInputs.length > 0 && (
+              <p className="decision-incomplete">
+                That verdict still uses our planning {placeholderInputs.length === 1 ? 'default' : 'defaults'} for {placeholderInputs.join(' and ')}. Enter your own quote to make this yours.
+              </p>
+            )}
             {thisCar.priceGap !== null && thisCar.priceGap > 0 && (
-              <p>Cut the price by <strong>{money(thisCar.priceGap, 0)}</strong>, or put <strong>{money(thisCar.priceGap, 0)}</strong> more down, to reach the comfortable range with these running costs.</p>
+              <p>Cut the price by <strong>{approxMoney(thisCar.priceGap)}</strong>, or put that much more down, to reach the comfortable range with these running costs.</p>
             )}
             {thisCar.priceGap !== null && thisCar.priceGap <= 0 && (
               <p>This price is already at or under the comfortable-range price for your take-home pay.</p>
@@ -385,7 +399,7 @@ export function CarAffordabilityCalculator({
           <StatGrid items={[
             { label: 'Cost per mile', value: money(thisCar.costPerMile ?? 0, 3), note: 'Everything except depreciation' },
             { label: 'Total interest', value: money(thisCar.totalInterest ?? 0, 0), note: thisCar.totalOfPayments && thisCar.totalOfPayments > 0 ? `${money(thisCar.totalOfPayments, 0)} paid over the term` : 'No loan' },
-            { label: 'Comfortable-range price', value: thisCar.comfortablePrice > 0 ? money(thisCar.comfortablePrice, 0) : 'None', note: `Our guideline: ≤ ${cap(COMFORTABLE.maxTotalShare)} of take-home` },
+            { label: 'Comfortable-range price', value: thisCar.comfortablePrice > 0 ? approxMoney(thisCar.comfortablePrice) : 'None', note: `Our guideline: ≤ ${cap(COMFORTABLE.maxTotalShare)} of take-home` },
           ]} />
           <p className="data-footnote">{energySourceNote}</p>
           <ResultDetails
@@ -400,13 +414,13 @@ export function CarAffordabilityCalculator({
         <div className="calculation-output">
           <PrimaryResult
             label="Estimated maximum vehicle price"
-            value={howMuch.comfortablePrice > 0 ? money(howMuch.comfortablePrice, 0) : 'None'}
-            note={`With ${money(Number(downPayment) || 0, 0)} down, ${money(howMuch.monthlyOperatingCost)} a month in running costs, and ${money(howMuch.monthlyTakeHome)} take-home`}
+            value={howMuch.comfortablePrice > 0 ? roundedGuidelineMoney(howMuch.comfortablePrice) : 'None'}
+            note={`Rounded, from our guideline. With ${money(Number(downPayment) || 0, 0)} down, ${money(howMuch.monthlyOperatingCost)} a month in running costs, and ${money(howMuch.monthlyTakeHome)} take-home`}
             tone="blue"
           />
           <StatGrid items={[
-            { label: 'Comfortable range', value: howMuch.comfortablePrice > 0 ? money(howMuch.comfortablePrice, 0) : 'None', note: `≤ ${cap(COMFORTABLE.maxTotalShare)} of take-home on the whole vehicle` },
-            { label: 'Stretch range', value: howMuch.reasonablePrice > 0 ? money(howMuch.reasonablePrice, 0) : 'None', note: `≤ ${cap(REASONABLE.maxTotalShare)} of take-home` },
+            { label: 'Comfortable range', value: howMuch.comfortablePrice > 0 ? approxMoney(howMuch.comfortablePrice) : 'None', note: `≤ ${cap(COMFORTABLE.maxTotalShare)} of take-home on the whole vehicle` },
+            { label: 'Stretch range', value: howMuch.reasonablePrice > 0 ? approxMoney(howMuch.reasonablePrice) : 'None', note: `≤ ${cap(REASONABLE.maxTotalShare)} of take-home` },
             { label: 'Top of our range', value: howMuch.aggressivePrice > 0 ? money(howMuch.aggressivePrice, 0) : 'None', note: `≤ ${cap(VEHICLE_AFFORDABILITY_BANDS.aggressive.maxTotalShare)} of take-home` },
           ]} />
           <StatGrid items={[

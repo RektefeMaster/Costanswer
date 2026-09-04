@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluralize } from '@/lib/plural';
 import { finiteNumber, type CalculationResult } from './contracts';
 import { addCalendarDays, DAY_MS, formatDateOnly, isValidDateOnly, parseDateOnly } from './datetime/calendar';
 
@@ -138,7 +139,7 @@ export function calculateBusinessDaysBetween(rawInput: unknown): CalculationResu
     calculationVersion: 'calendar-v1.0.0',
     datasetSnapshotIds: input.excludeFederalHolidays ? ['opm-federal-holiday-rules-2026-09'] : [],
     breakdown: [
-      { label: 'Calendar-day span', value: `${calendarDays} days`, detail: 'Elapsed days between the two dates' },
+      { label: 'Calendar-day span', value: pluralize(calendarDays, 'day', 'days'), detail: 'Elapsed days between the two dates' },
       { label: 'Weekend days excluded', value: `${weekendDays}`, detail: 'Saturday and Sunday' },
       { label: 'Federal holidays excluded', value: `${federalHolidays}`, detail: input.excludeFederalHolidays ? 'Observed U.S. federal holidays' : 'Holiday exclusion is off' },
     ],

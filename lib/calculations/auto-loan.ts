@@ -59,7 +59,7 @@ export function calculateAutoLoan(rawInput: unknown): CalculationResult<{
     datasetSnapshotIds: [],
     breakdown: [
       { label: 'Amount financed', value: formatMoney(purchase.amountFinanced) },
-      { label: 'Monthly payment', value: formatMoney(financing.monthlyPayment), detail: `${input.termMonths} months at ${formatNumber(input.annualRatePercent, { maximumFractionDigits: 3 })}% nominal APR-style rate` },
+      { label: 'Monthly payment', value: formatMoney(financing.monthlyPayment), detail: `${input.termMonths} months at ${formatNumber(input.annualRatePercent, { maximumFractionDigits: 3 })}% nominal annual interest rate` },
       { label: 'Total interest', value: formatMoney(financing.totalInterest) },
     ],
     assumptions: [

@@ -227,6 +227,28 @@ describe('where-cheaper engine', () => {
     expect(result.calculationVersion).toBe('where-cheaper-v1.0.0');
   });
 
+  it('ranks the geography the provider measured, not one row per state', () => {
+    // BLS prices these staples for four census regions. Ranking all 51 states
+    // off four numbers reported a state-level position that does not exist.
+    const grocery = compareWhereCheaper({
+      kind: 'grocery', homeState: 'TX', compareState: 'CA', monthlyKwh: 900, monthlyGallons: 40,
+    }, datasets).value.geographyRanking;
+    expect(grocery.total).toBe(4);
+    expect(grocery.unitLabel).toBe('census regions');
+    expect(grocery.homeLabel).toBe('South census region');
+    expect(grocery.sharedAcrossStates).toBe(true);
+    expect(grocery.statesSharing).toBe(17);
+    expect(grocery.homeRank).toBeLessThanOrEqual(4);
+
+    // Electricity really is published per state, so 51 positions are honest.
+    const power = compareWhereCheaper({
+      kind: 'electricity', homeState: 'TX', compareState: 'CA', monthlyKwh: 900, monthlyGallons: 40,
+    }, datasets).value.geographyRanking;
+    expect(power.total).toBe(51);
+    expect(power.unitLabel).toBe('states');
+    expect(power.sharedAcrossStates).toBe(false);
+  });
+
   it('uses the Texas weekly series and a PADD average for Alabama gasoline', () => {
     const result = compareWhereCheaper({
       kind: 'gasoline', homeState: 'TX', compareState: 'AL', monthlyKwh: 900, monthlyGallons: 40,

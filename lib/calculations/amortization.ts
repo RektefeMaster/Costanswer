@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { pluralize } from '@/lib/plural';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
 import { addCalendarMonths, formatDateOnly, isValidDateOnly, parseDateOnly } from './datetime/calendar';
 import { amortizeLoan } from './finance/loan';
@@ -55,7 +56,7 @@ export function calculateAmortization(rawInput: unknown): CalculationResult<{
     breakdown: [
       { label: 'Monthly payment', value: formatMoney(simulated.scheduledMonthlyPayment), detail: `${formatNumber(input.annualRatePercent, { maximumFractionDigits: 3 })}% for ${input.termMonths} scheduled months` },
       { label: 'Total interest', value: formatMoney(simulated.totalInterest) },
-      { label: 'Payoff', value: `${simulated.actualPeriods} payments`, detail: simulated.periodsSaved > 0 ? `${simulated.periodsSaved} months sooner with extra principal` : 'Scheduled term' },
+      { label: 'Payoff', value: pluralize(simulated.actualPeriods, 'payment', 'payments'), detail: simulated.periodsSaved > 0 ? `${pluralize(simulated.periodsSaved, 'month', 'months')} sooner with extra principal` : 'Scheduled term' },
     ],
     assumptions: [
       'The schedule uses the same fixed-rate amortization primitive as the Loan Calculator.',

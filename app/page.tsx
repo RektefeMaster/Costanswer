@@ -43,7 +43,7 @@ export default function Home() {
           <p className="eyebrow"><span /> Free calculators</p>
           <HeroHeadline />
           <p className="hero-lede">
-            Need a mortgage payment from this week’s rate? What $100 in 1990 buys today? A yearly salary from an hourly wage?
+            Need a mortgage payment from the latest national average rate? What $100 in 1990 buys today? A yearly salary from an hourly wage?
             Change the numbers until they look like yours.
           </p>
 
@@ -63,7 +63,7 @@ export default function Home() {
         <div className="section-intro">
           <h2 id="category-title">What this actually costs.</h2>
           <p className="section-lede">
-            A mortgage payment from this week’s national rate. Take-home pay after federal and state tax. An electric bill against your state’s average. What $100 in 1990 still buys.
+            A mortgage payment from the latest Freddie Mac national average. Take-home pay after federal and state tax. An electric bill against your state’s average. What $100 in 1990 still buys.
           </p>
           <p className="section-lede">
             When a page uses Freddie Mac, EIA, BLS, or IRS figures, the source and date sit next to the answer. Open the steps. Change the inputs until they look like yours.

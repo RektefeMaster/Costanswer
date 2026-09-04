@@ -6,7 +6,19 @@ import {
   type DatasetPolicy,
 } from './dataset-policy';
 
-export type FreshnessStatus = 'fresh' | 'stale';
+/**
+ * What a deployed snapshot is, relative to the provider's own release calendar.
+ *
+ * `current`      the provider has not published anything newer yet
+ * `update-due`   the next scheduled release date has passed, so a newer figure
+ *                very likely exists and this copy has not caught up
+ * `stale`        old enough that it should not be presented as a current figure
+ *
+ * Age alone cannot separate the first two. A weekly series with a two-week
+ * stale window reads as fresh through an entire missed release, which is how a
+ * mortgage rate could be described as "this week's" while being a week old.
+ */
+export type FreshnessStatus = 'current' | 'update-due' | 'stale';
 export type PublicationSourceStatus = 'preliminary' | 'final' | 'revised' | 'verified' | 'unsupported';
 
 export type FreshnessInput = {
@@ -57,16 +69,40 @@ export function freshnessAnchorDate(input: FreshnessInput, cadence: DatasetCaden
   return observationPeriodEndDate(input.observationPeriod, cadence);
 }
 
+function freshnessAnchor(policy: DatasetPolicy, input: FreshnessInput): string {
+  return policy.freshnessAnchor === 'published-at'
+    ? (input.publishedAt ?? input.verifiedAt ?? input.fetchedAt ?? `${observationPeriodEndDate(input.observationPeriod, policy.expectedCadence)}T00:00:00.000Z`).slice(0, 10)
+    : freshnessAnchorDate(input, policy.expectedCadence);
+}
+
+/**
+ * The date the provider is next expected to publish, after the release this
+ * snapshot holds. Once that date passes, this copy is behind by construction.
+ *
+ * Which clock to count from depends on what the observation period means. For
+ * a survey week or data month it is an elapsed window, so the next release is
+ * one interval past its end plus the provider's own publication lag. For a
+ * fiscal year or survey vintage the period is a label — HUD's FY2027 rents are
+ * published in 2026 — so only the release date the provider stamped on it can
+ * anchor the next one.
+ */
+export function nextExpectedReleaseDate(policy: DatasetPolicy, input: FreshnessInput): string | null {
+  if (policy.releaseIntervalDays === null) return null;
+  if (policy.freshnessAnchor === 'published-at') {
+    return addUtcDays(freshnessAnchor(policy, input), policy.releaseIntervalDays);
+  }
+  const observationEnd = observationPeriodEndDate(input.observationPeriod, policy.expectedCadence);
+  return addUtcDays(observationEnd, policy.releaseIntervalDays + policy.publicationLagDays);
+}
+
 export function evaluateFreshness(
   policy: DatasetPolicy,
   input: FreshnessInput,
   asOf: string = PUBLISHING_SNAPSHOT_DATE,
 ): FreshnessStatus {
-  const anchor = policy.freshnessAnchor === 'published-at'
-    ? (input.publishedAt ?? input.verifiedAt ?? input.fetchedAt ?? `${observationPeriodEndDate(input.observationPeriod, policy.expectedCadence)}T00:00:00.000Z`).slice(0, 10)
-    : freshnessAnchorDate(input, policy.expectedCadence);
-  const staleOn = addUtcDays(anchor, policy.staleAfterDays + 1);
-  return asOf < staleOn ? 'fresh' : 'stale';
+  const expectedRelease = nextExpectedReleaseDate(policy, input);
+  if (expectedRelease === null || asOf < expectedRelease) return 'current';
+  return asOf < addUtcDays(expectedRelease, policy.staleAfterMissedDays) ? 'update-due' : 'stale';
 }
 
 export function evaluateDatasetFreshness(

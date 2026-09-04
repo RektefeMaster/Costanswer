@@ -105,10 +105,18 @@ test('appliance electricity uses the EIA snapshot until a manual rate replaces i
   await expect(page.getByRole('heading', { name: 'Appliance Electricity Cost Calculator' })).toBeVisible();
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await expect(page.locator('.data-callout')).toContainText('EIA · June 2026');
-  await expect(page.locator('.data-callout')).toContainText('Latest available official data');
+  // June 2026 is the newest Electric Power Monthly release, so the callout says
+  // which period it covers and adds no staleness warning.
+  await expect(page.locator('.data-callout')).not.toContainText('Latest available official data');
   await expect(page.locator('.result-audit')).toContainText('Method appliance-energy-v1.0.0');
   await expect(page.locator('.result-audit')).toContainText('eia-electricity-residential');
   await page.locator('#appliance-custom-rate').fill('10');
+  // The air-conditioner preset counts 60% of its on-hours, because a compressor
+  // cycles rather than drawing nameplate watts continuously: 1500 W x 8 h x 7 d
+  // x 0.6 at 10c/kWh.
+  await expect(page.locator('#appliance-duty')).toHaveValue('60');
+  await expect(page.locator('.primary-result strong')).toHaveText('$21.84');
+  await page.locator('#appliance-duty').fill('100');
   await expect(page.locator('.primary-result strong')).toHaveText('$36.40');
   await expect(page.locator('.result-stat-grid')).toContainText('Manual electricity rate');
   await expect(page.locator('.data-footnote')).toContainText('The EIA state average is not used');
@@ -152,11 +160,12 @@ test('car affordability prices the whole vehicle and tracks which data it used',
   await expect(page.locator('.result-audit')).toContainText('Data Manual inputs / fixed rules');
   await expect(page.locator('.result-audit')).not.toContainText('eia-gasoline-regular-weekly');
 
-  await expect(page.locator('.decision-note')).toContainText('Cut the price by $11,100');
+  await expect(page.locator('.decision-note')).toContainText('Cut the price by about $11,000');
+  await expect(page.locator('.decision-note')).toContainText('planning defaults for insurance and upkeep');
 
   await page.getByRole('button', { name: 'Electric' }).click();
   await expect(page.locator('.data-callout')).toContainText('EIA · June 2026');
-  await expect(page.locator('.data-callout')).toContainText('Latest available official data');
+  await expect(page.locator('.data-callout')).not.toContainText('Latest available official data');
   await expect(page.locator('.result-audit')).toContainText('eia-electricity-residential');
 
   await page.getByRole('button', { name: 'How much car?' }).click();
@@ -446,7 +455,7 @@ test('header navigation at 390px with the mobile menu open stays inside the view
   await expect(menu.locator('summary')).toBeVisible();
   await menu.locator('summary').click();
   await expect(menu).toHaveJSProperty('open', true);
-  await expect(menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link')).toHaveCount(7);
+  await expect(menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link')).toHaveCount(10);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
 });
 
@@ -590,7 +599,7 @@ test('phase 7.5 calculators calculate across each family', async ({ page }) => {
   await page.goto('/money/401k');
   await expect(page.locator('.primary-result p')).toHaveText('Projected balance');
   await page.locator('.result-details summary').filter({ hasText: 'What we assumed' }).click();
-  await expect(page.locator('.result-details')).toContainText('does not cap');
+  await expect(page.locator('.result-details')).toContainText('IRS tax year 2026 limits are applied');
 
   await page.goto('/money/mortgage-payoff');
   await expect(page.locator('.primary-result p')).toHaveText('Pay off sooner by');

@@ -5,6 +5,7 @@ import { calculateMortgage, defaultRateForTerm, type MortgageTermYears } from '@
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { pluralize } from '@/lib/plural';
 
 type RateSnapshot = {
   snapshotId: string;
@@ -65,7 +66,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
   return (
     <CalculatorPanel
       title="Monthly mortgage payment"
-      intro="Start with this week’s national average rate. Type your quote if you have one."
+      intro="Starts from the most recent Freddie Mac national average. Type your own quote if you have one."
       toolId="mortgage-payment"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
@@ -75,7 +76,15 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
         <span>FREDDIE MAC PMMS</span>
         <p>
           <strong>30-year {rates.thirtyYearFixedPercent.toFixed(2)}% · 15-year {rates.fifteenYearFixedPercent.toFixed(2)}%</strong>
-          <small>National weekly average · {source.periodLabel}</small>
+          {/*
+            PMMS publishes weekly. Once the next Thursday release is due, saying
+            "this week's rate" would be a claim we cannot stand behind, so the
+            callout reports which survey week this actually is.
+          */}
+          <small>
+            National weekly average · survey week of {source.periodLabel}
+            {source.freshness !== 'current' && ` · ${source.freshnessLabel}. Check Freddie Mac for the latest week before relying on it.`}
+          </small>
         </p>
       </div>
       <div className="mode-tabs" role="group" aria-label="Loan term">
@@ -146,7 +155,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
           <StatGrid items={[
             { label: 'Principal and interest', value: money(calculation.result.value.monthlyPrincipalAndInterest), note: `${termYears}-year fixed` },
             { label: 'Loan amount', value: money(calculation.result.value.loanAmount, 0), note: `${calculation.result.value.downPaymentPercent}% down` },
-            { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0), note: `Over ${calculation.result.value.paymentCount} payments` },
+            { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0), note: `Over ${pluralize(calculation.result.value.paymentCount, 'payment', 'payments')}` },
           ]} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>
