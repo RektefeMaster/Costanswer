@@ -329,6 +329,34 @@ describe('registry and intent search', () => {
   });
 });
 
+describe('search reaches the tool a reader asked for', () => {
+  it('answers the phrasings people actually type', () => {
+    // Ten of these returned nothing before: a converter that did not match
+    // "kg to lbs", an area tool that did not match "sq ft", and so on.
+    const expectations: Array<[string, string]> = [
+      ['convert kg to lbs', 'unit-conversion'],
+      ['kg to lbs', 'unit-conversion'],
+      ['sq ft', 'square-footage'],
+      ['percent off', 'percentage'],
+      ['discount', 'percentage'],
+      ['cd rate', 'cd'],
+      ['student loan', 'loan'],
+      ['days until', 'days-from-today'],
+      ['w2', 'paycheck'],
+      ['refinance', 'mortgage-payment'],
+      ['take home pay', 'paycheck'],
+      ['how much house can i afford', 'home-affordability'],
+      ['how old am i', 'age'],
+      ['cheapest state', 'where-cheaper'],
+      ['overtime', 'hourly-to-salary'],
+    ];
+    for (const [query, expected] of expectations) {
+      const hits = searchTools(query, 3).map((result) => result.tool.id);
+      expect(hits, `"${query}" should reach ${expected}, got ${hits.join(', ') || 'nothing'}`).toContain(expected);
+    }
+  });
+});
+
 describe('internal linking graph', () => {
   it('gives every calculator real neighbours and keeps the whole catalogue reachable', () => {
     for (const tool of tools) {
