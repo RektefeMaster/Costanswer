@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { categories, getRelatedTools, type ResultNature, type ToolDefinition } from '@/lib/tool-registry';
+import { categories, getRelatedTools, getToolClusters, type ResultNature, type ToolDefinition } from '@/lib/tool-registry';
 import { siteConfig } from '@/lib/site-config';
 import { breadcrumbJsonLd, toolJsonLd } from '@/lib/seo';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -62,6 +62,9 @@ const RESULT_NOTES: Record<ResultNature, { heading: string; body: string }> = {
 export function ToolPage({ tool, children, methodology, sources = [], caution }: ToolPageProps) {
   const category = categories[tool.category];
   const related = getRelatedTools(tool);
+  // Naming the journey the reader is on gives the related block a reason to
+  // exist beyond "more of the same category".
+  const clusters = getToolClusters(tool.id);
   const breadcrumbs = [
     { name: siteConfig.name, path: '/' },
     { name: category.name, path: `/topics/${tool.category}` },
@@ -141,6 +144,11 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
         <section className="related-section" aria-labelledby="related-title">
           <p className="eyebrow muted"><span /> Next</p>
           <h2 id="related-title">Related calculators</h2>
+          {clusters.length > 0 && (
+            <p className="related-lede">
+              People working through {clusters.map((cluster) => cluster.label.toLowerCase()).join(' and ')} usually need these next.
+            </p>
+          )}
           <div className="related-grid">
             {related.map((relatedTool) => (
               <RelatedToolLink href={relatedTool.path} toolId={tool.id} category={tool.category} relatedToolId={relatedTool.id} key={relatedTool.id}>

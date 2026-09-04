@@ -1195,9 +1195,9 @@ input, select { font-variant-numeric: tabular-nums; }
 .dataset-card h2 { margin: 26px 0; font-size: 38px; }
 .dataset-card dl { border-top: 1px solid var(--line); }
 .dataset-card dl > div { display: grid; grid-template-columns: 180px 1fr; gap: 20px; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: 11px; }
-.dataset-card dt { color: rgba(16,42,42,.5); }
+.dataset-card dt { color: rgba(16,42,42,.78); }
 .dataset-card dd { margin: 0; overflow-wrap: anywhere; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-.dataset-card > p, .dataset-card > ul { color: rgba(16,42,42,.65); font-size: 12px; line-height: 1.6; }
+.dataset-card > p, .dataset-card > ul { color: rgba(16,42,42,.78); font-size: 12px; line-height: 1.6; }
 .dataset-links { display: flex; gap: 22px; margin-top: 25px; }
 
 @media (max-width: 920px) {
@@ -1537,3 +1537,14 @@ input, select { font-variant-numeric: tabular-nums; }
 .dataset-technical summary::after { content: '+'; float: right; font-size: 15px; font-weight: 400; }
 .dataset-technical[open] summary::after { content: '\2212'; }
 .dataset-technical dl, .dataset-technical ul { margin-top: 10px; }
+.related-lede { max-width: 62ch; margin: 10px 0 0; color: rgba(16,42,42,.76); font-size: 14px; line-height: 1.55; }
+.freshness-pill { display: inline-block; padding: 2px 9px 3px; border-radius: 999px; font-size: 11px; font-weight: 720; letter-spacing: .01em; }
+.freshness-current { background: rgba(32,119,103,.13); color: #17564b; }
+.freshness-update-due { background: rgba(176,110,20,.15); color: #7a4c07; }
+.freshness-stale { background: rgba(163,54,54,.14); color: #7d2020; }
+.dataset-summary { margin: 0 0 34px; }
+.dataset-summary ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 2px; }
+.dataset-summary li { display: grid; grid-template-columns: minmax(150px, auto) 1fr; align-items: baseline; gap: 4px 14px; padding: 11px 0; border-top: 1px solid rgba(16,42,42,.1); }
+.dataset-summary strong { font-size: 14px; font-weight: 700; }
+.dataset-summary small { grid-column: 2; color: rgba(16,42,42,.72); font-size: 12px; }
+@media (max-width: 600px) { .dataset-summary li { grid-template-columns: 1fr; } .dataset-summary small { grid-column: 1; } }

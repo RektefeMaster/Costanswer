@@ -4,6 +4,7 @@ import {
   evaluateFreshness,
   isPublicationSourceStatus,
   nextExpectedReleaseDate,
+  observationPeriodEndDate,
   type FreshnessInput,
   type FreshnessStatus,
   type PublicationSourceStatus,
@@ -20,8 +21,33 @@ export type DatasetSourceDisplay = {
   freshnessNote: string | null;
   nextExpectedRelease: string | null;
   releaseSchedule: string;
+  /** How long ago the period this snapshot covers ended, in reader terms. */
+  observationAge: string;
+  /** When this copy was last checked against the provider. */
+  lastCheckedOn: string | null;
   sourceStatus: PublicationSourceStatus | string;
 };
+
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Plain-language distance between two dates.
+ *
+ * "June 2026" tells a reader what the figure covers but not whether that is
+ * recent. Saying how old it is turns the dated snapshot from a technical
+ * detail into the thing that makes the number checkable.
+ */
+function describeAge(fromIsoDate: string, asOf: string): string {
+  const days = Math.round((Date.parse(`${asOf}T00:00:00.000Z`) - Date.parse(`${fromIsoDate}T00:00:00.000Z`)) / DAY_MS);
+  if (!Number.isFinite(days)) return 'unknown age';
+  if (days < 0) return 'covers a period still running';
+  if (days === 0) return 'today';
+  if (days === 1) return '1 day old';
+  if (days < 45) return `${days} days old`;
+  const months = Math.round(days / 30.44);
+  if (months < 24) return `${months} months old`;
+  return `${Math.round(days / 365.25)} years old`;
+}
 
 /**
  * Reader-facing freshness wording.
@@ -121,6 +147,11 @@ export function datasetSourceDisplay(input: {
     freshnessNote: FRESHNESS_NOTES[freshness],
     nextExpectedRelease: nextExpectedReleaseDate(policy, freshnessInput),
     releaseSchedule: policy.releaseSchedule,
+    observationAge: describeAge(
+      observationPeriodEndDate(input.observationPeriod, policy.expectedCadence),
+      input.asOf ?? PUBLISHING_SNAPSHOT_DATE,
+    ),
+    lastCheckedOn: (input.verifiedAt ?? input.fetchedAt)?.slice(0, 10) ?? null,
     sourceStatus,
   };
 }

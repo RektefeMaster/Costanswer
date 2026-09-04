@@ -9,6 +9,7 @@ import { FRACTION_ENGINE_ID, PERCENT_CHANGE_ENGINE_ID, PERCENTAGE_ENGINE_ID, RAN
 import { CONVERSION_ENGINE_ID } from './calculations/conversion/units';
 import { GPA_ENGINE_ID, GRADE_ENGINE_ID, SQUARE_FOOTAGE_ENGINE_ID } from './calculations/education/formulas';
 import { CATEGORY_IDS, categories, type CategoryAccent, type CategoryId } from './categories';
+import { CLUSTER_IDS, TOOL_CLUSTERS, clusterNeighbours, clustersForTool } from './clusters';
 import { parsePublishingDate, PUBLISHING_SNAPSHOT_DATE } from './publishing';
 
 export { CATEGORY_IDS, HEADER_CATEGORY_IDS, categories } from './categories';
@@ -1215,6 +1216,14 @@ export function assertToolRegistryIntegrity(): void {
       targets.add(relationship.toolId);
     }
   }
+  for (const clusterId of CLUSTER_IDS) {
+    for (const toolId of TOOL_CLUSTERS[clusterId].toolIds as readonly string[]) {
+      if (!toolById.has(toolId)) throw new Error(`Cluster ${clusterId} points to unknown tool ${toolId}.`);
+    }
+  }
+  for (const tool of tools) {
+    if (clustersForTool(tool.id).length === 0) throw new Error(`${tool.id} is not in any topic cluster.`);
+  }
 }
 
 assertToolRegistryIntegrity();
@@ -1229,15 +1238,20 @@ export function getToolsByCategory(category: CategoryId): ToolDefinition[] {
   return tools.filter((tool) => tool.category === category);
 }
 
+export const RELATED_TOOL_LIMIT = 6;
+export const RELATED_TOOL_MINIMUM = 3;
+
 /**
- * Related tools, read as an undirected graph.
+ * Neighbours for a tool, composed rather than hand-listed.
  *
- * Relationships are authored one way, so a link declared on the salary page
- * pointed at the paycheck page but not back. Thirty-four pairs were one-way
- * like that, which left readers on the far side of a real relationship with no
- * route back. Declared links come first, then the tools that point here.
+ * Four sources in order of how deliberate they are: the relationships authored
+ * on this tool, the rest of its topic clusters, the tools that authored a
+ * relationship pointing back at it, and finally its own category. That gives every
+ * page a real route onward — a reader can walk salary to after-tax to paycheck
+ * to 401(k) to home affordability to mortgage without meeting a dead end — and
+ * it cannot drift out of date the way a hand-written list on fifty pages does.
  */
-export function getRelatedTools(tool: ToolDefinition, limit = 6): ToolDefinition[] {
+export function getRelatedTools(tool: ToolDefinition, limit = RELATED_TOOL_LIMIT): ToolDefinition[] {
   const seen = new Set<string>([tool.id]);
   const related: ToolDefinition[] = [];
   const add = (candidate: ToolDefinition | undefined) => {
@@ -1246,10 +1260,19 @@ export function getRelatedTools(tool: ToolDefinition, limit = 6): ToolDefinition
     related.push(candidate);
   };
   for (const relationship of tool.relationships) add(toolById.get(relationship.toolId));
+  for (const neighbour of clusterNeighbours(tool.id)) add(toolById.get(neighbour));
   for (const candidate of tools) {
     if (candidate.relationships.some((relationship) => relationship.toolId === tool.id)) add(candidate);
   }
+  for (const candidate of tools) {
+    if (candidate.category === tool.category) add(candidate);
+  }
   return related;
+}
+
+/** The topic journeys this tool sits inside, for breadcrumb and hub copy. */
+export function getToolClusters(toolId: string) {
+  return clustersForTool(toolId).map((id) => ({ id, ...TOOL_CLUSTERS[id] }));
 }
 
 export function isCategoryId(value: string): value is CategoryId {

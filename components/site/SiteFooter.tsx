@@ -10,7 +10,7 @@ export function SiteFooter() {
           <span className="brand-mark" aria-hidden="true">C</span>
           <span>Cost<span>Answer</span></span>
         </Link>
-        <p>Practical U.S. calculators with the math and the sources shown.</p>
+        <p>{siteConfig.tagline}</p>
       </div>
       <nav aria-label="Footer topics">
         {CATEGORY_IDS.map((categoryId) => (

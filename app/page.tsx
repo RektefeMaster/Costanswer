@@ -43,8 +43,8 @@ export default function Home() {
           <p className="eyebrow"><span /> Free calculators</p>
           <HeroHeadline />
           <p className="hero-lede">
-            Need a mortgage payment from the latest national average rate? What $100 in 1990 buys today? A yearly salary from an hourly wage?
-            Change the numbers until they look like yours.
+            A mortgage payment from the latest national average rate. A yearly salary from an hourly wage. What $100 in 1990 buys today.
+            Every answer shows the formula it used and the source behind it. Change the numbers until they look like yours.
           </p>
 
           <form id="answer-search" className="answer-search" action="/search" role="search">

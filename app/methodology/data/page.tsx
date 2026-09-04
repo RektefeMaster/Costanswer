@@ -208,8 +208,10 @@ function freshnessRows(source: ReturnType<typeof datasetSourceDisplay>) {
   return (
     <>
       <div><dt>Source line</dt><dd>{source.line}</dd></div>
-      <div><dt>Freshness</dt><dd>{source.freshnessLabel}</dd></div>
-      <div><dt>Provider schedule</dt><dd>{source.releaseSchedule}. Next release expected {source.nextExpectedRelease}.</dd></div>
+      <div><dt>Status</dt><dd><span className={`freshness-pill freshness-${source.freshness}`}>{source.freshnessLabel}</span></dd></div>
+      <div><dt>Age of this period</dt><dd>{source.observationAge}</dd></div>
+      {source.lastCheckedOn && <div><dt>Last checked</dt><dd>{source.lastCheckedOn}</dd></div>}
+      <div><dt>Provider schedule</dt><dd>{source.releaseSchedule}{source.nextExpectedRelease ? `. Next release expected ${source.nextExpectedRelease}.` : '. No fixed release schedule.'}</dd></div>
       {source.freshnessNote && <div><dt>Note</dt><dd>{source.freshnessNote}</dd></div>}
     </>
   );
@@ -217,10 +219,46 @@ function freshnessRows(source: ReturnType<typeof datasetSourceDisplay>) {
 
 const cpiGaps = missingCpiMonths(cpiSnapshot.observations);
 
+/** One row per dataset, so the standing of the whole set is legible at a glance. */
+const ALL_SOURCES = [
+  { label: 'Freddie Mac mortgage rates', source: mortgageSource },
+  { label: 'BLS CPI-U inflation index', source: cpiSource },
+  { label: 'EIA residential electricity', source: electricitySource },
+  { label: 'EIA weekly gasoline', source: gasolineSource },
+  { label: 'BLS grocery average prices', source: grocerySource },
+  { label: 'IRS and SSA tax parameters', source: taxSource },
+  { label: 'IRS retirement limits', source: irsRetirementSource },
+  { label: 'Census ACS 5-year estimates', source: acsSource },
+  { label: 'HUD Fair Market Rents', source: hudSource },
+  { label: 'BEA Regional Price Parities', source: beaSource },
+  { label: 'USDA Food Plans', source: usdaSource },
+];
+
 export default function DataSourcesPage() {
   return (
-    <InfoPage eyebrow="Data sources" title="The data on the site right now" intro="Government datasets currently on the site, with the dates they cover. Calculator pages link here.">
+    <InfoPage
+      eyebrow="Data sources"
+      title="The data on the site right now"
+      intro="Every official dataset on the site, what period it covers, when it was last checked, and when its provider is due to publish again."
+    >
       <JsonLd data={datasetJsonLd} />
+      {/*
+        Each dataset is measured against its provider's own release calendar, so
+        "current" means nothing newer has been published rather than "recent
+        enough". That distinction is the whole point of storing dated snapshots.
+      */}
+      <section className="dataset-summary">
+        <h2>Where every dataset stands today</h2>
+        <ul>
+          {ALL_SOURCES.map((entry) => (
+            <li key={entry.label}>
+              <span className={`freshness-pill freshness-${entry.source.freshness}`}>{entry.source.freshnessLabel}</span>
+              <strong>{entry.label}</strong>
+              <small>{entry.source.periodLabel} · {entry.source.observationAge}</small>
+            </li>
+          ))}
+        </ul>
+      </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>Freddie Mac weekly mortgage rate averages</h2>

@@ -25,7 +25,16 @@ import {
 import { sha256 } from '@/lib/data/sha256';
 import { PUBLISHING_SNAPSHOT_INSTANT } from '@/lib/publishing';
 import { searchTools } from '@/lib/search';
-import { evaluateToolIndexability, isCategoryHubIndexable, tools } from '@/lib/tool-registry';
+import {
+  evaluateToolIndexability,
+  getRelatedTools,
+  getTool,
+  isCategoryHubIndexable,
+  RELATED_TOOL_LIMIT,
+  RELATED_TOOL_MINIMUM,
+  tools,
+} from '@/lib/tool-registry';
+import { clustersForTool } from '@/lib/clusters';
 import { getSitemapFamilies, paginateSitemapEntries, sitemapPageLastModified, SITEMAP_URL_LIMIT } from '@/lib/seo/sitemaps';
 import { toolMetadata } from '@/lib/seo';
 
@@ -317,6 +326,47 @@ describe('registry and intent search', () => {
     expect(new Set(empty.map((result) => result.tool.category)).size).toBe(8);
     expect(searchTools('', tools.length)).toHaveLength(tools.length);
     expect(searchTools('how much')).toEqual([]);
+  });
+});
+
+describe('internal linking graph', () => {
+  it('gives every calculator real neighbours and keeps the whole catalogue reachable', () => {
+    for (const tool of tools) {
+      const related = getRelatedTools(tool);
+      expect(related.length, `${tool.id} has too few related tools`).toBeGreaterThanOrEqual(RELATED_TOOL_MINIMUM);
+      expect(related.length).toBeLessThanOrEqual(RELATED_TOOL_LIMIT);
+      expect(related.map((candidate) => candidate.id)).not.toContain(tool.id);
+      expect(new Set(related.map((candidate) => candidate.id)).size).toBe(related.length);
+      expect(clustersForTool(tool.id).length, `${tool.id} is in no cluster`).toBeGreaterThan(0);
+    }
+
+    // A crawler landing anywhere should be able to walk to everything. Related
+    // lists used to be authored one way, which stranded whole corners.
+    const start = tools[0];
+    const seen = new Set<string>([start.id]);
+    let frontier = [start];
+    while (frontier.length > 0) {
+      const next: typeof tools = [];
+      for (const tool of frontier) {
+        for (const candidate of getRelatedTools(tool)) {
+          if (seen.has(candidate.id)) continue;
+          seen.add(candidate.id);
+          next.push(candidate);
+        }
+      }
+      frontier = next;
+    }
+    expect(seen.size).toBe(tools.length);
+  });
+
+  it('walks the pay-to-mortgage journey the clusters describe', () => {
+    const step = (from: string, to: string) =>
+      getRelatedTools(getTool(from)).some((candidate) => candidate.id === to);
+    expect(step('hourly-to-salary', 'salary-after-tax')).toBe(true);
+    expect(step('salary-after-tax', 'paycheck')).toBe(true);
+    expect(step('paycheck', '401k')).toBe(true);
+    expect(step('home-affordability', 'mortgage-payment')).toBe(true);
+    expect(step('mortgage-payment', 'mortgage-payoff')).toBe(true);
   });
 });
 
