@@ -349,6 +349,9 @@ describe('search reaches the tool a reader asked for', () => {
       ['how old am i', 'age'],
       ['cheapest state', 'where-cheaper'],
       ['overtime', 'hourly-to-salary'],
+      ['gsa per diem', 'per-diem'],
+      ['per diem by zip code', 'per-diem'],
+      ['standard conus rate', 'per-diem'],
     ];
     for (const [query, expected] of expectations) {
       const hits = searchTools(query, 3).map((result) => result.tool.id);

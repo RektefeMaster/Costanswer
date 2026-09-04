@@ -1,11 +1,12 @@
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
 import {
   GSA_MIE_BREAKDOWN_URL,
   GSA_PERDIEM_API_URL,
   gsaPerDiemSnapshotSchema,
   normalizeGsaPerDiemResponse,
+  parseMieBreakdowns,
   type GsaPerDiemSnapshot,
-  type MieBreakdown,
 } from '../lib/data/gsa-perdiem';
 import {
   acquireIngestionLock,
@@ -29,42 +30,6 @@ const dataDirectory = path.join(root, 'data', 'gsa-perdiem');
 function currentFiscalYear(now = new Date()): number {
   const year = now.getUTCFullYear();
   return now.getUTCMonth() >= 9 ? year + 1 : year;
-}
-
-/**
- * Read the M&IE tier table off GSA's own breakdown page.
- *
- * The API returns only the M&IE total for a destination. How that total splits
- * across meals, and what the first and last day of travel are worth, is
- * published separately, so it is parsed rather than assumed: taking three
- * quarters and rounding would not reproduce GSA's own published figures for
- * every tier.
- */
-export function parseMieBreakdowns(pageHtml: string): MieBreakdown[] {
-  const text = pageHtml
-    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/\s+/g, ' ');
-
-  // Rows read: total, breakfast, lunch, dinner, incidentals, first and last day.
-  const rowPattern = /\$(\d+)\s+\$(\d+)\s+\$(\d+)\s+\$(\d+)\s+\$(\d+)\s+\$(\d+(?:\.\d{2})?)/g;
-  const seen = new Map<number, MieBreakdown>();
-  for (const match of text.matchAll(rowPattern)) {
-    const [total, breakfast, lunch, dinner, incidentals, firstLastDay] = match.slice(1).map(Number);
-    const components = breakfast + lunch + dinner + incidentals;
-    // The page also carries an OCONUS table and unrelated dollar runs; only
-    // rows that actually behave like an M&IE tier are accepted.
-    if (Math.abs(components - total) > 0.005) continue;
-    if (Math.abs(firstLastDay - total * 0.75) > 0.005) continue;
-    seen.set(total, { total, breakfast, lunch, dinner, incidentals, firstLastDay });
-  }
-  const rows = [...seen.values()].sort((left, right) => left.total - right.total);
-  if (rows.length < 3) {
-    throw new Error(`GSA M&IE breakdown page yielded only ${rows.length} usable tiers; the table layout has probably changed.`);
-  }
-  return rows;
 }
 
 async function runIngestion(): Promise<void> {
@@ -115,9 +80,11 @@ async function runIngestion(): Promise<void> {
   );
 }
 
-const releaseLock = await acquireIngestionLock(dataDirectory);
-try {
-  await runIngestion();
-} finally {
-  await releaseLock();
+if (import.meta.url === pathToFileURL(path.resolve(process.argv[1] ?? '')).href) {
+  const releaseLock = await acquireIngestionLock(dataDirectory);
+  try {
+    await runIngestion();
+  } finally {
+    await releaseLock();
+  }
 }

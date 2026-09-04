@@ -31,8 +31,9 @@ const toolPaths = [
   '/auto/ev-vs-gas',
   '/auto/road-trip-fuel',
   '/auto/car-affordability',
-  '/everyday/business-days',
-  '/everyday/tip',
+    '/everyday/business-days',
+    '/everyday/per-diem',
+    '/everyday/tip',
   '/everyday/age',
   '/everyday/time',
   '/everyday/random-number',
@@ -615,4 +616,30 @@ test('phase 7.5 calculators calculate across each family', async ({ page }) => {
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     expect(overflow, `${path} overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
   }
+});
+
+test('per diem splits lodging and meals, maps a ZIP, and checks a room against the ceiling', async ({ page }) => {
+  await page.goto('/everyday/per-diem');
+  await expect(page.getByRole('heading', { name: 'GSA Per Diem Trip Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result p')).toHaveText('Trip total');
+  await expect(page.locator('.result-stat-grid')).toContainText('Lodging');
+  await expect(page.locator('.result-stat-grid')).toContainText('Meals and incidentals');
+  await expect(page.locator('.result-stat-grid')).toContainText('Trip total');
+
+  await page.locator('#perdiem-room-rate').fill('200');
+  await expect(page.getByText('WITHIN LIMIT', { exact: true })).toBeVisible();
+  await page.locator('#perdiem-room-rate').fill('400');
+  await expect(page.getByText(/OVER BY \$/)).toBeVisible();
+
+  await page.locator('#perdiem-destination').fill('36542');
+  await expect(page.locator('.location-selected')).toContainText('Gulf Shores');
+  await page.locator('#perdiem-destination').fill('36104');
+  await expect(page.getByText('STANDARD CONUS RATE', { exact: true })).toBeVisible();
+  await expect(page.getByText('GSA does not list this locality separately', { exact: true })).toBeVisible();
+  await expect(page.getByText(/ZIP 36104 is in Montgomery County/)).toBeVisible();
+
+  await page.locator('#perdiem-destination').fill('02138');
+  await expect(page.getByText('COUNTY IS SPLIT', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Use Boston \/ Cambridge/ })).toBeVisible();
 });

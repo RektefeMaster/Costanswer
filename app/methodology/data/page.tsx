@@ -515,7 +515,7 @@ export default function DataSourcesPage() {
           <div><dt>M&amp;IE tiers</dt><dd>{gsaPerDiemSnapshot.mieBreakdowns.map((tier) => `$${tier.total}`).join(' · ')}</dd></div>
           <div><dt>First and last day</dt><dd>75% of the daily M&amp;IE rate, as published by GSA</dd></div>
         </dl>
-        <p>{gsaPerDiemSnapshot.attribution}</p>
+        <p>{gsaPerDiemSnapshot.attribution} A ZIP code is not a GSA field: it is mapped through the Census ZCTA-to-county file, and a county GSA does not list on its own takes that state’s standard CONUS rate. When GSA carves a city out of a county, a ZIP cannot tell them apart, so both rates are offered.</p>
         <details className="dataset-technical">
           <summary>Technical validation</summary>
           <dl>

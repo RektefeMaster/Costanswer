@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { isStateCode } from '@/lib/location/states';
+import { getStateName, isStateCode } from '@/lib/location/states';
 
 export const GSA_PERDIEM_ADAPTER_VERSION = 'gsa-perdiem-conus-v1.0.0';
 export const GSA_PERDIEM_API_URL = 'https://api.gsa.gov/travel/perdiem/v2/rates/conus/lodging';
@@ -118,6 +118,61 @@ export type GsaPerDiemSnapshot = z.infer<typeof gsaPerDiemSnapshotSchema>;
 export type PerDiemDestination = z.infer<typeof perDiemDestinationSchema>;
 export type MieBreakdown = z.infer<typeof mieBreakdownSchema>;
 
+/**
+ * GSA's API repeats the Washington DC metro rate under Maryland and Virginia
+ * as well as DC, with the same city name and the same numbers. Those extra
+ * rows are the same ceiling, not a different destination, so pickers and ZIP
+ * lookups should treat them as the DC rate rather than "District of Columbia, VA".
+ */
+export function isDuplicateDcMetroRow(destination: PerDiemDestination): boolean {
+  return destination.city === 'District of Columbia' && destination.state !== 'DC';
+}
+
+export function formatPerDiemDestinationLabel(destination: PerDiemDestination): string {
+  if (destination.isStandardRate) {
+    const state = isStateCode(destination.state) ? getStateName(destination.state) : destination.state;
+    return `${state} standard CONUS rate`;
+  }
+  if (destination.city === 'District of Columbia') return 'Washington, DC';
+  return `${destination.city.trim()}, ${destination.state}`;
+}
+
+/**
+ * Read the M&IE tier table off GSA's own breakdown page.
+ *
+ * The API returns only the M&IE total for a destination. How that total splits
+ * across meals, and what the first and last day of travel are worth, is
+ * published separately, so it is parsed rather than assumed: taking three
+ * quarters and rounding would not reproduce GSA's own published figures for
+ * every tier.
+ */
+export function parseMieBreakdowns(pageHtml: string): MieBreakdown[] {
+  const text = pageHtml
+    .replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/\s+/g, ' ');
+
+  // Rows read: total, breakfast, lunch, dinner, incidentals, first and last day.
+  const rowPattern = /\$(\d+)\s+\$(\d+)\s+\$(\d+)\s+\$(\d+)\s+\$(\d+)\s+\$(\d+(?:\.\d{2})?)/g;
+  const seen = new Map<number, MieBreakdown>();
+  for (const match of text.matchAll(rowPattern)) {
+    const [total, breakfast, lunch, dinner, incidentals, firstLastDay] = match.slice(1).map(Number);
+    const components = breakfast + lunch + dinner + incidentals;
+    // The page also carries an OCONUS table and unrelated dollar runs; only
+    // rows that actually behave like an M&IE tier are accepted.
+    if (Math.abs(components - total) > 0.005) continue;
+    if (Math.abs(firstLastDay - total * 0.75) > 0.005) continue;
+    seen.set(total, { total, breakfast, lunch, dinner, incidentals, firstLastDay });
+  }
+  const rows = [...seen.values()].sort((left, right) => left.total - right.total);
+  if (rows.length < 3) {
+    throw new Error(`GSA M&IE breakdown page yielded only ${rows.length} usable tiers; the table layout has probably changed.`);
+  }
+  return rows;
+}
+
 /** GSA's API returns month columns with three-letter capitalised names. */
 const API_MONTH_COLUMNS: Record<MonthKey, string> = {
   jan: 'Jan', feb: 'Feb', mar: 'Mar', apr: 'Apr', may: 'May', jun: 'Jun',
@@ -153,7 +208,7 @@ export function normalizeGsaPerDiemResponse(
 
   const destinations: PerDiemDestination[] = rows.map((row) => {
     const state = row.State ?? '';
-    const city = row.City ?? '';
+    const city = (row.City ?? '').trim();
     if (!isStateCode(state)) throw new Error(`GSA row has a non-CONUS or unknown state: ${state}`);
     const county = row.County && row.County.trim() !== '' ? row.County : null;
     const isStandardRate = city === 'Standard Rate';

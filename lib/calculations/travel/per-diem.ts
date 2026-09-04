@@ -7,8 +7,13 @@ import {
   gsaPerDiemSnapshot,
   monthKeyForDate,
 } from '@/lib/data/gsa-perdiem-snapshot';
-import { getStateName } from '@/lib/location/states';
+import { formatPerDiemDestinationLabel } from '@/lib/data/gsa-perdiem';
+import { getStateName, isStateCode } from '@/lib/location/states';
 import { PER_DIEM_ENGINE_ID } from './version';
+
+function stateLabel(code: string): string {
+  return isStateCode(code) ? getStateName(code) : code;
+}
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a date in YYYY-MM-DD form.');
 
@@ -18,6 +23,8 @@ export const perDiemInputSchema = z.object({
   endDate: isoDate,
   /** Nights actually spent in a hotel, when that is fewer than the trip's nights. */
   lodgingNightsOverride: finiteNumber('Lodging nights', 0, 365).optional(),
+  /** A real nightly room rate, to check against the ceiling. Excludes tax. */
+  actualNightlyRate: finiteNumber('Nightly room rate', 0, 100_000).optional(),
 }).superRefine((input, context) => {
   if (input.endDate < input.startDate) {
     context.addIssue({ code: 'custom', path: ['endDate'], message: 'The return date cannot be before the departure date.' });
@@ -60,6 +67,30 @@ export type PerDiemValue = {
   days: PerDiemDay[];
   mealBreakdown: { breakfast: number; lunch: number; dinner: number; incidentals: number };
   outsideRateYear: boolean;
+  /**
+   * A real room rate measured against the ceiling.
+   *
+   * The ceiling is a limit, not an entitlement: a room under it is reimbursed
+   * at what it cost, and a room over it needs an exception or comes out of the
+   * traveller's pocket. Null until a rate is entered.
+   */
+  hotelCheck: {
+    nightlyRate: number;
+    /** Nights where the rate is at or under that month's ceiling. */
+    nightsWithinLimit: number;
+    nightsOverLimit: number;
+    /** Total room cost at the entered rate, before tax. */
+    actualLodgingCost: number;
+    /** What the ceiling allows for the same nights. */
+    allowedLodgingCost: number;
+    /** Positive when the stay costs more than the ceiling allows. */
+    overBy: number;
+    withinLimit: boolean;
+    /** Trip total using the real room rate rather than the ceiling. */
+    tripTotalAtActualRate: number;
+    /** Lodging allowed under the ceiling plus M&IE — what is reimbursable when the room is over. */
+    reimbursableTripTotal: number;
+  } | null;
 };
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -116,12 +147,31 @@ export function calculatePerDiem(rawInput: unknown): CalculationResult<PerDiemVa
   // GSA's county field sometimes lists every covered jurisdiction in a
   // sentence, which is useful detail but not a label. Long ones move to
   // `coveredArea` so the headline stays a place name.
-  const destinationLabel = destination.isStandardRate
-    ? `${getStateName(destination.state)} standard rate`
-    : `${destination.city}, ${destination.state}`;
+  const destinationLabel = formatPerDiemDestinationLabel(destination);
   const coveredArea = destination.isStandardRate
-    ? `Everywhere in ${getStateName(destination.state)} that GSA does not list separately`
+    ? `Everywhere in ${stateLabel(destination.state)} that GSA does not list separately`
     : destination.county;
+
+  // A real room rate is checked night by night, because a seasonal ceiling can
+  // allow the same room in one month and refuse it in the next. A same-day trip
+  // has no lodging nights, so there is nothing to compare.
+  const hotelCheck = input.actualNightlyRate === undefined || nights.length === 0 ? null : (() => {
+    const nightlyRate = input.actualNightlyRate as number;
+    const nightsOverLimit = nights.filter((night) => nightlyRate > night.lodgingCap).length;
+    const actualLodgingCost = nightlyRate * nights.length;
+    const allowedLodgingCost = nights.reduce((sum, night) => sum + Math.min(nightlyRate, night.lodgingCap), 0);
+    return {
+      nightlyRate: round(nightlyRate),
+      nightsWithinLimit: nights.length - nightsOverLimit,
+      nightsOverLimit,
+      actualLodgingCost: round(actualLodgingCost),
+      allowedLodgingCost: round(allowedLodgingCost),
+      overBy: round(Math.max(0, actualLodgingCost - allowedLodgingCost)),
+      withinLimit: nightsOverLimit === 0,
+      tripTotalAtActualRate: round(actualLodgingCost + mieTotal),
+      reimbursableTripTotal: round(allowedLodgingCost + mieTotal),
+    };
+  })();
 
   // Rates are set per federal fiscal year. A trip outside the loaded year is
   // still priced, but the reader is told the year does not match.
@@ -154,6 +204,7 @@ export function calculatePerDiem(rawInput: unknown): CalculationResult<PerDiemVa
         incidentals: mie.incidentals,
       },
       outsideRateYear,
+      hotelCheck,
     },
     calculationVersion: PER_DIEM_ENGINE_ID,
     datasetSnapshotIds: [gsaPerDiemSnapshot.snapshotId],
@@ -179,6 +230,13 @@ export function calculatePerDiem(rawInput: unknown): CalculationResult<PerDiemVa
         value: formatMoney(lodgingTotal + mieTotal),
         detail: `FY${gsaPerDiemSnapshot.fiscalYear} rates for ${destinationLabel}`,
       },
+      ...(hotelCheck ? [{
+        label: hotelCheck.withinLimit ? 'Your room, within the limit' : 'Your room, over the limit',
+        value: formatMoney(hotelCheck.actualLodgingCost),
+        detail: hotelCheck.withinLimit
+          ? `${formatMoney(hotelCheck.nightlyRate)} a night is at or under the ceiling on every night`
+          : `${formatMoney(hotelCheck.overBy)} above what the ceiling allows, on ${hotelCheck.nightsOverLimit} of ${nights.length} nights`,
+      }] : []),
     ],
     assumptions: [
       'These are the federal ceilings, not what a trip costs. Lodging is reimbursed at actual cost up to the cap, so a cheaper room is reimbursed at the cheaper price.',
@@ -186,12 +244,15 @@ export function calculatePerDiem(rawInput: unknown): CalculationResult<PerDiemVa
       `Meals and incidentals are paid per day at a flat rate. GSA pays ${formatMoney(mie.firstLastDay)} on the first and last day of travel, three quarters of the ${formatMoney(mie.total, 0)} daily rate.`,
       `A ${totalDays}-day trip has ${tripNights} ${tripNights === 1 ? 'night' : 'nights'} of lodging and ${totalDays} days of meals, which is why the two counts differ.`,
       ...(destination.isStandardRate
-        ? ['GSA does not list this locality separately, so it takes the state standard rate that covers everywhere else in the state.']
+        ? ['GSA does not list this locality separately, so it takes the standard CONUS rate that covers everywhere else in the state.']
         : []),
       ...(lowestNightlyCap !== highestNightlyCap
         ? ['This destination has seasonal lodging caps, so each night is priced against the month it falls in rather than one headline rate.']
         : []),
       'Continental U.S. only. Alaska, Hawaii, U.S. territories and foreign locations are set by the Department of Defense and the State Department, not GSA, and are not in this dataset.',
+      ...(hotelCheck
+        ? ['A room rate you entered is compared with the ceiling night by night and excludes lodging tax, which is reimbursed separately. Going over the ceiling usually needs an approved exception, and is otherwise the traveller\u2019s own cost.']
+        : []),
       'Your employer sets its own policy. A private employer is under no obligation to use these rates, and federal agencies apply their own travel rules on top of them.',
       ...(outsideRateYear
         ? [`These are FY${gsaPerDiemSnapshot.fiscalYear} rates, effective ${gsaPerDiemSnapshot.effectiveFrom} to ${gsaPerDiemSnapshot.effectiveTo}. Your dates fall partly outside that year, so a different rate table applies to those days.`]

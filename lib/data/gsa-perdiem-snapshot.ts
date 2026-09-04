@@ -1,5 +1,5 @@
 import currentPerDiemJson from '@/data/gsa-perdiem/current.json';
-import { MONTH_KEYS, type GsaPerDiemSnapshot, type MieBreakdown, type MonthKey, type PerDiemDestination } from './gsa-perdiem';
+import { MONTH_KEYS, isDuplicateDcMetroRow, type GsaPerDiemSnapshot, type MieBreakdown, type MonthKey, type PerDiemDestination } from './gsa-perdiem';
 import { readVerifiedEnvelope } from './envelope';
 
 const envelope = readVerifiedEnvelope<GsaPerDiemSnapshot>(currentPerDiemJson);
@@ -38,7 +38,13 @@ export function monthKeyForDate(isoDate: string): MonthKey {
   return key;
 }
 
-/** Destinations a reader can pick, listed with the standard rates last. */
+/**
+ * Destinations a reader can pick.
+ *
+ * GSA repeats the Washington DC metro rate under Maryland and Virginia. Those
+ * clones stay in the snapshot — they are what the API published — but they are
+ * not offered as separate places, because they are the same ceiling.
+ */
 export function listPerDiemDestinations(): PerDiemDestination[] {
-  return gsaPerDiemSnapshot.destinations;
+  return gsaPerDiemSnapshot.destinations.filter((row) => !isDuplicateDcMetroRow(row));
 }

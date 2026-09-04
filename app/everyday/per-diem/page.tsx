@@ -1,6 +1,7 @@
 import { PerDiemCalculator } from '@/components/calculators/PerDiemCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { gsaPerDiemSnapshot, listPerDiemDestinations } from '@/lib/data/gsa-perdiem-snapshot';
+import { zctaCountySnapshot } from '@/lib/data/zcta-county-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';
@@ -51,6 +52,14 @@ export default function PerDiemPage() {
           body: 'GSA sets lodging month by month, and many destinations cost more in season. Each night of a trip is priced against the month that night falls in, so a stay crossing into high season is not flattened to one rate.',
         },
         {
+          title: 'A ZIP is a county lookup, not a GSA field',
+          body: 'GSA publishes rates by city and county, not by ZIP code. A five-digit ZIP is mapped through the Census ZCTA-to-county file, then to a GSA locality. If GSA carves a city out of that county, the ZIP cannot tell them apart and both rates are offered. If that county is not listed on its own, the result is the state standard CONUS rate — the usual answer, not a failed lookup.',
+        },
+        {
+          title: 'A real room rate is a ceiling check',
+          body: 'Lodging is reimbursed at what you actually pay, up to the cap. Entering a nightly rate compares it with each night\'s ceiling and says whether the stay is within the limit or over by a dollar amount. Lodging tax is reimbursed separately and is not in that comparison.',
+        },
+        {
           title: 'What is not covered',
           body: 'Continental U.S. only. Alaska, Hawaii, U.S. territories and foreign locations are set by the Department of Defense and the State Department rather than GSA, and are not in this dataset. Lodging tax is reimbursed separately and is not in the cap.',
         },
@@ -67,6 +76,12 @@ export default function PerDiemPage() {
           detail: 'The published split across breakfast, lunch, dinner and incidentals, and the first and last day of travel amounts.',
           href: gsaPerDiemSnapshot.mieBreakdownUrl,
           dateLabel: `FY${gsaPerDiemSnapshot.fiscalYear}`,
+        },
+        {
+          name: 'U.S. Census Bureau ZCTA-to-county relationship file',
+          detail: `${zctaCountySnapshot.attribution} Used only to turn a ZIP code into the county GSA prices against. Snapshot ${zctaCountySnapshot.snapshotId}.`,
+          href: zctaCountySnapshot.sourceDocumentationUrl,
+          dateLabel: zctaCountySnapshot.observationPeriod,
         },
       ]}
     >
