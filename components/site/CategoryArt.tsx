@@ -3,7 +3,7 @@ import { categories, type CategoryId } from '@/lib/categories';
 export const categoryArtSrc: Record<CategoryId, string> = {
   money: '/categories/money.png',
   home: '/categories/home.png',
-  auto: '/categories/auto.png',
+  car: '/categories/car.png',
   everyday: '/categories/everyday.png',
   food: '/categories/food.png',
   shopping: '/categories/shopping.png',

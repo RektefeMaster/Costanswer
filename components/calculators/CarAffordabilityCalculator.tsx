@@ -196,7 +196,7 @@ export function CarAffordabilityCalculator({
       title="Car affordability"
       intro="What a car costs you out of pocket each month, and how much of your take-home pay that would be. Depreciation is not included."
       toolId="car-affordability"
-      category="auto"
+      category="car"
       calculationState={calculation.result ? 'complete' : 'invalid'}
       calculationSignature={JSON.stringify([
         mode, powertrain, incomeMode, monthlyTakeHome, annualGrossSalary, filingStatus, stateCode,
@@ -292,7 +292,7 @@ export function CarAffordabilityCalculator({
             <input id="car-fees" type="number" min="0" step="100" inputMode="decimal" value={salesTaxAndFees} onChange={(event) => setSalesTaxAndFees(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Interest rate" htmlFor="car-rate" hint="Your quoted rate. There is no auto-loan rate feed here.">
+        <Field label="Interest rate" htmlFor="car-rate" hint="Your quoted rate. There is no car-loan rate feed here.">
           <InputShell suffix="%">
             <input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} />
           </InputShell>

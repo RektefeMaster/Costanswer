@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
-import { AUTO_LOAN_ENGINE_ID } from './finance/version';
+import { CAR_LOAN_ENGINE_ID } from './finance/version';
 import { composeVehiclePurchase, financeVehicle } from './vehicle/financing';
 
-export const autoLoanInputSchema = z.object({
+export const carLoanInputSchema = z.object({
   mode: z.enum(['purchase', 'financed']),
   vehiclePrice: finiteNumber('Vehicle price', 0, 10_000_000),
   downPayment: finiteNumber('Down payment', 0, 10_000_000),
@@ -18,14 +18,14 @@ export const autoLoanInputSchema = z.object({
   }
 });
 
-export function calculateAutoLoan(rawInput: unknown): CalculationResult<{
+export function calculateCarLoan(rawInput: unknown): CalculationResult<{
   amountFinanced: number;
   monthlyPayment: number;
   totalInterest: number;
   totalRepayment: number;
   termMonths: number;
 }> {
-  const input = autoLoanInputSchema.parse(rawInput);
+  const input = carLoanInputSchema.parse(rawInput);
   const purchase = input.mode === 'financed'
     ? composeVehiclePurchase({
       vehiclePrice: input.financedAmount,
@@ -55,7 +55,7 @@ export function calculateAutoLoan(rawInput: unknown): CalculationResult<{
       totalRepayment: round(financing.totalOfPayments),
       termMonths: input.termMonths,
     },
-    calculationVersion: AUTO_LOAN_ENGINE_ID,
+    calculationVersion: CAR_LOAN_ENGINE_ID,
     datasetSnapshotIds: [],
     breakdown: [
       { label: 'Amount financed', value: formatMoney(purchase.amountFinanced) },
@@ -63,7 +63,7 @@ export function calculateAutoLoan(rawInput: unknown): CalculationResult<{
       { label: 'Total interest', value: formatMoney(financing.totalInterest) },
     ],
     assumptions: [
-      'This is a fixed-rate amortizing auto loan estimate, not a dealer or lender quote.',
+      'This is a fixed-rate amortizing car loan estimate, not a dealer or lender quote.',
       'The rate is a nominal annual interest rate compounded monthly. It is not a full APR with fees.',
       'Operating cost, insurance, fuel, and maintenance are not included. Use Car Affordability for that.',
       input.mode === 'purchase'

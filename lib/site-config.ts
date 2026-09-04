@@ -28,6 +28,6 @@ export const siteConfig = {
    */
   seoTitle: 'Practical U.S. calculators with the math shown',
   tagline: 'Practical calculators with transparent math and real sources.',
-  description: 'Free U.S. calculators for money, home, auto, health, math and everyday questions. Every answer shows the formula it used and the dated official source behind it.',
+  description: 'Free U.S. calculators for money, home, car, health, math and everyday questions. Every answer shows the formula it used and the dated official source behind it.',
   origin: configuredOrigin ?? 'http://localhost:3000',
 } as const;

@@ -13,7 +13,7 @@ const htmlPaths = [
   '/money/home-affordability',
   '/money/cost-of-living',
   '/money/inflation',
-  '/money/auto-loan',
+  '/money/car-loan',
   '/money/investment',
   '/money/retirement',
   '/money/amortization',
@@ -30,9 +30,9 @@ const htmlPaths = [
   '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
   '/home/square-footage',
-  '/auto/ev-vs-gas',
-  '/auto/road-trip-fuel',
-  '/auto/car-affordability',
+  '/car/ev-vs-gas',
+  '/car/road-trip-fuel',
+  '/car/car-affordability',
   '/everyday/business-days',
   '/everyday/tip',
   '/everyday/age',
@@ -58,7 +58,7 @@ const htmlPaths = [
   '/food/recipe-scaler',
   '/topics/money',
   '/topics/home',
-  '/topics/auto',
+  '/topics/car',
   '/topics/everyday',
   '/topics/food',
   '/topics/shopping',
@@ -70,6 +70,9 @@ const htmlPaths = [
   '/methodology/data',
   '/about',
   '/privacy',
+  '/terms',
+  '/contact',
+  '/faq',
 ];
 
 async function fetchWithTimeout(path: string): Promise<Response> {
@@ -83,7 +86,7 @@ for (const path of htmlPaths) {
   const html = await response.text();
   if (!html.includes('<title>')) throw new Error(`${path} has no document title`);
   if (!html.includes('rel="canonical"')) throw new Error(`${path} has no canonical link`);
-  if (path !== '/search?q=concrete' && !html.includes('application/ld+json') && path !== '/about' && path !== '/privacy' && path !== '/methodology' && path !== '/methodology/data') {
+  if (path !== '/search?q=concrete' && !html.includes('application/ld+json') && path !== '/about' && path !== '/privacy' && path !== '/terms' && path !== '/contact' && path !== '/methodology' && path !== '/methodology/data') {
     throw new Error(`${path} has no structured data`);
   }
 }
@@ -102,7 +105,7 @@ if (robotsText.includes('Disallow: /search')) throw new Error('Crawlers must be 
 const sitemapIndex = await (await fetchWithTimeout('/sitemap.xml')).text();
 if (!sitemapIndex.includes('<sitemapindex') || !sitemapIndex.includes('/sitemaps/tools/1.xml')) throw new Error('Sitemap index is incomplete.');
 const toolsSitemap = await (await fetchWithTimeout('/sitemaps/tools/1.xml')).text();
-if (!toolsSitemap.includes('/home/electricity-cost') || !toolsSitemap.includes('/home/appliance-electricity-cost') || !toolsSitemap.includes('/health/bmi') || !toolsSitemap.includes('/money/auto-loan') || toolsSitemap.includes('/search') || toolsSitemap.includes('/kg-to-lbs') || toolsSitemap.includes('/45-days-from-today')) throw new Error('Tool sitemap membership is incorrect.');
+if (!toolsSitemap.includes('/home/electricity-cost') || !toolsSitemap.includes('/home/appliance-electricity-cost') || !toolsSitemap.includes('/health/bmi') || !toolsSitemap.includes('/money/car-loan') || toolsSitemap.includes('/search') || toolsSitemap.includes('/kg-to-lbs') || toolsSitemap.includes('/45-days-from-today')) throw new Error('Tool sitemap membership is incorrect.');
 const topicsSitemap = await (await fetchWithTimeout('/sitemaps/topics/1.xml')).text();
 if (!topicsSitemap.includes('/topics/home') || !topicsSitemap.includes('/topics/money') || !topicsSitemap.includes('/topics/health') || !topicsSitemap.includes('/topics/math') || !topicsSitemap.includes('/topics/education') || !topicsSitemap.includes('/topics/everyday') || topicsSitemap.includes('/topics/food')) throw new Error('Thin topic hubs entered the sitemap.');
 
@@ -114,8 +117,21 @@ const homeTopicHtml = await (await fetchWithTimeout('/topics/home')).text();
 if (homeTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool topic hub should be indexable.');
 const shoppingTopicHtml = await (await fetchWithTimeout('/topics/shopping')).text();
 if (shoppingTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool shopping hub should be indexable.');
-const autoTopicHtml = await (await fetchWithTimeout('/topics/auto')).text();
-if (autoTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool auto hub should be indexable.');
+const carTopicHtml = await (await fetchWithTimeout('/topics/car')).text();
+if (carTopicHtml.includes('noindex')) throw new Error('A qualified multi-tool car hub should be indexable.');
+
+for (const [from, to] of [
+  ['/topics/auto', '/topics/car'],
+  ['/auto/ev-vs-gas', '/car/ev-vs-gas'],
+  ['/money/auto-loan', '/money/car-loan'],
+] as const) {
+  const redirected = await fetch(new URL(from, baseUrl), { signal: AbortSignal.timeout(10_000), redirect: 'manual' });
+  if (redirected.status !== 308 && redirected.status !== 301) {
+    throw new Error(`${from} should permanently redirect, got HTTP ${redirected.status}`);
+  }
+  const location = redirected.headers.get('location') ?? '';
+  if (!location.endsWith(to)) throw new Error(`${from} redirected to ${location}, expected ${to}`);
+}
 
 const rootResponse = await fetchWithTimeout('/');
 if (!rootResponse.headers.get('content-security-policy')?.includes("frame-ancestors 'none'")) throw new Error('Production security headers are missing.');

@@ -40,11 +40,13 @@ Add one entry to `lib/tool-registry.ts` with:
 
 Hubs, search, related links and the sitemap derive from this registry.
 
+Add one `ToolEditorial` record in `lib/tool-content/` (the category file that matches, then `index.ts` coverage). The registry assert fails if a tool has no unique guide, FAQ, glossary, tips, and caveats. Copy must be written for that tool. Search aliases and optional `metaTitle` / `metaDescription` must describe what the engine actually does — no loan-program or location bait the page cannot compute. Optional `longTail` notes belong in that record, not as generated doorway URLs.
+
 ## 5. Compose the page
 
-Build a small client calculator island with `components/calculators/CalculatorUI.tsx`. Use `ToolPage` for the server-rendered title, context, methodology, sources, breadcrumbs, ad rail and related tools.
+Build a small client calculator island with `components/calculators/CalculatorUI.tsx`. Use `ToolPage` for the server-rendered title, editorial guide, compact engine notes, sources, breadcrumbs, ad rail and related tools.
 
-The first viewport should expose the core inputs and answer quickly. Do not insert an ad slot between the form and result.
+The first viewport should expose the H1, then the core inputs and answer. Do not insert an ad slot between the form and result. Empty IAB reservations stay visually quiet.
 
 ## 6. Verify
 

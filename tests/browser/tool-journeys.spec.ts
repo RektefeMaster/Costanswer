@@ -14,7 +14,7 @@ const toolPaths = [
   '/money/home-affordability',
   '/money/cost-of-living',
   '/money/inflation',
-  '/money/auto-loan',
+  '/money/car-loan',
   '/money/investment',
   '/money/retirement',
   '/money/amortization',
@@ -28,9 +28,9 @@ const toolPaths = [
   '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
   '/home/square-footage',
-  '/auto/ev-vs-gas',
-  '/auto/road-trip-fuel',
-  '/auto/car-affordability',
+  '/car/ev-vs-gas',
+  '/car/road-trip-fuel',
+  '/car/car-affordability',
     '/everyday/business-days',
     '/everyday/per-diem',
     '/everyday/tip',
@@ -126,7 +126,7 @@ test('appliance electricity uses the EIA snapshot until a manual rate replaces i
 });
 
 test('car affordability prices the whole vehicle and tracks which data it used', async ({ page }) => {
-  await page.goto('/auto/car-affordability');
+  await page.goto('/car/car-affordability');
   await expect(page.getByRole('heading', { name: 'Car Affordability Calculator' })).toBeVisible();
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await expect(page.locator('.data-callout')).toContainText('EIA · Aug 31, 2026');
@@ -218,11 +218,11 @@ test('cost of living stays dollar-first and keeps HUD as a gross-rent benchmark'
 test('critical routes, metadata, sitemap gates, and security headers stay coherent', async ({ request }) => {
   test.setTimeout(120_000);
   const paths = [
-    '/', '/money/hourly-to-salary', '/money/salary-after-tax', '/money/paycheck', '/money/mortgage-payment', '/money/loan', '/money/compound-interest', '/money/debt-payoff', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/auto-loan', '/home/electricity-cost', '/home/appliance-electricity-cost', '/home/concrete-calculator', '/home/square-footage',
-    '/auto/ev-vs-gas', '/auto/road-trip-fuel', '/auto/car-affordability', '/everyday/business-days', '/everyday/time-card', '/shopping/unit-price', '/shopping/where-cheaper', '/food/recipe-scaler',
+    '/', '/money/hourly-to-salary', '/money/salary-after-tax', '/money/paycheck', '/money/mortgage-payment', '/money/loan', '/money/compound-interest', '/money/debt-payoff', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/car-loan', '/home/electricity-cost', '/home/appliance-electricity-cost', '/home/concrete-calculator', '/home/square-footage',
+    '/car/ev-vs-gas', '/car/road-trip-fuel', '/car/car-affordability', '/everyday/business-days', '/everyday/time-card', '/shopping/unit-price', '/shopping/where-cheaper', '/food/recipe-scaler',
     '/health/bmi', '/math/scientific', '/education/gpa',
-    '/topics/money', '/topics/home', '/topics/auto', '/topics/everyday', '/topics/food', '/topics/shopping', '/topics/health', '/topics/math', '/topics/education',
-    '/search?q=concrete', '/methodology', '/methodology/data', '/about', '/privacy', '/sitemap.xml',
+    '/topics/money', '/topics/home', '/topics/car', '/topics/everyday', '/topics/food', '/topics/shopping', '/topics/health', '/topics/math', '/topics/education',
+    '/search?q=concrete', '/methodology', '/methodology/data', '/about', '/privacy', '/terms', '/contact', '/faq', '/sitemap.xml',
     '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/robots.txt',
     '/manifest.webmanifest', '/favicon.svg',
   ];
@@ -243,7 +243,11 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
     const html = await (await request.get(path)).text();
     expect(html, path).not.toMatch(/<meta[^>]+name="robots"[^>]+content="noindex/i);
     expect(html, path).toContain('data-ad-placement="desktop-rail"');
+    expect(html, path).toContain('data-ad-placement="header-leaderboard"');
+    expect(html, path).toContain('data-ad-placement="in-content"');
     expect(html, path).toContain('data-ad-status="empty"');
+    expect(html, path).toContain('editorial-section');
+    expect(html, path).toContain('Terms used here');
   }
   const search = await (await request.get('/search?q=concrete')).text();
   expect(search).toMatch(/<meta[^>]+name="robots"[^>]+content="noindex, follow"/i);
@@ -253,7 +257,7 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   expect(topicSitemap).toContain('/topics/home');
   expect(topicSitemap).toContain('/topics/shopping');
   expect(topicSitemap).toContain('/topics/money');
-  expect(topicSitemap).toContain('/topics/auto');
+  expect(topicSitemap).toContain('/topics/car');
   expect(topicSitemap).toContain('/topics/everyday');
   expect(topicSitemap).toContain('/topics/health');
   expect(topicSitemap).toContain('/topics/math');
@@ -278,7 +282,7 @@ test('the remaining calculator classes recalculate and explain their results', a
   await expect(page.locator('.result-audit')).toContainText('material-volume-v1.1.0');
   await expect(page.locator('.result-audit')).toContainText('quikrete-packaged-concrete-yields-2026-09');
 
-  await page.goto('/auto/ev-vs-gas');
+  await page.goto('/car/ev-vs-gas');
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   const gasBadge = page.locator('.gas-label');
   const evBadge = page.locator('.ev-label');
@@ -360,6 +364,11 @@ test('the remaining calculator classes recalculate and explain their results', a
   await expect(page.locator('.primary-result strong')).toHaveText('$1,199.10');
   await expect(page.locator('.result-audit')).toContainText('mortgage-amortization-v1.0.0');
   await expect(page.locator('.result-audit')).toContainText('Data Manual inputs / fixed rules');
+  await expect(page.locator('.editorial-section')).toContainText('How this U.S. mortgage payment is calculated');
+  await expect(page.locator('[data-affiliate-slot]')).toHaveCount(0);
+  await expect(page.getByText('Some links on this page may be advertisements')).toHaveCount(0);
+  await expect(page.locator('[data-ad-placement="header-leaderboard"]')).toHaveAttribute('data-ad-status', 'empty');
+  await expect(page.locator('[data-ad-placement="header-leaderboard"]')).not.toContainText('728');
   await page.locator('#mortgage-rate').fill('');
   await expect(page.locator('.calc-error')).toContainText('Interest rate must be a number.');
 
@@ -376,7 +385,7 @@ test('the remaining calculator classes recalculate and explain their results', a
   await page.locator('#inflation-end-year').selectOption('2025');
   await expect(page.locator('#inflation-end-month option[value="10"]')).toHaveCount(0);
 
-  await page.goto('/auto/road-trip-fuel');
+  await page.goto('/car/road-trip-fuel');
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await expect(page.locator('.data-callout')).toContainText('$3.577');
   await page.locator('#trip-state').selectOption('AL');
@@ -447,6 +456,42 @@ test('intent search rejects unsupported pages and tracks only supported tools', 
   await expect(page.locator('.search-hint')).toContainText('afford this house');
 });
 
+test('desktop IAB slots stay reserved and empty ads do not crowd a phone calculator', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/money/mortgage-payment');
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('[data-ad-placement="header-leaderboard"]')).toBeVisible();
+  await expect(page.locator('[data-ad-placement="desktop-rail"]')).toBeVisible();
+  await expect(page.locator('[data-ad-placement="in-content"]')).toBeVisible();
+  await expect(page.locator('.editorial-section')).toContainText('How this U.S. mortgage payment is calculated');
+  await expect(page.locator('[data-affiliate-slot]')).toHaveCount(0);
+  await expect(page.locator('.primary-result')).toBeVisible();
+  const calcTop = await page.locator('.calculator-panel').evaluate((node) => node.getBoundingClientRect().top);
+  expect(calcTop).toBeLessThan(900);
+
+  await page.goto('/about');
+  await expect(page.getByRole('heading', { name: 'Who maintains this' })).toBeVisible();
+  await expect(page.locator('#who-maintains')).toBeVisible();
+  await expect(page.getByText('the same people')).toHaveCount(0);
+  await page.goto('/contact');
+  await expect(page.getByRole('heading', { name: 'Write' })).toBeVisible();
+  await page.goto('/faq');
+  await expect(page.getByRole('heading', { name: /Are you financial advisors/ })).toBeVisible();
+  await page.goto('/health/bmi');
+  await expect(page.locator('.editorial-faq details')).toHaveCount(3);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/money/mortgage-payment');
+  await expect(page.locator('.calculator-panel')).toBeVisible();
+  await expect(page.locator('#mortgage-price')).toBeVisible();
+  await expect(page.locator('[data-ad-placement="header-leaderboard"]')).toBeHidden();
+  await expect(page.locator('[data-ad-placement="desktop-rail"]')).toBeHidden();
+  await expect(page.locator('[data-ad-placement="in-content"]')).toBeHidden();
+  await expect(page.locator('[data-affiliate-slot]')).toHaveCount(0);
+  await expect(page.locator('.editorial-section')).toContainText('Practical tips');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
+});
+
 test('header navigation at 390px with the mobile menu open stays inside the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
@@ -491,7 +536,7 @@ test('mobile skip link and recipe editor work without horizontal overflow', asyn
 test('small phones keep home, search, and calculators inside the viewport', async ({ page }) => {
   for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 720 });
-    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/auto/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
+    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
       await page.goto(path);
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, `${path} at ${width}px overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
@@ -501,7 +546,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/loan', '/auto/road-trip-fuel', '/auto/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/education/grade', '/money/auto-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -581,7 +626,7 @@ test('phase 7.5 calculators calculate across each family', async ({ page }) => {
   await page.goto('/home/square-footage');
   await expect(page.locator('.primary-result strong')).toHaveText('120 ft²');
 
-  await page.goto('/money/auto-loan');
+  await page.goto('/money/car-loan');
   await expect(page.locator('.primary-result p')).toHaveText('Estimated monthly loan payment');
   await expect(page.locator('.primary-result strong')).toHaveText('$463.99');
 

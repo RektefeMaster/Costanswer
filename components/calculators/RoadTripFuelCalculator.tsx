@@ -51,7 +51,7 @@ export function RoadTripFuelCalculator({
       title="Road-trip fuel cost"
       intro="Miles, MPG, and a gas price. The default price is the most recent EIA weekly average for your state or region."
       toolId="road-trip-fuel"
-      category="auto"
+      category="car"
       calculationState={calculation.result ? 'complete' : 'invalid'}
       calculationSignature={JSON.stringify([miles, mpg, stateCode, customPrice])}
     >

@@ -1,12 +1,12 @@
-import { AutoLoanCalculator } from '@/components/calculators/AutoLoanCalculator';
+import { CarLoanCalculator } from '@/components/calculators/CarLoanCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';
 
-const tool = getTool('auto-loan');
+const tool = getTool('car-loan');
 export const metadata = toolMetadata(tool);
 
-export default function AutoLoanPage() {
+export default function CarLoanPage() {
   return (
     <ToolPage
       tool={tool}
@@ -17,10 +17,10 @@ export default function AutoLoanPage() {
         { title: 'What this is not', body: 'The rate is a nominal annual rate compounded monthly, not a full APR with fees. It is not a dealer quote.' },
       ]}
       sources={[
-        { name: 'Consumer Financial Protection Bureau', detail: 'How amortizing auto-loan payments split principal and interest.', href: 'https://www.consumerfinance.gov/ask-cfpb/what-is-amortization-and-how-could-it-affect-my-auto-loan-en-771/', dateLabel: 'Official guidance' },
+        { name: 'Consumer Financial Protection Bureau', detail: 'How amortizing car-loan payments split principal and interest.', href: 'https://www.consumerfinance.gov/ask-cfpb/what-is-amortization-and-how-could-it-affect-my-auto-loan-en-771/', dateLabel: 'Official guidance' },
       ]}
     >
-      <AutoLoanCalculator />
+      <CarLoanCalculator />
     </ToolPage>
   );
 }

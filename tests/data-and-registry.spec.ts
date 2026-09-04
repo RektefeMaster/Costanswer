@@ -36,7 +36,10 @@ import {
 } from '@/lib/tool-registry';
 import { clustersForTool } from '@/lib/clusters';
 import { getSitemapFamilies, paginateSitemapEntries, sitemapPageLastModified, SITEMAP_URL_LIMIT } from '@/lib/seo/sitemaps';
-import { toolMetadata } from '@/lib/seo';
+import { faqPageJsonLd, toolMetadata } from '@/lib/seo';
+import { SITE_FAQ } from '@/lib/site-faq';
+import { getToolEditorial, listToolEditorial } from '@/lib/tool-content';
+import { affiliateUrl, isAffiliateEligible, offersForTool } from '@/lib/affiliates';
 
 describe('EIA adapter contract', () => {
   it('normalizes the recorded official response into 51 state/DC rows', () => {
@@ -233,6 +236,9 @@ describe('registry and intent search', () => {
     try {
       expect(tools.every((tool) => evaluateToolIndexability(tool).indexable)).toBe(true);
       expect(tools.every((tool) => (toolMetadata(tool).robots as { index?: boolean }).index === true)).toBe(true);
+      expect(getSitemapFamilies().pages.map((entry) => entry.path)).toEqual([
+        '/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq',
+      ]);
       expect(getSitemapFamilies().pages.every((entry) => entry.lastModified === PUBLISHING_SNAPSHOT_INSTANT)).toBe(true);
       expect(getSitemapFamilies().tools).toHaveLength(tools.length);
     } finally {
@@ -254,7 +260,7 @@ describe('registry and intent search', () => {
     expect(isCategoryHubIndexable('home')).toBe(true);
     expect(isCategoryHubIndexable('shopping')).toBe(true);
     expect(isCategoryHubIndexable('money')).toBe(true);
-    expect(isCategoryHubIndexable('auto')).toBe(true);
+    expect(isCategoryHubIndexable('car')).toBe(true);
     expect(isCategoryHubIndexable('food')).toBe(false);
     expect(isCategoryHubIndexable('everyday')).toBe(true);
     expect(isCategoryHubIndexable('health')).toBe(true);
@@ -290,11 +296,11 @@ describe('registry and intent search', () => {
     expect(searchTools('monthly car cost')[0].tool.id).toBe('car-affordability');
     expect(searchTools('car affordability calculator')[0].tool.id).toBe('car-affordability');
     expect(searchTools('how much should I spend on a car')[0].tool.id).toBe('car-affordability');
-    expect(searchTools('car loan')[0].tool.id).toBe('auto-loan');
-    expect(searchTools('car loan calculator')[0].tool.id).toBe('auto-loan');
-    expect(searchTools('auto loan calculator')[0].tool.id).toBe('auto-loan');
-    expect(searchTools('car payment calculator')[0].tool.id).toBe('auto-loan');
-    expect(searchTools('vehicle loan calculator')[0].tool.id).toBe('auto-loan');
+    expect(searchTools('car loan')[0].tool.id).toBe('car-loan');
+    expect(searchTools('car loan calculator')[0].tool.id).toBe('car-loan');
+    expect(searchTools('auto loan calculator')[0].tool.id).toBe('car-loan');
+    expect(searchTools('car payment calculator')[0].tool.id).toBe('car-loan');
+    expect(searchTools('vehicle loan calculator')[0].tool.id).toBe('car-loan');
     expect(searchTools('bmi calculator')[0].tool.id).toBe('bmi');
     expect(searchTools('tdee calculator')[0].tool.id).toBe('tdee');
     expect(searchTools('percentage calculator')[0].tool.id).toBe('percentage');
@@ -352,6 +358,8 @@ describe('search reaches the tool a reader asked for', () => {
       ['gsa per diem', 'per-diem'],
       ['per diem by zip code', 'per-diem'],
       ['standard conus rate', 'per-diem'],
+      ['texas teacher salary after taxes', 'salary-after-tax'],
+      ['mortgage payment from a quoted rate', 'mortgage-payment'],
     ];
     for (const [query, expected] of expectations) {
       const hits = searchTools(query, 3).map((result) => result.tool.id);
@@ -416,5 +424,112 @@ describe('sitemap scale contract', () => {
       expect(Number.isFinite(Date.parse(expected))).toBe(true);
     }
     expect(families.tools.map((entry) => entry.path)).not.toContain('/search');
+  });
+});
+
+describe('site FAQ', () => {
+  it('keeps FAQPage JSON-LD aligned with the visible questions', () => {
+    const schema = faqPageJsonLd(SITE_FAQ);
+    expect(schema['@type']).toBe('FAQPage');
+    expect(schema.inLanguage).toBe('en-US');
+    expect(schema.mainEntity).toHaveLength(SITE_FAQ.length);
+    expect(new Set(SITE_FAQ.map((entry) => entry.id)).size).toBe(SITE_FAQ.length);
+    expect(new Set(SITE_FAQ.map((entry) => entry.question)).size).toBe(SITE_FAQ.length);
+
+    const entities = schema.mainEntity as Array<{
+      '@type': string;
+      name: string;
+      acceptedAnswer: { '@type': string; text: string };
+    }>;
+    for (const [index, entry] of SITE_FAQ.entries()) {
+      expect(entities[index]?.['@type']).toBe('Question');
+      expect(entities[index]?.name).toBe(entry.question);
+      expect(entities[index]?.acceptedAnswer.text).toBe(entry.answer.join(' '));
+      expect(entry.answer.every((paragraph) => paragraph.length > 40)).toBe(true);
+    }
+  });
+
+  it('only links related pages that exist', () => {
+    const staticPaths = new Set([
+      '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq',
+    ]);
+    const toolPaths = new Set(tools.map((tool) => tool.path));
+    for (const entry of SITE_FAQ) {
+      for (const related of entry.related ?? []) {
+        expect(
+          staticPaths.has(related.href) || toolPaths.has(related.href),
+          `${entry.id} related ${related.href}`,
+        ).toBe(true);
+      }
+    }
+  });
+});
+
+describe('tool editorial content', () => {
+  it('covers every calculator with unique indexable copy', () => {
+    const ledges = new Set<string>();
+    const questions = new Set<string>();
+    const firstParagraphs = new Set<string>();
+    const glossarySets = new Set<string>();
+    expect(listToolEditorial()).toHaveLength(tools.length);
+    for (const tool of tools) {
+      const content = getToolEditorial(tool.id);
+      expect(content.toolId).toBe(tool.id);
+      expect(content.guide.heading.length).toBeGreaterThan(20);
+      expect(content.guide.lede.length).toBeGreaterThan(80);
+      expect(content.guide.sections.length).toBeGreaterThan(0);
+      expect(content.faq.length).toBeGreaterThanOrEqual(1);
+      expect(content.glossary.length).toBeGreaterThanOrEqual(1);
+      expect(content.tips.length).toBeGreaterThanOrEqual(1);
+      expect(content.caveats.length).toBeGreaterThanOrEqual(1);
+      expect(ledges.has(content.guide.lede), `${tool.id} reuses another lede`).toBe(false);
+      ledges.add(content.guide.lede);
+      const firstParagraph = content.guide.sections[0]?.paragraphs[0];
+      expect(firstParagraph, `${tool.id} missing first guide paragraph`).toBeTruthy();
+      expect(firstParagraphs.has(firstParagraph!), `${tool.id} reuses another first paragraph`).toBe(false);
+      firstParagraphs.add(firstParagraph!);
+      const glossaryKey = content.glossary.map((item) => item.term).sort().join('|');
+      expect(glossarySets.has(glossaryKey), `${tool.id} reuses another glossary set`).toBe(false);
+      glossarySets.add(glossaryKey);
+      for (const entry of content.faq) {
+        expect(entry.question.length).toBeGreaterThan(12);
+        expect(entry.answer.join(' ').length).toBeGreaterThan(40);
+        expect(questions.has(entry.question), `duplicate FAQ: ${entry.question}`).toBe(false);
+        questions.add(entry.question);
+      }
+    }
+  });
+
+  it('gives YMYL health calorie tools at least three FAQs', () => {
+    for (const id of ['bmi', 'calorie', 'tdee'] as const) {
+      expect(getToolEditorial(id).faq.length, id).toBeGreaterThanOrEqual(3);
+    }
+  });
+
+  it('keeps honest long-tail notes on refinance, car-loan, paycheck, and 401(k)', () => {
+    for (const id of ['refinance', 'car-loan', 'paycheck', '401k'] as const) {
+      expect(getToolEditorial(id).longTail?.length, id).toBeGreaterThanOrEqual(1);
+    }
+  });
+
+  it('keeps long-tail meta titles from replacing the on-page product name', () => {
+    const mortgage = getTool('mortgage-payment');
+    expect(mortgage.title).toBe('Mortgage Payment Calculator');
+    expect(mortgage.metaTitle).toMatch(/30-Year/);
+    expect(toolMetadata(mortgage).title).toBe(mortgage.metaTitle);
+  });
+});
+
+describe('affiliate architecture', () => {
+  it('keys offers to money and credit tools without inventing tracking URLs', () => {
+    expect(isAffiliateEligible('mortgage-payment')).toBe(true);
+    expect(isAffiliateEligible('credit-card-payoff')).toBe(true);
+    expect(isAffiliateEligible('salary-after-tax')).toBe(false);
+    expect(isAffiliateEligible('hourly-to-salary')).toBe(false);
+    expect(isAffiliateEligible('bmi')).toBe(false);
+    expect(offersForTool('mortgage-payment').length).toBeGreaterThan(0);
+    expect(affiliateUrl('lendingtree', {})).toBeUndefined();
+    expect(affiliateUrl('lendingtree', { NEXT_PUBLIC_AFFILIATE_LENDINGTREE_URL: 'https://example.com/lenders' })).toBe('https://example.com/lenders');
+    expect(affiliateUrl('sofi', { NEXT_PUBLIC_AFFILIATE_SOFI_URL: 'not-a-url' })).toBeUndefined();
   });
 });

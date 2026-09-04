@@ -46,7 +46,7 @@ export function paginateSitemapEntries<T>(entries: readonly T[], limit = SITEMAP
 
 export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
   return {
-    pages: ['/', '/about', '/methodology', '/methodology/data', '/privacy'].map((path) => ({
+    pages: ['/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq'].map((path) => ({
       path: path as `/${string}`,
       lastModified: CONTENT_RELEASE_DATE,
       changeFrequency: path === '/' ? 'weekly' : 'monthly',

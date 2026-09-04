@@ -9,9 +9,9 @@ import { SiteHeader } from '@/components/site/SiteHeader';
 import { categories, getTool, type CategoryId } from '@/lib/tool-registry';
 import { siteConfig } from '@/lib/site-config';
 
-const categoryOrder: CategoryId[] = ['money', 'home', 'auto', 'health', 'math', 'everyday', 'education', 'food', 'shopping'];
+const categoryOrder: CategoryId[] = ['money', 'home', 'car', 'health', 'math', 'everyday', 'education', 'food', 'shopping'];
 const toneByCategory: Record<CategoryId, string> = {
-  money: 'mint', home: 'amber', auto: 'blue', everyday: 'rose', food: 'coral', shopping: 'violet', health: 'rose', math: 'violet', education: 'coral',
+  money: 'mint', home: 'amber', car: 'blue', everyday: 'rose', food: 'coral', shopping: 'violet', health: 'rose', math: 'violet', education: 'coral',
 };
 const exploreQuestions = [
   { tool: getTool('hourly-to-salary'), label: 'How much is $28 an hour a year?' },

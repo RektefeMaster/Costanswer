@@ -77,7 +77,7 @@ export function EvVsGasCalculator({
       title="Charging versus filling up"
       intro="Starts from the latest EIA pump and electricity averages for your state. Type your own prices over them. Mileage is the same for both cars."
       toolId="ev-vs-gas"
-      category="auto"
+      category="car"
       calculationState={calculation.result ? 'complete' : 'invalid'}
       calculationSignature={JSON.stringify([annualMiles, gasMpg, customGasPrice, evEfficiency, stateCode, customElectricityRate, chargingLoss])}
     >

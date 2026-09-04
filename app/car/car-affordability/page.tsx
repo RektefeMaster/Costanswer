@@ -99,7 +99,7 @@ export default function CarAffordabilityPage() {
         },
         {
           name: 'Consumer Financial Protection Bureau',
-          detail: 'How auto loans, terms, and dealer financing work. This tool does not apply any CFPB threshold as a pass or fail.',
+          detail: 'How car loans, terms, and dealer financing work. This tool does not apply any CFPB threshold as a pass or fail.',
           href: 'https://www.consumerfinance.gov/consumer-tools/auto-loans/',
           dateLabel: 'Official guidance',
         },

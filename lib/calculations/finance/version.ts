@@ -6,7 +6,7 @@ export function pinnedEngineId<const Id extends `${string}-v${number}.${number}.
 export const LOAN_ENGINE_ID = pinnedEngineId('loan-v1.0.0');
 export const COMPOUND_INTEREST_ENGINE_ID = pinnedEngineId('compound-interest-v1.0.0');
 export const DEBT_PAYOFF_ENGINE_ID = pinnedEngineId('debt-payoff-v1.0.0');
-export const AUTO_LOAN_ENGINE_ID = pinnedEngineId('auto-loan-v1.0.0');
+export const CAR_LOAN_ENGINE_ID = pinnedEngineId('car-loan-v1.0.0');
 export const INVESTMENT_ENGINE_ID = pinnedEngineId('investment-v1.0.0');
 export const RETIREMENT_ENGINE_ID = pinnedEngineId('retirement-v1.0.0');
 export const AMORTIZATION_ENGINE_ID = pinnedEngineId('amortization-v1.0.0');

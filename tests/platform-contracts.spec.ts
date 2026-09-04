@@ -17,7 +17,7 @@ describe('analytics privacy boundary', () => {
 
 describe('optional integration gates', () => {
   it('is disabled by default and requires privacy prerequisites before activation', () => {
-    expect(parseIntegrationConfig({})).toMatchObject({ analyticsEnabled: false, advertisingEnabled: false });
+    expect(parseIntegrationConfig({})).toMatchObject({ analyticsEnabled: false, advertisingEnabled: false, affiliatesEnabled: false });
     expect(parseIntegrationConfig({
       NEXT_PUBLIC_CONTACT_EMAIL: '',
       NEXT_PUBLIC_PRIVACY_EFFECTIVE_DATE: '  ',
@@ -25,6 +25,7 @@ describe('optional integration gates', () => {
     })).toMatchObject({
       analyticsEnabled: false,
       advertisingEnabled: false,
+      affiliatesEnabled: false,
       privacyEffectiveDate: undefined,
       publicContactEmail: undefined,
       policyVersion: undefined,
@@ -47,6 +48,13 @@ describe('optional integration gates', () => {
       NEXT_PUBLIC_CONTACT_EMAIL: 'privacy@example.com',
       NEXT_PUBLIC_PRIVACY_POLICY_VERSION: '1',
     })).toMatchObject({ analyticsEnabled: true, advertisingEnabled: true, publicContactEmail: 'privacy@example.com' });
+    expect(() => parseIntegrationConfig({ NEXT_PUBLIC_AFFILIATES_ENABLED: 'true' })).toThrow(/NEXT_PUBLIC_PRIVACY_EFFECTIVE_DATE/);
+    expect(parseIntegrationConfig({
+      NEXT_PUBLIC_AFFILIATES_ENABLED: 'true',
+      NEXT_PUBLIC_PRIVACY_EFFECTIVE_DATE: '2026-09-02',
+      NEXT_PUBLIC_CONTACT_EMAIL: 'privacy@example.com',
+      NEXT_PUBLIC_PRIVACY_POLICY_VERSION: '1',
+    })).toMatchObject({ affiliatesEnabled: true });
   });
 });
 

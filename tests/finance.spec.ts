@@ -300,7 +300,7 @@ describe('debt payoff primitives', () => {
 
   it('orders snowball by smallest balance and avalanche by highest rate', () => {
     const debts = [
-      { id: 'big-low', label: 'Auto', balance: 8_000, annualRatePercent: 4, minimumPayment: 200, originalIndex: 0 },
+      { id: 'big-low', label: 'Car', balance: 8_000, annualRatePercent: 4, minimumPayment: 200, originalIndex: 0 },
       { id: 'small-high', label: 'Card', balance: 2_000, annualRatePercent: 22, minimumPayment: 50, originalIndex: 1 },
     ];
     const snowball = simulateDebtPayoff(debts, 150, 'snowball');

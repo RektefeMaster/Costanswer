@@ -15,19 +15,20 @@ export function parseIntegrationConfig(environment: IntegrationEnvironment) {
   const config = {
     analyticsEnabled: environment.NEXT_PUBLIC_ANALYTICS_ENABLED === 'true',
     advertisingEnabled: environment.NEXT_PUBLIC_ADVERTISING_ENABLED === 'true',
+    affiliatesEnabled: environment.NEXT_PUBLIC_AFFILIATES_ENABLED === 'true',
     privacyEffectiveDate,
     publicContactEmail,
     policyVersion,
   };
 
-  if (config.analyticsEnabled || config.advertisingEnabled) {
+  if (config.analyticsEnabled || config.advertisingEnabled || config.affiliatesEnabled) {
     const missing = [
       !config.privacyEffectiveDate && 'NEXT_PUBLIC_PRIVACY_EFFECTIVE_DATE',
       !config.publicContactEmail && 'NEXT_PUBLIC_CONTACT_EMAIL',
       !config.policyVersion && 'NEXT_PUBLIC_PRIVACY_POLICY_VERSION',
     ].filter(Boolean);
     if (missing.length) {
-      throw new Error(`Optional analytics/advertising cannot be enabled without: ${missing.join(', ')}.`);
+      throw new Error(`Optional analytics/advertising/affiliates cannot be enabled without: ${missing.join(', ')}.`);
     }
   }
   return config;

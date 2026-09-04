@@ -1,21 +1,33 @@
 import { integrationConfig } from '@/lib/integration-config';
 
-type AdSlotProps = {
-  placement: 'after-result' | 'in-content' | 'desktop-rail';
-};
+export const AD_PLACEMENTS = ['header-leaderboard', 'desktop-rail', 'in-content'] as const;
+export type AdPlacement = (typeof AD_PLACEMENTS)[number];
 
-export function AdSlot({ placement }: AdSlotProps) {
+function adSlotLabel(placement: AdPlacement): string {
+  switch (placement) {
+    case 'header-leaderboard':
+      return 'Reserved leaderboard advertising space';
+    case 'desktop-rail':
+      return 'Reserved sidebar advertising space';
+    case 'in-content':
+      return 'Reserved in-content advertising space';
+    default: {
+      const exhaustive: never = placement;
+      throw new Error(`Unhandled ad placement: ${exhaustive}`);
+    }
+  }
+}
+
+export function AdSlot({ placement }: { placement: AdPlacement }) {
   const advertisingEnabled = integrationConfig.advertisingEnabled;
+  const status = advertisingEnabled ? 'reserved' : 'empty';
+
   return (
     <div
       className={`ad-slot ad-slot-${placement}`}
       data-ad-placement={placement}
-      data-ad-status={advertisingEnabled ? 'reserved' : 'empty'}
-      {...(advertisingEnabled
-        ? { 'aria-label': 'Reserved advertising space' }
-        : { 'aria-hidden': true })}
-    >
-      {advertisingEnabled ? <span>Advertising space</span> : null}
-    </div>
+      data-ad-status={status}
+      aria-label={adSlotLabel(placement)}
+    />
   );
 }

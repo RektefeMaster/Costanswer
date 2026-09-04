@@ -260,7 +260,7 @@ function assumptions(
     'The vehicle price is the number you type. This tool has no dealer, book-value, or market-price feed.',
     'This is cash out of pocket. Depreciation and resale value are not included, so it is not a full total-cost-of-ownership figure.',
     `Comfortable, Stretch and Risky are our own labels for bands on take-home pay: comfortable keeps the whole vehicle at or under ${comfortable.maxTotalShare * 100}% and the loan payment alone at or under ${comfortable.maxPaymentShare * 100}%, stretch still fits ${reasonable.maxTotalShare * 100}% and ${reasonable.maxPaymentShare * 100}%, and anything above that is the top of the range. They are planning thresholds, not a lender decision and not a rule that fits every household.`,
-    'The rate is a nominal annual interest rate, not APR. There is no auto-loan rate feed here, so the rate is whatever you type. Origination and prepaid finance charges are left out.',
+    'The rate is a nominal annual interest rate, not APR. There is no car-loan rate feed here, so the rate is whatever you type. Origination and prepaid finance charges are left out.',
     input.termMonths >= 1
       ? `Financing assumes ${input.termMonths} equal monthly payments with interest compounded monthly.`
       : 'No loan term was entered, so this only works as a cash purchase.',

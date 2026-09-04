@@ -28,11 +28,11 @@ export const TOOL_CLUSTERS = {
   },
   debt: {
     label: 'Borrowing and paying off debt',
-    toolIds: ['loan', 'debt-payoff', 'credit-card-payoff', 'auto-loan', 'amortization', 'refinance'],
+    toolIds: ['loan', 'debt-payoff', 'credit-card-payoff', 'car-loan', 'amortization', 'refinance'],
   },
   vehicle: {
     label: 'Running a car',
-    toolIds: ['car-affordability', 'auto-loan', 'ev-vs-gas', 'road-trip-fuel'],
+    toolIds: ['car-affordability', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
   },
   energy: {
     label: 'Energy at home',

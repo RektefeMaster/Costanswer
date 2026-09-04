@@ -6,11 +6,11 @@
  * Keeping them apart is what stops that whole table from being bundled into the
  * client on every page — only the search page, which searches it, pulls it in.
  */
-export const CATEGORY_IDS = ['money', 'home', 'auto', 'everyday', 'food', 'shopping', 'health', 'math', 'education'] as const;
+export const CATEGORY_IDS = ['money', 'home', 'car', 'everyday', 'food', 'shopping', 'health', 'math', 'education'] as const;
 export type CategoryId = (typeof CATEGORY_IDS)[number];
 
 /** Header stays at the original six categories. Health, math, and education are in the footer, homepage strip, and topic hubs. */
-export const HEADER_CATEGORY_IDS: readonly CategoryId[] = ['money', 'home', 'auto', 'everyday', 'food', 'shopping'];
+export const HEADER_CATEGORY_IDS: readonly CategoryId[] = ['money', 'home', 'car', 'everyday', 'food', 'shopping'];
 
 export type CategoryAccent = 'mint' | 'amber' | 'blue' | 'rose' | 'violet' | 'coral';
 
@@ -27,8 +27,8 @@ export const categories: Record<CategoryId, { name: string; description: string;
     description: 'A rough electric bill by state, what an appliance costs to run, or bags of concrete for a slab.',
     accent: 'amber',
   },
-  auto: {
-    name: 'Auto',
+  car: {
+    name: 'Car',
     blurb: 'Car vs take-home pay, EV charging, or trip fuel.',
     description: 'Whether a car fits your take-home pay, yearly EV charging versus gasoline, or fuel for a road trip.',
     accent: 'blue',

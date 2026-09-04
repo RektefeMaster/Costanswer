@@ -1,4 +1,4 @@
-import { REFINANCE_ENGINE_ID, COMPOUND_INTEREST_ENGINE_ID, DEBT_PAYOFF_ENGINE_ID, LOAN_ENGINE_ID, AUTO_LOAN_ENGINE_ID, INVESTMENT_ENGINE_ID, RETIREMENT_ENGINE_ID, AMORTIZATION_ENGINE_ID, CD_ENGINE_ID, INTEREST_ENGINE_ID, ROTH_IRA_ENGINE_ID, K401_ENGINE_ID, MORTGAGE_PAYOFF_ENGINE_ID, CREDIT_CARD_PAYOFF_ENGINE_ID } from './calculations/finance/version';
+import { REFINANCE_ENGINE_ID, COMPOUND_INTEREST_ENGINE_ID, DEBT_PAYOFF_ENGINE_ID, LOAN_ENGINE_ID, CAR_LOAN_ENGINE_ID, INVESTMENT_ENGINE_ID, RETIREMENT_ENGINE_ID, AMORTIZATION_ENGINE_ID, CD_ENGINE_ID, INTEREST_ENGINE_ID, ROTH_IRA_ENGINE_ID, K401_ENGINE_ID, MORTGAGE_PAYOFF_ENGINE_ID, CREDIT_CARD_PAYOFF_ENGINE_ID } from './calculations/finance/version';
 import { APPLIANCE_ENERGY_ENGINE_ID } from './calculations/energy/version';
 import { CAR_AFFORDABILITY_ENGINE_ID } from './calculations/vehicle/version';
 import { COST_OF_LIVING_ENGINE_ID } from './calculations/col/version';
@@ -76,6 +76,10 @@ export type ToolDefinition = {
    * pages where the word is doing real work.
    */
   resultNature: ResultNature;
+  /** Optional long-tail document title. The on-page H1 stays `title`. */
+  metaTitle?: string;
+  /** Optional long-tail meta description. Falls back to `description`. */
+  metaDescription?: string;
   indexability: IndexabilityEvidence;
   relationships: ToolRelationship[];
 };
@@ -126,6 +130,8 @@ export const tools: ToolDefinition[] = [
     accent: 'mint',
     featured: true,
     resultNature: 'exact',
+    metaTitle: 'Hourly to Salary Calculator — Weekly, Monthly & Yearly Gross Pay',
+    metaDescription: 'Convert a U.S. hourly wage into weekly, monthly, and yearly gross pay. Overtime is a separate line. This is before tax — use salary after tax for take-home.',
     indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'salary-after-tax', type: 'next-decision' },
@@ -151,11 +157,15 @@ export const tools: ToolDefinition[] = [
       'w2 pay',
       'w2 income after tax',
       'gross to net salary',
+      'texas teacher salary after taxes',
+      'california salary after taxes 2026',
     ],
     eyebrow: 'Estimated take-home on a salary',
     accent: 'mint',
     featured: true,
     resultNature: 'official-data-estimate',
+    metaTitle: 'Salary After Tax Calculator (Federal, FICA & State, 2026)',
+    metaDescription: 'Estimate U.S. take-home from a salary: federal income tax, FICA, and state wage tax when this site has a verified table. Not a filed return. Try Texas vs. California on the same gross pay.',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'paycheck', type: 'next-decision' },
@@ -180,11 +190,14 @@ export const tools: ToolDefinition[] = [
       'estimated paycheck',
       'w2 paycheck',
       'take home per paycheck',
+      'biweekly take home pay 2026',
     ],
     eyebrow: 'Estimated net paycheck',
     accent: 'mint',
     featured: true,
     resultNature: 'official-data-estimate',
+    metaTitle: 'Estimated Paycheck Calculator — Weekly, Biweekly & Monthly Take-Home',
+    metaDescription: 'Estimate a U.S. net paycheck by spreading an annual federal, FICA, and state tax estimate across pay periods. A real stub uses a W-4 and IRS tables instead.',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'salary-after-tax', type: 'uses-engine' },
@@ -212,6 +225,8 @@ export const tools: ToolDefinition[] = [
       'signing bonus after taxes',
     ],
     eyebrow: 'Flat supplemental withholding',
+    metaTitle: 'Bonus Tax Calculator — IRS Supplemental Withholding',
+    metaDescription: 'See why a separately paid U.S. bonus can look over-taxed: employers often withhold a flat IRS supplemental rate. That withholding is not your final tax.',
     accent: 'mint',
     featured: false,
     resultNature: 'official-data-estimate',
@@ -243,11 +258,15 @@ export const tools: ToolDefinition[] = [
       'refinance payment',
       'refinance calculator',
       'new mortgage payment after refinancing',
+      '30 year mortgage payment on 400000',
+      'mortgage payment from a quoted rate',
     ],
     eyebrow: 'National average mortgage payment',
     accent: 'mint',
     featured: true,
     resultNature: 'exact',
+    metaTitle: 'Mortgage Payment Calculator for U.S. 30-Year and 15-Year Fixed Loans',
+    metaDescription: 'Monthly principal and interest from price, down payment, term, and the latest Freddie Mac national average — or a rate you type. Taxes and insurance are optional. Not a lender quote.',
     indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'home-affordability', type: 'next-decision' },
@@ -286,7 +305,7 @@ export const tools: ToolDefinition[] = [
     relationships: [
       { toolId: 'mortgage-payment', type: 'sibling' },
       { toolId: 'amortization', type: 'next-decision' },
-      { toolId: 'auto-loan', type: 'sibling' },
+      { toolId: 'car-loan', type: 'sibling' },
       { toolId: 'debt-payoff', type: 'next-decision' },
     ],
   },
@@ -389,11 +408,14 @@ export const tools: ToolDefinition[] = [
       'how much home can I buy',
       'house I can afford',
       'mortgage affordability',
+      'how much house can I afford on take home pay',
     ],
     eyebrow: 'Take-home pay vs. a house',
     accent: 'mint',
     featured: true,
     resultNature: 'planning-model',
+    metaTitle: 'Home Affordability Calculator Using Take-Home Pay',
+    metaDescription: 'See whether a U.S. house fits take-home pay, or a comfortable / stretch / aggressive price from net pay, debts, and the national average mortgage rate. Not a lender DTI.',
     indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'mortgage-payment', type: 'uses-engine' },
@@ -421,6 +443,8 @@ export const tools: ToolDefinition[] = [
       'cost of living calculator',
     ],
     eyebrow: 'Modeled monthly living costs',
+    metaTitle: 'U.S. Cost of Living Calculator by City, Metro, or State',
+    metaDescription: 'Modeled monthly living costs from HUD Fair Market Rent, USDA food plans, and official regional context. Not a magazine index and not your lease.',
     accent: 'mint',
     featured: true,
     resultNature: 'official-data-estimate',
@@ -503,11 +527,11 @@ export const tools: ToolDefinition[] = [
   },
   {
     id: 'ev-vs-gas',
-    path: '/auto/ev-vs-gas',
+    path: '/car/ev-vs-gas',
     title: 'EV vs. Gas Energy Cost Calculator',
     shortTitle: 'EV vs. gas',
     description: 'Yearly charging versus gasoline, using your miles, MPG, a local gas price, and a state electricity average.',
-    category: 'auto',
+    category: 'car',
     engine: 'vehicle-energy-v1',
     searchTerms: ['ev vs gas cost', 'electric car vs gas cost', 'electric car savings', 'charging cost per mile', 'gas mileage comparison', 'ev charging cost calculator'],
     eyebrow: 'EV charging vs. gasoline',
@@ -524,11 +548,11 @@ export const tools: ToolDefinition[] = [
   },
   {
     id: 'road-trip-fuel',
-    path: '/auto/road-trip-fuel',
+    path: '/car/road-trip-fuel',
     title: 'Road Trip Fuel Cost Calculator',
     shortTitle: 'Road-trip fuel',
     description: 'Fuel cost for a drive from your miles, MPG, and the most recent EIA regular-gas average for your state or region. You can type a pump price instead.',
-    category: 'auto',
+    category: 'car',
     engine: 'road-trip-fuel-v1',
     searchTerms: [
       'road trip fuel cost',
@@ -555,11 +579,11 @@ export const tools: ToolDefinition[] = [
   },
   {
     id: 'car-affordability',
-    path: '/auto/car-affordability',
+    path: '/car/car-affordability',
     title: 'Car Affordability Calculator',
     shortTitle: 'Car affordability',
     description: 'Monthly cash cost of a car \u2014 loan payment, fuel or charging, insurance, upkeep, registration \u2014 and how much of your take-home pay it would take. Depreciation is not included, so this is out-of-pocket cost, not total cost of ownership.',
-    category: 'auto',
+    category: 'car',
     engine: CAR_AFFORDABILITY_ENGINE_ID,
     searchTerms: [
       'car affordability calculator',
@@ -570,15 +594,18 @@ export const tools: ToolDefinition[] = [
       'monthly car cost',
       'car payment vs income',
       'cost of car ownership',
+      'how much car can I afford on take home pay',
     ],
     eyebrow: 'Monthly cash cost vs. take-home pay',
     accent: 'blue',
     featured: true,
     resultNature: 'planning-model',
+    metaTitle: 'Car Affordability Calculator — Monthly Cash Cost vs. Take-Home Pay',
+    metaDescription: 'Loan, fuel or charging, insurance, upkeep, and registration versus take-home pay. Depreciation is omitted, so this is cash out of pocket, not total cost of ownership.',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 12, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
     relationships: [
       { toolId: 'loan', type: 'uses-engine' },
-      { toolId: 'auto-loan', type: 'sibling' },
+      { toolId: 'car-loan', type: 'sibling' },
       { toolId: 'salary-after-tax', type: 'uses-engine' },
       { toolId: 'ev-vs-gas', type: 'sibling' },
       { toolId: 'home-affordability', type: 'next-decision' },
@@ -1175,26 +1202,30 @@ export const tools: ToolDefinition[] = [
     ],
   },
   {
-    id: 'auto-loan',
-    path: '/money/auto-loan',
-    title: 'Auto Loan Calculator',
-    shortTitle: 'Auto loan',
+    id: 'car-loan',
+    path: '/money/car-loan',
+    title: 'Car Loan Calculator',
+    shortTitle: 'Car loan',
     description: 'Monthly vehicle loan payment, total interest, and amount financed. Not insurance, fuel, or the true cost of owning the car.',
     category: 'money',
-    engine: AUTO_LOAN_ENGINE_ID,
+    engine: CAR_LOAN_ENGINE_ID,
     searchTerms: [
-      'auto loan calculator',
       'car loan calculator',
+      'auto loan calculator',
       'car loan',
       'vehicle loan calculator',
       'car payment calculator',
-      'monthly auto payment',
+      'monthly car payment',
+      'car loan payment',
       'auto loan payment',
+      'car payment calculator 72 month',
     ],
     eyebrow: 'Vehicle loan payment',
     accent: 'mint',
     featured: true,
     resultNature: 'exact',
+    metaTitle: 'Car Loan Payment Calculator (Amount Financed, U.S.)',
+    metaDescription: 'Monthly auto-loan payment, total interest, and amount financed from price, tax, down payment, rate, and term. Not insurance, fuel, or the true cost of owning the car.',
     indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
     relationships: [
       { toolId: 'car-affordability', type: 'next-decision' },
@@ -1368,6 +1399,8 @@ export const tools: ToolDefinition[] = [
       'break even on refinancing',
     ],
     eyebrow: 'Break-even on a refinance',
+    metaTitle: 'Mortgage Refinance Calculator — Break-Even and New Payment',
+    metaDescription: 'Compare your current U.S. mortgage with a replacement loan: new payment, months to recoup closing costs, and whether a lower payment still costs more interest.',
     accent: 'mint',
     featured: false,
     resultNature: 'planning-model',
@@ -1414,6 +1447,8 @@ export const tools: ToolDefinition[] = [
     engine: CREDIT_CARD_PAYOFF_ENGINE_ID,
     searchTerms: ['credit card payoff calculator', 'credit card interest calculator', 'pay off credit card', 'credit card payment calculator'],
     eyebrow: 'One revolving balance',
+    metaTitle: 'Credit Card Payoff Calculator — Months and Interest',
+    metaDescription: 'See how long one U.S. credit-card balance takes to clear at a fixed monthly payment, or the payment needed for a target date. Not an issuer minimum-payment formula.',
     accent: 'mint',
     featured: true,
     resultNature: 'exact',

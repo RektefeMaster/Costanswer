@@ -1,13 +1,16 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { categories, getRelatedTools, getToolClusters, type ResultNature, type ToolDefinition } from '@/lib/tool-registry';
-import { siteConfig } from '@/lib/site-config';
-import { breadcrumbJsonLd, toolJsonLd } from '@/lib/seo';
-import { JsonLd } from '@/components/seo/JsonLd';
-import { SiteHeader } from '@/components/site/SiteHeader';
-import { SiteFooter } from '@/components/site/SiteFooter';
-import { AdSlot } from '@/components/monetization/AdSlot';
 import { RelatedToolLink } from '@/components/analytics/RelatedToolLink';
+import { AdSlot } from '@/components/monetization/AdSlot';
+import { AffiliateOffers } from '@/components/monetization/AffiliateOffers';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SiteFooter } from '@/components/site/SiteFooter';
+import { SiteHeader } from '@/components/site/SiteHeader';
+import { CalculatorEditorial } from '@/components/tool/CalculatorEditorial';
+import { breadcrumbJsonLd, toolArticleJsonLd, toolJsonLd } from '@/lib/seo';
+import { siteConfig } from '@/lib/site-config';
+import { getToolEditorial } from '@/lib/tool-content';
+import { categories, getRelatedTools, getToolClusters, type ResultNature, type ToolDefinition } from '@/lib/tool-registry';
 
 export type SourceItem = {
   name: string;
@@ -65,6 +68,7 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
   // Naming the journey the reader is on gives the related block a reason to
   // exist beyond "more of the same category".
   const clusters = getToolClusters(tool.id);
+  const editorialContent = getToolEditorial(tool.id);
   const breadcrumbs = [
     { name: siteConfig.name, path: '/' },
     { name: category.name, path: `/topics/${tool.category}` },
@@ -73,7 +77,7 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
 
   return (
     <>
-      <JsonLd data={[toolJsonLd(tool), breadcrumbJsonLd(breadcrumbs)]} />
+      <JsonLd data={[toolJsonLd(tool), toolArticleJsonLd(tool, editorialContent), breadcrumbJsonLd(breadcrumbs)]} />
       <SiteHeader />
       <main id="main-content" tabIndex={-1}>
         <header className={`tool-hero accent-${tool.accent}`}>
@@ -96,8 +100,32 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
           </div>
         </header>
 
+        <div className="ad-leaderboard-wrap">
+          <AdSlot placement="header-leaderboard" />
+        </div>
+
         <div className="tool-workspace">
-          <div className="tool-main-column">{children}</div>
+          <div className="tool-main-column">
+            {children}
+            <AffiliateOffers toolId={tool.id} />
+            <AdSlot placement="in-content" />
+            <CalculatorEditorial toolPath={tool.path} content={editorialContent} />
+            {methodology.length > 0 && (
+              <section className="engine-notes" aria-labelledby="engine-notes-title">
+                <h2 id="engine-notes-title">Engine notes</h2>
+                <p className="engine-notes-lede">Rounding, versioning, and omissions that sit beside the guide rather than repeating it.</p>
+                <ul>
+                  {methodology.map((item) => (
+                    <li key={item.title}>
+                      <strong>{item.title}.</strong>
+                      {' '}
+                      {item.body}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+          </div>
           <aside className="tool-rail" aria-label="Tool information">
             <div className="rail-card">
               <p className="rail-kicker">Note</p>
@@ -107,22 +135,6 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
             <AdSlot placement="desktop-rail" />
           </aside>
         </div>
-
-        <section className="method-section" aria-labelledby="method-title">
-          <div className="method-heading">
-            <p className="eyebrow muted"><span /> Method</p>
-            <h2 id="method-title">How this works</h2>
-          </div>
-          <div className="method-grid">
-            {methodology.map((item, index) => (
-              <article key={item.title}>
-                <span>0{index + 1}</span>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </article>
-            ))}
-          </div>
-        </section>
 
         {sources.length > 0 && (
           <section className="sources-section" aria-labelledby="sources-title">

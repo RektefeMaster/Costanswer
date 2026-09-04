@@ -4,7 +4,7 @@ Status: accepted for milestone 1 · 2026-09-01
 
 ## Product boundary
 
-CostAnswer is an answer-engine platform, not a calculator directory. The live catalog covers Money, Home, Auto, Everyday, Food, and Shopping:
+CostAnswer is an answer-engine platform, not a calculator directory. The live catalog covers Money, Home, Car, Everyday, Food, and Shopping:
 
 | Tool | Class | Shared capability proved |
 | --- | --- | --- |
@@ -83,7 +83,7 @@ type CalculationResult<T> = {
 
 **Chosen:** `lib/calculations/vehicle/` composes the existing engines instead of adding vehicle math of its own. It has four small parts: `financing.ts` turns price, taxes and fees, down payment and trade-in into an amount financed and hands it to the Finance Engine; `operating.ts` prices driving energy through the Energy Engine (gasoline or EV battery and charging loss) and adds insurance, upkeep and registration; `ownership.ts` composes those into a monthly and yearly cash cost; `affordability.ts` holds the take-home thresholds, the verdict, and the inverse that turns a budget back into a sticker price.
 
-**Alternatives considered:** a standalone auto-loan calculator, and a generic "asset ownership" framework covering vehicles, homes and equipment.
+**Alternatives considered:** a standalone car-loan calculator, and a generic "asset ownership" framework covering vehicles, homes and equipment.
 
 **Why:** the interesting product question is the whole monthly cost against take-home pay, not the payment. Every number it needs already existed — amortization, fuel, battery and wall energy, period normalization, take-home estimation — so the layer is composition, not new formulas. A generic ownership framework would have to abstract over cost structures that do not actually match; housing already has its own screen with its own thresholds.
 
@@ -112,17 +112,25 @@ Generated families begin `noindex` and may enter sitemaps only when all hard gat
 
 The quality score is 100 points: search-intent evidence 20, unique data/function 25, answer depth 15, provenance/freshness 15, internal-link value 10, mobile/performance 10, maintainability 5. Indexing requires 75+, including at least 15/25 uniqueness and 10/15 provenance.
 
-Sitemaps are split by family once volume requires it. Structured data is limited to valid `WebSite`, `WebApplication`, `BreadcrumbList`, `Article` and `Dataset` cases; no FAQ markup is added merely for visibility.
+Sitemaps are split by family once volume requires it. Structured data is limited to valid `WebSite`, `WebApplication`, `BreadcrumbList`, `Article` and `Dataset` cases. `FAQPage` markup is added only when the same questions are visible on the page (site FAQ, and each tool’s editorial FAQ).
+
+Long-tail queries (state + occupation, loan type + year, “$400,000 30-year payment”) belong in tool `searchTerms`, optional `metaTitle` / `metaDescription`, and a `longTail` section inside `lib/tool-content/`. They do not become generated URL families. Occupation × state salary pages and FHA-limit-by-county pages remain deferred until they have distinct data, not a name swap.
+
+### Editorial depth on tool pages
+
+Every tool has a `ToolEditorial` record in `lib/tool-content/`, keyed by tool id. `ToolPage` renders `CalculatorEditorial` (guide, FAQ, glossary, tips/caveats) under the calculator. Adding a tool requires a unique editorial entry or the registry assert fails.
+
+### Advertising and analytics
+
+Ad placements are named, reusable slots with reserved IAB space: `header-leaderboard` (~728×90, after the H1, desktop only), `desktop-rail` (~300×250 empty / 300×600 when advertising is on), and `in-content` (between the calculator and the guide). Empty slots are quiet reserved height with an `aria-label` — no hatched “fake ad” chrome. Below 921px, empty slots hide. A reserved in-content 300×250 may remain on larger phones. A reserved rail hides below 681px so the calculator stays first. No slot sits between an input and its result.
+
+Affiliate / lead-gen cards render only when affiliates are enabled and a real `https` partner URL exists (`lib/affiliates.ts`). FTC disclosure is shown only in that live state. Example names in `AFFILIATE_PARTNERS` are placeholders, not tracking IDs. Offers are labeled advertising and are never the calculator’s answer.
+
+Analytics uses a provider-neutral event boundary. Allowed events are `tool_opened`, `calculation_started`, `calculation_completed`, `result_interaction`, `search`, `related_tool_click` and `share`. Raw financial amounts, dates, ZIP codes and free-text queries are not sent by default.
 
 ### Internal links
 
 The registry stores typed edges: `uses-engine`, `uses-dataset`, `sibling`, `next-decision` and `methodology`. Each tool page renders breadcrumbs, its hub, relevant siblings, next decisions and source/method links. This creates a crawlable entity graph without hand-maintaining page-level link lists.
-
-### Advertising and analytics
-
-Ad placements are named, reusable slots with reserved space: `after-result`, `in-content`, and `desktop-rail`. They are empty in milestone 1. No slot sits between an input and its result.
-
-Analytics uses a provider-neutral event boundary. Allowed events are `tool_opened`, `calculation_started`, `calculation_completed`, `result_interaction`, `search`, `related_tool_click` and `share`. Raw financial amounts, dates, ZIP codes and free-text queries are not sent by default.
 
 ### Security and privacy
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calculateAmortization } from '@/lib/calculations/amortization';
-import { calculateAutoLoan } from '@/lib/calculations/auto-loan';
+import { calculateCarLoan } from '@/lib/calculations/car-loan';
 import { calculateCd } from '@/lib/calculations/cd';
 import { calculateCreditCardPayoff } from '@/lib/calculations/credit-card-payoff';
 import { round } from '@/lib/calculations/contracts';
@@ -63,14 +63,14 @@ describe('refinance break-even', () => {
   });
 });
 
-describe('auto loan and amortization reuse', () => {
+describe('car loan and amortization reuse', () => {
   it('locks $24,000 at 6% for 60 months near $463.99 using the shared factor', () => {
     const rate = 0.06 / 12;
     const growth = (1 + rate) ** 60;
     const independent = 24_000 * rate * growth / (growth - 1);
     expect(round(independent)).toBe(463.99);
     expect(round(monthlyPrincipalAndInterest(24_000, 6, 60))).toBe(463.99);
-    const auto = calculateAutoLoan({
+    const carLoan = calculateCarLoan({
       mode: 'financed',
       vehiclePrice: 0,
       downPayment: 0,
@@ -80,8 +80,8 @@ describe('auto loan and amortization reuse', () => {
       annualRatePercent: 6,
       termMonths: 60,
     });
-    expect(auto.value.monthlyPayment).toBe(463.99);
-    expect(auto.calculationVersion).toBe('auto-loan-v1.0.0');
+    expect(carLoan.value.monthlyPayment).toBe(463.99);
+    expect(carLoan.calculationVersion).toBe('car-loan-v1.0.0');
     const schedule = calculateAmortization({
       principal: 24_000,
       annualRatePercent: 6,
