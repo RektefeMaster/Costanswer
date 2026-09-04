@@ -77,9 +77,11 @@ export function calculate401k(rawInput: unknown): CalculationResult<{
   const input = k401InputSchema.parse(rawInput);
   const periodsPerYear = PERIODS_PER_YEAR[input.payFrequency];
   const annualReturn = input.assumedReturnPercent / 100;
-  // Compound at the contribution cadence so the stated annual return still
-  // compounds to exactly that much over a year.
-  const periodReturn = (1 + annualReturn) ** (1 / periodsPerYear) - 1;
+  // Same convention as every other projection on the site: a nominal annual
+  // rate applied each period, matching `compoundInterestGrowth`. Two
+  // calculators disagreeing on what "7% a year" means would be worse than
+  // either convention on its own.
+  const periodReturn = annualReturn / periodsPerYear;
   const salaryGrowth = input.salaryGrowthPercent / 100;
 
   let salary = input.salary;
@@ -109,8 +111,11 @@ export function calculate401k(rawInput: unknown): CalculationResult<{
     const employeePerPeriod = employee / periodsPerYear;
     const employerPerPeriod = employer / periodsPerYear;
     for (let period = 0; period < periodsPerYear; period += 1) {
-      // Contributions land during the year and earn a return from then on.
-      balance = (balance + employeePerPeriod + employerPerPeriod) * (1 + periodReturn);
+      // A deferral lands on payday, at the end of the period worked, and earns
+      // from there. Crediting it at the start of the period would pay a period
+      // of return on money that has not been earned yet — and would make more
+      // frequent pay produce a smaller balance, which is backwards.
+      balance = balance * (1 + periodReturn) + employeePerPeriod + employerPerPeriod;
     }
 
     rows.push({ year, age, salary, employee, employer, deferralLimited, overallLimited });
@@ -178,7 +183,7 @@ export function calculate401k(rawInput: unknown): CalculationResult<{
     ],
     assumptions: [
       'Under these assumptions only. This is not tax, plan, or investment advice.',
-      `Contributions go in every pay period (${PAY_FREQUENCY_LABELS[input.payFrequency].toLowerCase()}, ${periodsPerYear} a year) and earn the assumed return from the moment they land, which is how payroll deferrals actually work.`,
+      `Contributions go in every pay period (${PAY_FREQUENCY_LABELS[input.payFrequency].toLowerCase()}, ${periodsPerYear} a year) and land on payday and earn the assumed return from then on, which is how payroll deferrals actually work. The return you type is applied as a nominal annual rate compounded each pay period.`,
       'Employer match is a simple rate on employee deferrals, capped at a percent of salary. Plans differ, and vesting is not modeled.',
       ...limitAssumptions,
       `IRS tax year ${irsRetirementSnapshot.observationPeriod} limits are applied: ${formatMoney(irsRetirementLimits.electiveDeferral401k, 0)} elective deferral, ${formatMoney(irsRetirementLimits.catchUp401kAge50, 0)} catch-up at 50+, ${formatMoney(irsRetirementLimits.catchUp401kAges60to63, 0)} at ages 60 to 63, and a ${formatMoney(irsRetirementLimits.definedContributionOverall, 0)} annual-additions limit. Official copy: ${irsRetirementSnapshot.snapshotId}.`,

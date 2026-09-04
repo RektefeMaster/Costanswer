@@ -28,7 +28,11 @@ export function calculateRothIra(rawInput: unknown): CalculationResult<{
 }> {
   const input = rothIraInputSchema.parse(rawInput);
   const requestedAnnual = input.monthlyContribution * 12;
-  const monthlyReturn = (1 + input.assumedReturnPercent / 100) ** (1 / 12) - 1;
+  // Same convention as every other projection on the site: the rate you type is
+  // a nominal annual rate applied monthly, matching `compoundInterestGrowth`.
+  // Two calculators disagreeing on what "7% a year" means would be worse than
+  // either convention on its own.
+  const monthlyReturn = input.assumedReturnPercent / 100 / 12;
 
   let balance = input.currentBalance;
   let totalContributions = 0;
@@ -45,7 +49,9 @@ export function calculateRothIra(rawInput: unknown): CalculationResult<{
     if (year === 1) firstYearContribution = annual;
     const monthly = annual / 12;
     for (let month = 0; month < 12; month += 1) {
-      balance = (balance + monthly) * (1 + monthlyReturn);
+      // Contributions are credited at the end of each month, matching the
+      // ordinary-annuity convention the other projection engines use.
+      balance = balance * (1 + monthlyReturn) + monthly;
     }
     totalContributions += annual;
   }
@@ -89,7 +95,7 @@ export function calculateRothIra(rawInput: unknown): CalculationResult<{
         : []),
       'Those limits are held flat for the whole projection. The IRS indexes them for inflation, so later years are understated rather than guessed at.',
       'Roth eligibility phases out by filing status and modified adjusted gross income. Those ranges are not modeled here, so a high earner may be able to contribute less than this shows, or nothing directly.',
-      'Contributions are assumed to be made monthly in equal amounts, and to earn the assumed return from the month they go in.',
+      'Contributions are assumed to be made monthly in equal amounts, at the end of each month. The return you type is applied as a nominal annual rate compounded monthly, the same convention the other projection calculators use.',
       'Taxes, penalties, withdrawal rules, and conversions are not included.',
     ],
   };

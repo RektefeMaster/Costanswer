@@ -23,8 +23,8 @@ export default function HomeAffordabilityPage() {
       caution="This is a planning screen on take-home pay, not a lender approval. Credit, local taxes, insurance, and the quote you actually get can move the answer a long way."
       methodology={[
         {
-          title: 'True monthly housing cost',
-          body: 'Principal and interest use the same fixed-rate formula as the mortgage-payment tool. Property tax, insurance, and HOA are only what you type. PMI is an optional flat 0.5% of the loan per year when the down payment is under 20%. Repairs use the yearly percent you enter, defaulting to 1% of the price.',
+          title: 'Modeled monthly housing cost',
+          body: 'Principal and interest use the same fixed-rate formula as the mortgage-payment tool. Property tax, insurance, and HOA are only what you type, so leaving them blank leaves them out of the total rather than making them zero. PMI is an optional flat 0.5% of the loan per year when the down payment is under 20%. Repairs use the yearly percent you enter, defaulting to 1% of the price.',
         },
         {
           title: 'Comfortable, stretch, risky',

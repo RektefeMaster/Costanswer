@@ -511,7 +511,7 @@ export const tools: ToolDefinition[] = [
       'car payment vs income',
       'cost of car ownership',
     ],
-    eyebrow: 'True monthly cost vs. take-home pay',
+    eyebrow: 'Monthly cash cost vs. take-home pay',
     accent: 'blue',
     featured: true,
     resultNature: 'planning-model',

@@ -400,7 +400,7 @@ export default function DataSourcesPage() {
           <div><dt>ACS snapshot</dt><dd>{acsSnapshot.snapshotId}</dd></div>
           {freshnessRows(acsSource)}
           <div><dt>Survey years</dt><dd>{acsSnapshot.surveyYears}</dd></div>
-          <div><dt>Places in v1 search</dt><dd>{geographySnapshot.places.length} OMB principal cities</dd></div>
+          <div><dt>Searchable places</dt><dd>{geographySnapshot.places.length} OMB principal cities</dd></div>
         </dl>
         <p>ACS values are survey estimates for 2020–2024, not live counts. Population and median household income are context. Median household income is not the user’s salary. Sentinel Census values are stored as missing, not as zero. Names are never geographic identity; the engine uses FIPS, GEOID, CBSA, and HUD area codes.</p>
         <p className="dataset-links"><a href={acsSnapshot.sourceUrl}>ACS summary file ↗</a></p>

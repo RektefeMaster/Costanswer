@@ -216,6 +216,42 @@ describe('retirement family', () => {
     expect(monthly.value.endingBalance).toBeLessThan(12_000 * 1.07);
   });
 
+  it('keeps retirement projections on the same return convention and pay-timing as the shared engine', () => {
+    // Two calculators disagreeing on what "6% a year" means, or on when a
+    // contribution starts earning, would be worse than either convention alone.
+    const reference = compoundInterestGrowth({
+      principal: 5_000, annualRatePercent: 6, years: 10, contribution: 500,
+      compounding: 'monthly', contributionFrequency: 'monthly', contributionTiming: 'end',
+    });
+    const roth = calculateRothIra({
+      currentBalance: 5_000, monthlyContribution: 500, years: 10,
+      assumedReturnPercent: 6, currentAge: 40,
+    });
+    expect(roth.value.endingBalance).toBe(Math.round(reference.endingBalance));
+
+    const k401Reference = compoundInterestGrowth({
+      principal: 0, annualRatePercent: 7, years: 1, contribution: 1_000,
+      compounding: 'monthly', contributionFrequency: 'monthly', contributionTiming: 'end',
+    });
+    const k401 = calculate401k({
+      currentBalance: 0, salary: 100_000, employeePercent: 12, matchRatePercent: 0,
+      matchSalaryCapPercent: 0, years: 1, assumedReturnPercent: 7, salaryGrowthPercent: 0,
+      currentAge: 35, payFrequency: 'monthly',
+    });
+    expect(k401.value.endingBalance).toBe(Math.round(k401Reference.endingBalance));
+
+    // A deferral lands on payday, so being paid more often cannot lower the
+    // balance. Crediting contributions at the start of a period reversed this.
+    const balances = (['monthly', 'semimonthly', 'biweekly', 'weekly'] as const).map((payFrequency) =>
+      calculate401k({
+        currentBalance: 0, salary: 100_000, employeePercent: 12, matchRatePercent: 0,
+        matchSalaryCapPercent: 0, years: 1, assumedReturnPercent: 7, salaryGrowthPercent: 0,
+        currentAge: 35, payFrequency,
+      }).value.endingBalance);
+    expect(balances).toEqual([...balances].sort((left, right) => left - right));
+    expect(balances[0]).toBeLessThan(balances[balances.length - 1]);
+  });
+
   it('projects Roth growth without an eligibility verdict', () => {
     const result = calculateRothIra({
       currentBalance: 0,

@@ -397,7 +397,7 @@ function thisHouseBreakdown(value: HomeAffordabilityValue, input: ThisHouseInput
       : 'The house already fits the comfortable band.';
   return [
     {
-      label: 'True monthly housing cost',
+      label: 'Modeled monthly housing cost',
       value: formatMoney(housing.monthlyHousingTotal),
       detail: `${formatMoney(housing.monthlyPrincipalAndInterest)} P&I + tax, insurance, HOA, PMI, and repairs`,
     },
