@@ -1,7 +1,7 @@
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
-import { getAcsRow } from '@/lib/data/acs-snapshot';
+import { acsSnapshot, getAcsRow } from '@/lib/data/acs-snapshot';
 import type { CensusAcsRow } from '@/lib/data/census-acs';
-import { getBeaMetroRpp, getBeaStateRpp } from '@/lib/data/bea-rpp-snapshot';
+import { beaRppSnapshot, getBeaMetroRpp, getBeaStateRpp } from '@/lib/data/bea-rpp-snapshot';
 import { resolveHudFmrSnapshot, uniqueHudAreaForCounty } from '@/lib/data/hud-fmr-snapshot';
 import type { HudFmrArea, HudFmrSnapshot } from '@/lib/data/hud-fmr';
 import { gasolineGeographyForState } from './gasoline-geography';
@@ -38,6 +38,19 @@ export type LocationCoverage = {
   food: { status: CoverageStatus; label: string };
   eligibleStates: StateCode[];
   countyChoices: Array<{ geoid: string; name: string; state: StateCode }>;
+  /**
+   * Snapshot identities the resolved figures came from.
+   *
+   * Coverage crosses the network to the browser, and the cost-of-living
+   * calculation cites these in its result. Carrying them here is what lets the
+   * calculation run without the geography, HUD, ACS, and BEA tables.
+   */
+  datasets: {
+    hudSnapshotId: string;
+    beaSnapshotId: string;
+    acsSnapshotId: string;
+    acsSurveyYears: string;
+  };
 };
 
 function censusGeoId(kind: 'state' | 'county' | 'place' | 'cbsa', key: string): string {
@@ -103,6 +116,15 @@ function ambiguousCountyChoices(hud: HousingCoverage, geoids: string[]): Array<{
   return choices.length > 1 ? choices : [];
 }
 
+function datasetProvenance(hudSnapshot: HudFmrSnapshot): LocationCoverage['datasets'] {
+  return {
+    hudSnapshotId: hudSnapshot.snapshotId,
+    beaSnapshotId: beaRppSnapshot.snapshotId,
+    acsSnapshotId: acsSnapshot.snapshotId,
+    acsSurveyYears: acsSnapshot.surveyYears,
+  };
+}
+
 export function resolveLocationCoverage(input: {
   locationId: string;
   residentialState?: string;
@@ -141,6 +163,7 @@ export function resolveLocationCoverage(input: {
       food: { status: 'national', label: 'USDA national food-at-home benchmark' },
       eligibleStates: [state],
       countyChoices: [],
+      datasets: datasetProvenance(hudSnapshot),
     };
   }
 
@@ -170,6 +193,7 @@ export function resolveLocationCoverage(input: {
       food: { status: 'national', label: 'USDA national food-at-home benchmark' },
       eligibleStates: [state],
       countyChoices: ambiguousCountyChoices(hud, [county.geoid]),
+      datasets: datasetProvenance(hudSnapshot),
     };
   }
 
@@ -201,6 +225,7 @@ export function resolveLocationCoverage(input: {
       food: { status: 'national', label: 'USDA national food-at-home benchmark' },
       eligibleStates: [state],
       countyChoices: ambiguousCountyChoices(metroHud, inStateCounties),
+      datasets: datasetProvenance(hudSnapshot),
     };
   }
 
@@ -241,6 +266,7 @@ export function resolveLocationCoverage(input: {
       food: { status: 'national', label: 'USDA national food-at-home benchmark' },
       eligibleStates: cbsa.stateCodes as StateCode[],
       countyChoices: stateAmbiguous ? [] : ambiguousCountyChoices(hud, counties),
+      datasets: datasetProvenance(hudSnapshot),
     };
   }
 

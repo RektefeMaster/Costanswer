@@ -1,4 +1,5 @@
 import { CostOfLivingCalculator } from '@/components/calculators/CostOfLivingCalculator';
+import { resolveCostOfLivingCoverage } from '@/lib/calculations/col/coverage';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { acsSnapshot } from '@/lib/data/acs-snapshot';
 import { beaRppSnapshot } from '@/lib/data/bea-rpp-snapshot';
@@ -10,6 +11,13 @@ import { toolMetadata } from '@/lib/seo';
 import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
 const tool = getTool('cost-of-living');
+
+/**
+ * Coverage for the default city, resolved here so the first paint already has a
+ * real answer. The browser only calls `/api/location/coverage` once the visitor
+ * picks somewhere else.
+ */
+const initialCoverage = resolveCostOfLivingCoverage({ locationId: 'place:4805000' });
 export const metadata = toolMetadata(tool);
 
 const hudEffective = resolveHudFmrSnapshot(PUBLISHING_SNAPSHOT_DATE);
@@ -92,7 +100,7 @@ export default function CostOfLivingPage() {
         },
       ]}
     >
-      <CostOfLivingCalculator />
+      <CostOfLivingCalculator initialCoverage={initialCoverage} />
     </ToolPage>
   );
 }

@@ -8,12 +8,11 @@ import { AGE_ENGINE_ID, DATE_ENGINE_ID, DAYS_FROM_TODAY_ENGINE_ID, TIME_CARD_ENG
 import { FRACTION_ENGINE_ID, PERCENT_CHANGE_ENGINE_ID, PERCENTAGE_ENGINE_ID, RANDOM_NUMBER_ENGINE_ID, SCIENTIFIC_ENGINE_ID, TIP_ENGINE_ID } from './calculations/math/version';
 import { CONVERSION_ENGINE_ID } from './calculations/conversion/units';
 import { GPA_ENGINE_ID, GRADE_ENGINE_ID, SQUARE_FOOTAGE_ENGINE_ID } from './calculations/education/formulas';
+import { CATEGORY_IDS, categories, type CategoryAccent, type CategoryId } from './categories';
 import { parsePublishingDate, PUBLISHING_SNAPSHOT_DATE } from './publishing';
 
-export const CATEGORY_IDS = ['money', 'home', 'auto', 'everyday', 'food', 'shopping', 'health', 'math', 'education'] as const;
-export type CategoryId = (typeof CATEGORY_IDS)[number];
-/** Header stays at the original six categories. Health, math, and education are in the footer, homepage strip, and topic hubs. */
-export const HEADER_CATEGORY_IDS: readonly CategoryId[] = ['money', 'home', 'auto', 'everyday', 'food', 'shopping'];
+export { CATEGORY_IDS, HEADER_CATEGORY_IDS, categories } from './categories';
+export type { CategoryAccent, CategoryId } from './categories';
 
 export type ToolRelationship = {
   toolId: string;
@@ -54,7 +53,7 @@ export type ToolDefinition = {
   engine: string;
   searchTerms: string[];
   eyebrow: string;
-  accent: 'mint' | 'amber' | 'blue' | 'rose' | 'violet' | 'coral';
+  accent: CategoryAccent;
   featured: boolean;
   indexability: IndexabilityEvidence;
   relationships: ToolRelationship[];
@@ -81,62 +80,6 @@ function launchIndexability(
   };
 }
 
-export const categories: Record<CategoryId, { name: string; description: string; blurb: string; accent: ToolDefinition['accent'] }> = {
-  money: {
-    name: 'Money',
-    blurb: 'Pay, a mortgage payment, or buying power over time.',
-    description: 'Pay, a loan or mortgage payment, whether a house fits take-home pay, savings growth, or buying power over time.',
-    accent: 'mint',
-  },
-  home: {
-    name: 'Home',
-    blurb: 'An electric bill, an appliance, or bags of concrete.',
-    description: 'A rough electric bill by state, what an appliance costs to run, or bags of concrete for a slab.',
-    accent: 'amber',
-  },
-  auto: {
-    name: 'Auto',
-    blurb: 'Car vs take-home pay, EV charging, or trip fuel.',
-    description: 'Whether a car fits your take-home pay, yearly EV charging versus gasoline, or fuel for a road trip.',
-    accent: 'blue',
-  },
-  everyday: {
-    name: 'Everyday',
-    blurb: 'Workdays, ages, tips, and time on a timesheet.',
-    description: 'Workdays between two dates, age, tips, duration math, or hours on a timesheet.',
-    accent: 'rose',
-  },
-  food: {
-    name: 'Food',
-    blurb: 'Scale a recipe. Amounts stay in kitchen fractions.',
-    description: 'Scale a recipe up or down. Amounts stay in kitchen fractions.',
-    accent: 'coral',
-  },
-  shopping: {
-    name: 'Shopping',
-    blurb: 'Unit prices, or which states look cheaper.',
-    description: 'Compare package prices, or see which states look cheaper on official averages.',
-    accent: 'violet',
-  },
-  health: {
-    name: 'Health',
-    blurb: 'BMI, calories, and circumference estimates.',
-    description: 'Adult formula estimates for BMI, BMR, TDEE, daily calories, and circumference body fat. Not diagnoses.',
-    accent: 'rose',
-  },
-  math: {
-    name: 'Math',
-    blurb: 'Percents, fractions, units, and a scientific keypad.',
-    description: 'Percentage relationships, percent change, fractions, unit conversion, and a bounded scientific calculator.',
-    accent: 'violet',
-  },
-  education: {
-    name: 'Education',
-    blurb: 'Weighted grades and a 4.0 GPA scale you can see.',
-    description: 'A weighted course grade or a GPA from credits, with the scale shown as an assumption.',
-    accent: 'coral',
-  },
-};
 
 export const tools: ToolDefinition[] = [
   {

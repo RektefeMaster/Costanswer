@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { parsePublishingDate } from './publishing';
 
 export type IntegrationEnvironment = Record<string, string | undefined>;
@@ -43,10 +42,14 @@ function parseOptionalDate(value: string | undefined): string | undefined {
   return date;
 }
 
+/** Same shape check as before, without pulling a schema library into the client bundle. */
+const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
+
 function parseOptionalEmail(value: string | undefined): string | undefined {
   const email = blankToUndefined(value);
   if (!email) return undefined;
-  return z.string().email().parse(email);
+  if (!EMAIL.test(email)) throw new Error('NEXT_PUBLIC_CONTACT_EMAIL must be an email address.');
+  return email;
 }
 
 export const integrationConfig = parseIntegrationConfig(process.env);

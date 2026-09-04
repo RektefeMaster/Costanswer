@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useMemo, useState, useSyncExternalStore } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
 import { searchTools } from '@/lib/search';
@@ -41,12 +42,12 @@ export function SearchExperience() {
             : `${results.length} match${results.length === 1 ? '' : 'es'}`}
         </p>
         {results.length > 0 ? results.map(({ tool }) => (
-          <a href={tool.path} key={tool.id} onClick={() => emitAnalyticsEvent('result_interaction', { toolId: tool.id, category: tool.category, interaction: 'search_result_click' })}>
+          <Link href={tool.path} key={tool.id} onClick={() => emitAnalyticsEvent('result_interaction', { toolId: tool.id, category: tool.category, interaction: 'search_result_click' })}>
             <CategoryChip category={tool.category} size="row" tone="color" />
             <span><strong>{tool.title}</strong><small>{tool.description}</small></span>
             <span className="search-result-category">{categories[tool.category].name}</span>
             <b aria-hidden="true">→</b>
-          </a>
+          </Link>
         )) : (
           <div className="empty-search">
             <h2>No calculator matches that yet.</h2>

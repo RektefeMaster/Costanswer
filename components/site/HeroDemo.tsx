@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useMemo, useState } from 'react';
 import { calculateHourlySalary } from '@/lib/calculations/hourly-salary';
 
@@ -67,7 +68,7 @@ export function HeroDemo() {
       </div>
       <div className="demo-footer">
         <span>Before taxes · 2,080 work hours</span>
-        <a href="/money/hourly-to-salary">Open the salary calculator →</a>
+        <Link href="/money/hourly-to-salary">Open the salary calculator →</Link>
       </div>
     </div>
   );

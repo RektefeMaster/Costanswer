@@ -2,27 +2,30 @@ import { createHash } from 'node:crypto';
 import { access, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { eiaElectricitySnapshotSchema } from '../lib/data/eia-electricity';
-import { validateElectricityEnvelope } from '../lib/data/electricity-snapshot';
 import { eiaGasolineSnapshotSchema } from '../lib/data/eia-gasoline';
-import { validateGasolineEnvelope } from '../lib/data/gasoline-snapshot';
 import { blsGrocerySnapshotSchema } from '../lib/data/bls-grocery';
-import { validateGroceryEnvelope } from '../lib/data/grocery-snapshot';
 import { freddieMacPmmsSnapshotSchema } from '../lib/data/freddie-mac-pmms';
-import { validateMortgageRateEnvelope } from '../lib/data/mortgage-rate-snapshot';
 import { blsCpiSnapshotSchema } from '../lib/data/bls-cpi';
-import { validateCpiEnvelope } from '../lib/data/cpi-snapshot';
-import { validateTaxYearSnapshot } from '../lib/data/tax/snapshot';
+import {
+  validateAcsEnvelope,
+  validateBeaRppEnvelope,
+  validateCpiEnvelope,
+  validateElectricityEnvelope,
+  validateGasolineEnvelope,
+  validateGeographyEnvelope,
+  validateGroceryEnvelope,
+  validateHudEnvelope,
+  validateIrsRetirementEnvelope,
+  validateMortgageRateEnvelope,
+  validateTaxYearSnapshot,
+  validateUsdaFoodEnvelope,
+} from '../lib/data/verify';
 import { DATASET_POLICIES } from '../lib/data/dataset-policy';
-import { validateGeographyEnvelope } from '../lib/data/geography-snapshot';
 import { geographySnapshotSchema } from '../lib/data/geography';
-import { validateAcsEnvelope } from '../lib/data/acs-snapshot';
 import { censusAcsSnapshotSchema } from '../lib/data/census-acs';
-import { validateHudEnvelope, resolveHudFmrSnapshot } from '../lib/data/hud-fmr-snapshot';
-import { validateBeaRppEnvelope } from '../lib/data/bea-rpp-snapshot';
+import { resolveHudFmrSnapshot } from '../lib/data/hud-fmr-snapshot';
 import { beaRppSnapshotSchema } from '../lib/data/bea-rpp';
-import { validateUsdaFoodEnvelope } from '../lib/data/usda-food-snapshot';
 import { usdaFoodSnapshotSchema } from '../lib/data/usda-food';
-import { validateIrsRetirementEnvelope } from '../lib/data/irs-retirement-snapshot';
 import { irsRetirementSnapshotSchema } from '../lib/data/irs-retirement';
 import { geographySnapshot } from '../lib/data/geography-snapshot';
 import { PUBLISHING_SNAPSHOT_DATE } from '../lib/publishing';

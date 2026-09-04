@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateCostOfLiving } from '@/lib/calculations/cost-of-living';
+import { calculateCostOfLiving } from '@/lib/calculations/col/coverage';
 import { defaultFoodMembers, usdaFoodPlanMonthlyCost } from '@/lib/calculations/col/food';
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
 import { composeColTransport } from '@/lib/calculations/col/transport';

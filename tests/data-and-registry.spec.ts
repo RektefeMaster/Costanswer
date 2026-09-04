@@ -8,17 +8,20 @@ import currentGasolineFixture from '@/data/eia-gasoline/current.json';
 import currentGroceryFixture from '@/data/bls/current.json';
 import rawGroceryFixture from '@/data/bls/raw/bls-apu-grocery-2026-07-v2.json';
 import { eiaElectricitySnapshotSchema, normalizeEiaElectricityResponse } from '@/lib/data/eia-electricity';
-import { validateElectricityEnvelope } from '@/lib/data/electricity-snapshot';
 import { eiaGasolineSnapshotSchema, normalizeEiaGasolineHtml } from '@/lib/data/eia-gasoline';
-import { validateGasolineEnvelope } from '@/lib/data/gasoline-snapshot';
 import { blsGrocerySnapshotSchema, grocerySeriesIdBatches, GROCERY_ITEM_IDS, normalizeBlsGroceryResponse } from '@/lib/data/bls-grocery';
-import { validateGroceryEnvelope } from '@/lib/data/grocery-snapshot';
 import { normalizeFreddieMacPmmsHtml } from '@/lib/data/freddie-mac-pmms';
-import { validateMortgageRateEnvelope } from '@/lib/data/mortgage-rate-snapshot';
 import currentMortgageRateFixture from '@/data/freddie-mac/current.json';
 import { mergeCpiObservations, nextMonthPeriod, observationsFromBlsTimeSeries } from '@/lib/data/bls-cpi';
-import { validateCpiEnvelope } from '@/lib/data/cpi-snapshot';
 import currentCpiFixture from '@/data/bls-cpi/current.json';
+import {
+  validateCpiEnvelope,
+  validateElectricityEnvelope,
+  validateGasolineEnvelope,
+  validateGroceryEnvelope,
+  validateMortgageRateEnvelope,
+  verifyBundledSnapshots,
+} from '@/lib/data/verify';
 import { sha256 } from '@/lib/data/sha256';
 import { PUBLISHING_SNAPSHOT_INSTANT } from '@/lib/publishing';
 import { searchTools } from '@/lib/search';
@@ -179,6 +182,16 @@ describe('gasoline and grocery adapters', () => {
     expect(() => mergeCpiObservations(parsed, [{ period: '1913-01', index: 9.9 }])).toThrow(/1913-01/);
     expect(() => validateCpiEnvelope(currentCpiFixture)).not.toThrow();
     expect(currentCpiFixture.snapshot.observations.some((row: { period: string }) => row.period === '2025-10')).toBe(false);
+  });
+});
+
+describe('bundled snapshot integrity', () => {
+  /**
+   * The runtime modules read these snapshots without re-hashing them, so this is
+   * the check that keeps a corrupted or hand-edited file from shipping.
+   */
+  it('re-verifies every snapshot the app reads at runtime', () => {
+    expect(() => verifyBundledSnapshots()).not.toThrow();
   });
 });
 

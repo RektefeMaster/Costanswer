@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { emitAnalyticsEvent } from '@/lib/analytics';
-import type { CategoryId } from '@/lib/tool-registry';
+import type { CategoryId } from '@/lib/categories';
 
 export function RelatedToolLink({
   href,
@@ -18,9 +19,9 @@ export function RelatedToolLink({
   children: ReactNode;
 }) {
   return (
-    <a href={href} onClick={() => emitAnalyticsEvent('related_tool_click', { toolId, category, relatedToolId })}>
+    <Link href={href} onClick={() => emitAnalyticsEvent('related_tool_click', { toolId, category, relatedToolId })}>
       {children}
-    </a>
+    </Link>
   );
 }
 

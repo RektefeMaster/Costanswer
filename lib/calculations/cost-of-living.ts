@@ -8,14 +8,11 @@ import { defaultFoodMembers, usdaFoodPlanMonthlyCost } from './col/food';
 import { assertNoRppOnLocalRate, composeColTransport } from './col/transport';
 import { USDA_FOOD_PLANS, type UsdaFoodPlan } from '@/lib/data/usda-food';
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
-import { resolveHudFmrSnapshot } from '@/lib/data/hud-fmr-snapshot';
 import { getGasolinePriceForState } from '@/lib/data/gasoline-snapshot';
 import { getElectricityRate } from '@/lib/data/electricity-snapshot';
 import { gasolineSnapshot } from '@/lib/data/gasoline-snapshot';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
-import { acsSnapshot } from '@/lib/data/acs-snapshot';
-import { beaRppSnapshot } from '@/lib/data/bea-rpp-snapshot';
-import { resolveLocationCoverage, type LocationCoverage } from '@/lib/location/resolve';
+import type { LocationCoverage } from '@/lib/location/resolve';
 import { isStateCode } from '@/lib/location/states';
 import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
@@ -165,21 +162,20 @@ function bedroomLabel(bedrooms: ColBedroom): string {
   }
 }
 
-export function composeCostOfLiving(rawInput: unknown): CalculationResult<ColValue> {
+/**
+ * The location-independent half: pure arithmetic over an already-resolved
+ * coverage plus the small fuel, electricity, food-plan, and tax snapshots.
+ */
+export function composeCostOfLivingFromCoverage(
+  rawInput: unknown,
+  coverage: LocationCoverage,
+): CalculationResult<ColValue> {
   const input = costOfLivingInputSchema.parse(rawInput);
-  const asOf = input.asOf ?? PUBLISHING_SNAPSHOT_DATE;
-  const coverage = resolveLocationCoverage({
-    locationId: input.locationId,
-    residentialState: input.residentialState,
-    countyGeoid: input.countyGeoid,
-    asOf,
-  });
-  const hudSnapshot = resolveHudFmrSnapshot(asOf);
   const snapshotIds: string[] = [
-    hudSnapshot.snapshotId,
+    coverage.datasets.hudSnapshotId,
     usdaFoodSnapshot.snapshotId,
-    beaRppSnapshot.snapshotId,
-    acsSnapshot.snapshotId,
+    coverage.datasets.beaSnapshotId,
+    coverage.datasets.acsSnapshotId,
   ];
 
   const hudAmount = coverage.hud.status === 'exact' || coverage.hud.status === 'uniqueDerived'
@@ -467,7 +463,7 @@ export function composeCostOfLiving(rawInput: unknown): CalculationResult<ColVal
     incomeContext: {
       medianHouseholdIncome: coverage.census.row?.medianHouseholdIncome ?? null,
       geographyLabel: coverage.census.label,
-      vintage: acsSnapshot.surveyYears,
+      vintage: coverage.datasets.acsSurveyYears,
     },
     coverage,
     comparison: {
@@ -551,6 +547,17 @@ export function composeCostOfLiving(rawInput: unknown): CalculationResult<ColVal
   };
 }
 
-export function calculateCostOfLiving(rawInput: unknown): CalculationResult<ColValue> {
-  return composeCostOfLiving(rawInput);
+
+/**
+ * Recompute from a coverage the caller already has.
+ *
+ * The browser fetches coverage once per location and then calls this for every
+ * other input change, so changing bedrooms, household size, or income never
+ * touches the network.
+ */
+export function calculateCostOfLivingFromCoverage(
+  rawInput: unknown,
+  coverage: LocationCoverage,
+): CalculationResult<ColValue> {
+  return composeCostOfLivingFromCoverage(rawInput, coverage);
 }

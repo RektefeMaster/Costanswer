@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { validateTaxYearSnapshot } from '../lib/data/tax/snapshot';
+import { validateTaxYearSnapshot } from '../lib/data/verify';
 
 const snapshot = validateTaxYearSnapshot(JSON.parse(await readFile(path.join(process.cwd(), 'data', 'tax', '2026.json'), 'utf8')) as unknown);
 if (snapshot.taxYear !== 2026) throw new Error('Expected the published tax snapshot to be tax year 2026.');

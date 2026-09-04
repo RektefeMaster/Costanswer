@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { CategoryArt } from '@/components/site/CategoryArt';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { HeroDemo } from '@/components/site/HeroDemo';
@@ -70,17 +71,17 @@ export default function Home() {
           <ul className="topic-prompts">
             {exploreQuestions.map((item) => (
               <li key={item.tool.id}>
-                <a href={item.tool.path}>
+                <Link href={item.tool.path}>
                   <span>{item.label}</span>
                   <span aria-hidden="true">→</span>
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
         </div>
         <div className="category-grid">
           {categoryOrder.map((categoryId, index) => (
-            <a className={`category-card ${toneByCategory[categoryId]}`} href={`/topics/${categoryId}`} key={categoryId}>
+            <Link className={`category-card ${toneByCategory[categoryId]}`} href={`/topics/${categoryId}`} key={categoryId}>
               <CategoryArt category={categoryId} />
               <span className="category-topline">
                 <span className="category-number">0{index + 1}</span>
@@ -90,7 +91,7 @@ export default function Home() {
                 <strong>{categories[categoryId].name}</strong>
                 <small>{categories[categoryId].blurb}</small>
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </section>

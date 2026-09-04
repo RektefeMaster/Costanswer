@@ -1,15 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  calculateCostOfLiving,
+  calculateCostOfLivingFromCoverage,
   COL_BEDROOMS,
   type ColBedroom,
 } from '@/lib/calculations/cost-of-living';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from '@/lib/calculations/tax/types';
 import { USDA_FOOD_PLANS, type UsdaFoodPlan } from '@/lib/data/usda-food';
-import { searchLocations, type LocationSearchHit } from '@/lib/location/search';
+import type { LocationCoverage } from '@/lib/location/resolve';
+import type { LocationSearchHit } from '@/lib/location/search';
 import { getStateName, type StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
@@ -42,9 +43,17 @@ const AUSTIN: LocationSearchHit = {
   subtitle: 'Texas',
 };
 
-export function CostOfLivingCalculator() {
+/** Coverage for the location currently selected, and how it got there. */
+type CoverageState =
+  | { status: 'ready'; value: LocationCoverage }
+  | { status: 'loading'; value: LocationCoverage | null }
+  | { status: 'error'; value: null; message: string };
+
+export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: LocationCoverage }) {
   const [query, setQuery] = useState('Austin, TX');
   const [selected, setSelected] = useState<LocationSearchHit | null>(AUSTIN);
+  const [coverage, setCoverage] = useState<CoverageState>({ status: 'ready', value: initialCoverage });
+  const [matches, setMatches] = useState<LocationSearchHit[]>([]);
   const [residentialState, setResidentialState] = useState<StateCode | ''>('');
   const [countyGeoid, setCountyGeoid] = useState('');
   const [bedrooms, setBedrooms] = useState<ColBedroom>('br2');
@@ -68,10 +77,54 @@ export function CostOfLivingCalculator() {
   const [annualGrossSalary, setAnnualGrossSalary] = useState('75000');
   const [filingStatus, setFilingStatus] = useState<FilingStatus>('single');
 
-  const matches = useMemo(() => (selected && query === selected.displayName ? [] : searchLocations(query, 8)), [query, selected]);
+  const showingSelection = Boolean(selected) && query === selected?.displayName;
+
+  // Typeahead runs on the server, so the national geography tables never ship here.
+  useEffect(() => {
+    if (showingSelection || query.trim() === '') {
+      setMatches([]);
+      return;
+    }
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetch(`/api/location/search?q=${encodeURIComponent(query)}`, { signal: controller.signal })
+        .then(async (response) => (response.ok ? await response.json() as { hits?: LocationSearchHit[] } : { hits: [] }))
+        .then((body) => setMatches(body.hits ?? []))
+        .catch(() => { /* aborted or offline: keep the last list rather than flashing empty */ });
+    }, 140);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [query, showingSelection]);
+
+  // Coverage changes only when the place, state, or county does — not when a number does.
+  const coverageKey = selected?.id ? `${selected.id}|${residentialState}|${countyGeoid}` : '';
+  // Which selection the coverage in state actually describes, so returning to an
+  // earlier location refetches rather than reusing whichever one loaded last.
+  const loadedCoverageKey = useRef(`${AUSTIN.id}||`);
+  useEffect(() => {
+    if (!coverageKey || coverageKey === loadedCoverageKey.current) return;
+    const controller = new AbortController();
+    setCoverage((current) => ({ status: 'loading', value: current.value }));
+    const params = new URLSearchParams({ id: selected!.id });
+    if (residentialState) params.set('state', residentialState);
+    if (countyGeoid) params.set('county', countyGeoid);
+    fetch(`/api/location/coverage?${params}`, { signal: controller.signal })
+      .then(async (response) => {
+        const body = await response.json() as { coverage?: LocationCoverage; error?: string };
+        if (!response.ok || !body.coverage) throw new Error(body.error ?? 'This location could not be resolved.');
+        loadedCoverageKey.current = coverageKey;
+        setCoverage({ status: 'ready', value: body.coverage });
+      })
+      .catch((error: unknown) => {
+        if (controller.signal.aborted) return;
+        setCoverage({ status: 'error', value: null, message: calculationErrorMessage(error) });
+      });
+    return () => controller.abort();
+  }, [coverageKey, selected, residentialState, countyGeoid]);
 
   const calculation = useMemo(() => {
     if (!selected?.id) return { result: null, error: 'Choose a location from the list. Duplicate names stay listed until you pick one.' };
+    if (coverage.status === 'error') return { result: null, error: coverage.message };
+    if (!coverage.value) return { result: null, error: '' };
     try {
       const payload: Record<string, unknown> = {
         locationId: selected.id,
@@ -105,12 +158,12 @@ export function CostOfLivingCalculator() {
         payload.kwhPer100Miles = Number(kwhPer100Miles);
         payload.chargingLossPercent = Number(chargingLossPercent);
       }
-      return { result: calculateCostOfLiving(payload), error: '' };
+      return { result: calculateCostOfLivingFromCoverage(payload, coverage.value), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
   }, [
-    selected, residentialState, countyGeoid, bedrooms, adults, children, foodPlan, housingMode, manualHousing,
+    coverage, selected, residentialState, countyGeoid, bedrooms, adults, children, foodPlan, housingMode, manualHousing,
     transportMode, manualTransport, annualMiles, mpg, kwhPer100Miles, chargingLossPercent,
     monthlyInsurance, monthlyMaintenance, annualRegistration, otherEssentials, incomeMode,
     monthlyTakeHome, annualGrossSalary, filingStatus,
@@ -129,7 +182,7 @@ export function CostOfLivingCalculator() {
       intro="Housing uses HUD Fair Market Rent as a gross-rent benchmark. Food uses a USDA Food Plan. This is not a proprietary cost-of-living index."
       toolId="cost-of-living"
       category="money"
-      calculationState={!calculation.result ? 'invalid' : value && !value.housing.included ? 'waiting' : 'complete'}
+      calculationState={coverage.status === 'loading' ? 'waiting' : !calculation.result ? 'invalid' : value && !value.housing.included ? 'waiting' : 'complete'}
       calculationSignature={JSON.stringify([selected?.id, residentialState, countyGeoid, bedrooms, adults, children, foodPlan, housingMode, transportMode, incomeMode, monthlyTakeHome, annualGrossSalary])}
     >
       {value && (

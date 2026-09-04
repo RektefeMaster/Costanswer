@@ -1,6 +1,5 @@
-/* Vinext beta currently duplicates React during next/link HMR; plain crawlable anchors avoid that runtime fault. */
-/* eslint-disable @next/next/no-html-link-for-pages */
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
@@ -46,7 +45,7 @@ export default async function TopicPage({ params }: { params: Promise<{ category
           <div className="topic-hero-mark" aria-hidden="true">
             <CategoryArt category={category} priority />
           </div>
-          <nav className="breadcrumbs" aria-label="Breadcrumb"><span><a href="/">{siteConfig.name}</a></span><span><b aria-hidden="true">/</b><span aria-current="page">{definition.name}</span></span></nav>
+          <nav className="breadcrumbs" aria-label="Breadcrumb"><span><Link href="/">{siteConfig.name}</Link></span><span><b aria-hidden="true">/</b><span aria-current="page">{definition.name}</span></span></nav>
           <p className="eyebrow"><span /> {definition.name} calculators</p>
           <h1>{definition.name}</h1>
           <p>{definition.description}</p>
@@ -58,7 +57,7 @@ export default async function TopicPage({ params }: { params: Promise<{ category
           </div>
           <div className="topic-tool-rows">
             {categoryTools.map((tool, index) => (
-              <a className="topic-tool-card" href={tool.path} key={tool.id}>
+              <Link className="topic-tool-card" href={tool.path} key={tool.id}>
                 <span className="topic-tool-number">{String(index + 1).padStart(2, '0')}</span>
                 <span className="topic-tool-copy">
                   <strong>{tool.title}</strong>
@@ -70,7 +69,7 @@ export default async function TopicPage({ params }: { params: Promise<{ category
                   </span>
                   <span className="topic-tool-arrow" aria-hidden="true">→</span>
                 </span>
-              </a>
+              </Link>
             ))}
           </div>
         </section>
@@ -78,7 +77,7 @@ export default async function TopicPage({ params }: { params: Promise<{ category
           <p>Why only {categoryTools.length}?</p>
           <h2>This list will get longer.</h2>
           <p>A calculator goes up when we can explain it. If it uses data, we link to the source.</p>
-          <a href="/methodology">How the numbers work →</a>
+          <Link href="/methodology">How the numbers work →</Link>
         </section>
       </main>
       <SiteFooter />

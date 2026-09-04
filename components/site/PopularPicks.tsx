@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { calculateInflation } from '@/lib/calculations/inflation';
 import { calculateMortgage } from '@/lib/calculations/mortgage';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
@@ -79,7 +80,7 @@ export function PopularPicks() {
           <h2 id="popular-title">A few to try first.</h2>
           <p className="popular-lede">Real U.S. figures, already run. Change the inputs on the next page.</p>
         </div>
-        <a className="popular-all" href="/search">See all calculators <span aria-hidden="true">→</span></a>
+        <Link className="popular-all" href="/search">See all calculators <span aria-hidden="true">→</span></Link>
       </div>
 
       <div className="popular-board">
@@ -89,7 +90,7 @@ export function PopularPicks() {
         </div>
         <div className="popular-board-cols">
           {answers.map((pick, index) => (
-            <a className={`popular-col accent-${pick.tool.accent}`} href={pick.tool.path} key={pick.tool.id}>
+            <Link className={`popular-col accent-${pick.tool.accent}`} href={pick.tool.path} key={pick.tool.id}>
               <span className="popular-col-topline">
                 <span>0{index + 1} · {categories[pick.tool.category].name}</span>
                 <span className="popular-col-arrow" aria-hidden="true">→</span>
@@ -100,7 +101,7 @@ export function PopularPicks() {
               </span>
               <strong className="popular-col-question">{pick.question}</strong>
               <span className="popular-col-note">{pick.note}</span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

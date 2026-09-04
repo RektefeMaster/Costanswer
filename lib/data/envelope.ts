@@ -38,3 +38,26 @@ export function snapshotRecordFromEnvelope(rawEnvelope: unknown, label: string):
   }
   return snapshotRecord;
 }
+
+/** Manifest that publication writes next to every snapshot. */
+export type SnapshotManifest = {
+  currentSnapshotId: string;
+  observationPeriod: string;
+  normalizedSha256: string;
+  validationStatus: 'passed';
+};
+
+export type SnapshotEnvelope<Snapshot> = { manifest: SnapshotManifest; snapshot: Snapshot };
+
+/**
+ * Read a snapshot whose bytes publication already verified.
+ *
+ * The hash and schema checks live in `lib/data/verify.ts` and run in
+ * `npm run verify:data` and the test suite. Runtime reads the committed JSON
+ * directly: re-hashing and re-parsing it on every page load moved that work
+ * into the browser, where it blocked hydration for hundreds of milliseconds on
+ * the larger datasets.
+ */
+export function readVerifiedEnvelope<Snapshot>(rawEnvelope: unknown): SnapshotEnvelope<Snapshot> {
+  return rawEnvelope as SnapshotEnvelope<Snapshot>;
+}

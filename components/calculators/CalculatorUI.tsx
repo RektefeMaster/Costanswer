@@ -3,7 +3,7 @@
 import type { BreakdownStep } from '@/lib/calculations/contracts';
 import { emitAnalyticsEvent } from '@/lib/analytics';
 import { parseNumericBound, stepNumberValue } from '@/lib/number-step';
-import type { CategoryId } from '@/lib/tool-registry';
+import type { CategoryId } from '@/lib/categories';
 import {
   Children,
   cloneElement,

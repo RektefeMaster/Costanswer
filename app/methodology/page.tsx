@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { InfoPage } from '@/components/site/InfoPage';
 import { pageMetadata } from '@/lib/seo';
 
@@ -24,7 +25,7 @@ export default function MethodologyPage() {
       <p>It goes live when it works and explains itself.</p>
       <h2>If something changes</h2>
       <p>If EIA, BLS, or Freddie Mac revises a figure, or we find a bug in the math, the version number changes. Older copies keep their version numbers.</p>
-      <p><a href="/methodology/data">See the data on the site right now →</a></p>
+      <p><Link href="/methodology/data">See the data on the site right now →</Link></p>
     </InfoPage>
   );
 }

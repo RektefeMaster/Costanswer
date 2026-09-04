@@ -6,7 +6,8 @@ import { calculateSalaryAfterTax, estimateAnnualTaxLiability } from '@/lib/calcu
 import { calculatePaycheck } from '@/lib/calculations/paycheck';
 import { calculateHourlySalary } from '@/lib/calculations/hourly-salary';
 import { PAYCHECK_ENGINE_ID, SALARY_AFTER_TAX_ENGINE_ID } from '@/lib/calculations/tax/version';
-import { getTaxYearSnapshot, validateTaxYearSnapshot } from '@/lib/data/tax/snapshot';
+import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
+import { validateTaxYearSnapshot } from '@/lib/data/verify';
 import { taxYearSnapshotSchema } from '@/lib/data/tax/schema';
 import type { TaxBracket } from '@/lib/calculations/tax/types';
 import { describe, expect, it } from 'vitest';

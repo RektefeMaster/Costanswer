@@ -1,4 +1,4 @@
-import { categories, type CategoryId } from '@/lib/tool-registry';
+import { categories, type CategoryId } from '@/lib/categories';
 
 export const categoryArtSrc: Record<CategoryId, string> = {
   money: '/categories/money.png',

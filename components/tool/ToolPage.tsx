@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { categories, getRelatedTools, type ToolDefinition } from '@/lib/tool-registry';
 import { siteConfig } from '@/lib/site-config';
@@ -42,7 +43,7 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
             {breadcrumbs.map((item, index) => (
               <span key={item.path}>
                 {index > 0 && <b aria-hidden="true">/</b>}
-                {index === breadcrumbs.length - 1 ? <span aria-current="page">{item.name}</span> : <a href={item.path}>{item.name}</a>}
+                {index === breadcrumbs.length - 1 ? <span aria-current="page">{item.name}</span> : <Link href={item.path}>{item.name}</Link>}
               </span>
             ))}
           </nav>
