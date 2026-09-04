@@ -65,6 +65,19 @@ describe('energy engines', () => {
     expect(vehicle.datasetSnapshotIds).toEqual([]);
   });
 
+  it('cites only the snapshots whose published figures are actually in the result', () => {
+    // The page now starts from the EIA pump and electricity averages, so each
+    // id has to drop out the moment the reader types over that figure.
+    const inputs = {
+      annualMiles: 12_000, gasMpg: 30, gasPricePerGallon: 3.5,
+      evKwhPer100Miles: 30, electricityCentsPerKwh: 15, chargingLossPercent: 10,
+    };
+    expect(calculateEvVsGas(inputs, ['eia-electricity-x', 'eia-gasoline-x']).datasetSnapshotIds)
+      .toEqual(['eia-electricity-x', 'eia-gasoline-x']);
+    expect(calculateEvVsGas(inputs, ['eia-electricity-x']).datasetSnapshotIds).toEqual(['eia-electricity-x']);
+    expect(calculateEvVsGas(inputs).datasetSnapshotIds).toEqual([]);
+  });
+
   it('compares EV wall energy and gasoline on the same mileage', () => {
     const result = calculateEvVsGas({
       annualMiles: 12_000,

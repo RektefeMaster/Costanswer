@@ -27,7 +27,7 @@ export type EvVsGasValue = {
 
 export function calculateEvVsGas(
   rawInput: unknown,
-  datasetSnapshotId?: string,
+  datasetSnapshotIds: string[] = [],
 ): CalculationResult<EvVsGasValue> {
   const input = evVsGasInputSchema.parse(rawInput);
   const gas = fuelCost({
@@ -62,7 +62,7 @@ export function calculateEvVsGas(
       breakEvenGasPrice: gas.gallons === 0 ? 0 : round(ev.cost / gas.gallons, 2),
     },
     calculationVersion: 'vehicle-energy-v1.1.0',
-    datasetSnapshotIds: datasetSnapshotId ? [datasetSnapshotId] : [],
+    datasetSnapshotIds,
     breakdown: [
       {
         label: 'Gas vehicle energy',

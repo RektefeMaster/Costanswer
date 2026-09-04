@@ -8,57 +8,97 @@ import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type StateRate = { stateCode: StateCode; stateName: string; priceCentsPerKwh: number };
+type StateGasPrice = { stateCode: StateCode; dollarsPerGallon: number; geographyLabel: string };
 
-export function EvVsGasCalculator({ rates, snapshotId, observationPeriod }: { rates: StateRate[]; snapshotId: string; observationPeriod: string }) {
+export function EvVsGasCalculator({
+  rates,
+  gasPrices,
+  snapshotId,
+  gasolineSnapshotId,
+  observationPeriod,
+  gasolineObservationPeriod,
+}: {
+  rates: StateRate[];
+  gasPrices: StateGasPrice[];
+  snapshotId: string;
+  gasolineSnapshotId: string;
+  observationPeriod: string;
+  gasolineObservationPeriod: string;
+}) {
   const [annualMiles, setAnnualMiles] = useState('12000');
   const [gasMpg, setGasMpg] = useState('28');
-  const [gasPrice, setGasPrice] = useState('');
+  // The site already carries a verified EIA weekly pump average by state, and
+  // the road-trip calculator defaults to it. Leaving this one blank meant the
+  // page showed nothing on arrival and ignored data we publish on the same
+  // question. The average is a starting point, not a quote: type over it.
+  const [customGasPrice, setCustomGasPrice] = useState('');
   const [evEfficiency, setEvEfficiency] = useState('28');
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [customElectricityRate, setCustomElectricityRate] = useState('');
   const [chargingLoss, setChargingLoss] = useState('12');
   const selected = rates.find((rate) => rate.stateCode === stateCode) ?? rates[0];
+  const selectedGas = gasPrices.find((price) => price.stateCode === stateCode) ?? gasPrices[0];
   const electricitySource = datasetSourceDisplay({
     datasetId: 'eia-electricity',
     observationPeriod,
     sourceStatus: 'preliminary',
   });
+  const gasolineSource = datasetSourceDisplay({
+    datasetId: 'eia-gasoline',
+    observationPeriod: gasolineObservationPeriod,
+    sourceStatus: 'preliminary',
+  });
   const electricityRate = customElectricityRate.trim() ? Number(customElectricityRate) : selected.priceCentsPerKwh;
+  const usingCustomGasPrice = customGasPrice.trim() !== '';
+  const gasPrice = usingCustomGasPrice ? Number(customGasPrice) : selectedGas.dollarsPerGallon;
 
   const calculation = useMemo(() => {
-    if (gasPrice.trim() === '') return { result: null, error: '' };
     try {
+      // Each snapshot id is cited only while its published figure is actually
+      // the one in the result.
+      const snapshotIds = [
+        customElectricityRate.trim() === '' ? snapshotId : null,
+        usingCustomGasPrice ? null : gasolineSnapshotId,
+      ].filter((id): id is string => id !== null);
       return { result: calculateEvVsGas({
-        annualMiles: Number(annualMiles), gasMpg: Number(gasMpg), gasPricePerGallon: Number(gasPrice),
+        annualMiles: Number(annualMiles), gasMpg: Number(gasMpg), gasPricePerGallon: gasPrice,
         evKwhPer100Miles: Number(evEfficiency), electricityCentsPerKwh: electricityRate,
         chargingLossPercent: Number(chargingLoss),
-      }, customElectricityRate.trim() === '' ? snapshotId : undefined), error: '' };
+      }, snapshotIds), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [annualMiles, gasMpg, gasPrice, evEfficiency, electricityRate, customElectricityRate, chargingLoss, snapshotId]);
+  }, [annualMiles, gasMpg, gasPrice, usingCustomGasPrice, evEfficiency, electricityRate, customElectricityRate, chargingLoss, snapshotId, gasolineSnapshotId]);
 
   const money = (value: number, digits = 0) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: digits });
 
   return (
     <CalculatorPanel
       title="Charging versus filling up"
-      intro="You need a current pump price. Mileage is the same for both cars."
+      intro="Starts from the latest EIA pump and electricity averages for your state. Type your own prices over them. Mileage is the same for both cars."
       toolId="ev-vs-gas"
       category="auto"
-      calculationState={gasPrice.trim() === '' ? 'waiting' : calculation.result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([annualMiles, gasMpg, gasPrice, evEfficiency, stateCode, customElectricityRate, chargingLoss])}
+      calculationState={calculation.result ? 'complete' : 'invalid'}
+      calculationSignature={JSON.stringify([annualMiles, gasMpg, customGasPrice, evEfficiency, stateCode, customElectricityRate, chargingLoss])}
     >
       <div className="comparison-inputs">
         <section>
           <h3 className="comparison-label gas-label">Gas vehicle</h3>
           <Field label="Fuel economy" htmlFor="gas-mpg"><InputShell suffix="MPG"><input id="gas-mpg" type="number" min="1" step="0.1" value={gasMpg} onChange={(event) => setGasMpg(event.target.value)} /></InputShell></Field>
-          <Field label="Local gas price" htmlFor="gas-price" hint="Type a current station price. There is no default."><InputShell prefix="$" suffix="/ gal"><input id="gas-price" type="number" min="0" step="0.01" placeholder="Enter current price" value={gasPrice} onChange={(event) => setGasPrice(event.currentTarget.value)} /></InputShell></Field>
+          <Field
+            label="Gas price"
+            htmlFor="gas-price"
+            hint={`Leave blank for the ${gasolineSource.periodLabel} EIA average for ${selectedGas.geographyLabel}. A station price is better if you have one.`}
+          >
+            <InputShell prefix="$" suffix="/ gal">
+              <input id="gas-price" type="number" min="0" step="0.01" placeholder={selectedGas.dollarsPerGallon.toFixed(2)} value={customGasPrice} onChange={(event) => setCustomGasPrice(event.currentTarget.value)} />
+            </InputShell>
+          </Field>
         </section>
         <section>
           <h3 className="comparison-label ev-label">Electric vehicle</h3>
           <Field label="Vehicle efficiency" htmlFor="ev-efficiency"><InputShell suffix="kWh / 100 mi"><input id="ev-efficiency" type="number" min="5" step="0.1" value={evEfficiency} onChange={(event) => setEvEfficiency(event.target.value)} /></InputShell></Field>
-          <Field label="State electricity average" htmlFor="ev-state"><span className="input-shell select-shell"><select id="ev-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomElectricityRate(''); }}>{rates.map((rate) => <option key={rate.stateCode} value={rate.stateCode}>{rate.stateName} · {rate.priceCentsPerKwh.toFixed(2)}¢</option>)}</select></span></Field>
+          <Field label="State electricity average" htmlFor="ev-state"><span className="input-shell select-shell"><select id="ev-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomElectricityRate(''); setCustomGasPrice(''); }}>{rates.map((rate) => <option key={rate.stateCode} value={rate.stateCode}>{rate.stateName} · {rate.priceCentsPerKwh.toFixed(2)}¢</option>)}</select></span></Field>
           <Field label="Your electricity rate (optional)" htmlFor="ev-rate" hint="Leave blank to use the state average"><InputShell suffix="¢ / kWh"><input id="ev-rate" type="number" min="0" step="0.01" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customElectricityRate} onChange={(event) => setCustomElectricityRate(event.target.value)} /></InputShell></Field>
         </section>
       </div>
@@ -69,7 +109,6 @@ export function EvVsGasCalculator({ rates, snapshotId, observationPeriod }: { ra
           <Field label="Charging loss" htmlFor="charging-loss" hint="Loss from the wall to the battery. 12% is a typical starting point."><InputShell suffix="%"><input id="charging-loss" type="number" min="0" max="30" step="1" value={chargingLoss} onChange={(event) => setChargingLoss(event.target.value)} /></InputShell></Field>
         </div>
       </div>
-      {!gasPrice && <p className="calc-prompt">Enter a current local gas price to run the comparison. A default pump price is not invented.</p>}
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
