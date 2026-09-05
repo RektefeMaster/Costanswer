@@ -435,7 +435,7 @@ export function CarAffordabilityCalculator({
           ]} />
           <div className="decision-note">
             <p>
-              Running costs come out of the budget first — {money(howMuch.monthlyOperatingCost)} a month here — and whatever is left is what a loan payment can use. Each price above is the largest one that keeps the whole vehicle inside that share of take-home pay.
+              Running costs come out of the budget first ({money(howMuch.monthlyOperatingCost)} a month here), and whatever is left is what a loan payment can use. Each price above is the largest one that keeps the whole vehicle inside that share of take-home pay.
             </p>
             <p>
               Those percentages are {siteConfig.name} planning thresholds on take-home pay, not a lender decision and not a rule that fits every household.

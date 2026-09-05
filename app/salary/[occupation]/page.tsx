@@ -114,7 +114,7 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
               <p>
                 {profile.employment.total === null
                   ? `National pay for this occupation from the Bureau of Labor Statistics wage survey, by percentile and by state.`
-                  : `The Bureau of Labor Statistics counted ${formatNumber(profile.employment.total)} ${occupationPlural(occupation)} across the country. Pay varies more by state than most people expect — and the state that pays most is not always the one that leaves most.`}
+                  : `The Bureau of Labor Statistics counted ${formatNumber(profile.employment.total)} ${occupationPlural(occupation)} across the country. Pay varies more by state than most people expect, and the state that pays most is not always the one that leaves most.`}
               </p>
             </div>
           </div>
@@ -132,7 +132,7 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
               <section className="engine-notes" aria-labelledby="spread-title">
                 <h2 id="spread-title">{`Which state pays ${occupationPlural(occupation)} the most?`}</h2>
                 <p className="engine-notes-lede">
-                  {`${getStateName(best.state)} pays a median of ${formatMoney(best.estimate.annual.median, 0)}, ${getStateName(worst.state)} ${formatMoney(worst.estimate.annual.median, 0)} — a gap of ${formatMoney(best.estimate.annual.median - worst.estimate.annual.median, 0)} before either state's taxes or prices are counted.`}
+                  {`${getStateName(best.state)} pays a median of ${formatMoney(best.estimate.annual.median, 0)}, ${getStateName(worst.state)} ${formatMoney(worst.estimate.annual.median, 0)}. That is a gap of ${formatMoney(best.estimate.annual.median - worst.estimate.annual.median, 0)} before either state's taxes or prices are counted.`}
                 </p>
                 <ul>
                   <li>

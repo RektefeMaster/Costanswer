@@ -265,7 +265,7 @@ export const WEALTH_EDITORIAL: ToolEditorial[] = [
       {
         heading: 'Match, limits, and a job change',
         paragraphs: [
-          'Type the match the plan actually uses. A common classroom example is 50% of the first 6% of pay; your document may differ, and this engine will not read the SPD. IRS employee deferral and catch-up limits change by year and age — check the official cap for the year you mean. The page will not stop a contribution that exceeds it.',
+          'Type the match the plan actually uses. A common classroom example is 50% of the first 6% of pay; your document may differ, and this engine will not read the SPD. IRS employee deferral and catch-up limits change by year and age. Check the official cap for the year you mean. The page will not stop a contribution that exceeds it.',
           'Unvested match can leave with a job change. The projection assumes you stay and that the return you typed is constant. Neither is a forecast.',
         ],
       },

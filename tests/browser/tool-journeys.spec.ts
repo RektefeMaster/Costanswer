@@ -196,7 +196,7 @@ test('cost of living stays dollar-first and keeps HUD as a gross-rent benchmark'
   await expect(page.locator('.location-selected')).toContainText('New York, NY');
   await expect(page.getByText('INCOMPLETE', { exact: true })).toBeVisible();
   await expect(page.locator('.primary-result p')).toHaveText('Modeled monthly living cost is not comparable');
-  await expect(page.locator('.primary-result strong')).toHaveText('—');
+  await expect(page.locator('.primary-result strong')).toHaveText('n/a');
   await page.locator('#col-location').fill('Springfield');
   await expect(page.locator('.location-results')).toContainText('Springfield, IL');
   await expect(page.locator('.location-results')).toContainText('Springfield, MO');

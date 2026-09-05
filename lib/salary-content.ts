@@ -302,7 +302,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
     questions.push({
       question: `What is the take-home pay for ${article} ${singular}${inWhere}?`,
       answer: [
-        `On the median wage of ${money(takeHome.grossAnnual)}, one filer taking the standard deduction keeps about ${money(takeHome.annual)} a year — roughly ${money(takeHome.monthly)} a month.`,
+        `On the median wage of ${money(takeHome.grossAnnual)}, one filer taking the standard deduction keeps about ${money(takeHome.annual)} a year, or roughly ${money(takeHome.monthly)} a month.`,
         `That is after ${taxesOnWagesLabel(takeHome)}, an effective rate of ${formatNumber(takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.`,
         takeHome.stateIncomeTax > 0
           ? `${profile.areaLabel} takes ${money(takeHome.stateIncomeTax)} of it in state income tax.`
@@ -318,7 +318,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
       answer: [
         gap === 0
           ? `The median is the same as the national median of ${money(profile.versusNation.nationalAnnualMedian)}.`
-          : `${gap > 0 ? 'Yes' : 'No'} — the median${inWhere} is ${percent(gap)} ${gap > 0 ? 'above' : 'below'} the national median of ${money(profile.versusNation.nationalAnnualMedian)}.`,
+          : `${gap > 0 ? 'Yes' : 'No'}. The median${inWhere} is ${percent(gap)} ${gap > 0 ? 'above' : 'below'} the national median of ${money(profile.versusNation.nationalAnnualMedian)}.`,
         profile.costAdjusted
           ? `Nominal pay is only half the comparison: prices in ${profile.areaLabel} sit at ${formatNumber(profile.costAdjusted.allItemsRpp, { maximumFractionDigits: 1 })} against a national 100, so the gap in what the money buys is different from the gap in the salary.`
           : 'Nominal pay is only half the comparison; state taxes and local prices change what it is worth.',
@@ -331,7 +331,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
     questions.push({
       question: `Is ${money(median)} a good salary in ${profile.areaLabel}?`,
       answer: [
-        `It is ${formatNumber(ratio, { maximumFractionDigits: 2 })} times the median household income of ${money(profile.versusHousehold.medianHouseholdIncome)} — and a household often has more than one earner, so a single salary at this level goes further than the ratio alone suggests.`,
+        `It is ${formatNumber(ratio, { maximumFractionDigits: 2 })} times the median household income of ${money(profile.versusHousehold.medianHouseholdIncome)}. A household often has more than one earner, so a single salary at this level goes further than the ratio alone suggests.`,
         `Prices in ${profile.areaLabel} run at ${formatNumber(profile.costAdjusted.allItemsRpp, { maximumFractionDigits: 1 })} against a national average of 100${profile.costAdjusted.housingRentsRpp === null ? '' : `, with rents at ${formatNumber(profile.costAdjusted.housingRentsRpp, { maximumFractionDigits: 1 })}`}, so ${money(median)} here buys about what ${money(profile.costAdjusted.adjustedAnnualMedian)} buys at national average prices.`,
       ],
     });

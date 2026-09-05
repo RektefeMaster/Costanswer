@@ -1,7 +1,6 @@
 import Link from 'next/link';
-import { CategoryArt } from '@/components/site/CategoryArt';
+import { SalaryArt, type SalaryArtKind } from '@/components/site/SalaryArt';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
-import type { CategoryId } from '@/lib/categories';
 import { getOewsEstimate, oewsIndex } from '@/lib/data/bls-oews-snapshot';
 import { occupationHeadingName } from '@/lib/salary-content';
 import { nationalSalaryOccupations, salaryFamilyPath, salaryOccupationPath, salaryStateIndexPath } from '@/lib/salary-pages';
@@ -16,15 +15,15 @@ import { nationalSalaryOccupations, salaryFamilyPath, salaryOccupationPath, sala
  */
 const PROMOTED_CODES = ['29-1141', '15-1252', '53-3032', '25-2021', '47-2111', '31-1131', '13-2011', '43-6014'] as const;
 const PROMO_TONES = ['mint', 'amber', 'blue', 'rose', 'coral', 'violet', 'mint', 'amber'] as const;
-const PROMO_ART: Record<(typeof PROMOTED_CODES)[number], CategoryId> = {
-  '29-1141': 'health',
-  '15-1252': 'math',
-  '53-3032': 'car',
-  '25-2021': 'education',
-  '47-2111': 'home',
-  '31-1131': 'health',
-  '13-2011': 'money',
-  '43-6014': 'everyday',
+const PROMO_ART: Record<(typeof PROMOTED_CODES)[number], SalaryArtKind> = {
+  '29-1141': 'nurse',
+  '15-1252': 'developer',
+  '53-3032': 'truck',
+  '25-2021': 'teacher',
+  '47-2111': 'electrician',
+  '31-1131': 'aide',
+  '13-2011': 'accountant',
+  '43-6014': 'admin',
 };
 
 export function SalaryPromo() {
@@ -44,12 +43,12 @@ export function SalaryPromo() {
     <section className="category-strip salary-promo" aria-labelledby="salary-promo-title">
       <div className="section-intro">
         <div className="salary-promo-mark" aria-hidden="true">
-          <CategoryArt category="money" />
+          <SalaryArt kind="pay-stub" />
         </div>
         <p className="eyebrow"><span /> {`Pay · BLS ${oewsIndex.referenceLabel}`}</p>
         <h2 id="salary-promo-title">What does that job actually pay?</h2>
         <p className="section-lede">
-          {`Median wages for ${formatNumber(occupations.length)} occupations, in every state, from the federal wage survey — with what the money leaves after that state's taxes and what it buys at local prices.`}
+          {`Median wages for ${formatNumber(occupations.length)} occupations, in every state, from the federal wage survey, plus what the money leaves after that state's taxes and what it buys at local prices.`}
         </p>
         <ul className="topic-prompts">
           <li>
@@ -69,7 +68,7 @@ export function SalaryPromo() {
       <div className="category-grid">
         {rows.map(({ occupation, median, art, tone }, index) => (
           <Link className={`category-card ${tone}`} href={salaryOccupationPath(occupation)} key={occupation.code}>
-            <CategoryArt category={art} />
+            <SalaryArt kind={art} />
             <span className="category-topline">
               <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
               <span className="category-arrow" aria-hidden="true">↗</span>

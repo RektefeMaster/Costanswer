@@ -31,7 +31,7 @@ export function HeroDemo() {
   const rateNumber = Number(hourlyRate);
   const rateLabel = Number.isFinite(rateNumber) && hourlyRate.trim() !== ''
     ? rateNumber.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: rateNumber % 1 === 0 ? 0 : 2 })
-    : '$—';
+    : '$0';
 
   return (
     <div className="hero-demo" aria-label="Example calculation">
@@ -41,7 +41,7 @@ export function HeroDemo() {
       </div>
       <p className="demo-kicker">{rateLabel} an hour is how much a year?</p>
       <div className="demo-answer" aria-live="polite">
-        <span>{calculation ? money(calculation.value.annual) : '—'}</span>
+        <span>{calculation ? money(calculation.value.annual) : 'n/a'}</span>
         <small>per year</small>
       </div>
       <div className="demo-math">

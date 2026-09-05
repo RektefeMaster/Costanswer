@@ -80,13 +80,13 @@ export default function CarAffordabilityPage() {
       ]}
       sources={[
         {
-          name: 'U.S. Energy Information Administration — gasoline',
+          name: 'U.S. Energy Information Administration (gasoline)',
           detail: `${gasolineSnapshot.attribution} Snapshot ${gasolineSnapshot.snapshotId}.`,
           href: gasolineSnapshot.sourceDocumentationUrl,
           dateLabel: gasolineSource.line,
         },
         {
-          name: 'U.S. Energy Information Administration — electricity',
+          name: 'U.S. Energy Information Administration (electricity)',
           detail: `${electricitySnapshot.attribution} Snapshot ${electricitySnapshot.snapshotId}. Home charging only; public fast charging is priced separately by the network.`,
           href: electricitySnapshot.sourceDocumentationUrl,
           dateLabel: electricitySource.line,

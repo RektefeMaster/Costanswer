@@ -18,7 +18,7 @@ export const SITE_FAQ: SiteFaqEntry[] = [
     question: 'What is CostAnswer?',
     rail: 'What is CostAnswer?',
     answer: [
-      'CostAnswer is independently built and maintained by a software builder and researcher, not a licensed financial advisor, CPA, attorney, or clinician. There is no fabricated CFA roster. Trust the Method version, the hashed snapshot, and the about page — not a fake credential.',
+      'CostAnswer is independently built and maintained by a software builder and researcher, not a licensed financial advisor, CPA, attorney, or clinician. There is no fabricated CFA roster. Trust the Method version, the hashed snapshot, and the about page, not a fake credential.',
       'The catalogue covers pay and tax, mortgages and loans, whether a house or a car fits take-home pay, energy and fuel, home projects, health formulas, date and time math, unit conversion, school grades, and federal travel per diem. It is not a bank, a tax preparer, a clinic, or a government office.',
     ],
     related: [
@@ -32,7 +32,7 @@ export const SITE_FAQ: SiteFaqEntry[] = [
     rail: 'Who maintains this?',
     answer: [
       'CostAnswer is independently built and maintained. The person who writes the methodology and keeps the engines current is a software builder and researcher, not a licensed financial advisor, CPA, attorney, or clinician.',
-      'There is no fabricated CFA or CPA roster. Trust the Method version, the hashed snapshot, and the about page — not a fake credential. If you need advice that has to hold up at a bank, the IRS, or a clinic, use a person licensed to give it.',
+      'There is no fabricated CFA or CPA roster. Trust the Method version, the hashed snapshot, and the about page, not a fake credential. If you need advice that has to hold up at a bank, the IRS, or a clinic, use a person licensed to give it.',
     ],
     related: [
       { href: '/about', label: 'About' },

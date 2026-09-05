@@ -19,7 +19,7 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
       {
         question: 'What grade do I need on the final?',
         answer: [
-          'Only if you enter the final as an item with its weight and leave earned unknown — this page computes a weighted average of known items, not a solver for a missing exam unless you rearrange the inputs yourself.',
+          'Only if you enter the final as an item with its weight and leave earned unknown. This page computes a weighted average of known items, not a solver for a missing exam unless you rearrange the inputs yourself.',
         ],
       },
     ],

@@ -57,7 +57,7 @@ export function AmortizationCalculator() {
                 {rows.map((row) => (
                   <tr key={row.period}>
                     <td>{row.period}</td>
-                    <td>{row.date ?? '—'}</td>
+                    <td>{row.date ?? 'n/a'}</td>
                     <td>{money(row.payment)}</td>
                     <td>{money(row.principal)}</td>
                     <td>{money(row.interest)}</td>

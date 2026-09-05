@@ -177,7 +177,7 @@ export const HOUSING_EDITORIAL: ToolEditorial[] = [
       {
         heading: 'A lower payment that resets the clock',
         paragraphs: [
-          'Type the remaining balance and remaining term on the loan you have, not the original 30-year note. A refinance that starts a new 30-year term can cut the monthly figure and still increase total interest. The break-even line is closing costs divided by monthly savings — it does not know when you will sell.',
+          'Type the remaining balance and remaining term on the loan you have, not the original 30-year note. A refinance that starts a new 30-year term can cut the monthly figure and still increase total interest. The break-even line is closing costs divided by monthly savings. It does not know when you will sell.',
           'Cash-out, points, and ARM-to-fixed conversions are only in the rates and costs you enter. The page does not look up today’s market quotes or a county’s FHA limit.',
         ],
       },
@@ -307,7 +307,7 @@ export const HOUSING_EDITORIAL: ToolEditorial[] = [
     toolId: 'car-loan',
     guide: {
       heading: 'How the car-loan payment is built',
-      lede: 'Price, taxes and fees, down payment, and trade-in become an amount financed. That amount is amortized at the rate and term you type. Insurance, fuel, and depreciation are not in this payment — they are on the car-affordability page.',
+      lede: 'Price, taxes and fees, down payment, and trade-in become an amount financed. That amount is amortized at the rate and term you type. Insurance, fuel, and depreciation are not in this payment. They are on the car-affordability page.',
       sections: [
         {
           heading: 'Amount financed',
@@ -346,7 +346,7 @@ export const HOUSING_EDITORIAL: ToolEditorial[] = [
       {
         heading: 'Term length versus the payment',
         paragraphs: [
-          'A longer term lowers the monthly figure and raises total interest on the same amount financed. Type the rate from the dealer worksheet, not a national average this page does not fetch. Sales tax is only the percent or dollars you enter — not a DMV table for your county.',
+          'A longer term lowers the monthly figure and raises total interest on the same amount financed. Type the rate from the dealer worksheet, not a national average this page does not fetch. Sales tax is only the percent or dollars you enter, not a DMV table for your county.',
           'Insurance, fuel, and registration sit on the car-affordability page. Comparing two terms here and then ignoring those lines will make the cheaper payment look like the cheaper car.',
         ],
       },

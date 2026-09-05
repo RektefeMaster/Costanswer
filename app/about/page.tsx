@@ -57,7 +57,7 @@ export default function AboutPage() {
 
         <h2 id="trust">What makes an answer trustworthy here</h2>
         <p>Three things sit under every result. The formula, written out step by step, so you can follow the arithmetic. The version of the engine that produced it, so the same inputs give the same answer tomorrow. And, for anything that uses public data, the dataset, its observation period, and the date it was published.</p>
-        <p>Each calculator page also has a topic guide, a FAQ, a glossary, and the limits of the model — written for that tool, not copied across the catalogue.</p>
+        <p>Each calculator page also has a topic guide, a FAQ, a glossary, and the limits of the model, written for that tool rather than copied across the catalogue.</p>
 
         <h2 id="standards">{editorial.standardsHeading}</h2>
         <ul>
@@ -80,7 +80,7 @@ export default function AboutPage() {
         <p>These are calculators, not advice. Nothing here is legal, tax, medical, or financial advice, and no result is a lender decision, a diagnosis, or a prepared return. Where a model leaves something out (depreciation, healthcare, withholding tables) the page says so next to the answer instead of in the small print. The <Link href="/terms">user agreement</Link> applies to every page.</p>
 
         <h2 id="paid-for">How the site is paid for</h2>
-        <p>The calculators are free and do not need an account. Some layouts reserve standard advertising space (a leaderboard, a sidebar, and an in-content slot). Empty reservations stay visually quiet — no fake ad creative. No ad network loads until a public contact address, a dated privacy policy, and an advertising flag are all set in the software.</p>
+        <p>The calculators are free and do not need an account. Some layouts reserve standard advertising space (a leaderboard, a sidebar, and an in-content slot). Empty reservations stay visually quiet, with no fake ad creative. No ad network loads until a public contact address, a dated privacy policy, and an advertising flag are all set in the software.</p>
         <p>Some money and credit tools can show a partner-comparison slot next to the result. Example names in configuration ({examplePartnerNames().join(', ')}) are placeholders, not live deals. A partner card only becomes a link when affiliates are enabled and a real program URL is set. Partner offers are advertising. They are never the calculator’s answer, and they are not financial advice. An FTC-style disclosure appears only when a live partner link is on the page.</p>
 
         <h2 id="corrections">Corrections</h2>

@@ -80,7 +80,7 @@ export default function SalaryHubPage() {
               <p>
                 {nationalTotal?.annual.median == null
                   ? 'Published wages for every occupation the Bureau of Labor Statistics measures, by percentile and by state.'
-                  : `The median American job pays ${formatMoney(nationalTotal.annual.median, 0)} a year. What any particular job pays depends far more on which job and which state — every page here shows both, plus what the wage leaves after tax.`}
+                  : `The median American job pays ${formatMoney(nationalTotal.annual.median, 0)} a year. What any particular job pays depends far more on which job and which state. Every page here shows both, plus what the wage leaves after tax.`}
               </p>
               <p><Link href={salaryStateIndexPath()}>Browse by state instead →</Link></p>
             </div>

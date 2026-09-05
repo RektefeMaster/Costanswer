@@ -125,7 +125,7 @@ export default async function StateSalaryPage({ params }: { params: Promise<{ st
             <WagePanel
               result={result}
               tone="blue"
-              footnote={`All occupations combined. Individual occupations vary far more than this figure suggests — the tables below show the spread.`}
+              footnote={`All occupations combined. Individual occupations vary far more than this figure suggests. The tables below show the spread.`}
             />
             <AdSlot placement="in-content" />
 

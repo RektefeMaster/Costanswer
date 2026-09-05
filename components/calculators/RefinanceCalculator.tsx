@@ -109,7 +109,7 @@ export function RefinanceCalculator({
         <div className="calculation-output">
           <PrimaryResult
             label={value.breakEvenMonths === null ? 'This refinance does not lower the payment' : 'Months to earn back the closing costs'}
-            value={value.breakEvenMonths === null ? '—' : pluralize(value.breakEvenMonths, 'month', 'months')}
+            value={value.breakEvenMonths === null ? 'n/a' : pluralize(value.breakEvenMonths, 'month', 'months')}
             note={value.breakEvenMonths === null
               ? `The new payment is ${money(Math.abs(value.monthlyChange))} higher, so there is nothing to earn back`
               : `Saving ${money(value.monthlyChange)} a month against ${money(Number(closingCosts) || 0, 0)} of closing costs`}

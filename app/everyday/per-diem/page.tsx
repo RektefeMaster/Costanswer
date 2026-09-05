@@ -53,7 +53,7 @@ export default function PerDiemPage() {
         },
         {
           title: 'A ZIP is a county lookup, not a GSA field',
-          body: 'GSA publishes rates by city and county, not by ZIP code. A five-digit ZIP is mapped through the Census ZCTA-to-county file, then to a GSA locality. If GSA carves a city out of that county, the ZIP cannot tell them apart and both rates are offered. If that county is not listed on its own, the result is the state standard CONUS rate — the usual answer, not a failed lookup.',
+          body: 'GSA publishes rates by city and county, not by ZIP code. A five-digit ZIP is mapped through the Census ZCTA-to-county file, then to a GSA locality. If GSA carves a city out of that county, the ZIP cannot tell them apart and both rates are offered. If that county is not listed on its own, the result is the state standard CONUS rate, which is the usual answer, not a failed lookup.',
         },
         {
           title: 'A real room rate is a ceiling check',

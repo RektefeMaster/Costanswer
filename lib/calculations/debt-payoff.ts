@@ -153,7 +153,7 @@ export function calculateDebtPayoff(rawInput: unknown): CalculationResult<DebtPa
     ],
     assumptions: [
       'Snowball pays the smallest remaining balance first. Avalanche pays the highest interest rate first. Ties use the original list order.',
-      'Each month, interest is added first. Then every open debt gets its minimum, and any leftover budget — including minimums freed after a debt is paid off — goes to the current target.',
+      'Each month, interest is added first. Then every open debt gets its minimum, and any leftover budget, including minimums freed after a debt is paid off, goes to the current target.',
       `The monthly budget stays at the original minimums plus the extra ${formatMoney(input.additionalMonthlyPayment)} you typed, even after a debt is gone.`,
       'Rates are nominal annual rates charged monthly. This is not an APR quote and does not include fees or penalty interest.',
       `The simulation stops at ${formatNumber(DEBT_PAYOFF_MONTH_CAP)} months so a payment that cannot cover interest cannot run forever.`,

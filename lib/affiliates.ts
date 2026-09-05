@@ -91,7 +91,7 @@ export const AFFILIATE_OFFERS: readonly AffiliateOffer[] = [
     partnerId: 'sofi',
     toolIds: ['debt-payoff', 'credit-card-payoff'],
     headline: 'See personal-loan options',
-    body: 'The payoff date on this page is loan math on the balances and rates you typed. A personal-loan offer, if one appears, is advertising — not a recommendation to refinance the card.',
+    body: 'The payoff date on this page is loan math on the balances and rates you typed. A personal-loan offer, if one appears, is advertising, not a recommendation to refinance the card.',
     cta: 'View partner options',
   },
 ];

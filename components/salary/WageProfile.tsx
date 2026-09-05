@@ -211,8 +211,7 @@ export function TakeHomeSection({ profile }: { profile: OccupationWageProfile })
         </li>
         <li><strong>Social Security and Medicare.</strong> {formatMoney(takeHome.fica, 0)} a year.</li>
         <li>
-          <strong>Left over.</strong> {formatMoney(takeHome.annual, 0)} a year, {formatMoney(takeHome.monthly, 0)} a month —
-          an effective rate of {formatNumber(takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.
+          <strong>Left over.</strong> {formatMoney(takeHome.annual, 0)} a year, {formatMoney(takeHome.monthly, 0)} a month, an effective rate of {formatNumber(takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.
         </li>
       </ul>
       <p className="engine-notes-lede">

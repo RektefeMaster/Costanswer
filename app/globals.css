@@ -426,8 +426,8 @@ input, select { font-variant-numeric: tabular-nums; }
   pointer-events: none;
   user-select: none;
 }
-.salary-promo-mark .category-art,
-.salary-promo-mark .category-art-money {
+.salary-promo-mark .salary-art,
+.salary-promo-mark .salary-art-pay-stub {
   position: relative;
   right: auto;
   bottom: auto;
@@ -438,6 +438,7 @@ input, select { font-variant-numeric: tabular-nums; }
   transform: rotate(-11deg);
   transform-origin: center;
 }
+.salary-art-truck { width: 70%; max-width: 300px; bottom: -10%; right: -10%; }
 .category-topline, .category-copy { position: relative; z-index: 1; }
 .category-topline { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .category-number { font-size: 11px; font-weight: 800; }

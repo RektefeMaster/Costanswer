@@ -209,7 +209,7 @@ function buildAssumptions(profile: OccupationWageProfile): string[] {
     assumptions.push('BLS publishes only an annual wage for this occupation, because a standard 2,080-hour year would misdescribe it.');
   }
   if (profile.wage.basis === 'hourly-only') {
-    assumptions.push(`BLS publishes only an hourly wage for this occupation, so no annual figure — and no take-home — is shown. Multiplying by ${formatNumber(OEWS_ANNUAL_HOURS)} hours would invent a year BLS declined to assume.`);
+    assumptions.push(`BLS publishes only an hourly wage for this occupation, so no annual figure and no take-home is shown. Multiplying by ${formatNumber(OEWS_ANNUAL_HOURS)} hours would invent a year BLS declined to assume.`);
   }
   if (profile.wage.atOrAboveWageCap) {
     assumptions.push(`At least one figure was published only as "at or above ${formatMoney(oewsIndex.annualWageCap, 0)} a year", which is the survey's top code rather than the real wage.`);

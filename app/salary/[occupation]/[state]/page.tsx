@@ -152,13 +152,13 @@ export default async function OccupationInStatePage({ params }: { params: Promis
                   {profile.costAdjusted.housingRentsRpp !== null && (
                     <li>
                       <strong>Rents.</strong>{' '}
-                      {`${formatNumber(profile.costAdjusted.housingRentsRpp, { maximumFractionDigits: 1 })} against 100 — the component that moves most between states.`}
+                      {`${formatNumber(profile.costAdjusted.housingRentsRpp, { maximumFractionDigits: 1 })} against 100, the component that moves most between states.`}
                     </li>
                   )}
                   {profile.versusHousehold && (
                     <li>
                       <strong>Against local households.</strong>{' '}
-                      {`The median household in ${stateName} takes in ${formatMoney(profile.versusHousehold.medianHouseholdIncome, 0)}, so this occupation's median is ${formatNumber(profile.versusHousehold.ratio, { maximumFractionDigits: 2 })} times that — on one income.`}
+                      {`The median household in ${stateName} takes in ${formatMoney(profile.versusHousehold.medianHouseholdIncome, 0)}, so this occupation's median is ${formatNumber(profile.versusHousehold.ratio, { maximumFractionDigits: 2 })} times that, on one income.`}
                     </li>
                   )}
                   {profile.employment.concentrationVsNationPercent !== null && (

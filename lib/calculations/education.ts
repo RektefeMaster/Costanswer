@@ -36,7 +36,7 @@ export function calculateGrade(rawInput: unknown): CalculationResult<{
       percent: round(grade.percent, 2),
       letter,
       totalWeight: round(grade.totalWeight, 2),
-      scaleNote: 'A 90 / B 80 / C 70 / D 60 — assumed convenience scale',
+      scaleNote: 'A 90 / B 80 / C 70 / D 60, an assumed convenience scale',
     },
     calculationVersion: GRADE_ENGINE_ID,
     datasetSnapshotIds: [],

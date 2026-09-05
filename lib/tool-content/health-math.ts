@@ -116,7 +116,7 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Does a step count change TDEE here?',
         answer: [
-          'No. There is no wearable import. The multiplier is the label you choose. If your weight is drifting, the label or the BMR inputs are a poor fit — not a prompt to invent a custom factor.',
+          'No. There is no wearable import. The multiplier is the label you choose. If your weight is drifting, the label or the BMR inputs are a poor fit, not a prompt to invent a custom factor.',
         ],
       },
       {

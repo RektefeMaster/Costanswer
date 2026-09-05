@@ -16,7 +16,7 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
         {
           heading: 'ZIP codes that sit in two GSA rates',
           paragraphs: [
-            'A ZIP maps to a county. GSA sometimes carves a city out of that county. When that happens, the page quotes the county rate and offers the city rate. Pick the one that matches the trip. Unlisted counties use the state standard CONUS rate — that is a normal answer, not a failed lookup.',
+            'A ZIP maps to a county. GSA sometimes carves a city out of that county. When that happens, the page quotes the county rate and offers the city rate. Pick the one that matches the trip. Unlisted counties use the state standard CONUS rate. That is a normal answer, not a failed lookup.',
           ],
         },
       ],

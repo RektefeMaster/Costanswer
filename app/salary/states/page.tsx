@@ -55,8 +55,8 @@ export default function SalaryStatesPage() {
             </div>
             <div className="tool-intro">
               <p>
-                The median wage across all occupations, state by state. It is a blunt figure on its own — a state
-                can rank high because of what it pays or because of which jobs it has — so each state page breaks
+                The median wage across all occupations, state by state. It is a blunt figure on its own. A state
+                can rank high because of what it pays or because of which jobs it has, so each state page breaks
                 it into occupations, take-home pay and local prices.
               </p>
             </div>

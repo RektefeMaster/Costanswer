@@ -418,7 +418,7 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
           </div>
           <PrimaryResult
             label={value.comparison.comparable ? 'Estimated modeled monthly living cost' : 'Modeled monthly living cost is not comparable'}
-            value={value.comparison.comparable ? money(value.totalModeledMonthlyCost) : '—'}
+            value={value.comparison.comparable ? money(value.totalModeledMonthlyCost) : 'n/a'}
             note={primaryNote}
           />
           <StatGrid items={[
