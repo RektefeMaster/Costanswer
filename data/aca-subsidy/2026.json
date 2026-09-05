@@ -1,0 +1,31 @@
+{
+  "snapshotId": "aca-subsidy-2026-irs-rp2025-25-hhs2025-verified2026-09-05",
+  "coverageYear": 2026,
+  "povertyGuidelineYear": 2025,
+  "verifiedAt": "2026-09-05",
+  "sourceStatus": "official-rules",
+  "minimumIncomePercentFpl": 100,
+  "maximumIncomePercentFpl": 400,
+  "employerAffordabilityPercent": 9.96,
+  "excessAdvanceCreditRepaymentCap": null,
+  "povertyGuidelines": {
+    "contiguous": { "firstPerson": 15650, "additionalPerson": 5500 },
+    "alaska": { "firstPerson": 19550, "additionalPerson": 6880 },
+    "hawaii": { "firstPerson": 17990, "additionalPerson": 6330 }
+  },
+  "contributionBands": [
+    { "lowerIncomePercentFpl": 100, "upperIncomePercentFpl": 133, "initialContributionPercent": 2.10, "finalContributionPercent": 2.10 },
+    { "lowerIncomePercentFpl": 133, "upperIncomePercentFpl": 150, "initialContributionPercent": 3.14, "finalContributionPercent": 4.19 },
+    { "lowerIncomePercentFpl": 150, "upperIncomePercentFpl": 200, "initialContributionPercent": 4.19, "finalContributionPercent": 6.60 },
+    { "lowerIncomePercentFpl": 200, "upperIncomePercentFpl": 250, "initialContributionPercent": 6.60, "finalContributionPercent": 8.44 },
+    { "lowerIncomePercentFpl": 250, "upperIncomePercentFpl": 300, "initialContributionPercent": 8.44, "finalContributionPercent": 9.96 },
+    { "lowerIncomePercentFpl": 300, "upperIncomePercentFpl": 400, "initialContributionPercent": 9.96, "finalContributionPercent": 9.96 }
+  ],
+  "sources": [
+    { "id": "irs-contribution-table", "name": "IRS Revenue Procedure 2025-25, section 3", "url": "https://www.irs.gov/irb/2025-32_IRB#REV-PROC-2025-25", "publishedAt": "2025-08-04", "detail": "Applicable contribution percentages and employer affordability percentage for 2026." },
+    { "id": "hhs-poverty-guidelines", "name": "HHS 2025 poverty guidelines, Federal Register 90 FR 5917", "url": "https://www.govinfo.gov/content/pkg/FR-2025-01-17/html/2025-01377.htm", "publishedAt": "2025-01-17", "detail": "Annual poverty guidelines for the contiguous states and DC, Alaska, and Hawaii, including additional household members." },
+    { "id": "irs-eligibility-and-formula", "name": "IRS Premium Tax Credit questions and answers", "url": "https://www.irs.gov/affordable-care-act/individuals-and-families/questions-and-answers-on-the-premium-tax-credit", "publishedAt": null, "detail": "Q5–8: eligibility, household MAGI and prior-year poverty guidelines; Q24–26: benchmark, enrollment premium cap and tobacco; Q31: no repayment cap after 2025." },
+    { "id": "irs-income-exceptions", "name": "IRS Premium Tax Credit overview", "url": "https://www.irs.gov/credits-deductions/premium-tax-credit-ptc-overview", "publishedAt": null, "detail": "100–400% general income range, exceptions below 100%, filing and coverage conditions." }
+  ],
+  "normalizedSha256": "1adfccee024a4eb67dc705dcf8ba69163eaa168183819d927a575627a02448b6"
+}

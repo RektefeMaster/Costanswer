@@ -209,7 +209,7 @@ describe('bundled snapshot integrity', () => {
 
 describe('registry and intent search', () => {
   it('keeps every launch tool above the indexability threshold and on a unique route', () => {
-    expect(tools).toHaveLength(54);
+    expect(tools).toHaveLength(55);
     expect(tools.every((tool) => evaluateToolIndexability(tool).indexable)).toBe(true);
     expect(new Set(tools.map((tool) => tool.id)).size).toBe(tools.length);
     expect(new Set(tools.map((tool) => tool.path)).size).toBe(tools.length);

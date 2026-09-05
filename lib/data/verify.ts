@@ -30,6 +30,7 @@ import currentIrsRetirementJson from '@/data/irs-retirement/current.json';
 import currentMortgageRateJson from '@/data/freddie-mac/current.json';
 import currentInsuranceJson from '@/data/naic-insurance/current.json';
 import currentTaxJson from '@/data/tax/2026.json';
+import acaSubsidyJson from '@/data/aca-subsidy/2026.json';
 import currentUsdaJson from '@/data/usda-food/current.json';
 import hudReleasesJson from '@/data/hud-fmr/releases.json';
 import hudFy2026Json from '@/data/hud-fmr/snapshots/hud-fmr-fy2026-revised-2026-05-21-v1.json';
@@ -51,6 +52,7 @@ import { zctaCountySnapshotSchema } from './zcta-county';
 import { hudFmrSnapshotSchema } from './hud-fmr';
 import { irsRetirementSnapshotSchema } from './irs-retirement';
 import { naicInsuranceSnapshotSchema } from './naic-insurance';
+import { acaSubsidySnapshotSchema, type AcaSubsidySnapshot } from './aca-subsidy';
 import { usdaFoodSnapshotSchema } from './usda-food';
 import { taxYearSnapshotSchema, type TaxYearSnapshot } from './tax/schema';
 
@@ -161,6 +163,25 @@ export function validateTaxYearSnapshot(rawSnapshot: unknown): TaxYearSnapshot {
 }
 
 /**
+ * The 2026 ACA rules ship as a bare snapshot, like the tax year, rather than a
+ * manifest envelope: there is no provider feed to promote from, only a small
+ * table transcribed from a Revenue Procedure and the Federal Register. The hash
+ * is what makes a mistyped percentage fail the build instead of quietly
+ * changing everybody's estimated credit.
+ */
+export function validateAcaSubsidySnapshot(rawSnapshot: unknown): AcaSubsidySnapshot {
+  const computedNormalizedHash = assertNormalizedHash(
+    rawSnapshot as object,
+    'Bundled ACA premium tax credit rules',
+  );
+  const snapshot = acaSubsidySnapshotSchema.parse(rawSnapshot);
+  if (snapshot.normalizedSha256 !== computedNormalizedHash) {
+    throw new Error('ACA subsidy snapshot hash does not match the parsed document.');
+  }
+  return snapshot;
+}
+
+/**
  * Re-verify every snapshot the app reads at runtime, in one pass.
  *
  * This is the check the runtime modules no longer perform. Tests call it so a
@@ -184,6 +205,7 @@ export function verifyBundledSnapshots(): void {
   validateNaicInsuranceEnvelope(currentInsuranceJson);
   validateUsdaFoodEnvelope(currentUsdaJson);
   validateTaxYearSnapshot(currentTaxJson);
+  validateAcaSubsidySnapshot(acaSubsidyJson);
   hudFmrSnapshotSchema.parse(hudFy2026Json);
   hudFmrSnapshotSchema.parse(hudFy2027Json);
   hudReleasesSchema.parse(hudReleasesJson);

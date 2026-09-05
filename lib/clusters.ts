@@ -16,7 +16,9 @@ export const TOOL_CLUSTERS = {
     label: 'Pay and take-home',
     // A 401(k) deferral comes out of the same paycheck, and take-home pay is
     // what an affordability screen is built on, so both sit in this journey.
-    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'home-affordability'],
+    // Marketplace assistance is calculated from household income, so the
+    // subsidy check belongs to the same journey as after-tax pay.
+    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'home-affordability', 'health-insurance'],
   },
   retirement: {
     label: 'Saving and retirement',
@@ -40,7 +42,7 @@ export const TOOL_CLUSTERS = {
   },
   prices: {
     label: 'What things cost',
-    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living'],
+    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living', 'health-insurance'],
   },
   'home-project': {
     label: 'Measuring a home project',

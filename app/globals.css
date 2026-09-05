@@ -954,6 +954,26 @@ input, select { font-variant-numeric: tabular-nums; }
   .insurance-claim-results th, .insurance-claim-results td { padding: 12px 5px; overflow-wrap: anywhere; }
   .insurance-comparison-verdict { margin: 20px; }
 }
+.health-premiums { margin: 26px 30px 0; padding: 20px 0 4px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.health-premiums h3 { margin: 0 20px; font-size: 14px; font-weight: 800; }
+.health-premiums .calc-form-grid { padding: 18px 20px 20px; }
+.health-advanced { margin: 20px 30px 0; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.health-advanced > summary { cursor: pointer; padding: 18px 20px; font-size: 14px; font-weight: 780; }
+.health-advanced > summary span { display: block; margin-top: 6px; margin-left: 15px; color: var(--muted); font-size: 11px; font-weight: 400; }
+.health-advanced .calc-form-grid { padding: 8px 20px 22px; }
+.health-status { margin: 22px 30px; padding: 16px 18px; border-left: 3px solid #207767; border-radius: 0 8px 8px 0; background: rgba(32,119,103,.06); }
+.health-status-review { border-left-color: #9a6212; background: rgba(154,98,18,.08); }
+.health-status > span { display: block; font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; color: #207767; }
+.health-status-review > span { color: #7d4f0e; }
+.health-status ul { margin: 10px 0 0; padding-left: 18px; }
+.health-status li { font-size: 12px; line-height: 1.6; }
+.health-status li + li { margin-top: 7px; }
+.health-range-note { margin: 0; padding: 20px 30px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .health-premiums, .health-advanced { margin-left: 20px; margin-right: 20px; }
+  .health-status, .health-range-note { margin-left: 20px; margin-right: 20px; }
+  .health-range-note { padding-left: 0; padding-right: 0; }
+}
 .calculator-heading { display: grid; grid-template-columns: .35fr 1fr; column-gap: 28px; padding: 26px 30px; border-bottom: 1px solid var(--line); }
 .calculator-heading > p { grid-row: 1 / 3; margin: 3px 0 0; color: #207767; font-size: 10px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
 .calculator-heading h2 { margin: 0; font-size: 34px; line-height: 1; }

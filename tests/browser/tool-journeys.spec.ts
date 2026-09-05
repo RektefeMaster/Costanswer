@@ -13,6 +13,7 @@ const toolPaths = [
   '/money/debt-payoff',
   '/money/home-affordability',
   '/money/insurance-cost',
+  '/money/health-insurance',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',
@@ -539,7 +540,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
     await page.setViewportSize({ width, height: 720 });
     // The insurance page carries the widest fixed layouts on the site: two
     // side-by-side quote fieldsets and a three-column comparison table.
-    for (const path of ['/', '/search', '/money/cost-of-living', '/money/insurance-cost', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
+    for (const path of ['/', '/search', '/money/cost-of-living', '/money/insurance-cost', '/money/health-insurance', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
       await page.goto(path);
       await page.evaluate(() => document.querySelectorAll('main details').forEach((node) => { (node as HTMLDetailsElement).open = true; }));
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
@@ -550,7 +551,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -741,4 +742,52 @@ test('insurance budget uses the dated NAIC benchmark, switches to entered premiu
   await expect(page.locator('.insurance-comparison-verdict')).toContainText('Policy A costs less');
   await expect(page.locator('.insurance-comparison-verdict')).toContainText('Policy B has the lower premium');
   await expect(page.locator('.insurance-comparison-verdict')).toContainText('3.33 claim-free years');
+});
+
+test('the subsidy calculator applies the 2026 table and refuses to price what it cannot determine', async ({ page }) => {
+  await page.goto('/money/health-insurance');
+  await expect(page.getByRole('heading', { name: 'Health Insurance Subsidy Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.data-callout')).toContainText('HHS 2025 poverty guidelines');
+  await expect(page.locator('.result-audit')).toContainText('Method aca-subsidy-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('aca-subsidy-2026-');
+
+  // One person, $42,000 against a $15,650 guideline: 268.37% of FPL lands inside
+  // the 250-300% band, interpolating to 9.00% and a $314.95 monthly contribution.
+  await expect(page.locator('.primary-result strong')).toHaveText('$244.95');
+  await expect(page.locator('.result-stat-grid')).toContainText('268.4%');
+  await expect(page.locator('.result-stat-grid')).toContainText('$314.95');
+  await expect(page.locator('.result-stat-grid')).toContainText('9.00% of household income');
+  await expect(page.locator('.health-status')).toContainText('Conditional estimate');
+
+  // A second household member adds one guideline increment, moving the ceiling.
+  await page.locator('#health-household').fill('2');
+  await expect(page.locator('.health-range-note')).toContainText('$21,150');
+  await expect(page.locator('.health-range-note')).toContainText('$84,600');
+
+  // Exactly at 400% FPL the contribution is the flat 9.96%; a dollar over, the
+  // 2026 cliff removes the credit entirely rather than tapering it.
+  await page.locator('#health-magi').fill('84600');
+  await page.locator('#health-benchmark').fill('900');
+  await page.locator('#health-plan').fill('900');
+  await expect(page.locator('.result-stat-grid')).toContainText('9.96% of household income');
+  await expect(page.locator('.primary-result strong')).toHaveText('$702.18');
+  await page.locator('#health-magi').fill('84601');
+  await expect(page.locator('.health-status')).toContainText('Above the 400% FPL ceiling');
+  await expect(page.locator('.primary-result p')).toHaveText('Your monthly premium, with no credit in this scenario');
+  await expect(page.locator('.primary-result strong')).toHaveText('$900.00');
+
+  // Unconfirmed eligibility must read as "not estimated", never as a zero credit.
+  await page.locator('#health-magi').fill('42000');
+  await page.locator('#health-eligibility').selectOption('unknown');
+  await expect(page.locator('.health-status')).toContainText('Eligibility not confirmed');
+  await expect(page.locator('.primary-result p')).toHaveText('Full monthly premium, no credit estimated');
+  await expect(page.locator('.result-stat-grid')).toContainText('Not estimated');
+
+  // Below the income range the answer is Medicaid, not a dollar figure.
+  await page.locator('#health-eligibility').selectOption('assumed-eligible');
+  await page.locator('#health-magi').fill('18000');
+  await expect(page.locator('.health-status')).toContainText('Below the subsidy income range');
+  await expect(page.locator('.health-status')).toContainText('Medicaid');
+  await expect(page.locator('.result-stat-grid')).toContainText('Outside the table');
 });

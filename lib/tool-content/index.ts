@@ -1,6 +1,7 @@
 import { tools } from '@/lib/tool-registry';
 import { EDUCATION_SHOPPING_FOOD_EDITORIAL } from './education-shopping-food';
 import { EVERYDAY_EDITORIAL } from './everyday';
+import { HEALTH_INSURANCE_EDITORIAL } from './health-insurance';
 import { HEALTH_MATH_EDITORIAL } from './health-math';
 import { HOME_CAR_EDITORIAL } from './home-car';
 import { HOUSING_EDITORIAL } from './housing';
@@ -15,6 +16,7 @@ const ALL_EDITORIAL: ToolEditorial[] = [
   ...PAY_EDITORIAL,
   ...HOUSING_EDITORIAL,
   ...INSURANCE_EDITORIAL,
+  ...HEALTH_INSURANCE_EDITORIAL,
   ...WEALTH_EDITORIAL,
   ...HOME_CAR_EDITORIAL,
   ...EVERYDAY_EDITORIAL,
