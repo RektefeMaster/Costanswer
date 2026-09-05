@@ -70,7 +70,7 @@ describe('publishing clock', () => {
   it('accepts real calendar dates and formats the versioned snapshot in UTC', () => {
     expect(parsePublishingDate('2026-02-31')).toBeNull();
     expect(parsePublishingDate(PUBLISHING_SNAPSHOT_DATE)).toBe(Date.parse(PUBLISHING_SNAPSHOT_INSTANT));
-    expect(formatPublishingDateLong(PUBLISHING_SNAPSHOT_DATE)).toBe('September 2, 2026');
+    expect(formatPublishingDateLong(PUBLISHING_SNAPSHOT_DATE)).toBe('September 5, 2026');
   });
 });
 

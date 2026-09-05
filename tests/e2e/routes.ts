@@ -11,6 +11,7 @@ const htmlPaths = [
   '/money/compound-interest',
   '/money/debt-payoff',
   '/money/home-affordability',
+  '/money/insurance-cost',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',

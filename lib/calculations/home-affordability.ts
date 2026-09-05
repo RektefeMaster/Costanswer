@@ -300,27 +300,44 @@ function extraDownPaymentToComfortable(input: ThisHouseInput): number | null {
   if (verdictForHousing(monthlyHousingCost(input.homePrice, input).monthlyHousingTotal, input) === 'comfortable') {
     return 0;
   }
-  const maxDown = input.homePrice - 1;
-  if (maxDown <= input.downPayment) return null;
+  const maxExtra = Math.ceil(input.homePrice - input.downPayment) - 1;
+  if (maxExtra <= 0) return null;
   const comfortableAtMaxDown = verdictForHousing(
-    monthlyHousingCost(input.homePrice, { ...input, downPayment: maxDown }).monthlyHousingTotal,
+    monthlyHousingCost(input.homePrice, { ...input, downPayment: input.downPayment + maxExtra }).monthlyHousingTotal,
     input,
   );
   if (comfortableAtMaxDown !== 'comfortable') return null;
 
-  let low = input.downPayment;
-  let high = maxDown;
+  let low = 0;
+  let high = maxExtra;
   while (high - low > 1) {
     const mid = Math.floor((low + high) / 2);
     const verdict = verdictForHousing(
-      monthlyHousingCost(input.homePrice, { ...input, downPayment: mid }).monthlyHousingTotal,
+      monthlyHousingCost(input.homePrice, { ...input, downPayment: input.downPayment + mid }).monthlyHousingTotal,
       input,
     );
     if (verdict === 'comfortable') high = mid;
     else low = mid;
   }
-  const extra = high - input.downPayment;
-  return extra > 0 ? extra : 0;
+  return high;
+}
+
+function priceCutToComfortable(input: ThisHouseInput): number | null {
+  const comfortableAfterCut = (cut: number) => verdictForHousing(
+    monthlyHousingCost(input.homePrice - cut, input).monthlyHousingTotal,
+    input,
+  ) === 'comfortable';
+  if (comfortableAfterCut(0)) return 0;
+  const maxCut = Math.min(Math.ceil(input.homePrice - input.downPayment) - 1, Math.floor(input.homePrice - 1));
+  if (maxCut <= 0 || !comfortableAfterCut(maxCut)) return null;
+  let low = 0;
+  let high = maxCut;
+  while (high - low > 1) {
+    const mid = Math.floor((low + high) / 2);
+    if (comfortableAfterCut(mid)) high = mid;
+    else low = mid;
+  }
+  return high;
 }
 
 function metricsFromHousing(housingTotal: number, input: AffordabilityProfile) {
@@ -336,7 +353,7 @@ function metricsFromHousing(housingTotal: number, input: AffordabilityProfile) {
 
 function stressForThisHouse(input: ThisHouseInput, housing: HousingCostParts): AffordabilityStress {
   const paymentCount = paymentCountFor(input.termYears);
-  const stressedRate = Math.min(25, input.annualRatePercent + STRESS_RATE_INCREASE_POINTS);
+  const stressedRate = input.annualRatePercent + STRESS_RATE_INCREASE_POINTS;
   const rateBumpMonthly = Math.max(0, monthlyPrincipalAndInterest(housing.loanAmount, stressedRate, paymentCount) - housing.monthlyPrincipalAndInterest);
   const taxBumpMonthly = housing.monthlyPropertyTax * STRESS_TAX_INCREASE_RATE;
   const essentials = housing.monthlyHousingTotal + input.monthlyExistingDebt + input.monthlyOtherExpenses;
@@ -394,7 +411,9 @@ function thisHouseBreakdown(value: HomeAffordabilityValue, input: ThisHouseInput
       : `Cut the price by ${formatMoney(path.priceCut, 0)}.`
     : path?.extraDownPayment && path.extraDownPayment > 0
       ? `Raise the down payment by ${formatMoney(path.extraDownPayment, 0)}.`
-      : 'The house already fits the comfortable band.';
+      : value.verdict === 'comfortable'
+        ? 'The house already fits the comfortable band.'
+        : 'A price cut or larger down payment alone cannot reach the comfortable band with these expenses and income.';
   return [
     {
       label: 'Modeled monthly housing cost',
@@ -408,7 +427,7 @@ function thisHouseBreakdown(value: HomeAffordabilityValue, input: ThisHouseInput
     },
     {
       label: 'Comfortable home price',
-      value: formatMoney(value.comfortableHomePrice, 0),
+      value: value.comfortableHomePrice > 0 ? formatMoney(value.comfortableHomePrice, 0) : 'None',
       detail: pathDetail,
     },
     {
@@ -476,7 +495,9 @@ export function calculateHomeAffordability(
       calculationVersion: HOME_AFFORDABILITY_VERSION,
       datasetSnapshotIds,
       breakdown: howMuchBreakdown(value),
-      assumptions: assumptions(input, false),
+      assumptions: assumptions(input, [comfortableHomePrice, reasonableHomePrice, aggressiveHomePrice].some(
+        (price) => price > input.downPayment && estimatedMonthlyPmi(price - input.downPayment, price, input.includePmiEstimate) > 0,
+      )),
     };
   }
 
@@ -484,9 +505,7 @@ export function calculateHomeAffordability(
   const metrics = metricsFromHousing(housing.monthlyHousingTotal, input);
   const verdict = verdictForHousing(housing.monthlyHousingTotal, input);
   const extraDownPayment = extraDownPaymentToComfortable(input);
-  const priceCut = verdict === 'comfortable'
-    ? 0
-    : comfortableHomePrice > 0 ? Math.max(0, Math.round(input.homePrice) - comfortableHomePrice) : null;
+  const priceCut = priceCutToComfortable(input);
   const roundedHousing = roundHousing(housing);
   const stress = stressForThisHouse(input, housing);
   const value: HomeAffordabilityValue = {

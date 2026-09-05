@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import { calculateMortgage, defaultRateForTerm, type MortgageTermYears } from '@/lib/calculations/mortgage';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
@@ -66,7 +67,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
   return (
     <CalculatorPanel
       title="Monthly mortgage payment"
-      intro="Starts from the most recent Freddie Mac national average. Type your own quote if you have one."
+      intro="Starts from the dated Freddie Mac national average below. Type your own quote if you have one."
       toolId="mortgage-payment"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
@@ -124,7 +125,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
             <input id="mortgage-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Yearly home insurance" htmlFor="mortgage-insurance" hint="Optional">
+        <Field label="Yearly home insurance" htmlFor="mortgage-insurance" hint="Enter an annual quote or planning estimate">
           <InputShell prefix="$">
             <input id="mortgage-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
           </InputShell>
@@ -135,6 +136,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
           </InputShell>
         </Field>
       </div>
+      <p className="decision-note">Need an insurance budget? Use the <Link href="/money/insurance-cost">Insurance Cost Calculator</Link>, then enter its annual homeowners estimate above. A carrier quote is more specific to your home.</p>
       <div className="check-row">
         <label>
           <input type="checkbox" checked={includePmiEstimate} onChange={(event) => setIncludePmiEstimate(event.target.checked)} />

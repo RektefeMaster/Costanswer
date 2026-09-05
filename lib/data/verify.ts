@@ -28,6 +28,7 @@ import oewsManifestJson from '@/data/bls-oews/manifest.json';
 import currentHudJson from '@/data/hud-fmr/current.json';
 import currentIrsRetirementJson from '@/data/irs-retirement/current.json';
 import currentMortgageRateJson from '@/data/freddie-mac/current.json';
+import currentInsuranceJson from '@/data/naic-insurance/current.json';
 import currentTaxJson from '@/data/tax/2026.json';
 import currentUsdaJson from '@/data/usda-food/current.json';
 import hudReleasesJson from '@/data/hud-fmr/releases.json';
@@ -49,6 +50,7 @@ import { gsaPerDiemSnapshotSchema } from './gsa-perdiem';
 import { zctaCountySnapshotSchema } from './zcta-county';
 import { hudFmrSnapshotSchema } from './hud-fmr';
 import { irsRetirementSnapshotSchema } from './irs-retirement';
+import { naicInsuranceSnapshotSchema } from './naic-insurance';
 import { usdaFoodSnapshotSchema } from './usda-food';
 import { taxYearSnapshotSchema, type TaxYearSnapshot } from './tax/schema';
 
@@ -65,6 +67,7 @@ function manifestSchema(period: z.ZodType<string> = z.string()) {
 const MONTHLY = z.string().regex(/^\d{4}-\d{2}$/);
 const CPI_MONTHLY = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/);
 const DAILY = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
+const REFERENCE_YEAR = z.string().regex(/^\d{4}$/);
 
 /** Every dataset stamps its own identity and hash into the snapshot body. */
 type VerifiableSnapshot = { snapshotId: string; observationPeriod: string; normalizedSha256: string };
@@ -101,6 +104,7 @@ export const validateZctaCountyEnvelope = envelopeValidator(zctaCountySnapshotSc
 export const validateHudEnvelope = envelopeValidator(hudFmrSnapshotSchema, 'HUD FMR');
 export const validateIrsRetirementEnvelope = envelopeValidator(irsRetirementSnapshotSchema, 'IRS retirement limits');
 export const validateMortgageRateEnvelope = envelopeValidator(freddieMacPmmsSnapshotSchema, 'Freddie Mac PMMS', DAILY);
+export const validateNaicInsuranceEnvelope = envelopeValidator(naicInsuranceSnapshotSchema, 'NAIC insurance', REFERENCE_YEAR);
 export const validateUsdaFoodEnvelope = envelopeValidator(usdaFoodSnapshotSchema, 'USDA Food Plans');
 
 /**
@@ -177,6 +181,7 @@ export function verifyBundledSnapshots(): void {
   validateHudEnvelope(currentHudJson);
   validateIrsRetirementEnvelope(currentIrsRetirementJson);
   validateMortgageRateEnvelope(currentMortgageRateJson);
+  validateNaicInsuranceEnvelope(currentInsuranceJson);
   validateUsdaFoodEnvelope(currentUsdaJson);
   validateTaxYearSnapshot(currentTaxJson);
   hudFmrSnapshotSchema.parse(hudFy2026Json);

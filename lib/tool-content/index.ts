@@ -4,6 +4,7 @@ import { EVERYDAY_EDITORIAL } from './everyday';
 import { HEALTH_MATH_EDITORIAL } from './health-math';
 import { HOME_CAR_EDITORIAL } from './home-car';
 import { HOUSING_EDITORIAL } from './housing';
+import { INSURANCE_EDITORIAL } from './insurance';
 import { PAY_EDITORIAL } from './pay';
 import type { ToolEditorial } from './types';
 import { WEALTH_EDITORIAL } from './wealth';
@@ -13,6 +14,7 @@ export type { EditorialFaq, EditorialGlossaryTerm, EditorialSection, ToolEditori
 const ALL_EDITORIAL: ToolEditorial[] = [
   ...PAY_EDITORIAL,
   ...HOUSING_EDITORIAL,
+  ...INSURANCE_EDITORIAL,
   ...WEALTH_EDITORIAL,
   ...HOME_CAR_EDITORIAL,
   ...EVERYDAY_EDITORIAL,

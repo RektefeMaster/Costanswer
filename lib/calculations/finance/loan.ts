@@ -10,8 +10,10 @@ export function monthlyPaymentFactor(annualRatePercent: number, paymentCount: nu
   if (paymentCount === 0) throw new Error('Loan term must include at least one payment.');
   if (annualRatePercent === 0) return 1 / paymentCount;
   const rate = monthlyRate(annualRatePercent);
-  const growth = (1 + rate) ** paymentCount;
-  return rate * growth / (growth - 1);
+  if (rate === 0) return 1 / paymentCount;
+  // log1p/expm1 retain precision when a positive rate is almost zero.
+  // Discounting also avoids overflowing a large growth factor.
+  return rate / -Math.expm1(-paymentCount * Math.log1p(rate));
 }
 
 export function monthlyPrincipalAndInterest(
@@ -43,9 +45,10 @@ export function remainingBalance(
   if (paymentsMade >= paymentCount) return 0;
   if (annualRatePercent === 0) return loanAmount * (1 - paymentsMade / paymentCount);
   const rate = monthlyRate(annualRatePercent);
-  const payment = monthlyPrincipalAndInterest(loanAmount, annualRatePercent, paymentCount);
-  const growth = (1 + rate) ** paymentsMade;
-  return loanAmount * growth - payment * (growth - 1) / rate;
+  if (rate === 0) return loanAmount * (1 - paymentsMade / paymentCount);
+  const logGrowth = Math.log1p(rate);
+  return loanAmount * Math.expm1(-(paymentCount - paymentsMade) * logGrowth)
+    / Math.expm1(-paymentCount * logGrowth);
 }
 
 export type ExtraPaymentPlan = {

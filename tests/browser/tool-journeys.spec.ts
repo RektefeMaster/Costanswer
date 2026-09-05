@@ -12,6 +12,7 @@ const toolPaths = [
   '/money/compound-interest',
   '/money/debt-payoff',
   '/money/home-affordability',
+  '/money/insurance-cost',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',
@@ -266,7 +267,7 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   const toolSitemap = await (await request.get('/sitemaps/tools/1.xml')).text();
   for (const path of toolPaths) expect(toolSitemap).toContain(path);
   expect(toolSitemap).not.toContain('/search');
-  expect(toolSitemap).toContain('<lastmod>2026-09-02T00:00:00.000Z</lastmod>');
+  expect(toolSitemap).toContain('<lastmod>2026-09-05T00:00:00.000Z</lastmod>');
 
   const manifest = await (await request.get('/manifest.webmanifest')).json();
   expect(manifest.icons).toContainEqual({ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' });
@@ -536,8 +537,11 @@ test('mobile skip link and recipe editor work without horizontal overflow', asyn
 test('small phones keep home, search, and calculators inside the viewport', async ({ page }) => {
   for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 720 });
-    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
+    // The insurance page carries the widest fixed layouts on the site: two
+    // side-by-side quote fieldsets and a three-column comparison table.
+    for (const path of ['/', '/search', '/money/cost-of-living', '/money/insurance-cost', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
       await page.goto(path);
+      await page.evaluate(() => document.querySelectorAll('main details').forEach((node) => { (node as HTMLDetailsElement).open = true; }));
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, `${path} at ${width}px overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
     }
@@ -546,7 +550,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -687,4 +691,54 @@ test('per diem splits lodging and meals, maps a ZIP, and checks a room against t
   await page.locator('#perdiem-destination').fill('02138');
   await expect(page.getByText('COUNTY IS SPLIT', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: /Use Boston \/ Cambridge/ })).toBeVisible();
+});
+
+test('insurance budget uses the dated NAIC benchmark, switches to entered premiums, and compares deductibles', async ({ page }) => {
+  await page.goto('/money/insurance-cost');
+  await expect(page.getByRole('heading', { name: 'Insurance Cost Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+
+  // Texas HO-3 $2,864 + auto expenditure $1,428.94, both 2023 NAIC observations.
+  await expect(page.locator('.primary-result strong')).toHaveText('$357.74');
+  await expect(page.locator('.insurance-source-note')).toContainText('NAIC · 2023 observations');
+  await expect(page.locator('.calculation-output .result-audit')).toContainText('Method insurance-budget-v1.0.0');
+  await expect(page.locator('.calculation-output .result-audit')).toContainText('naic-insurance-2023-v1');
+
+  await page.locator('#insurance-state').selectOption('FL');
+  await expect(page.locator('.primary-result strong')).toHaveText('$386.97');
+  await expect(page.locator('.result-stat-grid')).toContainText('$2,779.00');
+
+  // Published expenditure is per insured vehicle, so the vehicle count multiplies it.
+  await page.locator('#insurance-vehicles').selectOption('2');
+  await expect(page.locator('.result-stat-grid')).toContainText('$3,729.26');
+
+  // Auto only drops the housing line and locks the auto toggle on.
+  await page.getByRole('button', { name: 'Auto only' }).click();
+  await expect(page.locator('.result-stat-grid')).toContainText('Not included');
+  await expect(page.locator('.insurance-auto-toggle input')).toBeDisabled();
+
+  // An entered premium is the household total: it is annualized, never multiplied
+  // by the vehicle count, and it retires the snapshot claim in the audit line.
+  await page.locator('.insurance-customize > summary').click();
+  await page.locator('#insurance-auto-basis').selectOption('custom');
+  await page.locator('#insurance-auto-premium').fill('900');
+  await page.locator('#insurance-auto-premium-frequency').selectOption('six-month');
+  await expect(page.locator('.primary-result strong')).toHaveText('$150.00');
+  await expect(page.locator('.insurance-source-note')).toContainText('Your entered premiums');
+  await expect(page.locator('.calculation-output .result-audit')).toContainText('Data Manual inputs / fixed rules');
+  await expect(page.locator('.calculation-output .result-audit')).not.toContainText('naic-insurance-2023-v1');
+
+  // The cushion is an explicit user scenario, so it never moves the headline number.
+  await page.locator('#insurance-buffer').fill('10');
+  await expect(page.locator('.primary-result strong')).toHaveText('$150.00');
+  await expect(page.locator('.insurance-cushion')).toContainText('$165.00');
+
+  // $1,800/$500 versus $1,500/$1,500 on a $5,000 covered loss: A wins the single
+  // claim, but B is the cheaper premium, so the verdict has to name both.
+  await page.locator('.insurance-deductibles > summary').click();
+  await expect(page.locator('.insurance-claim-results tbody')).toContainText('$2,300.00');
+  await expect(page.locator('.insurance-claim-results tbody')).toContainText('$3,000.00');
+  await expect(page.locator('.insurance-comparison-verdict')).toContainText('Policy A costs less');
+  await expect(page.locator('.insurance-comparison-verdict')).toContainText('Policy B has the lower premium');
+  await expect(page.locator('.insurance-comparison-verdict')).toContainText('3.33 claim-free years');
 });

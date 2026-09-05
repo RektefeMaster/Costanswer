@@ -17,6 +17,7 @@ import {
   validateHudEnvelope,
   validateIrsRetirementEnvelope,
   validateMortgageRateEnvelope,
+  validateNaicInsuranceEnvelope,
   validateTaxYearSnapshot,
   validateUsdaFoodEnvelope,
 } from '../lib/data/verify';
@@ -27,6 +28,7 @@ import { resolveHudFmrSnapshot } from '../lib/data/hud-fmr-snapshot';
 import { beaRppSnapshotSchema } from '../lib/data/bea-rpp';
 import { usdaFoodSnapshotSchema } from '../lib/data/usda-food';
 import { irsRetirementSnapshotSchema } from '../lib/data/irs-retirement';
+import { naicInsuranceSnapshotSchema } from '../lib/data/naic-insurance';
 import { geographySnapshot } from '../lib/data/geography-snapshot';
 import { PUBLISHING_SNAPSHOT_DATE } from '../lib/publishing';
 
@@ -211,6 +213,27 @@ async function verifyIrsRetirement(): Promise<string> {
   return snapshotId;
 }
 
+/**
+ * NAIC ships two reports whose figures describe a data year years earlier, so
+ * the checks that matter are that the promoted snapshot still names that
+ * reference year and that the policy has not quietly been re-anchored onto the
+ * observation period, which would label the newest available report stale.
+ */
+async function verifyNaicInsurance(): Promise<string> {
+  const snapshotId = await verifyEnvelope(
+    path.join(process.cwd(), 'data', 'naic-insurance'),
+    'insurance.normalized.json',
+    validateNaicInsuranceEnvelope,
+    naicInsuranceSnapshotSchema.parse,
+    '2023.json',
+  );
+  const policy = DATASET_POLICIES['naic-insurance'];
+  if (policy.periodKind !== 'reference-year' || policy.freshnessAnchor !== 'published-at' || policy.refreshMode !== 'manual') {
+    throw new Error('NAIC insurance must stay a manually promoted reference-year dataset anchored on the provider release date.');
+  }
+  return snapshotId;
+}
+
 const ids = [
   await verifyElectricity(),
   await verifyGasoline(),
@@ -219,6 +242,7 @@ const ids = [
   await verifyCpi(),
   await verifyTax(),
   await verifyIrsRetirement(),
+  await verifyNaicInsurance(),
   ...(await verifyLocationDatasets()),
 ];
 console.log(`Verified ${ids.join(', ')}: raw hash, normalized hash, semantics and promotion envelope passed.`);

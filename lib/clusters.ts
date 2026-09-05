@@ -24,7 +24,7 @@ export const TOOL_CLUSTERS = {
   },
   'home-buying': {
     label: 'Buying a home',
-    toolIds: ['mortgage-payment', 'home-affordability', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
+    toolIds: ['mortgage-payment', 'home-affordability', 'insurance-cost', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
   },
   debt: {
     label: 'Borrowing and paying off debt',
@@ -32,7 +32,7 @@ export const TOOL_CLUSTERS = {
   },
   vehicle: {
     label: 'Running a car',
-    toolIds: ['car-affordability', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
+    toolIds: ['car-affordability', 'insurance-cost', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
   },
   energy: {
     label: 'Energy at home',

@@ -13,6 +13,7 @@ import { resolveHudFmrSnapshot, hudLatestPublishedSnapshot } from '@/lib/data/hu
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
 import { gsaPerDiemSnapshot } from '@/lib/data/gsa-perdiem-snapshot';
 import { irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
+import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
 import { datasetSourceDisplay, officialDatasetJsonLd } from '@/lib/data/source-display';
 import { DATASET_POLICIES } from '@/lib/data/dataset-policy';
@@ -21,7 +22,7 @@ import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
 export const metadata = pageMetadata(
   'Data sources',
-  'EIA, BLS, HUD, Census, BEA, USDA, and Freddie Mac copies used by CostAnswer, with observation dates.',
+  'EIA, BLS, HUD, Census, BEA, USDA, NAIC, and Freddie Mac copies used by CostAnswer, with observation dates.',
   '/methodology/data',
 );
 
@@ -122,6 +123,20 @@ const irsRetirementSource = datasetSourceDisplay({
   fetchedAt: irsRetirementSnapshot.fetchedAt,
 });
 
+/*
+ * NAIC's own publication date is the anchor here, not the reference year. The
+ * homeowners report prints only a month on its cover, so `verifiedAt` — the day
+ * a maintainer last confirmed no newer edition is downloadable — is what the
+ * freshness window counts from, rather than a publication day nobody published.
+ */
+const insuranceSource = datasetSourceDisplay({
+  datasetId: 'naic-insurance',
+  observationPeriod: insuranceSnapshot.observationPeriod,
+  sourceStatus: insuranceSnapshot.sourceStatus,
+  verifiedAt: insuranceSnapshot.verifiedAt,
+  fetchedAt: insuranceSnapshot.fetchedAt,
+});
+
 const datasetJsonLd = [
   officialDatasetJsonLd({
     name: 'Freddie Mac weekly mortgage rate averages',
@@ -204,6 +219,14 @@ const datasetJsonLd = [
     sourceUrl: usdaFoodSnapshot.sourceUrl,
   }),
   officialDatasetJsonLd({
+    name: `NAIC ${insuranceSnapshot.observationPeriod} homeowners, renters and auto insurance averages`,
+    description: insuranceSnapshot.attribution,
+    temporalCoverage: insuranceSnapshot.observationPeriod,
+    dateModified: insuranceSnapshot.verifiedAt,
+    creatorName: insuranceSnapshot.provider,
+    sourceUrl: insuranceSnapshot.sourceUrl,
+  }),
+  officialDatasetJsonLd({
     name: `IRS tax year ${irsRetirementSnapshot.observationPeriod} retirement contribution limits`,
     description: irsRetirementSnapshot.attribution,
     temporalCoverage: irsRetirementSnapshot.observationPeriod,
@@ -242,6 +265,7 @@ const ALL_SOURCES = [
   { label: 'BEA Regional Price Parities', source: beaSource },
   { label: 'USDA Food Plans', source: usdaSource },
   { label: 'GSA travel per diem', source: perDiemSource },
+  { label: 'NAIC insurance averages', source: insuranceSource },
 ];
 
 export default function DataSourcesPage() {
@@ -500,9 +524,9 @@ export default function DataSourcesPage() {
         <p className="dataset-links"><a href={usdaFoodSnapshot.sourceUrl}>USDA monthly reports ↗</a></p>
       </section>
       <h2>How to read this</h2>
-      <p>Electricity prices are average residential rates, not your utility rate. Gasoline prices are EIA weekly regular averages for a state or PADD region, not a pump. Grocery staples are BLS average retail prices for the U.S. city average or a census region; they are not a household food budget. Mortgage rates are Freddie Mac national weekly averages, not a lender quote. CPI-U is the average urban price level, not your personal basket. Tax results are estimated annual liability from published IRS, SSA, and state schedules, not a prepared return or employer withholding. HUD FMR is a gross-rent benchmark, not listing rent. BEA RPP is a spatial price index, not inflation. USDA Food Plans are food at home. None of this is Walmart, Kroger, Costco, or a weekly circular.</p>
+      <p>Electricity prices are average residential rates, not your utility rate. Gasoline prices are EIA weekly regular averages for a state or PADD region, not a pump. Grocery staples are BLS average retail prices for the U.S. city average or a census region; they are not a household food budget. Mortgage rates are Freddie Mac national weekly averages, not a lender quote. CPI-U is the average urban price level, not your personal basket. Tax results are estimated annual liability from published IRS, SSA, and state schedules, not a prepared return or employer withholding. HUD FMR is a gross-rent benchmark, not listing rent. BEA RPP is a spatial price index, not inflation. USDA Food Plans are food at home. NAIC insurance figures are state averages over policies already written, not a quote, an offer of coverage, or a prediction of your renewal. None of this is Walmart, Kroger, Costco, or a weekly circular.</p>
       <h2>When it updates</h2>
-      <p>A normal new period can go live after the checks pass. Odd unit changes, missing states, duplicates, or big jumps wait for a person to look. If a check fails, the last good copy stays on the site. Tax snapshots and IRS retirement-limit copies are yearly official releases, not a weekly fetch. Census, HUD, and BEA are annual; an old reference year is not automatically stale. HUD effectiveness is separate from publication: a future fiscal year can be on file without becoming the default. Source status (preliminary, final, revised, or verified) is not the same as freshness (fresh or stale).</p>
+      <p>A normal new period can go live after the checks pass. Odd unit changes, missing states, duplicates, or big jumps wait for a person to look. If a check fails, the last good copy stays on the site. Tax snapshots and IRS retirement-limit copies are yearly official releases, not a weekly fetch. Census, HUD, and BEA are annual; an old reference year is not automatically stale. NAIC publishes each data year two to three years later, so its copy is measured against the release we last confirmed is the newest, not against the year the figures describe. HUD effectiveness is separate from publication: a future fiscal year can be on file without becoming the default. Source status (preliminary, final, revised, or verified) is not the same as freshness (fresh or stale).</p>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>GSA travel per diem, continental U.S.</h2>
@@ -526,6 +550,33 @@ export default function DataSourcesPage() {
           <ul>{gsaPerDiemSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
         </details>
         <p className="dataset-links"><a href={gsaPerDiemSnapshot.sourceDocumentationUrl}>GSA per diem rates ↗</a><a href={gsaPerDiemSnapshot.mieBreakdownUrl}>M&amp;IE breakdown ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>NAIC homeowners, renters and auto insurance averages</h2>
+        <dl>
+          <div><dt>Observation period</dt><dd>{insuranceSnapshot.observationPeriod} insurance experience</dd></div>
+          {freshnessRows(insuranceSource)}
+          <div><dt>Source status</dt><dd>{insuranceSnapshot.sourceStatus}</dd></div>
+          <div><dt>Cadence</dt><dd>{DATASET_POLICIES['naic-insurance'].expectedCadence} / {DATASET_POLICIES['naic-insurance'].refreshMode}</dd></div>
+          <div><dt>Reports</dt><dd>{insuranceSnapshot.sources.homeowners.publicationLabel} homeowners report · {insuranceSnapshot.sources.auto.publicationLabel} auto database report</dd></div>
+          <div><dt>Geographies</dt><dd>{insuranceSnapshot.states.length} states/DC rows plus a countrywide row</dd></div>
+          <div><dt>Homeowners, countrywide</dt><dd>${insuranceSnapshot.national.homeownersAnnualPremium.toLocaleString('en-US')} a year, {insuranceSnapshot.homeownersPolicyForm} average premium</dd></div>
+          <div><dt>Renters, countrywide</dt><dd>${insuranceSnapshot.national.rentersAnnualPremium.toLocaleString('en-US')} a year, {insuranceSnapshot.rentersPolicyForm} average premium</dd></div>
+          <div><dt>Auto, countrywide</dt><dd>${insuranceSnapshot.national.autoAnnualExpenditure.toLocaleString('en-US')} average expenditure per {insuranceSnapshot.autoExpenditureDenominator.replace('liability-insured car-years', 'liability-insured car-year')}</dd></div>
+        </dl>
+        <p>{insuranceSnapshot.attribution} The publication year is not the price year: these are {insuranceSnapshot.observationPeriod} averages across different properties, vehicles, limits, deductibles and policyholders, so they are a budgeting benchmark rather than a quote. Average expenditure counts vehicles that carry only some of the three coverages, so it is not a standardized full-coverage price.</p>
+        <ul>{insuranceSnapshot.caveats.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{insuranceSnapshot.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{insuranceSnapshot.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{insuranceSnapshot.schemaVersion}</dd></div>
+          </dl>
+          <ul>{insuranceSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
+        <p className="dataset-links"><a href={insuranceSnapshot.sources.homeowners.sourceUrl}>Homeowners report ↗</a><a href={insuranceSnapshot.sources.auto.sourceUrl}>Auto database report ↗</a><a href={insuranceSnapshot.termsUrl}>Terms ↗</a></p>
       </section>
     </InfoPage>
   );

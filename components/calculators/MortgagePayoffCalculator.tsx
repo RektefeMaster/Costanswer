@@ -14,6 +14,7 @@ export function MortgagePayoffCalculator() {
   const [extraMonthlyPayment, setExtraMonthlyPayment] = useState('200');
   const [startDate, setStartDate] = useState('2026-09-01');
   const calculation = useMemo(() => {
+    if (annualRatePercent.trim() === '') return { result: null, error: 'Interest rate must be a number. Use 0 for an interest-free loan.' };
     try {
       return {
         result: calculateMortgagePayoff({

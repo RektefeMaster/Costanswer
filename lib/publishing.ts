@@ -5,7 +5,7 @@
  * runtimes and at different moments. Advance this date only as part of a
  * reviewed release so the same commit always makes the same crawl decision.
  */
-export const PUBLISHING_SNAPSHOT_DATE = '2026-09-02';
+export const PUBLISHING_SNAPSHOT_DATE = '2026-09-05';
 export const PUBLISHING_SNAPSHOT_INSTANT = `${PUBLISHING_SNAPSHOT_DATE}T00:00:00.000Z`;
 
 export function parsePublishingDate(value: string): number | null {

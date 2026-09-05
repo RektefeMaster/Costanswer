@@ -29,6 +29,9 @@ export function RefinanceCalculator({
   });
 
   const calculation = useMemo(() => {
+    if (currentRatePercent.trim() === '' || newRatePercent.trim() === '') {
+      return { result: null, error: 'Enter both interest rates. Use 0 for an interest-free loan.' };
+    }
     try {
       return {
         result: calculateRefinance({
@@ -88,7 +91,7 @@ export function RefinanceCalculator({
         </section>
         <section>
           <h3 className="comparison-label ev-label">Loan you would take</h3>
-          <Field label="New interest rate" htmlFor="refi-new-rate" hint="Starts at this week’s national average. Use your quote if you have one.">
+          <Field label="New interest rate" htmlFor="refi-new-rate" hint="Starts at the dated national average above. Use your quote if you have one.">
             <InputShell suffix="%"><input id="refi-new-rate" type="number" min="0" max="25" step="0.05" inputMode="decimal" value={newRatePercent} onChange={(event) => setNewRatePercent(event.target.value)} /></InputShell>
           </Field>
           <Field label="New term" htmlFor="refi-new-term" hint="Going back to 30 years lowers the payment and usually raises total interest">
