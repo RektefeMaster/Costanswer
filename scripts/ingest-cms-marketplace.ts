@@ -166,11 +166,22 @@ export function extractCmsLandscape(workbookBytes: Uint8Array): { counties: RawC
   return { counties: [...byCounty.values()], rowCount };
 }
 
-/** Adult ages are the ones every state prices off a curve; children are filed separately. */
+/**
+ * The curve is checked over two ranges, not one.
+ *
+ * A county can price adults exactly on the federal curve and still file its
+ * under-21 rates on a different one: 185 of them do. Checking only the adult
+ * ages and then scaling a 19-year-old off age 21 produced a 30% error in
+ * Alabama, reported as exact, which is why the two ranges are asked separately.
+ */
 const ADULT_CURVE_CHECKS = ([27, 30, 40, 50, 60] as const).map((age) => ({
   index: CMS_PUBLISHED_AGES.indexOf(age),
   factor: FEDERAL_DEFAULT_AGE_CURVE[age],
 }));
+const CHILD_CURVE_CHECKS = [
+  { index: CMS_PUBLISHED_AGES.indexOf('child'), factor: FEDERAL_DEFAULT_AGE_CURVE[0] },
+  { index: CMS_PUBLISHED_AGES.indexOf(18), factor: FEDERAL_DEFAULT_AGE_CURVE[18] },
+];
 const AGE_21_INDEX = CMS_PUBLISHED_AGES.indexOf(21);
 const cents = (value: number) => Math.round(value * 100);
 
@@ -200,6 +211,7 @@ export function normalizeCmsLandscape(
   const counties: CmsCountyIdentity[] = [];
   const values: number[] = [];
   let stateFiledCurveCounties = 0;
+  let stateFiledChildCurveCounties = 0;
   let skippedThinCounties = 0;
 
   for (const county of [...extracted.counties].sort((left, right) => left.countyFips.localeCompare(right.countyFips))) {
@@ -214,15 +226,18 @@ export function normalizeCmsLandscape(
       continue;
     }
 
-    const conforms = county.plans.every((plan) => {
+    const conformsTo = (checks: Array<{ index: number; factor: number }>) => county.plans.every((plan) => {
       const age21 = plan.premiums[AGE_21_INDEX];
       if (age21 === null || age21 <= 0) return true;
-      return ADULT_CURVE_CHECKS.every(({ index, factor }) => {
+      return checks.every(({ index, factor }) => {
         const actual = plan.premiums[index];
         return actual === null || Math.abs(actual - age21 * factor) / (age21 * factor) <= 0.005;
       });
     });
+    const conforms = conformsTo(ADULT_CURVE_CHECKS);
+    const childConforms = conformsTo(CHILD_CURVE_CHECKS);
     if (!conforms) stateFiledCurveCounties += 1;
+    if (!childConforms) stateFiledChildCurveCounties += 1;
 
     counties.push({
       countyFips: county.countyFips,
@@ -232,6 +247,7 @@ export function normalizeCmsLandscape(
       planCount: county.plans.length,
       silverPlanCount: silverPlans.length,
       ageCurve: conforms ? 'federal-default' : 'state-filed',
+      childAgeCurve: childConforms ? 'federal-default' : 'state-filed',
     });
 
     const block: number[] = benchmark.map(cents);
@@ -295,6 +311,7 @@ export function normalizeCmsLandscape(
         'The benchmark is the second-lowest-cost Silver premium in the county, ranked separately at each published age. An enrollee\u2019s actual benchmark depends on who is enrolling and can differ.',
         'Premiums are per person and are added across a household, counting at most the three oldest children under 21, as the federal rating rules require.',
         'Cost-sharing-reduction variants show the deductible and out-of-pocket maximum spread across a county\u2019s Silver plans. They are granted by income, not chosen, and the premium is unchanged.',
+        'Ages between the published ones are scaled from age 21 only where a county\u2019s own filings confirm the federal curve over that part of the range. Adults and under-21s are recorded separately, because a county can follow it for one and not the other.',
         'Deductible and out-of-pocket figures are the individual medical amounts. Drug deductibles, family amounts, copays, and provider networks are outside this snapshot.',
       ],
       rawSha256: metadata.rawSha256,
@@ -305,6 +322,7 @@ export function normalizeCmsLandscape(
         'Confirmed no county spans more than one rating area, so a per-county premium is unambiguous.',
         `Kept ${counties.length} counties publishing at least two Silver plans, the minimum a second-lowest-cost benchmark requires; ${skippedThinCounties} were left out rather than given a substitute benchmark.`,
         `Confirmed ${counties.length - stateFiledCurveCounties} counties reproduce the federal default age curve within 0.5% at every published adult age; ${stateFiledCurveCounties} file their own and are flagged for published-age quoting only.`,
+        `Checked the under-21 range separately: ${counties.length - stateFiledChildCurveCounties} counties also reproduce the curve at the child and age-18 premiums, and ${stateFiledChildCurveCounties} do not, including counties whose adult premiums match it exactly.`,
         'Verified the benchmark never falls below the lowest Silver premium and that no cost-sharing variant raises the out-of-pocket maximum above standard Silver.',
         'Packed every figure as integer cents and proved the packing lossless by unpacking each county back to its source values.',
         'Stored premiums in USD per month exactly as filed; no inflation, rating, or eligibility adjustment is applied.',

@@ -38,7 +38,7 @@ export default function HealthInsurancePage() {
         },
         {
           title: 'Ages between the published ones',
-          body: 'CMS prints a premium at eight ages. Almost every county files on the federal default age curve, confirmed plan by plan during ingestion, so any age in between is exact. A state filing its own curve is flagged, and its premiums are quoted at the nearest published age rather than interpolated.',
+          body: 'CMS prints a premium at eight ages. Adult and under-21 rates are checked separately against the federal default age curve, because a county can follow it for one and not the other. Ages in between are scaled from age 21 only where that part of the range conforms; otherwise the nearest published age on the same side of 21 is quoted, and the page says so.',
         },
         {
           title: 'What the 2026 rules changed',

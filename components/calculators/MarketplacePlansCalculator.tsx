@@ -60,8 +60,8 @@ export function MarketplacePlansCalculator() {
       return {
         result: calculateMarketplacePlanCost({
           metals: priced.metals,
-          monthlyPremiumTaxCredit: Number(monthlyCredit) || 0,
-          expectedAnnualCareSpend: Number(expectedCare) || 0,
+          monthlyPremiumTaxCredit: Number(monthlyCredit),
+          expectedAnnualCareSpend: Number(expectedCare),
         }),
         error: '',
       };
@@ -141,7 +141,8 @@ export function MarketplacePlansCalculator() {
         <p className="data-footnote">
           Pricing {county.countyName} County, {US_STATES[county.stateCode]} · rating area {county.ratingArea} · {county.planCount} plans filed
           {priced && ` · benchmark Silver ${formatMoney(priced.benchmark.premium)} a month`}
-          {county.ageCurve === 'state-filed' && ' · this state files its own age curve, so premiums are quoted at the nearest published age'}
+          {county.ageCurve === 'state-filed' && ' · this state files its own adult age curve, so adult premiums are quoted at the nearest published age'}
+          {county.childAgeCurve === 'state-filed' && ' · under-21 rates are filed separately here, so an age between the published ones is quoted at the nearest of them'}
         </p>
       )}
 

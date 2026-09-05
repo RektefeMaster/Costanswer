@@ -23,8 +23,8 @@ export function MedicareCalculator() {
     filingStatus,
     annualMagi: Number(annualMagi),
     partAQuarters,
-    monthlyDrugPlanPremium: Number(monthlyDrugPlanPremium) || 0,
-    monthlyMedigapPremium: Number(monthlyMedigapPremium) || 0,
+    monthlyDrugPlanPremium: monthlyDrugPlanPremium.trim() === '' ? 0 : Number(monthlyDrugPlanPremium),
+    monthlyMedigapPremium: monthlyMedigapPremium.trim() === '' ? 0 : Number(monthlyMedigapPremium),
     coverageMonths: Number(coverageMonths),
   }), [filingStatus, annualMagi, partAQuarters, monthlyDrugPlanPremium, monthlyMedigapPremium, coverageMonths]);
 

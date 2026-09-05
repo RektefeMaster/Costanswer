@@ -16,7 +16,7 @@ export const HEALTH_INSURANCE_EDITORIAL: ToolEditorial[] = [{
       ] },
       { heading: 'How your county premium is built', paragraphs: [
         'Premiums are filed per person and added up: every adult, plus at most the three oldest children under 21. A fourth child adds nothing to the bill, and the page says so when it applies, because a household adding a quote by hand usually gets that wrong.',
-        'CMS publishes a premium at eight ages. Almost every county prices the ages in between off the federal default age curve, which is checked plan by plan when the data is ingested, so a 35-year-old gets an exact figure rather than an interpolation. A state filing its own curve is flagged and quoted at the nearest published age instead of being forced through a curve it does not use.',
+        'CMS publishes a premium at eight ages. Adult and under-21 rates are checked separately against the federal default age curve, because a county can follow it for one and not the other: some counties whose adult premiums match the curve file under-21 rates on a different one. Ages in between are scaled from age 21 only where that part of the range conforms; otherwise the nearest published age on the same side of 21 is quoted, and the page says so.',
       ] },
       { heading: 'Which income and which household', paragraphs: [
         'Use modified adjusted gross income for the coverage year, for the whole tax household, including members required to file even if they are not enrolling. Take-home pay, gross wages alone, and last year’s return are all different numbers and will give a different credit.',

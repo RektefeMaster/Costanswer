@@ -90,13 +90,25 @@ export const cmsCountyIdentitySchema = z.object({
   planCount: z.number().int().positive(),
   silverPlanCount: z.number().int().min(2),
   /**
-   * Whether premiums for unpublished ages can be scaled from age 21.
+   * Whether adult premiums for unpublished ages can be scaled from age 21.
    *
    * `federal-default` means every plan in the county reproduces the federal
-   * curve, so any age is exact. `state-filed` means the state filed its own
-   * curve and only the published ages may be quoted.
+   * curve at every published adult age, so any adult age is exact.
+   * `state-filed` means the state filed its own curve and only published ages
+   * may be quoted.
    */
   ageCurve: z.enum(['federal-default', 'state-filed']),
+  /**
+   * The same question for anyone under 21, answered separately.
+   *
+   * It has to be: 185 counties whose adult premiums track the federal curve to
+   * the cent file their under-21 rates on a different one. In Autauga County,
+   * Alabama, the published age-18 premium is $315.67 while the curve applied to
+   * age 21 gives $453.87 — a 30% error, and one that would have been reported
+   * as exact. Under-21 ages are scaled only where the county's own child and
+   * age-18 premiums confirm the curve.
+   */
+  childAgeCurve: z.enum(['federal-default', 'state-filed']),
 }).strict();
 export type CmsCountyIdentity = z.infer<typeof cmsCountyIdentitySchema>;
 
@@ -225,29 +237,38 @@ export function unpackCostSharing(values: number[], countyIndex: number, level: 
 /**
  * The published age a state-filed county falls back to, for an exact figure.
  *
- * Age 45 sits exactly between the published 40 and 50, and the tie is broken
- * toward the older age. Premiums rise with age, so quoting the younger one
- * would hand someone budgeting for coverage a figure that is too low, which is
- * the more damaging of the two ways to be wrong.
+ * Children and adults are different rating classes, so the fallback never
+ * crosses 21: a 20-year-old is quoted at 18, not at the adult rate. Inside
+ * each class a tie is broken toward the older age. Premiums rise with age,
+ * so quoting the younger one would hand someone budgeting for coverage a
+ * figure that is too low, which is the more damaging of the two ways to be
+ * wrong.
  */
 export function nearestPublishedAge(age: number): CmsPublishedAge {
-  if (age <= 14) return 'child';
-  const numeric = CMS_PUBLISHED_AGES.filter((entry): entry is Exclude<CmsPublishedAge, 'child'> => entry !== 'child');
-  return numeric.reduce((closest, candidate) => (Math.abs(candidate - age) <= Math.abs(closest - age) ? candidate : closest));
+  const candidates: Array<{ key: CmsPublishedAge; point: number }> = age < 21
+    ? [{ key: 'child', point: 14 }, { key: 18, point: 18 }]
+    : CMS_PUBLISHED_AGES
+      .filter((entry): entry is Exclude<CmsPublishedAge, 'child'> => typeof entry === 'number' && entry >= 21)
+      .map((entry) => ({ key: entry, point: entry }));
+  return candidates.reduce((closest, candidate) =>
+    (Math.abs(candidate.point - age) <= Math.abs(closest.point - age) ? candidate : closest)).key;
 }
 
 export type CmsAgeQuote = { premium: number; exactForAge: boolean; quotedAge: CmsPublishedAge | number };
+export type CmsCountyCurves = Pick<CmsCountyIdentity, 'ageCurve' | 'childAgeCurve'>;
 
 /**
  * Monthly premium for one person of a given age, from a county's published rates.
  *
- * A county on the federal curve can be quoted at any age, because every plan in
- * it reproduces that curve to the cent. A state-filed county is quoted only at
- * the nearest age CMS actually printed, and the caller is told which age that
- * was so the page can say so instead of implying an exact match.
+ * A published age is always exact. An age in between is scaled from age 21 only
+ * where the county's own filings confirm the federal curve over that part of the
+ * range, and adults and under-21s are asked about separately because a county
+ * can follow it for one and not the other. Where it does not, the nearest
+ * published age is quoted and the caller is told which, so the page can say so
+ * instead of implying an exact match.
  */
 export function premiumForAge(
-  ageCurve: CmsCountyIdentity['ageCurve'],
+  curves: CmsCountyCurves,
   premiumsByPublishedAge: number[],
   age: number,
   curve: Readonly<Record<number, number>> = FEDERAL_DEFAULT_AGE_CURVE,
@@ -258,7 +279,8 @@ export function premiumForAge(
   if (publishedIndex >= 0) {
     return { premium: premiumsByPublishedAge[publishedIndex], exactForAge: true, quotedAge: CMS_PUBLISHED_AGES[publishedIndex] };
   }
-  if (ageCurve === 'federal-default') {
+  const governing = age < 21 ? curves.childAgeCurve : curves.ageCurve;
+  if (governing === 'federal-default') {
     const factor = curve[Math.min(age, 64)];
     if (factor === undefined) throw new Error(`The age curve has no factor for age ${age}.`);
     return {
@@ -283,7 +305,7 @@ export type CmsHouseholdQuote = { premium: number; exactForAges: boolean; billed
  * which is the rule households most often get wrong adding a quote up by hand.
  */
 export function householdPremium(
-  ageCurve: CmsCountyIdentity['ageCurve'],
+  curves: CmsCountyCurves,
   premiumsByPublishedAge: number[],
   ages: number[],
   curve: Readonly<Record<number, number>> = FEDERAL_DEFAULT_AGE_CURVE,
@@ -297,7 +319,7 @@ export function householdPremium(
   let total = 0;
   let exact = true;
   for (const age of billed) {
-    const quote = premiumForAge(ageCurve, premiumsByPublishedAge, age, curve);
+    const quote = premiumForAge(curves, premiumsByPublishedAge, age, curve);
     total += quote.premium;
     if (!quote.exactForAge) exact = false;
   }

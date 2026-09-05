@@ -579,7 +579,8 @@ export default function DataSourcesPage() {
           <div><dt>Cadence</dt><dd>{DATASET_POLICIES['cms-marketplace'].expectedCadence} / {DATASET_POLICIES['cms-marketplace'].refreshMode}</dd></div>
           <div><dt>Geographies</dt><dd>{cmsMarketplaceIndex.counties.length.toLocaleString('en-US')} counties across {cmsMarketplaceIndex.coveredStateCodes.length} HealthCare.gov states</dd></div>
           <div><dt>Published ages</dt><dd>{cmsMarketplaceIndex.publishedAges.join(', ')}</dd></div>
-          <div><dt>Age curve</dt><dd>{cmsMarketplaceIndex.counties.filter((county) => county.ageCurve === 'federal-default').length.toLocaleString('en-US')} counties on the federal default curve, {cmsMarketplaceIndex.counties.filter((county) => county.ageCurve === 'state-filed').length} state-filed</dd></div>
+          <div><dt>Adult age curve</dt><dd>{cmsMarketplaceIndex.counties.filter((county) => county.ageCurve === 'federal-default').length.toLocaleString('en-US')} counties on the federal default, {cmsMarketplaceIndex.counties.filter((county) => county.ageCurve === 'state-filed').length} state-filed</dd></div>
+          <div><dt>Under-21 age curve</dt><dd>{cmsMarketplaceIndex.counties.filter((county) => county.childAgeCurve === 'federal-default').length.toLocaleString('en-US')} counties on the federal default, {cmsMarketplaceIndex.counties.filter((county) => county.childAgeCurve === 'state-filed').length} state-filed</dd></div>
         </dl>
         <p>{cmsMarketplaceIndex.attribution} A state running its own Marketplace files premiums separately and is absent from this file rather than having no plans, which is a difference the pages using it have to state.</p>
         <ul>{cmsMarketplaceIndex.caveats.map((item) => <li key={item}>{item}</li>)}</ul>

@@ -89,7 +89,7 @@ export function costSharingVariant(countyFips: string, level: CmsCostSharingLeve
 export function benchmarkForHousehold(countyFips: string, ages: number[]): CmsHouseholdQuote {
   const county = getCmsCounty(countyFips);
   if (!county) throw new Error(`No published Marketplace plans for county ${countyFips}.`);
-  return householdPremium(county.ageCurve, benchmarkSilverByAge(countyFips), ages);
+  return householdPremium(county, benchmarkSilverByAge(countyFips), ages);
 }
 
 /** The full price of the cheapest plan at a metal level, for one household. */
@@ -97,13 +97,13 @@ export function lowestMetalForHousehold(countyFips: string, metal: CmsMetal, age
   const county = getCmsCounty(countyFips);
   const summary = metalSummary(countyFips, metal);
   if (!county || !summary) return null;
-  return householdPremium(county.ageCurve, summary.lowestByAge, ages);
+  return householdPremium(county, summary.lowestByAge, ages);
 }
 
 export type CmsZipLookup =
-  | { status: 'covered'; counties: CmsCountyIdentity[] }
+  | { status: 'covered'; counties: CmsCountyIdentity[]; stateCodes: StateCode[] }
   | { status: 'not-in-this-release'; stateCodes: StateCode[] }
-  | { status: 'unknown-zip' };
+  | { status: 'unknown-zip'; stateCodes: [] };
 
 /** GEOID's leading two digits are the state FIPS; the gazetteer names the state. */
 const stateCodeByFips = new Map<string, StateCode>(
@@ -122,11 +122,14 @@ const stateCodeByFips = new Map<string, StateCode>(
  */
 export function cmsCountiesForZip(zip: string): CmsZipLookup {
   const geoids = countiesForZip(zip);
-  if (!geoids || geoids.length === 0) return { status: 'unknown-zip' };
-  const counties = geoids.map((geoid) => getCmsCounty(geoid)).filter((county): county is CmsCountyIdentity => county !== undefined);
-  if (counties.length > 0) return { status: 'covered', counties };
+  if (!geoids || geoids.length === 0) return { status: 'unknown-zip', stateCodes: [] };
+  // The state is reported whether or not this release prices the county. Alaska
+  // and Hawaii have their own federal poverty guidelines, so a caller that
+  // cannot name the state must not fall back to a contiguous-state default.
   const stateCodes = [...new Set(geoids.map((geoid) => stateCodeByFips.get(geoid.slice(0, 2)))
     .filter((code): code is StateCode => code !== undefined))];
+  const counties = geoids.map((geoid) => getCmsCounty(geoid)).filter((county): county is CmsCountyIdentity => county !== undefined);
+  if (counties.length > 0) return { status: 'covered', counties, stateCodes };
   return { status: 'not-in-this-release', stateCodes };
 }
 

@@ -49,6 +49,13 @@ export function HealthInsuranceCalculator() {
   const matches = lookup.status === 'covered' ? lookup.counties : [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
   const ages = useMemo(() => parseAges(enrollingAges), [enrollingAges]);
+  /*
+   * The poverty guideline depends on the state, and Alaska and Hawaii have their
+   * own. Defaulting to a contiguous state when the ZIP names none would move the
+   * credit by tens of dollars a month without saying so, so the calculation is
+   * withheld instead.
+   */
+  const resolvedStateCode = county?.stateCode ?? lookup.stateCodes[0] ?? null;
 
   /**
    * The benchmark and the sticker price of each metal level, for these ages in
@@ -76,14 +83,14 @@ export function HealthInsuranceCalculator() {
   const usedPlan = planOverride.trim() !== '' ? Number(planOverride) : quotes?.silver?.premium ?? usedBenchmark;
 
   const calculation = useMemo(() => {
-    if (usedBenchmark === null || usedPlan === null || usedPlan === undefined) {
+    if (usedBenchmark === null || usedPlan === null || usedPlan === undefined || resolvedStateCode === null) {
       return { result: null, error: '' };
     }
     try {
       return {
         result: calculateAcaSubsidy({
           coverageYear: 2026,
-          stateCode: county?.stateCode ?? 'TX',
+          stateCode: resolvedStateCode,
           householdSize: Number(householdSize),
           annualHouseholdMagi: Number(annualHouseholdMagi),
           monthlyBenchmarkPremium: usedBenchmark,
@@ -97,7 +104,7 @@ export function HealthInsuranceCalculator() {
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [county, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark]);
+  }, [resolvedStateCode, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark]);
 
   const result = calculation.result;
   const value = result?.value;
@@ -186,7 +193,8 @@ export function HealthInsuranceCalculator() {
       {county && (
         <p className="data-footnote">
           Pricing {county.countyName} County, {US_STATES[county.stateCode]} · rating area {county.ratingArea} · {county.planCount} plans filed, {county.silverPlanCount} of them Silver
-          {county.ageCurve === 'state-filed' && ' · this state files its own age curve, so premiums are quoted at the nearest published age'}
+          {county.ageCurve === 'state-filed' && ' · this state files its own adult age curve, so adult premiums are quoted at the nearest published age'}
+          {county.childAgeCurve === 'state-filed' && ' · under-21 rates are filed separately here, so an age between the published ones is quoted at the nearest of them'}
         </p>
       )}
       {quotes && !quotes.benchmark.exactForAges && (
@@ -313,11 +321,19 @@ export function HealthInsuranceCalculator() {
             </div>
           )}
 
+          {/*
+            The audit names every release that put a number on this screen. The
+            engine claims the county filing only when the benchmark came from it,
+            but a typed benchmark leaves the plan premium still read from CMS, and
+            a reader checking that figure has to be able to find its source.
+          */}
           <ResultDetails
             breakdown={result.breakdown}
             assumptions={result.assumptions}
             calculationVersion={result.calculationVersion}
-            datasetSnapshotIds={result.datasetSnapshotIds}
+            datasetSnapshotIds={quotes
+              ? [...new Set([...result.datasetSnapshotIds, cmsMarketplaceIndex.snapshotId])]
+              : result.datasetSnapshotIds}
           />
           <p className="health-range-note">
             At {householdSize} {Number(householdSize) === 1 ? 'person' : 'people'}, the 2026 credit runs from{' '}
