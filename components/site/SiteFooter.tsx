@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { siteConfig } from '@/lib/site-config';
 import { categories, CATEGORY_IDS } from '@/lib/categories';
+import { occupationHeadingName } from '@/lib/salary-content';
 import { FOOTER_SALARY_OCCUPATIONS, salaryFamilyPath, salaryOccupationPath, salaryStateIndexPath } from '@/lib/salary-pages';
 
 export function SiteFooter() {
@@ -27,13 +28,13 @@ export function SiteFooter() {
           hub from every page in the site is what gives a crawler a path to it
           at all — a sitemap alone leaves the whole family an orphan.
         */}
-        <nav className="footer-nav-topics" aria-labelledby="footer-salary-heading">
+        <nav className="footer-nav-salary" aria-labelledby="footer-salary-heading">
           <p id="footer-salary-heading" className="footer-kicker">Salaries</p>
-          <div className="footer-topics">
+          <div className="footer-salary-links">
             <Link href={salaryFamilyPath()}>What jobs pay</Link>
             <Link href={salaryStateIndexPath()}>Pay by state</Link>
             {FOOTER_SALARY_OCCUPATIONS.map((occupation) => (
-              <Link href={salaryOccupationPath(occupation)} key={occupation.code}>{occupation.displayTitle}</Link>
+              <Link href={salaryOccupationPath(occupation)} key={occupation.code}>{occupationHeadingName(occupation)}</Link>
             ))}
           </div>
         </nav>

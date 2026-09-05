@@ -13,6 +13,7 @@ import { nationalSalaryOccupations, salaryFamilyPath, salaryOccupationPath, sala
  * hang off a hub nothing points at.
  */
 const PROMOTED_CODES = ['29-1141', '15-1252', '53-3032', '25-2021', '47-2111', '31-1131', '13-2011', '43-6014'] as const;
+const PROMO_TONES = ['mint', 'amber', 'blue', 'rose', 'coral', 'violet', 'mint', 'amber'] as const;
 
 export function SalaryPromo() {
   const occupations = nationalSalaryOccupations();
@@ -33,15 +34,24 @@ export function SalaryPromo() {
         <p className="section-lede">
           {`Median wages for ${formatNumber(occupations.length)} occupations, in every state, from the federal wage survey — with what the money leaves after that state's taxes and what it buys at local prices.`}
         </p>
-        <p className="section-lede">
-          <Link href={salaryFamilyPath()}>Browse every occupation →</Link>
-          {' '}
-          <Link href={salaryStateIndexPath()}>Browse by state →</Link>
-        </p>
+        <ul className="topic-prompts">
+          <li>
+            <Link href={salaryFamilyPath()}>
+              <span>Browse every occupation</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </li>
+          <li>
+            <Link href={salaryStateIndexPath()}>
+              <span>Browse by state</span>
+              <span aria-hidden="true">→</span>
+            </Link>
+          </li>
+        </ul>
       </div>
       <div className="category-grid">
         {rows.map(({ occupation, median }, index) => (
-          <Link className="category-card" href={salaryOccupationPath(occupation)} key={occupation.code}>
+          <Link className={`category-card ${PROMO_TONES[index % PROMO_TONES.length]}`} href={salaryOccupationPath(occupation)} key={occupation.code}>
             <span className="category-topline">
               <span className="category-number">{String(index + 1).padStart(2, '0')}</span>
               <span className="category-arrow" aria-hidden="true">↗</span>

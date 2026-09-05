@@ -97,7 +97,7 @@ input, select { font-variant-numeric: tabular-nums; }
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
   background: var(--ink); color: var(--accent); font-family: Georgia, serif; font-style: italic;
 }
-.top-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px clamp(14px, 2vw, 28px); font-size: 13px; font-weight: 650; }
+.top-nav { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 22px; font-size: 13px; font-weight: 650; }
 .top-nav a { position: relative; display: inline-flex; align-items: center; gap: 6px; }
 .top-nav a, .header-search { transition: color .2s ease; }
 .top-nav a:hover, .header-search:hover { color: #207767; }
@@ -379,6 +379,7 @@ input, select { font-variant-numeric: tabular-nums; }
   justify-content: space-between;
   gap: 36px;
   border-radius: 14px;
+  background: var(--cream);
   color: var(--ink);
   contain: content;
 }
@@ -647,10 +648,11 @@ input, select { font-variant-numeric: tabular-nums; }
 }
 .footer-inner {
   display: grid;
-  grid-template-columns: minmax(200px, 1.05fr) minmax(240px, 1.15fr) repeat(2, minmax(132px, 0.55fr));
-  gap: 28px 32px;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.15fr) minmax(0, 0.95fr) minmax(0, 0.55fr);
+  gap: 28px 40px;
   align-items: start;
 }
+.footer-inner > * { min-width: 0; }
 .brand-footer { width: fit-content; font-size: 21px; }
 .brand-footer .brand-mark { background: var(--accent); color: var(--ink); }
 .footer-lead p {
@@ -669,18 +671,30 @@ input, select { font-variant-numeric: tabular-nums; }
   letter-spacing: .14em;
   text-transform: uppercase;
 }
-.site-footer nav { display: flex; flex-direction: column; align-items: flex-start; font-size: 14px; }
-.footer-topics {
+.site-footer nav { display: flex; flex-direction: column; align-items: stretch; font-size: 14px; }
+.footer-topics,
+.footer-salary-links {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  column-gap: 18px;
   width: 100%;
 }
+.footer-topics {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  column-gap: 18px;
+}
+.footer-salary-links {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+}
+.footer-nav-legal { grid-column: 4; }
 .site-footer nav a {
   min-height: 32px;
-  display: inline-flex;
-  align-items: center;
+  max-width: 100%;
+  display: flex;
+  align-items: flex-start;
+  padding-block: 6px;
   color: var(--cream);
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 .site-footer nav a:hover { color: var(--accent); }
 .footer-legal {
@@ -1524,9 +1538,11 @@ input, select { font-variant-numeric: tabular-nums; }
 .dataset-links { display: flex; gap: 22px; margin-top: 25px; }
 
 @media (max-width: 920px) {
-  .footer-inner { grid-template-columns: 1.2fr .7fr .7fr; gap: 24px 28px; }
+  .footer-inner { grid-template-columns: minmax(0, 1.2fr) minmax(0, .85fr) minmax(0, .7fr); gap: 24px 28px; }
   .footer-lead { grid-column: 1 / -1; }
-  .footer-topics { grid-template-columns: 1fr 1fr 1fr; }
+  .footer-nav-legal { grid-column: 3; }
+  .footer-topics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .footer-salary-links { grid-template-columns: 1fr; }
   .info-page-doc > header { grid-template-columns: 1fr; gap: 18px; }
   .info-doc-grid { grid-template-columns: 1fr; }
   .info-doc-rail { position: static; grid-template-columns: 1fr 1fr; }
@@ -1549,9 +1565,11 @@ input, select { font-variant-numeric: tabular-nums; }
 
 @media (max-width: 680px) {
   .site-footer { padding-top: 36px; }
-  .footer-inner { grid-template-columns: 1fr 1fr; gap: 28px 20px; }
-  .footer-lead, .footer-nav-topics { grid-column: 1 / -1; }
-  .footer-topics { grid-template-columns: 1fr 1fr 1fr; }
+  .footer-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 20px; }
+  .footer-lead, .footer-nav-topics, .footer-nav-salary { grid-column: 1 / -1; }
+  .footer-nav-legal { grid-column: auto; }
+  .footer-topics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .footer-salary-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .footer-lead p { font-size: 16px; }
   .footer-legal { margin-top: 20px; }
   .tool-hero { padding-inline: 0; padding-bottom: 54px; }
@@ -1900,7 +1918,3 @@ input, select { font-variant-numeric: tabular-nums; }
 .salary-questions { padding-top: 8px; }
 .occupation-names { margin: 0 0 22px; color: var(--muted); font-size: 12px; line-height: 1.6; }
 .occupation-names strong { color: var(--ink); font-weight: 700; }
-
-/* The salary family is not a tool category, so its nav entry carries no
-   category chip; the extra leading keeps it from crowding the chips beside it. */
-.top-nav-salary { padding-left: 4px; }

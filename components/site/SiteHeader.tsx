@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
 import { categories, CATEGORY_IDS, HEADER_CATEGORY_IDS, type CategoryId } from '@/lib/categories';
-import { CategoryChip } from '@/components/site/CategoryArt';
+import { CategoryChip, NavChip } from '@/components/site/CategoryArt';
 
 function isCategoryActive(pathname: string, categoryId: CategoryId) {
   return pathname === `/topics/${categoryId}` || pathname.startsWith(`/${categoryId}/`);
@@ -69,10 +69,10 @@ export function SiteHeader() {
             </Link>
           ))}
           <Link
-            className="top-nav-salary"
             href="/salary"
             aria-current={pathname === '/salary' || pathname.startsWith('/salary/') ? 'page' : undefined}
           >
+            <NavChip />
             Salaries
           </Link>
         </nav>
@@ -80,7 +80,14 @@ export function SiteHeader() {
         <details className="mobile-menu" ref={menuRef} suppressHydrationWarning>
           <summary aria-label="Open site navigation">Menu</summary>
           <nav aria-label="Mobile navigation">
-            <Link className="mobile-search-link" href="/salary">Salaries</Link>
+            <Link
+              className="mobile-search-link"
+              href="/salary"
+              aria-current={pathname === '/salary' || pathname.startsWith('/salary/') ? 'page' : undefined}
+            >
+              <NavChip />
+              Salaries
+            </Link>
             <Link className="mobile-search-link" href="/search" aria-current={searchCurrent}>Search calculators</Link>
             {/* The drawer has room for the whole catalogue; the top bar does not. */}
             {CATEGORY_IDS.map((categoryId) => (

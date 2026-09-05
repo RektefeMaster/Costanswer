@@ -35,6 +35,17 @@ export function CategoryArt({
   );
 }
 
+export function NavChip() {
+  return (
+    <span className="nav-chip nav-chip-nav nav-chip-ink" aria-hidden="true">
+      <svg className="nav-check" viewBox="0 0 40 40" fill="none">
+        <path className="nav-check-short" pathLength="1" d="M5.2 18.4c1.8 1.6 4.8 7.2 7.4 13.2" />
+        <path className="nav-check-long" pathLength="1" d="M11.6 31.2C18.4 16.8 27.6 6.4 38.8 2.6" />
+      </svg>
+    </span>
+  );
+}
+
 export function CategoryChip({
   category,
   size = 'nav',
@@ -44,14 +55,8 @@ export function CategoryChip({
   size?: 'nav' | 'row';
   tone?: 'ink' | 'color';
 }) {
+  if (tone === 'ink') return <NavChip />;
   return (
-    <span className={`nav-chip nav-chip-${size} nav-chip-${tone} accent-${categories[category].accent}`} aria-hidden="true">
-      {tone === 'ink' ? (
-        <svg className="nav-check" viewBox="0 0 40 40" fill="none">
-          <path className="nav-check-short" pathLength="1" d="M5.2 18.4c1.8 1.6 4.8 7.2 7.4 13.2" />
-          <path className="nav-check-long" pathLength="1" d="M11.6 31.2C18.4 16.8 27.6 6.4 38.8 2.6" />
-        </svg>
-      ) : null}
-    </span>
+    <span className={`nav-chip nav-chip-${size} nav-chip-color accent-${categories[category].accent}`} aria-hidden="true" />
   );
 }
