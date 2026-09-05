@@ -24,8 +24,8 @@ export function SalaryArt({
       className={`category-art salary-art salary-art-${kind}`}
       src={`/salary/${kind}.svg`}
       alt=""
-      width={64}
-      height={64}
+      width={520}
+      height={520}
       decoding="async"
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : 'low'}

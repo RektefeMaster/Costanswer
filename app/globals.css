@@ -438,7 +438,12 @@ input, select { font-variant-numeric: tabular-nums; }
   transform: rotate(-11deg);
   transform-origin: center;
 }
-.salary-art-truck { width: 70%; max-width: 300px; bottom: -10%; right: -10%; }
+.salary-art-truck { width: 72%; max-width: 320px; bottom: -8%; right: -12%; }
+.salary-art-developer { width: 64%; max-width: 280px; bottom: -14%; right: -8%; }
+.salary-art-accountant { width: 52%; bottom: -16%; }
+.salary-art-admin { width: 56%; bottom: -12%; }
+.salary-art-aide { width: 62%; bottom: -10%; right: -10%; }
+.salary-art-electrician { width: 60%; bottom: -14%; }
 .category-topline, .category-copy { position: relative; z-index: 1; }
 .category-topline { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .category-number { font-size: 11px; font-weight: 800; }
