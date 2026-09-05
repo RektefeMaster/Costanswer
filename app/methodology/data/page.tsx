@@ -14,6 +14,7 @@ import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
 import { gsaPerDiemSnapshot } from '@/lib/data/gsa-perdiem-snapshot';
 import { irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
+import { cmsMarketplaceIndex } from '@/lib/data/cms-marketplace-snapshot';
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
 import { datasetSourceDisplay, officialDatasetJsonLd } from '@/lib/data/source-display';
 import { DATASET_POLICIES } from '@/lib/data/dataset-policy';
@@ -137,6 +138,14 @@ const insuranceSource = datasetSourceDisplay({
   fetchedAt: insuranceSnapshot.fetchedAt,
 });
 
+const cmsSource = datasetSourceDisplay({
+  datasetId: 'cms-marketplace',
+  observationPeriod: cmsMarketplaceIndex.observationPeriod,
+  sourceStatus: cmsMarketplaceIndex.sourceStatus,
+  verifiedAt: cmsMarketplaceIndex.verifiedAt,
+  fetchedAt: cmsMarketplaceIndex.fetchedAt,
+});
+
 const datasetJsonLd = [
   officialDatasetJsonLd({
     name: 'Freddie Mac weekly mortgage rate averages',
@@ -219,6 +228,14 @@ const datasetJsonLd = [
     sourceUrl: usdaFoodSnapshot.sourceUrl,
   }),
   officialDatasetJsonLd({
+    name: `CMS ${cmsMarketplaceIndex.observationPeriod} individual market medical landscape`,
+    description: cmsMarketplaceIndex.attribution,
+    temporalCoverage: cmsMarketplaceIndex.observationPeriod,
+    dateModified: cmsMarketplaceIndex.verifiedAt,
+    creatorName: cmsMarketplaceIndex.provider,
+    sourceUrl: cmsMarketplaceIndex.sourceUrl,
+  }),
+  officialDatasetJsonLd({
     name: `NAIC ${insuranceSnapshot.observationPeriod} homeowners, renters and auto insurance averages`,
     description: insuranceSnapshot.attribution,
     temporalCoverage: insuranceSnapshot.observationPeriod,
@@ -266,6 +283,7 @@ const ALL_SOURCES = [
   { label: 'USDA Food Plans', source: usdaSource },
   { label: 'GSA travel per diem', source: perDiemSource },
   { label: 'NAIC insurance averages', source: insuranceSource },
+  { label: 'CMS Marketplace plan premiums', source: cmsSource },
 ];
 
 export default function DataSourcesPage() {
@@ -550,6 +568,32 @@ export default function DataSourcesPage() {
           <ul>{gsaPerDiemSnapshot.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
         </details>
         <p className="dataset-links"><a href={gsaPerDiemSnapshot.sourceDocumentationUrl}>GSA per diem rates ↗</a><a href={gsaPerDiemSnapshot.mieBreakdownUrl}>M&amp;IE breakdown ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>CMS Marketplace plan premiums by county</h2>
+        <dl>
+          <div><dt>Observation period</dt><dd>{cmsMarketplaceIndex.observationPeriod} plan year</dd></div>
+          {freshnessRows(cmsSource)}
+          <div><dt>Source status</dt><dd>{cmsMarketplaceIndex.sourceStatus}</dd></div>
+          <div><dt>Cadence</dt><dd>{DATASET_POLICIES['cms-marketplace'].expectedCadence} / {DATASET_POLICIES['cms-marketplace'].refreshMode}</dd></div>
+          <div><dt>Geographies</dt><dd>{cmsMarketplaceIndex.counties.length.toLocaleString('en-US')} counties across {cmsMarketplaceIndex.coveredStateCodes.length} HealthCare.gov states</dd></div>
+          <div><dt>Published ages</dt><dd>{cmsMarketplaceIndex.publishedAges.join(', ')}</dd></div>
+          <div><dt>Age curve</dt><dd>{cmsMarketplaceIndex.counties.filter((county) => county.ageCurve === 'federal-default').length.toLocaleString('en-US')} counties on the federal default curve, {cmsMarketplaceIndex.counties.filter((county) => county.ageCurve === 'state-filed').length} state-filed</dd></div>
+        </dl>
+        <p>{cmsMarketplaceIndex.attribution} A state running its own Marketplace files premiums separately and is absent from this file rather than having no plans, which is a difference the pages using it have to state.</p>
+        <ul>{cmsMarketplaceIndex.caveats.map((item) => <li key={item}>{item}</li>)}</ul>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{cmsMarketplaceIndex.snapshotId}</dd></div>
+            <div><dt>Adapter</dt><dd>{cmsMarketplaceIndex.adapterVersion}</dd></div>
+            <div><dt>Schema</dt><dd>{cmsMarketplaceIndex.schemaVersion}</dd></div>
+            <div><dt>Packing</dt><dd>{cmsMarketplaceIndex.columnsPerCounty} integer columns per county</dd></div>
+          </dl>
+          <ul>{cmsMarketplaceIndex.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
+        </details>
+        <p className="dataset-links"><a href={cmsMarketplaceIndex.sourceDocumentationUrl}>Landscape file ↗</a><a href={cmsMarketplaceIndex.sourceUrl}>CMS public use files ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>

@@ -29,6 +29,8 @@ import currentHudJson from '@/data/hud-fmr/current.json';
 import currentIrsRetirementJson from '@/data/irs-retirement/current.json';
 import currentMortgageRateJson from '@/data/freddie-mac/current.json';
 import currentInsuranceJson from '@/data/naic-insurance/current.json';
+import cmsIndexJson from '@/data/cms-marketplace/index.json';
+import cmsPremiumsJson from '@/data/cms-marketplace/premiums.json';
 import currentTaxJson from '@/data/tax/2026.json';
 import acaSubsidyJson from '@/data/aca-subsidy/2026.json';
 import currentUsdaJson from '@/data/usda-food/current.json';
@@ -52,6 +54,7 @@ import { zctaCountySnapshotSchema } from './zcta-county';
 import { hudFmrSnapshotSchema } from './hud-fmr';
 import { irsRetirementSnapshotSchema } from './irs-retirement';
 import { naicInsuranceSnapshotSchema } from './naic-insurance';
+import { cmsMarketplaceIndexSchema, cmsMarketplacePremiumsSchema, type CmsMarketplaceIndex } from './cms-marketplace';
 import { acaSubsidySnapshotSchema, type AcaSubsidySnapshot } from './aca-subsidy';
 import { usdaFoodSnapshotSchema } from './usda-food';
 import { taxYearSnapshotSchema, type TaxYearSnapshot } from './tax/schema';
@@ -163,6 +166,24 @@ export function validateTaxYearSnapshot(rawSnapshot: unknown): TaxYearSnapshot {
 }
 
 /**
+ * CMS ships as an index plus packed premium columns, like OEWS.
+ *
+ * A row of objects for 2,055 counties does not fit in a Worker, so the numbers
+ * travel as integer cents in their own file. That file is proved by the digest
+ * the index carries, which is itself inside the hash the index is sealed with,
+ * so a change to either alone fails here.
+ */
+export function validateCmsMarketplace(rawIndex: unknown, rawPremiums: unknown): CmsMarketplaceIndex {
+  const computed = assertNormalizedHash(rawIndex as object, 'Bundled CMS marketplace index');
+  const index = cmsMarketplaceIndexSchema.parse(rawIndex);
+  if (index.normalizedSha256 !== computed) throw new Error('CMS marketplace index hash does not match the parsed document.');
+  const premiums = cmsMarketplacePremiumsSchema.parse(rawPremiums);
+  if (premiums.snapshotId !== index.snapshotId) throw new Error('Bundled CMS premium columns come from a different release than the index.');
+  if (premiums.countyCount !== index.counties.length) throw new Error('Bundled CMS premium columns cover a different number of counties than the index.');
+  return index;
+}
+
+/**
  * The 2026 ACA rules ship as a bare snapshot, like the tax year, rather than a
  * manifest envelope: there is no provider feed to promote from, only a small
  * table transcribed from a Revenue Procedure and the Federal Register. The hash
@@ -206,6 +227,7 @@ export function verifyBundledSnapshots(): void {
   validateUsdaFoodEnvelope(currentUsdaJson);
   validateTaxYearSnapshot(currentTaxJson);
   validateAcaSubsidySnapshot(acaSubsidyJson);
+  validateCmsMarketplace(cmsIndexJson, cmsPremiumsJson);
   hudFmrSnapshotSchema.parse(hudFy2026Json);
   hudFmrSnapshotSchema.parse(hudFy2027Json);
   hudReleasesSchema.parse(hudReleasesJson);

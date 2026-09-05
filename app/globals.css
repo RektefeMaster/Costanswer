@@ -968,11 +968,22 @@ input, select { font-variant-numeric: tabular-nums; }
 .health-status ul { margin: 10px 0 0; padding-left: 18px; }
 .health-status li { font-size: 12px; line-height: 1.6; }
 .health-status li + li { margin-top: 7px; }
+.health-county-choice { margin: 0 30px 4px; }
+.health-county-choice p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+.health-metal-table { margin: 22px 30px; }
+.health-metal-table table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.health-metal-table caption { text-align: left; font-weight: 780; padding: 0 0 14px; }
+.health-metal-table th, .health-metal-table td { padding: 13px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+.health-metal-table th:first-child { text-align: left; }
+.health-metal-table thead { background: rgba(32,119,103,.06); }
+.health-metal-table > p { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
 .health-range-note { margin: 0; padding: 20px 30px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; }
 @media (max-width: 600px) {
   .health-premiums, .health-advanced { margin-left: 20px; margin-right: 20px; }
-  .health-status, .health-range-note { margin-left: 20px; margin-right: 20px; }
+  .health-status, .health-range-note, .health-metal-table, .health-county-choice { margin-left: 20px; margin-right: 20px; }
   .health-range-note { padding-left: 0; padding-right: 0; }
+  .health-metal-table { font-size: 11px; }
+  .health-metal-table th, .health-metal-table td { padding: 11px 5px; overflow-wrap: anywhere; }
 }
 .calculator-heading { display: grid; grid-template-columns: .35fr 1fr; column-gap: 28px; padding: 26px 30px; border-bottom: 1px solid var(--line); }
 .calculator-heading > p { grid-row: 1 / 3; margin: 3px 0 0; color: #207767; font-size: 10px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }

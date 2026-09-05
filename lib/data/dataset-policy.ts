@@ -14,6 +14,7 @@ export const DATASET_IDS = [
   'irs-retirement-limits',
   'gsa-perdiem',
   'naic-insurance',
+  'cms-marketplace',
 ] as const;
 
 export type DatasetId = (typeof DATASET_IDS)[number];
@@ -251,6 +252,24 @@ export const DATASET_POLICIES: Record<DatasetId, DatasetPolicy> = {
     releaseIntervalDays: 365,
     publicationLagDays: 0,
     releaseSchedule: 'Homeowners and Auto Insurance Database reports, roughly annual and two to three years behind the data year',
+  },
+  /*
+   * The landscape file describes a plan year, and it is published shortly before
+   * that year's open enrollment rather than after it. Anchoring on the release
+   * date keeps a 2026 file current through the year it prices, and the 120-day
+   * grace window covers the gap between one plan year's file and the next.
+   */
+  'cms-marketplace': {
+    datasetId: 'cms-marketplace',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 120,
+    refreshMode: 'manual',
+    providerShort: 'CMS',
+    periodKind: 'reference-year',
+    freshnessAnchor: 'published-at',
+    releaseIntervalDays: 365,
+    publicationLagDays: 0,
+    releaseSchedule: 'Individual Market Medical Landscape file, published for each plan year before open enrollment',
   },
 };
 

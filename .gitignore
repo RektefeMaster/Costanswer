@@ -50,9 +50,9 @@ next-env.d.ts
 # hash to the promoted value.
 data/bls-oews/snapshots/
 
-# CMS Marketplace plan-attribute archives are 72 MB of provider zips, downloaded
-# for a county-level benchmark Silver premium pipeline that does not exist yet.
-# The ACA calculator reads only data/aca-subsidy/2026.json — the IRS contribution
-# table and HHS poverty guidelines — which is small, reviewed, and committed.
-# Re-download these from the CMS public use files when that pipeline is built.
-data/cms-marketplace/raw/
+# The CMS landscape archives are 72 MB of provider zips. Their provenance lives
+# in data/cms-marketplace/raw/*.sha256 and in the rawSha256 the promoted index
+# carries, so `npm run verify:cms` proves the committed snapshot against them
+# whenever they are present and checks its own hashes when they are not.
+# Re-download from https://www.cms.gov/marketplace/resources/data/public-use-files
+data/cms-marketplace/raw/*.zip

@@ -17,6 +17,7 @@ import {
   validateHudEnvelope,
   validateIrsRetirementEnvelope,
   validateMortgageRateEnvelope,
+  validateCmsMarketplace,
   validateNaicInsuranceEnvelope,
   validateTaxYearSnapshot,
   validateUsdaFoodEnvelope,
@@ -234,6 +235,28 @@ async function verifyNaicInsurance(): Promise<string> {
   return snapshotId;
 }
 
+/**
+ * CMS travels as an index plus packed columns rather than an envelope, so the
+ * checks are that the two files name the same release and that the recorded
+ * source digest still matches. The 56 MB archive itself is not in the
+ * repository; `npm run data:cms -- --verify` replays it when it is present.
+ */
+async function verifyCmsMarketplace(): Promise<string> {
+  const directory = path.join(process.cwd(), 'data', 'cms-marketplace');
+  const indexDocument = JSON.parse(await readFile(path.join(directory, 'index.json'), 'utf8')) as unknown;
+  const premiums = JSON.parse(await readFile(path.join(directory, 'premiums.json'), 'utf8')) as unknown;
+  const index = validateCmsMarketplace(indexDocument, premiums);
+  const recordedDigest = (await readFile(path.join(directory, 'raw', '2026-medical.sha256'), 'utf8')).trim();
+  if (recordedDigest !== index.rawSha256) throw new Error('Recorded CMS source digest does not match the promoted index.');
+  const immutable = await readFile(path.join(directory, 'snapshots', `${index.snapshotId}.json`), 'utf8');
+  if (immutable !== await readFile(path.join(directory, 'index.json'), 'utf8')) throw new Error('CMS immutable index differs from index.json.');
+  const policy = DATASET_POLICIES['cms-marketplace'];
+  if (policy.periodKind !== 'reference-year' || policy.freshnessAnchor !== 'published-at') {
+    throw new Error('CMS marketplace must stay a reference-year dataset anchored on the provider release date.');
+  }
+  return index.snapshotId;
+}
+
 const ids = [
   await verifyElectricity(),
   await verifyGasoline(),
@@ -243,6 +266,7 @@ const ids = [
   await verifyTax(),
   await verifyIrsRetirement(),
   await verifyNaicInsurance(),
+  await verifyCmsMarketplace(),
   ...(await verifyLocationDatasets()),
 ];
 console.log(`Verified ${ids.join(', ')}: raw hash, normalized hash, semantics and promotion envelope passed.`);

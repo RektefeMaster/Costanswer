@@ -744,41 +744,49 @@ test('insurance budget uses the dated NAIC benchmark, switches to entered premiu
   await expect(page.locator('.insurance-comparison-verdict')).toContainText('3.33 claim-free years');
 });
 
-test('the subsidy calculator applies the 2026 table and refuses to price what it cannot determine', async ({ page }) => {
+test('the subsidy calculator prices a real county and refuses to price what it cannot determine', async ({ page }) => {
   await page.goto('/money/health-insurance');
   await expect(page.getByRole('heading', { name: 'Health Insurance Subsidy Calculator' })).toBeVisible();
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
-  await expect(page.locator('.data-callout')).toContainText('HHS 2025 poverty guidelines');
+  await expect(page.locator('.data-callout')).toContainText('HHS 2025 guidelines');
   await expect(page.locator('.result-audit')).toContainText('Method aca-subsidy-v1.0.0');
+  // Both releases are named: the county filing and the federal rules.
+  await expect(page.locator('.result-audit')).toContainText('cms-marketplace-2026-v1');
   await expect(page.locator('.result-audit')).toContainText('aca-subsidy-2026-');
 
-  // One person, $42,000 against a $15,650 guideline: 268.37% of FPL lands inside
-  // the 250-300% band, interpolating to 9.00% and a $314.95 monthly contribution.
-  await expect(page.locator('.primary-result strong')).toHaveText('$244.95');
-  await expect(page.locator('.result-stat-grid')).toContainText('268.4%');
-  await expect(page.locator('.result-stat-grid')).toContainText('$314.95');
-  await expect(page.locator('.result-stat-grid')).toContainText('9.00% of household income');
-  await expect(page.locator('.health-status')).toContainText('Conditional estimate');
+  // ZIP 77002 is Harris County, Texas. Nothing about the benchmark is typed in.
+  await expect(page.locator('.data-footnote').first()).toContainText('Harris County, Texas');
+  await expect(page.locator('.result-stat-grid')).toContainText('232.6%');
+  await expect(page.locator('.result-stat-grid')).toContainText('7.80% of household income');
+  await expect(page.locator('.primary-result strong')).toHaveText('$388.04');
+  // A fixed-dollar credit buys a cheap plan down to nothing but never pays out.
+  await expect(page.locator('.health-metal-table')).toContainText('Bronze');
+  await expect(page.locator('.health-metal-table tbody')).toContainText('$0.00');
+  // 232.6% of the guideline lands in the 73% cost-sharing band.
+  await expect(page.locator('.health-status').nth(1)).toContainText('73% variant');
 
-  // A second household member adds one guideline increment, moving the ceiling.
-  await page.locator('#health-household').fill('2');
-  await expect(page.locator('.health-range-note')).toContainText('$21,150');
-  await expect(page.locator('.health-range-note')).toContainText('$84,600');
+  // The fourth child is not billed, and the page says so rather than hiding it.
+  await page.locator('#health-ages').fill('40, 38, 12, 10, 8, 6');
+  await expect(page.locator('.data-footnote').nth(1)).toContainText('not charged a premium');
 
-  // Exactly at 400% FPL the contribution is the flat 9.96%; a dollar over, the
-  // 2026 cliff removes the credit entirely rather than tapering it.
-  await page.locator('#health-magi').fill('84600');
-  await page.locator('#health-benchmark').fill('900');
-  await page.locator('#health-plan').fill('900');
-  await expect(page.locator('.result-stat-grid')).toContainText('9.96% of household income');
-  await expect(page.locator('.primary-result strong')).toHaveText('$702.18');
-  await page.locator('#health-magi').fill('84601');
+  // A state that runs its own exchange is named, not shown as having no plans.
+  await page.locator('#health-zip').fill('90012');
+  await expect(page.locator('.health-status')).toContainText('Priced by a state exchange');
+  await expect(page.locator('.health-status')).toContainText('California');
+  await page.locator('#health-zip').fill('00000');
+  await expect(page.locator('.health-status')).toContainText('ZIP not recognised');
+
+  // Above the 2026 ceiling the credit is gone, and the headline stops claiming one.
+  await page.locator('#health-zip').fill('77002');
+  await page.locator('#health-ages').fill('40');
+  await page.locator('#health-household').fill('1');
+  await page.locator('#health-magi').fill('62601');
   await expect(page.locator('.health-status')).toContainText('Above the 400% FPL ceiling');
   await expect(page.locator('.primary-result p')).toHaveText('Your monthly premium, with no credit in this scenario');
-  await expect(page.locator('.primary-result strong')).toHaveText('$900.00');
 
   // Unconfirmed eligibility must read as "not estimated", never as a zero credit.
   await page.locator('#health-magi').fill('42000');
+  await page.locator('.health-advanced > summary').click();
   await page.locator('#health-eligibility').selectOption('unknown');
   await expect(page.locator('.health-status')).toContainText('Eligibility not confirmed');
   await expect(page.locator('.primary-result p')).toHaveText('Full monthly premium, no credit estimated');
@@ -786,7 +794,7 @@ test('the subsidy calculator applies the 2026 table and refuses to price what it
 
   // Below the income range the answer is Medicaid, not a dollar figure.
   await page.locator('#health-eligibility').selectOption('assumed-eligible');
-  await page.locator('#health-magi').fill('18000');
+  await page.locator('#health-magi').fill('12000');
   await expect(page.locator('.health-status')).toContainText('Below the subsidy income range');
   await expect(page.locator('.health-status')).toContainText('Medicaid');
   await expect(page.locator('.result-stat-grid')).toContainText('Outside the table');

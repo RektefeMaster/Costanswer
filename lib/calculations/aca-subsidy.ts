@@ -21,6 +21,15 @@ export const acaSubsidyInputSchema = z.object({
   /** A planning assumption about all non-income conditions, not an eligibility determination. */
   eligibility: z.enum(['assumed-eligible', 'ineligible', 'unknown']),
   coverageMonths: z.number().int().min(1).max(12).default(12),
+  /**
+   * The published release a supplied benchmark was read from, when it was not
+   * typed in by hand.
+   *
+   * A credit built from a dated county filing and one built from a number
+   * somebody remembered are different claims, and the audit line has to be able
+   * to tell them apart.
+   */
+  benchmarkSnapshotId: z.string().min(1).optional(),
 }).refine((input) => input.monthlyEligiblePlanPremium === undefined || input.monthlyEligiblePlanPremium <= input.monthlyPlanPremium, {
   message: 'The eligible enrollment premium cannot exceed the full selected-plan premium.',
   path: ['monthlyEligiblePlanPremium'],
@@ -125,7 +134,7 @@ export function calculateAcaSubsidy(rawInput: unknown, rawSnapshot: AcaSubsidySn
   return {
     value,
     calculationVersion: ACA_SUBSIDY_VERSION,
-    datasetSnapshotIds: [snapshot.snapshotId],
+    datasetSnapshotIds: input.benchmarkSnapshotId ? [snapshot.snapshotId, input.benchmarkSnapshotId] : [snapshot.snapshotId],
     breakdown: [
       { label: 'Poverty guideline', value: formatMoney(povertyGuideline, 0), detail: `${snapshot.povertyGuidelineYear} HHS guideline for a tax household of ${input.householdSize}; used for ${input.coverageYear} coverage.` },
       { label: 'Household income vs FPL', value: `${formatNumber(incomePercentFpl, { maximumFractionDigits: 2 })}%`, detail: `${formatMoney(input.annualHouseholdMagi, 0)} annual household MAGI.` },
@@ -139,7 +148,9 @@ export function calculateAcaSubsidy(rawInput: unknown, rawSnapshot: AcaSubsidySn
       '2026 Marketplace credits use the 2025 poverty guidelines in effect when annual enrollment began. Alaska and Hawaii have separate guidelines.',
       'The eligibility assumption requires qualified non-catastrophic Marketplace coverage, the tax-filing and dependent requirements, paid required premiums, and no disqualifying government or affordable employer coverage for the people included in these premiums. Married filing separately has limited exceptions.',
       'Employer offers, Medicaid, Medicare, CHIP, TRICARE, immigration status, mixed-eligibility families, and HRA benefits require a Marketplace review. This calculator does not infer eligibility from income or state alone.',
-      'Use your actual second-lowest-cost Silver plan premium for the eligible coverage family and location, excluding its tobacco surcharge. Enrollment averages and national premiums are not a benchmark quote.',
+      input.benchmarkSnapshotId === undefined
+        ? 'Use your actual second-lowest-cost Silver plan premium for the eligible coverage family and location, excluding its tobacco surcharge. Enrollment averages and national premiums are not a benchmark quote.'
+        : 'The benchmark is the second-lowest-cost Silver premium filed for this county and these ages, read from the published plan-year file. Your Marketplace benchmark can differ if a different set of people enrols or a plan is unavailable to you.',
       input.monthlyEligiblePlanPremium === undefined
         ? 'The full selected-plan premium is assumed to be eligible for the credit cap. Enter a separate eligible premium if it includes non-essential-health-benefit add-ons.'
         : 'The credit is capped at the eligible enrollment premium entered; any non-eligible difference remains in your net cost.',

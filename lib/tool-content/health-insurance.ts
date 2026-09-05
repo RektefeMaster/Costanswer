@@ -4,15 +4,19 @@ export const HEALTH_INSURANCE_EDITORIAL: ToolEditorial[] = [{
   toolId: 'health-insurance',
   guide: {
     heading: 'Work out what a Marketplace plan actually costs you in 2026',
-    lede: 'The premium tax credit is not a discount rate or a percentage off. It is a fixed dollar amount built from your household income, your household size, and one specific plan you may not be buying. This page applies the published federal formula step by step, shows the percentage it used, and says plainly where the arithmetic stops and a Marketplace decision begins.',
+    lede: 'The premium tax credit is not a discount rate or a percentage off. It is a fixed dollar amount built from your household income, your household size, and one specific plan you may not be buying. Enter a ZIP code and the ages enrolling: the benchmark that sizes the credit is read from the plan-year premiums CMS published for your county, so you do not have to look it up. Every step is shown, and the page says plainly where the arithmetic stops and a Marketplace decision begins.',
     sections: [
       { heading: 'Two premiums, two different jobs', paragraphs: [
-        'The credit is sized by the second-lowest-cost Silver plan available to the people enrolling in your county, called the benchmark. It is subtracted from whichever plan you actually pick. Those are usually different plans at different prices, which is why the page asks for both numbers rather than one.',
+        'The credit is sized by the second-lowest-cost Silver plan available to the people enrolling in your county, called the benchmark. It is subtracted from whichever plan you actually pick. Those are usually different plans at different prices, which is why the page prices both from the county filing rather than assuming they are the same.',
         'Choose a cheaper plan than the benchmark and the credit stays the same size, so more of your premium disappears; the credit can never exceed what you are enrolled in, so it cannot pay you. Choose a dearer plan and the extra is yours. The benchmark also excludes any tobacco surcharge even when the plan you buy carries one.',
       ] },
       { heading: 'How the contribution percentage is found', paragraphs: [
         'Your income is expressed as a percentage of the poverty guideline for your household size, then located in the IRS table. The table gives each band a starting and an ending percentage, and your percentage sits proportionally between them. It is not a bracket: at 175% of the guideline you get a percentage roughly halfway across the 150–200% band, not the band edge.',
         'That percentage is applied to annual household income and divided by twelve to give your expected monthly contribution. The credit is the benchmark premium minus that contribution, floored at zero. When the benchmark is cheaper than your expected contribution there is no credit, which happens to higher earners in low-premium areas.',
+      ] },
+      { heading: 'How your county premium is built', paragraphs: [
+        'Premiums are filed per person and added up: every adult, plus at most the three oldest children under 21. A fourth child adds nothing to the bill, and the page says so when it applies, because a household adding a quote by hand usually gets that wrong.',
+        'CMS publishes a premium at eight ages. Almost every county prices the ages in between off the federal default age curve, which is checked plan by plan when the data is ingested, so a 35-year-old gets an exact figure rather than an interpolation. A state filing its own curve is flagged and quoted at the nearest published age instead of being forced through a curve it does not use.',
       ] },
       { heading: 'Which income and which household', paragraphs: [
         'Use modified adjusted gross income for the coverage year, for the whole tax household, including members required to file even if they are not enrolling. Take-home pay, gross wages alone, and last year’s return are all different numbers and will give a different credit.',
@@ -29,8 +33,10 @@ export const HEALTH_INSURANCE_EDITORIAL: ToolEditorial[] = [{
     ],
   },
   faq: [
-    { question: 'How do I find my second-lowest-cost Silver plan premium?', answer: ['Run a plan preview on your Marketplace with your county, household size, and the ages of the people enrolling. Sort Silver plans by price and take the second cheapest. For a year you have already been covered, the same figure appears on Form 1095-A, column B, as the applicable second-lowest-cost Silver plan premium.'] },
-    { question: 'Why does the calculator ask for two different premiums?', answer: ['Because the credit is calculated from one plan and spent on another. The second-lowest-cost Silver plan decides how many dollars of credit you get. Your chosen plan is what those dollars are subtracted from. Entering the same number twice is only correct if you are actually enrolling in the benchmark plan itself.'] },
+    { question: 'How do I find my second-lowest-cost Silver plan premium?', answer: ['You do not have to. Enter your ZIP code and the ages enrolling, and the benchmark is taken from the plan-year premiums CMS filed for your county, ranked to the second-cheapest Silver plan. If you would rather check it yourself, run a plan preview on your Marketplace and take the second-cheapest Silver, or read column B of a Form 1095-A from a year you were covered.'] },
+    { question: 'Why does the calculator ask for a ZIP code?', answer: ['Premiums are filed by county, and a ZIP is the shortest way most people can name theirs. Where a ZIP straddles a county line the page asks which county you are in, because the two file separately and can carry different benchmarks and so different credits. States running their own Marketplace publish premiums elsewhere; for those the page says so and lets you enter your own benchmark.'] },
+    { question: 'What are cost-sharing reductions and do I get them?', answer: ['They are a second, separate form of help that lowers your deductible and out-of-pocket maximum rather than your premium, and they arrive automatically by income: the richest variant up to 150% of the poverty guideline, then smaller ones to 200% and 250%. They exist only on Silver plans. If you qualify, the page shows the actual deductible those variants carry in your county, because choosing a cheaper Bronze plan quietly gives that up.'] },
+    { question: 'Why is the benchmark different from the plan I want to buy?', answer: ['Because the credit is calculated from one plan and spent on another. The second-lowest-cost Silver plan decides how many dollars of credit you get; your chosen plan is what those dollars come off. That is why a cheaper plan does not shrink your credit, and why the page shows Bronze, Silver, and Gold against the same credit amount.'] },
     { question: 'What happens if I earn just over 400% of the poverty guideline in 2026?', answer: ['The credit drops to zero. The temporary expansion above that ceiling ended after 2025, so 2026 has a hard cliff rather than a taper. The calculator shows the exact dollar income at which the ceiling falls for your household size, so you can see how close you are.'] },
     { question: 'Is this the same as the subsidy the Marketplace will offer me?', answer: ['It applies the same published formula, but it is not an eligibility determination. The Marketplace verifies income, coverage, filing status, and other conditions this page cannot see, and the IRS reconciles the final credit on Form 8962 with your actual income. Treat this as a planning number to check their figure against.'] },
     { question: 'Does the credit cover my deductible and copays?', answer: ['No. The premium tax credit only reduces the monthly premium. Deductibles, copays, and coinsurance are separate, and so are cost-sharing reductions, which are a different form of help attached to Silver plans for lower incomes. This calculator estimates premium assistance only.'] },
@@ -45,18 +51,21 @@ export const HEALTH_INSURANCE_EDITORIAL: ToolEditorial[] = [{
     { term: 'Federal poverty guideline', definition: 'The HHS income figure for a household size that income is compared against; 2026 coverage uses the 2025 guidelines.' },
     { term: 'Applicable contribution percentage', definition: 'The share of household income the IRS table expects you to pay toward the benchmark premium.' },
     { term: 'Advance payment', definition: 'Credit paid to the insurer during the year, reconciled against your actual income on Form 8962.' },
-    { term: 'Cost-sharing reduction', definition: 'Separate help with deductibles and copays on Silver plans at lower incomes; not part of this premium estimate.' },
+    { term: 'Cost-sharing reduction', definition: 'Separate help that lowers the deductible and out-of-pocket maximum on a Silver plan, granted by income rather than chosen.' },
+    { term: 'Rating area', definition: 'The geographic area a state files premiums for; a county sits in exactly one of them.' },
   ],
   tips: [
-    'Take the benchmark premium from a plan preview for your own county and the ages actually enrolling, not a state or national average.',
+    'Enter the ages of the people actually enrolling, not everyone in the tax household: the two sets are often different and they do different jobs here.',
     'Estimate income for the coverage year rather than copying last year’s return, and report changes to the Marketplace as they happen.',
     'Check the dollar income where the 400% ceiling falls for your household before assuming a raise leaves you better off.',
     'Compare plans on the premium after the credit plus the deductible you would face, not on the premium alone.',
+    'If your income qualifies you for a cost-sharing reduction, weigh the lower Silver deductible against a cheaper Bronze premium before choosing.',
   ],
   caveats: [
     'This is a premium estimate from published federal rules, not an eligibility determination, an offer of coverage, or tax advice.',
     'Eligibility conditions beyond income are assumed rather than checked, and the assumption is stated on the result.',
-    'State-funded assistance, cost-sharing reductions, Medicaid, CHIP, and employer HRA arrangements are outside this calculation.',
+    'Premiums cover the states using HealthCare.gov. A state running its own Marketplace files elsewhere, and the page says so rather than showing nothing.',
+    'State-funded assistance, Medicaid, CHIP, and employer HRA arrangements are outside this calculation, and provider networks and drug formularies are not compared at all.',
     'For 2026 there is no cap on repaying excess advance credits, so an underestimated income can be owed back in full.',
   ],
 }];

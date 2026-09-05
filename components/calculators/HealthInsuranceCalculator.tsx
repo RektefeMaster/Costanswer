@@ -5,7 +5,11 @@ import { calculateAcaSubsidy, type AcaSubsidyStatus } from '@/lib/calculations/a
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
-import { STATE_CODES, US_STATES, type StateCode } from '@/lib/location/states';
+import {
+  benchmarkForHousehold, cmsCountiesForZip, cmsMarketplaceIndex, costSharingLevelForIncome,
+  costSharingVariant, lowestMetalForHousehold, metalSummary,
+} from '@/lib/data/cms-marketplace-snapshot';
+import { US_STATES, type StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type Eligibility = 'assumed-eligible' | 'unknown' | 'ineligible';
@@ -13,10 +17,10 @@ type Eligibility = 'assumed-eligible' | 'unknown' | 'ineligible';
 /**
  * How firmly each outcome may be stated.
  *
- * Only `estimated` produces a credit this page is willing to put in a headline.
- * The two null-credit outcomes are not zero-credit outcomes: someone below the
- * income range may qualify for Medicaid at no premium, and someone who has not
- * checked the coverage and filing conditions has no answer yet. Printing $0 of
+ * Only `estimated` produces a credit this page will put in a headline. The two
+ * null-credit outcomes are not zero-credit outcomes: someone below the income
+ * range may qualify for Medicaid at no premium, and someone who has not checked
+ * the coverage and filing conditions has no answer yet. Printing $0 of
  * assistance for either would be a claim the calculation did not make.
  */
 const STATUS_LABELS: Record<AcaSubsidyStatus, { tag: string; tone: 'estimate' | 'review' }> = {
@@ -27,141 +31,214 @@ const STATUS_LABELS: Record<AcaSubsidyStatus, { tag: string; tone: 'estimate' | 
   ineligible: { tag: 'No credit in this scenario', tone: 'review' },
 };
 
+const parseAges = (text: string): number[] => text.split(',').map((part) => Number(part.trim()))
+  .filter((age) => Number.isInteger(age) && age >= 0 && age <= 120);
+
 export function HealthInsuranceCalculator() {
-  const [stateCode, setStateCode] = useState<StateCode>('TX');
-  const [householdSize, setHouseholdSize] = useState('1');
-  const [annualHouseholdMagi, setAnnualHouseholdMagi] = useState('42000');
-  const [monthlyBenchmarkPremium, setMonthlyBenchmarkPremium] = useState('550');
-  const [monthlyPlanPremium, setMonthlyPlanPremium] = useState('480');
+  const [zip, setZip] = useState('77002');
+  const [chosenFips, setChosenFips] = useState('');
+  const [enrollingAges, setEnrollingAges] = useState('40, 38, 10');
+  const [householdSize, setHouseholdSize] = useState('3');
+  const [annualHouseholdMagi, setAnnualHouseholdMagi] = useState('62000');
   const [eligibility, setEligibility] = useState<Eligibility>('assumed-eligible');
-  const [monthlyEligiblePlanPremium, setMonthlyEligiblePlanPremium] = useState('');
+  const [benchmarkOverride, setBenchmarkOverride] = useState('');
+  const [planOverride, setPlanOverride] = useState('');
   const [coverageMonths, setCoverageMonths] = useState('12');
 
+  const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
+  const matches = lookup.status === 'covered' ? lookup.counties : [];
+  const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
+  const ages = useMemo(() => parseAges(enrollingAges), [enrollingAges]);
+
+  /**
+   * The benchmark and the sticker price of each metal level, for these ages in
+   * this county. A typed override replaces the benchmark and, with it, the claim
+   * that the figure came from the published file.
+   */
+  const quotes = useMemo(() => {
+    if (!county || ages.length === 0) return null;
+    try {
+      const benchmark = benchmarkForHousehold(county.countyFips, ages);
+      return {
+        benchmark,
+        bronze: lowestMetalForHousehold(county.countyFips, 'bronze', ages),
+        silver: lowestMetalForHousehold(county.countyFips, 'silver', ages),
+        gold: lowestMetalForHousehold(county.countyFips, 'gold', ages),
+      };
+    } catch {
+      return null;
+    }
+  }, [county, ages]);
+
+  const overrideBenchmark = benchmarkOverride.trim() === '' ? null : Number(benchmarkOverride);
+  const usedBenchmark = overrideBenchmark ?? quotes?.benchmark.premium ?? null;
+  // Default the plan being priced to the cheapest Silver, the plan most people compare against.
+  const usedPlan = planOverride.trim() !== '' ? Number(planOverride) : quotes?.silver?.premium ?? usedBenchmark;
+
   const calculation = useMemo(() => {
+    if (usedBenchmark === null || usedPlan === null || usedPlan === undefined) {
+      return { result: null, error: '' };
+    }
     try {
       return {
         result: calculateAcaSubsidy({
           coverageYear: 2026,
-          stateCode,
+          stateCode: county?.stateCode ?? 'TX',
           householdSize: Number(householdSize),
           annualHouseholdMagi: Number(annualHouseholdMagi),
-          monthlyBenchmarkPremium: Number(monthlyBenchmarkPremium),
-          monthlyPlanPremium: Number(monthlyPlanPremium),
-          // An empty advanced field means "no separate eligible premium", not zero.
-          monthlyEligiblePlanPremium: monthlyEligiblePlanPremium.trim() === '' ? undefined : Number(monthlyEligiblePlanPremium),
+          monthlyBenchmarkPremium: usedBenchmark,
+          monthlyPlanPremium: usedPlan,
           eligibility,
           coverageMonths: Number(coverageMonths),
+          benchmarkSnapshotId: overrideBenchmark === null ? cmsMarketplaceIndex.snapshotId : undefined,
         }),
         error: '',
       };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [stateCode, householdSize, annualHouseholdMagi, monthlyBenchmarkPremium, monthlyPlanPremium, monthlyEligiblePlanPremium, eligibility, coverageMonths]);
+  }, [county, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark]);
 
   const result = calculation.result;
   const value = result?.value;
   const status = value ? STATUS_LABELS[value.status] : null;
   const hasCredit = value?.monthlyNetPremium !== null && value?.monthlyNetPremium !== undefined;
-  const guidelineRegion = stateCode === 'AK' ? 'Alaska' : stateCode === 'HI' ? 'Hawaii' : 'the contiguous states and DC';
+  const credit = value?.monthlyPremiumTaxCredit ?? null;
+  const csrLevel = value && value.status === 'estimated' ? costSharingLevelForIncome(value.incomePercentFpl) : null;
+  const csr = county && csrLevel ? costSharingVariant(county.countyFips, csrLevel) : null;
+  const standardSilver = county ? metalSummary(county.countyFips, 'silver') : null;
+  const afterCredit = (full: number | null | undefined) =>
+    full === null || full === undefined || credit === null ? null : Math.max(0, Math.round((full - credit) * 100) / 100);
 
   return (
     <CalculatorPanel
       title="Your 2026 premium after the credit"
-      intro="Enter your expected 2026 household income and the two premiums the Marketplace shows you. This applies the published federal formula; it does not determine eligibility."
+      intro="Enter a ZIP code and who is enrolling. The benchmark that sizes your credit is read from the plan-year file CMS published for your county."
       toolId="health-insurance"
       category="money"
       calculationState={result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([stateCode, householdSize, annualHouseholdMagi, monthlyBenchmarkPremium, monthlyPlanPremium, monthlyEligiblePlanPremium, eligibility, coverageMonths])}
+      calculationSignature={JSON.stringify([zip, chosenFips, enrollingAges, householdSize, annualHouseholdMagi, eligibility, benchmarkOverride, planOverride, coverageMonths])}
     >
       <div className="data-callout">
-        <span>2026 COVERAGE</span>
+        <span>2026 PLAN YEAR</span>
         <p>
-          <strong>IRS contribution table · HHS {acaSubsidySnapshot.povertyGuidelineYear} poverty guidelines</strong>
-          <small>{acaSubsidySnapshot.snapshotId}</small>
+          <strong>CMS county plan filings · IRS contribution table · HHS {acaSubsidySnapshot.povertyGuidelineYear} guidelines</strong>
+          <small>{cmsMarketplaceIndex.snapshotId} · {acaSubsidySnapshot.snapshotId}</small>
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="State" htmlFor="health-state" hint={`Sets the poverty guideline for ${guidelineRegion}. It does not price plans: Alaska and Hawaii have separate guidelines, every other state and DC share one.`}>
-          <span className="input-shell select-shell">
-            <select id="health-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>
-              {STATE_CODES.map((code) => <option key={code} value={code}>{US_STATES[code]}</option>)}
-            </select>
-          </span>
+        <Field label="ZIP code" htmlFor="health-zip" hint={`Premiums are filed by county. ${cmsMarketplaceIndex.counties.length.toLocaleString('en-US')} counties across ${cmsMarketplaceIndex.coveredStateCodes.length} HealthCare.gov states are priced here.`}>
+          <InputShell>
+            <input id="health-zip" type="text" inputMode="numeric" maxLength={5} value={zip} onChange={(event) => { setZip(event.target.value); setChosenFips(''); }} />
+          </InputShell>
         </Field>
-        <Field label="People in your tax household" htmlFor="health-household" hint="You, your spouse if filing jointly, and everyone you claim as a dependent, whether or not they are enrolling.">
+        <Field label="Ages of everyone enrolling" htmlFor="health-ages" hint="Separate with commas. Premiums are per person; at most the three oldest children under 21 are charged.">
+          <InputShell>
+            <input id="health-ages" type="text" inputMode="numeric" value={enrollingAges} onChange={(event) => setEnrollingAges(event.target.value)} />
+          </InputShell>
+        </Field>
+        <Field label="People in your tax household" htmlFor="health-household" hint="Everyone on the return, whether or not they are enrolling. This sets the poverty guideline, not the premium.">
           <InputShell>
             <input id="health-household" type="number" min="1" max="30" step="1" value={householdSize} onChange={(event) => setHouseholdSize(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Expected 2026 household income (MAGI)" htmlFor="health-magi" hint="Modified adjusted gross income for the whole tax household, for the coverage year. Not take-home pay and not last year's return.">
+        <Field label="Expected 2026 household income (MAGI)" htmlFor="health-magi" hint="Modified adjusted gross income for the coverage year. Not take-home pay and not last year's return.">
           <InputShell prefix="$">
             <input id="health-magi" type="number" min="0" step="1000" value={annualHouseholdMagi} onChange={(event) => setAnnualHouseholdMagi(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Other eligibility conditions" htmlFor="health-eligibility" hint="Coverage, tax-filing, and no disqualifying employer or government coverage. This calculator cannot check these.">
-          <span className="input-shell select-shell">
-            <select id="health-eligibility" value={eligibility} onChange={(event) => setEligibility(event.target.value as Eligibility)}>
-              <option value="assumed-eligible">Assume they are met</option>
-              <option value="unknown">I have not checked them</option>
-              <option value="ineligible">They are not met</option>
-            </select>
-          </span>
-        </Field>
       </div>
+
       {/*
-        The benchmark and the plan are different premiums doing different jobs:
-        the benchmark sizes the credit and the selected plan is what the credit
-        is subtracted from. Reading the same number into both is the mistake
-        this section exists to prevent.
+        A ZIP that straddles a county line has to be resolved by the reader:
+        two counties in one ZIP can file different benchmarks and so different
+        credits, and picking one silently would hide that.
       */}
-      <div className="health-premiums">
-        <h3>The two premiums from the Marketplace</h3>
-        <div className="calc-form-grid compact-grid">
-          <Field label="Second-lowest-cost Silver, per month" htmlFor="health-benchmark" hint="The benchmark that sizes your credit, for your county and the people enrolling, before any tobacco surcharge. Marketplace plan previews list it; last year's is on Form 1095-A, column B.">
-            <InputShell prefix="$">
-              <input id="health-benchmark" type="number" min="0" step="25" value={monthlyBenchmarkPremium} onChange={(event) => setMonthlyBenchmarkPremium(event.target.value)} />
-            </InputShell>
-          </Field>
-          <Field label="The plan you want, per month" htmlFor="health-plan" hint="Full price of the plan you are choosing, before any credit. It can be any metal level, cheaper or dearer than the benchmark.">
-            <InputShell prefix="$">
-              <input id="health-plan" type="number" min="0" step="25" value={monthlyPlanPremium} onChange={(event) => setMonthlyPlanPremium(event.target.value)} />
-            </InputShell>
-          </Field>
+      {lookup.status === 'covered' && matches.length > 1 && (
+        <div className="health-county-choice">
+          <p>ZIP {zip} spans {matches.length} counties, which file separately.</p>
+          <div className="mode-tabs">
+            {matches.map((entry) => (
+              <button key={entry.countyFips} type="button" aria-pressed={entry.countyFips === county?.countyFips}
+                className={entry.countyFips === county?.countyFips ? 'active' : ''}
+                onClick={() => setChosenFips(entry.countyFips)}>{entry.countyName}</button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
+      {lookup.status === 'not-in-this-release' && (
+        <div className="health-status health-status-review" role="status">
+          <span>Priced by a state exchange</span>
+          <ul>
+            <li>
+              {lookup.stateCodes.map((code) => US_STATES[code as StateCode]).join(' and ') || 'This state'} runs its own Marketplace and files premiums separately, so this release carries no plans for it.
+              The credit rules below are federal and still apply: enter your own benchmark premium to use them.
+            </li>
+          </ul>
+        </div>
+      )}
+      {lookup.status === 'unknown-zip' && zip.trim() !== '' && (
+        <div className="health-status health-status-review" role="status">
+          <span>ZIP not recognised</span>
+          <ul><li>Enter a five-digit ZIP code that the Census ZCTA file maps to a county.</li></ul>
+        </div>
+      )}
+      {county && (
+        <p className="data-footnote">
+          Pricing {county.countyName} County, {US_STATES[county.stateCode]} · rating area {county.ratingArea} · {county.planCount} plans filed, {county.silverPlanCount} of them Silver
+          {county.ageCurve === 'state-filed' && ' · this state files its own age curve, so premiums are quoted at the nearest published age'}
+        </p>
+      )}
+      {quotes && !quotes.benchmark.exactForAges && (
+        <p className="data-footnote">Premiums for this county are published at set ages only, so an age between them is quoted at the nearest published one.</p>
+      )}
+      {quotes && quotes.benchmark.unbilledChildCount > 0 && (
+        <p className="data-footnote">
+          {quotes.benchmark.unbilledChildCount} {quotes.benchmark.unbilledChildCount === 1 ? 'child is' : 'children are'} not charged a premium: the federal rules bill at most the three oldest children under 21.
+        </p>
+      )}
+
       <details className="health-advanced">
-        <summary>Partial year or non-covered extras <span>Only if they apply to you</span></summary>
+        <summary>Use your own premiums, or a partial year <span>Only if they apply to you</span></summary>
         <div className="calc-form-grid">
+          <Field label="Your own benchmark premium" htmlFor="health-benchmark" hint={quotes ? `Leave blank to use the ${formatMoney(quotes.benchmark.premium)} filed for this county and these ages.` : 'The second-lowest-cost Silver premium for the people enrolling.'}>
+            <InputShell prefix="$">
+              <input id="health-benchmark" type="number" min="0" step="25" placeholder={quotes ? String(quotes.benchmark.premium) : ''} value={benchmarkOverride} onChange={(event) => setBenchmarkOverride(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="The plan you want, per month" htmlFor="health-plan" hint={quotes?.silver ? `Leave blank to price the cheapest Silver plan, ${formatMoney(quotes.silver.premium)}.` : 'Full price before any credit.'}>
+            <InputShell prefix="$">
+              <input id="health-plan" type="number" min="0" step="25" placeholder={quotes?.silver ? String(quotes.silver.premium) : ''} value={planOverride} onChange={(event) => setPlanOverride(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Other eligibility conditions" htmlFor="health-eligibility" hint="Coverage, tax-filing, and no disqualifying employer or government coverage. This calculator cannot check these.">
+            <span className="input-shell select-shell">
+              <select id="health-eligibility" value={eligibility} onChange={(event) => setEligibility(event.target.value as Eligibility)}>
+                <option value="assumed-eligible">Assume they are met</option>
+                <option value="unknown">I have not checked them</option>
+                <option value="ineligible">They are not met</option>
+              </select>
+            </span>
+          </Field>
           <Field label="Months of coverage in 2026" htmlFor="health-months" hint="Twelve for a full year. A shorter period is totalled separately; your annual income is not reduced to match.">
             <InputShell>
               <input id="health-months" type="number" min="1" max="12" step="1" value={coverageMonths} onChange={(event) => setCoverageMonths(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Credit-eligible part of that premium" htmlFor="health-eligible-premium" hint="Leave blank unless your plan bundles benefits outside the essential health benefits. The credit cannot exceed this amount, and the rest stays in your net cost.">
-            <InputShell prefix="$">
-              <input id="health-eligible-premium" type="number" min="0" step="25" placeholder={monthlyPlanPremium} value={monthlyEligiblePlanPremium} onChange={(event) => setMonthlyEligiblePlanPremium(event.target.value)} />
-            </InputShell>
-          </Field>
         </div>
       </details>
+
       {calculation.error && <InlineError message={calculation.error} />}
+      {!county && lookup.status === 'covered' && <InlineError message="Enter the ages of everyone enrolling to price a plan." />}
       {result && value && status && (
         <div className="calculation-output">
-          {/*
-            Three different things can put the full premium in this headline, and
-            "after the credit" is only honest for one of them. A calculated zero
-            (over the ceiling, or conditions not met) is a finding; a null is the
-            absence of one. Saying "after the credit" over an unchanged $900 reads
-            as though assistance was applied and came to nothing.
-          */}
           <PrimaryResult
             label={!hasCredit ? 'Full monthly premium, no credit estimated'
-              : value.monthlyPremiumTaxCredit === 0 ? 'Your monthly premium, with no credit in this scenario'
+              : credit === 0 ? 'Your monthly premium, with no credit in this scenario'
                 : 'Your monthly premium after the credit'}
             value={formatMoney(hasCredit ? value.monthlyNetPremium! : value.monthlyPlanPremium)}
             note={hasCredit
-              ? `${formatMoney(value.coveragePeriodNetPremium!)} over ${value.coverageMonths} month${value.coverageMonths === 1 ? '' : 's'} · ${US_STATES[stateCode]}`
+              ? `${formatMoney(value.coveragePeriodNetPremium!)} over ${value.coverageMonths} month${value.coverageMonths === 1 ? '' : 's'}${county ? ` · ${county.countyName} County, ${US_STATES[county.stateCode]}` : ''}`
               : 'The credit is not estimated in this scenario. Read why below.'}
           />
           <div className={`health-status health-status-${status.tone}`} role="status">
@@ -171,8 +248,8 @@ export function HealthInsuranceCalculator() {
           <StatGrid items={[
             {
               label: 'Monthly premium tax credit',
-              value: value.monthlyPremiumTaxCredit === null ? 'Not estimated' : formatMoney(value.monthlyPremiumTaxCredit),
-              note: value.monthlyPremiumTaxCredit === null ? 'Needs a Marketplace eligibility review' : `${formatMoney(value.annualPremiumTaxCredit!)} across twelve identical months`,
+              value: credit === null ? 'Not estimated' : formatMoney(credit),
+              note: credit === null ? 'Needs a Marketplace eligibility review' : `${formatMoney(value.annualPremiumTaxCredit!)} across twelve identical months`,
             },
             {
               label: 'Income vs poverty guideline',
@@ -190,18 +267,60 @@ export function HealthInsuranceCalculator() {
                 : `${formatNumber(value.applicableContributionPercent, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}% of household income, per month`,
             },
           ]} />
+
+          {/*
+            The credit is a fixed number of dollars, so it buys down a cheap plan
+            further than an expensive one. Showing all three metal levels against
+            the same credit is the comparison the sticker prices hide.
+          */}
+          {quotes && credit !== null && credit > 0 && (
+            <div className="health-metal-table">
+              <table>
+                <caption>Cheapest plan at each metal level, before and after your {formatMoney(credit)} credit</caption>
+                <thead><tr><th scope="col">Level</th><th scope="col">Full premium</th><th scope="col">After credit</th></tr></thead>
+                <tbody>
+                  {([['Bronze', quotes.bronze], ['Silver', quotes.silver], ['Gold', quotes.gold]] as const).map(([label, quote]) => (
+                    <tr key={label}>
+                      <th scope="row">{label}</th>
+                      <td>{quote ? formatMoney(quote.premium) : 'None filed'}</td>
+                      <td>{quote ? formatMoney(afterCredit(quote.premium)!) : '—'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <p>A credit is a fixed dollar amount, not a percentage off. It cannot exceed the plan you enrol in, so a plan cheaper than your credit costs nothing rather than paying you.</p>
+            </div>
+          )}
+
+          {/*
+            Cost-sharing reductions are the half of the answer a premium hides.
+            They arrive only on a Silver plan and only by income, so someone who
+            buys Bronze for the lower premium can be giving up a much lower
+            deductible without ever being told.
+          */}
+          {csr && csrLevel && (
+            <div className="health-status health-status-estimate" role="status">
+              <span>Extra savings on Silver: the {csrLevel}% variant</span>
+              <ul>
+                <li>
+                  At {formatNumber(value.incomePercentFpl, { maximumFractionDigits: 1 })}% of the poverty guideline, a Silver plan is upgraded to its {csrLevel}% cost-sharing variant at no extra premium.
+                  In this county those variants carry a median deductible of {formatMoney(csr.individualDeductible.median, 0)}
+                  {standardSilver && ` against ${formatMoney(standardSilver.individualDeductible.median, 0)} on standard Silver`}, and a median out-of-pocket maximum of {formatMoney(csr.individualMaximumOutOfPocket.median, 0)}
+                  {standardSilver && ` against ${formatMoney(standardSilver.individualMaximumOutOfPocket.median, 0)}`}.
+                </li>
+                <li>This applies to Silver only. Choosing Bronze for the lower premium gives it up, which is the trade-off a premium comparison alone does not show.</li>
+              </ul>
+            </div>
+          )}
+
           <ResultDetails
             breakdown={result.breakdown}
             assumptions={result.assumptions}
             calculationVersion={result.calculationVersion}
             datasetSnapshotIds={result.datasetSnapshotIds}
           />
-          {/*
-            The subsidy range is a property of the household, not of the plan, so
-            it stays visible whichever plan is priced above.
-          */}
           <p className="health-range-note">
-            At {householdSize} {Number(householdSize) === 1 ? 'person' : 'people'} in {US_STATES[stateCode]}, the 2026 credit runs from{' '}
+            At {householdSize} {Number(householdSize) === 1 ? 'person' : 'people'}, the 2026 credit runs from{' '}
             <strong>{formatMoney(value.minimumAnnualIncome, 0)}</strong> to <strong>{formatMoney(value.maximumAnnualIncome, 0)}</strong> of household income.
             Below that range, check Medicaid; above it, the plan is priced at full cost for 2026.
           </p>
