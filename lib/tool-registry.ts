@@ -440,6 +440,7 @@ export const tools: ToolDefinition[] = [
       { toolId: 'mortgage-payment', type: 'next-decision' },
       { toolId: 'home-affordability', type: 'next-decision' },
       { toolId: 'car-affordability', type: 'next-decision' },
+      { toolId: 'auto-coverage', type: 'sibling' },
       { toolId: 'cost-of-living', type: 'sibling' },
     ],
   },

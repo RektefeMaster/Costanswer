@@ -40,10 +40,17 @@ export type MarketplacePlanCost = {
   individualMaximumOutOfPocket: CmsSpread;
   /** Premium only: a year in which no covered care is used. */
   healthyYearCost: number;
-  /** Premium plus the care entered, capped by the out-of-pocket maximum. */
+  /** Premium plus the care entered, capped by the highest out-of-pocket maximum. */
   expectedYearCost: number;
-  /** Premium plus the whole out-of-pocket maximum: the most the plan can cost. */
+  /**
+   * Premium plus the highest individual out-of-pocket maximum filed at this metal.
+   *
+   * The landscape file does not pair the cheapest premium with that plan's own
+   * maximum, so this is a bound for the metal, not one plan's bill.
+   */
   worstYearCost: number;
+  /** Premium plus the lowest filed maximum at this metal. */
+  worstYearCostLow: number;
 };
 
 export type MarketplacePlanCostValue = {
@@ -53,6 +60,13 @@ export type MarketplacePlanCostValue = {
   cheapestExpectedYear: CmsMetal;
   /** True when no single level is cheapest in both a healthy and a bad year. */
   hasTradeoff: boolean;
+  /**
+   * True when ranking ceilings by the lowest vs highest maximum at each metal
+   * names different winners. The cheapest premium and the maximums come from
+   * different plans, so a single "worst year" winner would be a pairing the
+   * file does not contain.
+   */
+  ceilingWinnerDependsOnPlan: boolean;
   healthyYearSpread: number;
   worstYearSpread: number;
 };
@@ -74,7 +88,8 @@ export function calculateMarketplacePlanCost(rawInput: unknown): CalculationResu
     // The credit cannot exceed the premium of the plan it is applied to.
     const monthlyAfterCredit = round(Math.max(0, entry.monthlyPremium - input.monthlyPremiumTaxCredit));
     const annualPremium = round(monthlyAfterCredit * months);
-    const moop = entry.individualMaximumOutOfPocket.median;
+    const moopHigh = entry.individualMaximumOutOfPocket.high;
+    const moopLow = entry.individualMaximumOutOfPocket.low;
     return {
       metal: entry.metal,
       monthlyPremium: round(entry.monthlyPremium),
@@ -83,12 +98,9 @@ export function calculateMarketplacePlanCost(rawInput: unknown): CalculationResu
       individualDeductible: entry.individualDeductible,
       individualMaximumOutOfPocket: entry.individualMaximumOutOfPocket,
       healthyYearCost: annualPremium,
-      // Care is paid in full up to the deductible and then shared, but the
-      // out-of-pocket maximum is the only cap the published data supports. Using
-      // it as the ceiling keeps this an honest bound rather than a modelled
-      // coinsurance schedule the file does not carry.
-      expectedYearCost: round(annualPremium + Math.min(input.expectedAnnualCareSpend, moop)),
-      worstYearCost: round(annualPremium + moop),
+      expectedYearCost: round(annualPremium + Math.min(input.expectedAnnualCareSpend, moopHigh)),
+      worstYearCost: round(annualPremium + moopHigh),
+      worstYearCostLow: round(annualPremium + moopLow),
     };
   });
 
@@ -96,6 +108,7 @@ export function calculateMarketplacePlanCost(rawInput: unknown): CalculationResu
     plans.reduce((best, plan) => (pick(plan) < pick(best) ? plan : best)).metal;
   const cheapestHealthyYear = cheapestBy((plan) => plan.healthyYearCost);
   const cheapestWorstYear = cheapestBy((plan) => plan.worstYearCost);
+  const cheapestWorstYearLow = cheapestBy((plan) => plan.worstYearCostLow);
   const spread = (pick: (plan: MarketplacePlanCost) => number) =>
     round(Math.max(...plans.map(pick)) - Math.min(...plans.map(pick)));
 
@@ -105,6 +118,7 @@ export function calculateMarketplacePlanCost(rawInput: unknown): CalculationResu
     cheapestWorstYear,
     cheapestExpectedYear: cheapestBy((plan) => plan.expectedYearCost),
     hasTradeoff: cheapestHealthyYear !== cheapestWorstYear,
+    ceilingWinnerDependsOnPlan: cheapestWorstYear !== cheapestWorstYearLow,
     healthyYearSpread: spread((plan) => plan.healthyYearCost),
     worstYearSpread: spread((plan) => plan.worstYearCost),
   };
@@ -123,15 +137,15 @@ export function calculateMarketplacePlanCost(rawInput: unknown): CalculationResu
       ...plans.map((plan) => ({
         label: `${label(plan.metal)}, the most it can cost`,
         value: formatMoney(plan.worstYearCost),
-        detail: `${formatMoney(plan.annualPremiumAfterCredit)} premium + ${formatMoney(plan.individualMaximumOutOfPocket.median, 0)} out-of-pocket maximum`,
+        detail: `${formatMoney(plan.annualPremiumAfterCredit)} premium + ${formatMoney(plan.individualMaximumOutOfPocket.high, 0)} highest out-of-pocket maximum at this metal`,
       })),
     ],
     assumptions: [
       'Premiums, deductibles, and out-of-pocket maximums are the figures filed for this county and plan year. They are not a quote, and they do not confirm a plan is open to you.',
       'The premium tax credit is subtracted from every level alike and floored at that level’s premium, because it is a fixed dollar amount rather than a percentage off.',
-      'A year with no claims costs the premium alone. The worst year adds the whole individual out-of-pocket maximum, which is the ceiling the plan may not exceed for covered in-network care.',
+      'A year with no claims costs the cheapest premium at that metal. The worst year adds the highest individual out-of-pocket maximum filed at that metal in this county, because the landscape file does not pair that cheapest premium with one plan’s own maximum. That figure is a bound, not a single plan’s bill.',
       'Deductible and out-of-pocket figures are the individual medical amounts, shown as the range across the county’s plans at that level. A family out-of-pocket maximum is higher, and drug deductibles can be separate.',
-      'The middle scenario caps the care you enter at the out-of-pocket maximum. It does not model a deductible-then-coinsurance schedule: copays, coinsurance rates, and the split between covered services are not in the published file.',
+      'The middle scenario caps the care you enter at the highest out-of-pocket maximum. It does not model a deductible-then-coinsurance schedule: copays, coinsurance rates, and the split between covered services are not in the published file.',
       'Out-of-network care, services a plan excludes, balance billing, and anything above a plan’s limits sit outside the out-of-pocket maximum and outside this comparison.',
       'Provider networks, drug formularies, and prior-authorisation rules are not compared. Two plans at the same metal level and price can differ enormously on all three.',
     ],

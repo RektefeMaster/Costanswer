@@ -29,7 +29,8 @@ export function MarketplacePlansCalculator() {
   const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
   const matches = lookup.status === 'covered' ? lookup.counties : [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
-  const ages = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
+  const parsedAges = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
+  const ages = parsedAges.invalidTokens.length === 0 ? parsedAges.ages : [];
 
   const priced = useMemo(() => {
     if (!county || ages.length === 0) return null;
@@ -54,12 +55,17 @@ export function MarketplacePlansCalculator() {
 
   const calculation = useMemo(() => {
     if (!priced) return { result: null, error: '' };
+    const credit = monthlyCredit.trim() === '' ? 0 : Number(monthlyCredit);
+    const care = expectedCare.trim() === '' ? 0 : Number(expectedCare);
+    if (!Number.isFinite(credit) || !Number.isFinite(care)) {
+      return { result: null, error: 'Enter a number for the credit and the care you expect to pay for.' };
+    }
     try {
       return {
         result: calculateMarketplacePlanCost({
           metals: priced.metals,
-          monthlyPremiumTaxCredit: Number(monthlyCredit),
-          expectedAnnualCareSpend: Number(expectedCare),
+          monthlyPremiumTaxCredit: credit,
+          expectedAnnualCareSpend: care,
         }),
         error: '',
       };
@@ -145,7 +151,10 @@ export function MarketplacePlansCalculator() {
       )}
 
       {calculation.error && <InlineError message={calculation.error} />}
-      {county && ages.length === 0 && (
+      {parsedAges.invalidTokens.length > 0 && (
+        <InlineError message={`Ages must be whole numbers of years. “${parsedAges.invalidTokens.join(', ')}” is not an age.`} />
+      )}
+      {county && ages.length === 0 && parsedAges.invalidTokens.length === 0 && (
         <InlineError message="Enter the ages of everyone enrolling, as whole numbers separated by commas." />
       )}
       {result && value && cheapestNow && (
@@ -160,10 +169,18 @@ export function MarketplacePlansCalculator() {
             depends on the year they have. Naming both winners is the honest
             answer; naming one would be picking a risk appetite for the reader.
           */}
-          <div className={`health-status health-status-${value.hasTradeoff ? 'review' : 'estimate'}`} role="status">
-            <span>{value.hasTradeoff ? 'The cheapest plan depends on the year you have' : 'One level is cheapest either way'}</span>
+          <div className={`health-status health-status-${value.hasTradeoff || value.ceilingWinnerDependsOnPlan ? 'review' : 'estimate'}`} role="status">
+            <span>{value.ceilingWinnerDependsOnPlan
+              ? 'The worst-year ranking depends on which plan you pick'
+              : value.hasTradeoff ? 'The cheapest plan depends on the year you have' : 'One level is cheapest either way'}</span>
             <ul>
-              {value.hasTradeoff ? (
+              {value.ceilingWinnerDependsOnPlan ? (
+                <li>
+                  The cheapest premium at each metal is not paired with one out-of-pocket maximum in the published file.
+                  The ceiling shown is that premium plus the highest maximum filed at that metal, a bound rather than one plan’s bill.
+                  Ranking by the lowest maximum instead would name a different winner.
+                </li>
+              ) : value.hasTradeoff ? (
                 <>
                   <li>
                     In a year with no claims, {METAL_LABEL[value.cheapestHealthyYear]} costs least, saving {formatMoney(value.healthyYearSpread)} a year against the dearest level here.
@@ -181,7 +198,7 @@ export function MarketplacePlansCalculator() {
 
           <div className="health-metal-table">
             <table>
-              <caption>Cost of a year at each metal level. Premiums are the cheapest filed; deductibles are the county median at that level.</caption>
+              <caption>Cost of a year at each metal level. Premiums are the cheapest filed; the ceiling uses the highest out-of-pocket maximum at that metal.</caption>
               <thead>
                 <tr>
                   <th scope="col">Level</th><th scope="col">Per month</th><th scope="col">No claims</th>
@@ -201,7 +218,7 @@ export function MarketplacePlansCalculator() {
                 ))}
               </tbody>
             </table>
-            <p>Deductibles are the median across this county&rsquo;s plans at that level; the range is in the steps below. The worst-year figure adds the whole individual out-of-pocket maximum, the ceiling on covered in-network care.</p>
+            <p>Deductibles are the median across this county&rsquo;s plans at that level. The worst-year figure adds the highest individual out-of-pocket maximum filed at that metal, because the cheapest premium and the maximums are not paired in the published file.</p>
           </div>
 
           <StatGrid items={byDisplayOrder(value.plans).map((plan) => ({

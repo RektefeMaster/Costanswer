@@ -299,19 +299,26 @@ export function premiumForAge(
 
 export type CmsHouseholdQuote = { premium: number; exactForAges: boolean; billedMemberCount: number; unbilledChildCount: number };
 
+export type ParsedEnrollingAges = { ages: number[]; invalidTokens: string[] };
+
 /**
  * Ages typed as a comma-separated list.
  *
  * Empty segments from a trailing comma or a double comma are dropped rather
  * than becoming age 0. `Number('')` is 0, and 0 is a real infant rate, so a
- * stray comma would silently add a child to the household.
+ * stray comma would silently add a child to the household. A token that is not
+ * a whole number of years is reported rather than skipped: dropping it would
+ * shrink the household and underprice the premium without saying so.
  */
-export function parseEnrollingAges(text: string): number[] {
-  return text.split(',')
-    .map((part) => part.trim())
-    .filter((part) => part !== '')
-    .map((part) => Number(part))
-    .filter((age) => Number.isInteger(age) && age >= 0 && age <= 120);
+export function parseEnrollingAges(text: string): ParsedEnrollingAges {
+  const ages: number[] = [];
+  const invalidTokens: string[] = [];
+  for (const part of text.split(',').map((entry) => entry.trim()).filter((entry) => entry !== '')) {
+    const age = Number(part);
+    if (Number.isInteger(age) && age >= 0 && age <= 120) ages.push(age);
+    else invalidTokens.push(part);
+  }
+  return { ages, invalidTokens };
 }
 
 /**

@@ -138,8 +138,9 @@ export function MedicareCalculator() {
                 <li>
                   Your {medicareSnapshot.irmaaIncomeTaxYear} income adds {formatMoney(value.partBIrmaa)} to Part B
                   {value.hasDrugCoverage
-                    ? ` and ${formatMoney(value.partDIrmaa)} to drug coverage every month, which is ${formatMoney((value.partBIrmaa + value.partDIrmaa) * 12)} over the year on top of the standard premiums.`
-                    : ` every month (${formatMoney(value.partBIrmaa * 12)} over the year). A Part D plan would add ${formatMoney(value.partDIrmaa)} more per month, which is not in this total because you have no drug coverage.`}
+                    ? ` and ${formatMoney(value.partDIrmaa)} to drug coverage every month, which is ${formatMoney((value.partBIrmaa + value.partDIrmaa) * 12)} over a full year on top of the standard premiums.`
+                    : ` every month (${formatMoney(value.partBIrmaa * 12)} over a full year). A Part D plan would add ${formatMoney(value.partDIrmaa)} more per month, which is not in this total because you have no drug coverage.`}
+                  {(input?.coverageMonths ?? 12) !== 12 ? ` This coverage period is ${input?.coverageMonths} months.` : ''}
                 </li>
               ) : (
                 <li>Your {medicareSnapshot.irmaaIncomeTaxYear} income is below the first threshold, so the standard {formatMoney(value.partBStandardPremium)} Part B premium applies.</li>
@@ -147,7 +148,7 @@ export function MedicareCalculator() {
               {value.nextIrmaaThreshold !== null && value.annualCostOfNextThreshold !== null && (
                 <li>
                   The next rung starts {value.nextIrmaaThresholdIsInclusive ? 'at' : 'above'} {formatMoney(value.nextIrmaaThreshold, 0)}, which is {formatMoney(value.distanceToNextThreshold ?? 0, 0)} away.
-                  Crossing it by a single dollar costs {formatMoney(value.annualCostOfNextThreshold)} for the year: this is a cliff, not a taper.
+                  Crossing it by a single dollar costs {formatMoney(value.annualCostOfNextThreshold)} for a full year: this is a cliff, not a taper.
                 </li>
               )}
               <li>Each spouse enrolled in Medicare pays their own adjustment, so a couple filing jointly can pay it twice. Retirement or another life-changing event can be reported on form SSA-44 to have a later year used instead.</li>

@@ -815,9 +815,10 @@ test('the plan cost calculator prices a county to the ceiling, not just the prem
   await expect(page.locator('.data-footnote')).toContainText('benchmark Silver');
   await expect(page.locator('.primary-result p')).toContainText('a year with no claims');
 
-  // The point of the tool: the cheapest premium and the lowest ceiling are
-  // different plans, and both are named rather than one being picked.
-  await expect(page.locator('.health-status').first()).toContainText('depends on the year you have');
+  // The cheapest premium and the highest maximum are not a single plan. Harris
+  // County at age 40 is the case: Bronze wins a healthy year, and the high-bound
+  // ceiling still names Bronze, but ranking by the lowest maximum would not.
+  await expect(page.locator('.health-status').first()).toContainText('depends on which plan you pick');
   const rows = page.locator('.health-metal-table tbody tr');
   await expect(rows).toHaveCount(3);
   await expect(rows.nth(0)).toContainText('Bronze');
@@ -899,4 +900,9 @@ test('the Medicare calculator shows the income cliff, not just the premium', asy
   await page.locator('#medicare-quarters').selectOption('under-30');
   await expect(page.locator('.result-stat-grid')).toContainText('$565.00');
   await expect(page.locator('.primary-result strong')).toHaveText('$807.90');
+
+  // Part D IRMAA is not charged without a drug plan.
+  await page.locator('#medicare-quarters').selectOption('40-or-more');
+  await page.locator('#medicare-drug-coverage').selectOption('none');
+  await expect(page.locator('.primary-result strong')).toHaveText('$202.90');
 });

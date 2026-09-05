@@ -200,12 +200,13 @@ describe('CMS Marketplace landscape snapshot', () => {
   });
 
   it('drops empty age tokens instead of turning a trailing comma into an infant', () => {
-    expect(parseEnrollingAges('40, 38, 10')).toEqual([40, 38, 10]);
-    expect(parseEnrollingAges('40, 38, 10,')).toEqual([40, 38, 10]);
-    expect(parseEnrollingAges('40,,38')).toEqual([40, 38]);
-    expect(parseEnrollingAges('0')).toEqual([0]);
-    expect(parseEnrollingAges('')).toEqual([]);
-    expect(parseEnrollingAges('abc')).toEqual([]);
+    expect(parseEnrollingAges('40, 38, 10')).toEqual({ ages: [40, 38, 10], invalidTokens: [] });
+    expect(parseEnrollingAges('40, 38, 10,')).toEqual({ ages: [40, 38, 10], invalidTokens: [] });
+    expect(parseEnrollingAges('40,,38')).toEqual({ ages: [40, 38], invalidTokens: [] });
+    expect(parseEnrollingAges('0')).toEqual({ ages: [0], invalidTokens: [] });
+    expect(parseEnrollingAges('')).toEqual({ ages: [], invalidTokens: [] });
+    expect(parseEnrollingAges('abc')).toEqual({ ages: [], invalidTokens: ['abc'] });
+    expect(parseEnrollingAges('40, bob, 10')).toEqual({ ages: [40, 10], invalidTokens: ['bob'] });
   });
 
   it('reads a real county end to end', () => {

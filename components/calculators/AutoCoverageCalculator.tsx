@@ -119,7 +119,7 @@ export function AutoCoverageCalculator() {
             <div className="health-status health-status-review" role="status">
               <span>The deductible has overtaken the car</span>
               <ul>
-                <li>Collision and comprehensive pay the car&rsquo;s value less the deductible. At {formatMoney(Number(vehicleValue) || 0, 0)} against a {formatMoney(value.worthlessBelowValue, 0)} deductible, a total loss returns nothing, so these two coverages are paying for a benefit they cannot deliver.</li>
+                <li>Collision and comprehensive pay the car&rsquo;s value less the deductible. At {formatMoney(Number(vehicleValue), 0)} against a {formatMoney(value.worthlessBelowValue, 0)} deductible, a total loss returns nothing, so these two coverages are paying for a benefit they cannot deliver.</li>
                 <li>Liability is a separate matter and is required almost everywhere. Nothing here suggests dropping it.</li>
               </ul>
             </div>

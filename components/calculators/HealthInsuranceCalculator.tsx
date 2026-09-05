@@ -45,7 +45,8 @@ export function HealthInsuranceCalculator() {
   const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
   const matches = lookup.status === 'covered' ? lookup.counties : [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
-  const ages = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
+  const parsedAges = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
+  const ages = parsedAges.invalidTokens.length === 0 ? parsedAges.ages : [];
   /*
    * The poverty guideline depends on the state, and Alaska and Hawaii have their
    * own. Defaulting to a contiguous state when the ZIP names none would move the
@@ -98,13 +99,14 @@ export function HealthInsuranceCalculator() {
           eligibility,
           coverageMonths: Number(coverageMonths),
           benchmarkSnapshotId: overrideBenchmark === null ? cmsMarketplaceIndex.snapshotId : undefined,
+          benchmarkAgesExact: overrideBenchmark === null ? quotes?.benchmark.exactForAges : undefined,
         }),
         error: '',
       };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [resolvedStateCode, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark]);
+  }, [resolvedStateCode, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark, quotes]);
 
   const result = calculation.result;
   const value = result?.value;
@@ -212,7 +214,7 @@ export function HealthInsuranceCalculator() {
       <details className="health-advanced">
         <summary>Use your own premiums, or a partial year <span>Only if they apply to you</span></summary>
         <div className="calc-form-grid">
-          <Field label="Your own benchmark premium" htmlFor="health-benchmark" hint={quotes ? `Leave blank to use the ${formatMoney(quotes.benchmark.premium)} filed for this county and these ages.` : 'The second-lowest-cost Silver premium for the people enrolling.'}>
+          <Field label="Your own benchmark premium" htmlFor="health-benchmark" hint={quotes ? `Leave blank to use the ${formatMoney(quotes.benchmark.premium)} filed for this county${quotes.benchmark.exactForAges ? ' and these ages' : ', quoted at the nearest published ages'}.` : 'The second-lowest-cost Silver premium for the people enrolling.'}>
             <InputShell prefix="$">
               <input id="health-benchmark" type="number" min="0" step="25" placeholder={quotes ? String(quotes.benchmark.premium) : ''} value={benchmarkOverride} onChange={(event) => setBenchmarkOverride(event.target.value)} />
             </InputShell>
@@ -240,7 +242,10 @@ export function HealthInsuranceCalculator() {
       </details>
 
       {calculation.error && <InlineError message={calculation.error} />}
-      {county && ages.length === 0 && (
+      {parsedAges.invalidTokens.length > 0 && (
+        <InlineError message={`Ages must be whole numbers of years. “${parsedAges.invalidTokens.join(', ')}” is not an age.`} />
+      )}
+      {county && ages.length === 0 && parsedAges.invalidTokens.length === 0 && (
         <InlineError message="Enter the ages of everyone enrolling, as whole numbers separated by commas." />
       )}
       {result && value && status && (

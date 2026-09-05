@@ -219,4 +219,12 @@ describe('premium tax credit estimates', () => {
     expect(text).toContain('no repayment cap');
     expect(text).toContain('Deductibles, copays, coinsurance');
   });
+
+  it('says when a county benchmark is quoted at the nearest published age', () => {
+    const exact = calculateAcaSubsidy({ ...base, benchmarkSnapshotId: 'cms-marketplace-2026-v1', benchmarkAgesExact: true });
+    expect(exact.assumptions.join(' ')).toContain('this county and these ages');
+    const inexact = calculateAcaSubsidy({ ...base, benchmarkSnapshotId: 'cms-marketplace-2026-v1', benchmarkAgesExact: false });
+    expect(inexact.assumptions.join(' ')).toContain('nearest published ages');
+    expect(inexact.assumptions.join(' ')).not.toContain('this county and these ages');
+  });
 });

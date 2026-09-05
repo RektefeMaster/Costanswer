@@ -19,19 +19,37 @@ describe('marketplace plan cost scenarios', () => {
     const bronze = planFor(result, 'bronze');
     const gold = planFor(result, 'gold');
     expect(bronze.healthyYearCost).toBe(3_600);
-    expect(bronze.worstYearCost).toBe(3_600 + 10_150);
+    expect(bronze.worstYearCost).toBe(3_600 + 10_600);
     expect(gold.healthyYearCost).toBe(7_200);
-    expect(gold.worstYearCost).toBe(7_200 + 5_000);
+    expect(gold.worstYearCost).toBe(7_200 + 6_000);
 
     // Bronze is cheapest if nothing happens; Gold has the lower ceiling. That
     // opposition is the whole point of the tool, so it is stated outright.
     expect(result.value.cheapestHealthyYear).toBe('bronze');
     expect(result.value.cheapestWorstYear).toBe('gold');
     expect(result.value.hasTradeoff).toBe(true);
+    expect(result.value.ceilingWinnerDependsOnPlan).toBe(false);
     expect(result.value.healthyYearSpread).toBe(7_200 - 3_600);
-    // Silver is dearest at the ceiling (6,000 + 8,950); Gold is cheapest (7,200 + 5,000).
-    expect(result.value.worstYearSpread).toBe(14_950 - 12_200);
+    // Silver is dearest at the high ceiling (6,000 + 10,600); Gold is cheapest (7,200 + 6,000).
+    expect(result.value.worstYearSpread).toBe(16_600 - 13_200);
     expect(result.calculationVersion).toBe(MARKETPLACE_PLANS_ENGINE_ID);
+  });
+
+  it('does not pair the cheapest premium with a median maximum the file does not attach to it', () => {
+    const result = calculateMarketplacePlanCost({
+      metals: [
+        { metal: 'bronze' as const, monthlyPremium: 400, individualDeductible: spread(1_000, 2_000, 3_000), individualMaximumOutOfPocket: spread(2_000, 9_000, 15_000) },
+        { metal: 'gold' as const, monthlyPremium: 500, individualDeductible: spread(1_000, 2_000, 3_000), individualMaximumOutOfPocket: spread(5_000, 5_500, 6_000) },
+      ],
+    });
+    // The most a year can cost uses the highest maximum, so Gold wins that bound.
+    expect(result.value.cheapestWorstYear).toBe('gold');
+    expect(planFor(result, 'bronze').worstYearCost).toBe(4_800 + 15_000);
+    expect(planFor(result, 'gold').worstYearCost).toBe(6_000 + 6_000);
+    // Ranking by the lowest maximum would name Bronze, which is why the page
+    // must not present the hybrid as one plan's ceiling.
+    expect(result.value.ceilingWinnerDependsOnPlan).toBe(true);
+    expect(result.assumptions.join(' ')).toContain('bound, not a single plan');
   });
 
   it('reports no trade-off when one level wins both ends', () => {
@@ -79,7 +97,7 @@ describe('marketplace plan cost scenarios', () => {
     const half = calculateMarketplacePlanCost({ ...base, coverageMonths: 6 });
     expect(planFor(half, 'silver').healthyYearCost).toBe(3_000);
     // The out-of-pocket maximum is a plan-year figure and is not halved with it.
-    expect(planFor(half, 'silver').worstYearCost).toBe(3_000 + 8_950);
+    expect(planFor(half, 'silver').worstYearCost).toBe(3_000 + 10_600);
   });
 
   it('rejects inputs that would silently become free coverage', () => {

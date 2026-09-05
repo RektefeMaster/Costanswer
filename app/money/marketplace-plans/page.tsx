@@ -19,7 +19,7 @@ export default function MarketplacePlansPage() {
         },
         {
           title: 'Three scenarios, not one',
-          body: 'A premium comparison only answers the healthy-year question. A year with no claims costs the premium. The worst year adds the whole individual out-of-pocket maximum, which is the ceiling a plan may not exceed for covered in-network care. The middle figure caps the care you enter at that same ceiling.',
+          body: 'A premium comparison only answers the healthy-year question. A year with no claims costs the cheapest premium at that metal. The worst year adds the highest individual out-of-pocket maximum filed at that metal in the county, because the landscape file does not pair that premium with one plan’s own maximum. The middle figure caps the care you enter at that same high ceiling.',
         },
         {
           title: 'What the middle scenario deliberately does not do',

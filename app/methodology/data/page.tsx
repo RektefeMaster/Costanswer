@@ -15,6 +15,8 @@ import { gsaPerDiemSnapshot } from '@/lib/data/gsa-perdiem-snapshot';
 import { irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { cmsMarketplaceIndex } from '@/lib/data/cms-marketplace-snapshot';
+import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
+import { medicareSnapshot } from '@/lib/data/medicare';
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
 import { datasetSourceDisplay, officialDatasetJsonLd } from '@/lib/data/source-display';
 import { DATASET_POLICIES } from '@/lib/data/dataset-policy';
@@ -23,7 +25,7 @@ import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
 export const metadata = pageMetadata(
   'Data sources',
-  'EIA, BLS, HUD, Census, BEA, USDA, NAIC, and Freddie Mac copies used by CostAnswer, with observation dates.',
+  'EIA, BLS, HUD, Census, BEA, USDA, NAIC, CMS, IRS, and Freddie Mac copies used by CostAnswer, with observation dates.',
   '/methodology/data',
 );
 
@@ -595,6 +597,48 @@ export default function DataSourcesPage() {
           <ul>{cmsMarketplaceIndex.validationReport.map((item) => <li key={item}>{item}</li>)}</ul>
         </details>
         <p className="dataset-links"><a href={cmsMarketplaceIndex.sourceDocumentationUrl}>Landscape file ↗</a><a href={cmsMarketplaceIndex.sourceUrl}>CMS public use files ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>2026 ACA premium tax credit rules</h2>
+        <dl>
+          <div><dt>Coverage year</dt><dd>{acaSubsidySnapshot.coverageYear}</dd></div>
+          <div><dt>Poverty guidelines</dt><dd>{acaSubsidySnapshot.povertyGuidelineYear} HHS, including separate Alaska and Hawaii figures</dd></div>
+          <div><dt>Income range</dt><dd>{acaSubsidySnapshot.minimumIncomePercentFpl}%–{acaSubsidySnapshot.maximumIncomePercentFpl}% of the guideline</dd></div>
+          <div><dt>Employer affordability</dt><dd>{acaSubsidySnapshot.employerAffordabilityPercent}% of household income</dd></div>
+          <div><dt>Excess-credit repayment cap</dt><dd>None for {acaSubsidySnapshot.coverageYear}</dd></div>
+          <div><dt>Verified</dt><dd>{acaSubsidySnapshot.verifiedAt}</dd></div>
+        </dl>
+        <p>The IRS contribution table and HHS poverty guidelines are a hashed official-rules snapshot, not a fetched series. The schema proves the table is shaped like the IRS one; the hash is what fails the build on a single wrong digit.</p>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{acaSubsidySnapshot.snapshotId}</dd></div>
+            <div><dt>Source status</dt><dd>{acaSubsidySnapshot.sourceStatus}</dd></div>
+          </dl>
+        </details>
+        <p className="dataset-links">{acaSubsidySnapshot.sources.map((source) => <a key={source.id} href={source.url}>{source.name} ↗</a>)}</p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>2026 Medicare premiums and IRMAA</h2>
+        <dl>
+          <div><dt>Coverage year</dt><dd>{medicareSnapshot.coverageYear}</dd></div>
+          <div><dt>IRMAA income year</dt><dd>{medicareSnapshot.irmaaIncomeTaxYear} MAGI</dd></div>
+          <div><dt>Part B standard premium</dt><dd>${medicareSnapshot.partB.standardMonthlyPremium.toFixed(2)} a month</dd></div>
+          <div><dt>Part B deductible</dt><dd>${medicareSnapshot.partB.annualDeductible} a year</dd></div>
+          <div><dt>Part A deductible</dt><dd>${medicareSnapshot.partA.inpatientDeductiblePerBenefitPeriod} per benefit period</dd></div>
+          <div><dt>Verified</dt><dd>{medicareSnapshot.verifiedAt}</dd></div>
+        </dl>
+        <p>Figures are transcribed from the CMS fact sheet. Most IRMAA rungs are “more than”; the top rung is “greater than or equal to”. Married filing separately skips the middle rungs. Part D IRMAA is owed only with Part D or Medicare Advantage drug coverage.</p>
+        <details className="dataset-technical">
+          <summary>Technical validation</summary>
+          <dl>
+            <div><dt>Snapshot</dt><dd>{medicareSnapshot.snapshotId}</dd></div>
+            <div><dt>Source status</dt><dd>{medicareSnapshot.sourceStatus}</dd></div>
+          </dl>
+        </details>
+        <p className="dataset-links">{medicareSnapshot.sources.map((source) => <a key={source.id} href={source.url}>{source.name} ↗</a>)}</p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>

@@ -30,6 +30,13 @@ export const acaSubsidyInputSchema = z.object({
    * to tell them apart.
    */
   benchmarkSnapshotId: z.string().min(1).optional(),
+  /**
+   * Whether every billed age was a published age or a confirmed curve point.
+   *
+   * A nearest-published-age quote is still a figure from the county file, but
+   * it is not the premium for the ages typed, and the assumption has to say so.
+   */
+  benchmarkAgesExact: z.boolean().optional(),
 }).refine((input) => input.monthlyEligiblePlanPremium === undefined || input.monthlyEligiblePlanPremium <= input.monthlyPlanPremium, {
   message: 'The eligible enrollment premium cannot exceed the full selected-plan premium.',
   path: ['monthlyEligiblePlanPremium'],
@@ -150,7 +157,9 @@ export function calculateAcaSubsidy(rawInput: unknown, rawSnapshot: AcaSubsidySn
       'Employer offers, Medicaid, Medicare, CHIP, TRICARE, immigration status, mixed-eligibility families, and HRA benefits require a Marketplace review. This calculator does not infer eligibility from income or state alone.',
       input.benchmarkSnapshotId === undefined
         ? 'Use your actual second-lowest-cost Silver plan premium for the eligible coverage family and location, excluding its tobacco surcharge. Enrollment averages and national premiums are not a benchmark quote.'
-        : 'The benchmark is the second-lowest-cost Silver premium filed for this county and these ages, read from the published plan-year file. Your Marketplace benchmark can differ if a different set of people enrols or a plan is unavailable to you.',
+        : input.benchmarkAgesExact === false
+          ? 'The benchmark is the second-lowest-cost Silver premium filed for this county, quoted at the nearest published ages because this county does not file the federal curve at every age in the household. Your Marketplace benchmark can differ if a different set of people enrols or a plan is unavailable to you.'
+          : 'The benchmark is the second-lowest-cost Silver premium filed for this county and these ages, read from the published plan-year file. Your Marketplace benchmark can differ if a different set of people enrols or a plan is unavailable to you.',
       input.monthlyEligiblePlanPremium === undefined
         ? 'The full selected-plan premium is assumed to be eligible for the credit cap. Enter a separate eligible premium if it includes non-essential-health-benefit add-ons.'
         : 'The credit is capped at the eligible enrollment premium entered; any non-eligible difference remains in your net cost.',
