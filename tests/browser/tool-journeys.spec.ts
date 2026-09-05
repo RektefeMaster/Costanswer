@@ -14,6 +14,7 @@ const toolPaths = [
   '/money/home-affordability',
   '/money/insurance-cost',
   '/money/health-insurance',
+  '/money/marketplace-plans',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',
@@ -551,7 +552,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/marketplace-plans', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -798,4 +799,32 @@ test('the subsidy calculator prices a real county and refuses to price what it c
   await expect(page.locator('.health-status')).toContainText('Below the subsidy income range');
   await expect(page.locator('.health-status')).toContainText('Medicaid');
   await expect(page.locator('.result-stat-grid')).toContainText('Outside the table');
+});
+
+test('the plan cost calculator prices a county to the ceiling, not just the premium', async ({ page }) => {
+  await page.goto('/money/marketplace-plans');
+  await expect(page.getByRole('heading', { name: 'Marketplace Health Plan Cost Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.result-audit')).toContainText('Method marketplace-plan-cost-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('cms-marketplace-2026-v1');
+
+  // ZIP 77002 is Harris County, Texas, priced for one 40-year-old.
+  await expect(page.locator('.data-footnote')).toContainText('Harris County, Texas');
+  await expect(page.locator('.data-footnote')).toContainText('benchmark Silver');
+  await expect(page.locator('.primary-result p')).toContainText('a year with no claims');
+
+  // The point of the tool: the cheapest premium and the lowest ceiling are
+  // different plans, and both are named rather than one being picked.
+  await expect(page.locator('.health-status').first()).toContainText('depends on the year you have');
+  const rows = page.locator('.health-metal-table tbody tr');
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(0)).toContainText('Bronze');
+  await expect(rows.nth(2)).toContainText('Gold');
+
+  // A fixed credit comes off every level and floors at that level's premium.
+  await page.locator('#plans-credit').fill('2000');
+  await expect(page.locator('.health-metal-table tbody')).toContainText('$0.00');
+
+  await page.locator('#plans-zip').fill('90012');
+  await expect(page.locator('.health-status')).toContainText('Priced by a state exchange');
 });

@@ -42,7 +42,7 @@ export const TOOL_CLUSTERS = {
   },
   prices: {
     label: 'What things cost',
-    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living', 'health-insurance'],
+    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living', 'health-insurance', 'marketplace-plans'],
   },
   'home-project': {
     label: 'Measuring a home project',

@@ -5,6 +5,7 @@ import { HEALTH_INSURANCE_EDITORIAL } from './health-insurance';
 import { HEALTH_MATH_EDITORIAL } from './health-math';
 import { HOME_CAR_EDITORIAL } from './home-car';
 import { HOUSING_EDITORIAL } from './housing';
+import { MARKETPLACE_PLANS_EDITORIAL } from './marketplace-plans';
 import { INSURANCE_EDITORIAL } from './insurance';
 import { PAY_EDITORIAL } from './pay';
 import type { ToolEditorial } from './types';
@@ -17,6 +18,7 @@ const ALL_EDITORIAL: ToolEditorial[] = [
   ...HOUSING_EDITORIAL,
   ...INSURANCE_EDITORIAL,
   ...HEALTH_INSURANCE_EDITORIAL,
+  ...MARKETPLACE_PLANS_EDITORIAL,
   ...WEALTH_EDITORIAL,
   ...HOME_CAR_EDITORIAL,
   ...EVERYDAY_EDITORIAL,

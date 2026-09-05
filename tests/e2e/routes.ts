@@ -13,6 +13,7 @@ const htmlPaths = [
   '/money/home-affordability',
   '/money/insurance-cost',
   '/money/health-insurance',
+  '/money/marketplace-plans',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',
