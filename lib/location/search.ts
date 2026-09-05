@@ -1,5 +1,5 @@
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
-import type { GeographyCbsa, GeographyCounty, GeographyPlace } from '@/lib/data/geography';
+import type { GeographyCbsa, GeographyCounty, GeographyPlace, GeographyState } from '@/lib/data/geography';
 import { getStateName, isStateCode, type StateCode } from './states';
 import {
   displayPlaceName,
@@ -193,6 +193,10 @@ export function getLocationSearchHit(id: string): LocationSearchHit | undefined 
 export function requireCanonicalLocation(id: string): CanonicalLocationId {
   parseCanonicalLocationId(id);
   return id as CanonicalLocationId;
+}
+
+export function getGeographyState(state: StateCode): GeographyState | undefined {
+  return geographySnapshot.states.find((row) => row.state === state);
 }
 
 export function getPlace(geoid: string): GeographyPlace | undefined {

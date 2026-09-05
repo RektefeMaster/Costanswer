@@ -73,6 +73,11 @@ const htmlPaths = [
   '/terms',
   '/contact',
   '/faq',
+  '/salary',
+  '/salary/states',
+  '/salary/states/texas',
+  '/salary/registered-nurse',
+  '/salary/registered-nurse/texas',
 ];
 
 async function fetchWithTimeout(path: string): Promise<Response> {
@@ -91,7 +96,7 @@ for (const path of htmlPaths) {
   }
 }
 
-for (const path of ['/sitemap.xml', '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/robots.txt', '/manifest.webmanifest']) {
+for (const path of ['/sitemap.xml', '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/sitemaps/salary/1.xml', '/robots.txt', '/manifest.webmanifest']) {
   const response = await fetchWithTimeout(path);
   if (response.status !== 200) throw new Error(`${path} returned HTTP ${response.status}`);
 }
@@ -131,6 +136,45 @@ for (const [from, to] of [
   }
   const location = redirected.headers.get('location') ?? '';
   if (!location.endsWith(to)) throw new Error(`${from} redirected to ${location}, expected ${to}`);
+}
+
+/*
+ * Every level of the salary family is open to search. The sitemap index must
+ * therefore carry more than one salary page — a single file of 31,000 URLs is
+ * six megabytes the Worker would rebuild on every cache miss — and every level
+ * must be indexable, including the leaves.
+ */
+const salaryIndexXml = await (await fetchWithTimeout('/sitemap.xml')).text();
+const salaryPageCount = [...salaryIndexXml.matchAll(/\/sitemaps\/salary\/\d+\.xml/g)].length;
+if (salaryPageCount < 2) throw new Error(`The salary family should be split across sitemap files, found ${salaryPageCount}.`);
+
+const salarySitemap = await (await fetchWithTimeout('/sitemaps/salary/1.xml')).text();
+if (!salarySitemap.includes('/salary/registered-nurse<') && !salarySitemap.includes('/salary/registered-nurse</loc>')) {
+  throw new Error('Occupation pages are missing from the salary sitemap.');
+}
+if (!salarySitemap.includes('/salary/states/texas')) throw new Error('State hubs are missing from the salary sitemap.');
+
+const allSalaryPages = await Promise.all(
+  Array.from({ length: salaryPageCount }, (_unused, index) => fetchWithTimeout(`/sitemaps/salary/${index + 1}.xml`).then((response) => response.text())),
+);
+const salaryCorpus = allSalaryPages.join('');
+if (!salaryCorpus.includes('/salary/registered-nurse/texas')) {
+  throw new Error('Occupation-in-state pages are open but missing from the sitemap.');
+}
+const submitted = [...salaryCorpus.matchAll(/<loc>/g)].length;
+if (submitted < 30_000) throw new Error(`Only ${submitted} salary URLs were submitted; the whole corpus is meant to be open.`);
+
+const occupationHtml = await (await fetchWithTimeout('/salary/registered-nurse')).text();
+if (occupationHtml.includes('noindex')) throw new Error('Occupation pages should be indexable.');
+const stateHubHtml = await (await fetchWithTimeout('/salary/states/texas')).text();
+if (stateHubHtml.includes('noindex')) throw new Error('State hubs should be indexable.');
+const leafHtml = await (await fetchWithTimeout('/salary/registered-nurse/texas')).text();
+if (leafHtml.includes('noindex')) throw new Error('Occupation-in-state pages should be indexable.');
+if (!leafHtml.includes('/salary/registered-nurse/oklahoma')) throw new Error('An occupation-in-state page must link its peer states.');
+
+for (const path of ['/salary/all-occupations', '/salary/not-a-real-job', '/salary/registered-nurse/not-a-state']) {
+  const response = await fetchWithTimeout(path);
+  if (response.status !== 404) throw new Error(`${path} should not exist, got HTTP ${response.status}`);
 }
 
 const rootResponse = await fetchWithTimeout('/');

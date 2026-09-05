@@ -50,6 +50,8 @@ The publication flow is:
 
 Only the promoted manifest is imported by application code. A rejected update leaves the last verified snapshot live.
 
+One dataset departs from this in what it commits. The BLS OEWS normalized snapshot is 12 MB — larger than the application — so the repository holds the archives BLS served, a receipt fixing their digests, a manifest carrying the normalized hash, and two derived files the application imports: a 541 KB index of occupations and coverage, and 3.4 MB of wage columns packed as integers. `npm run data:oews:rebuild` regenerates the snapshot from the committed archives and refuses to write one that does not hash to the promoted value, so the uncommitted file stays auditable and CI proves it on every run. The packing is lossless by construction — OEWS publishes annual wages in whole tens of dollars and hourly wages in whole cents — and `verifyOewsWagesRoundTrip` proves it value by value before anything is written. Deriving hourly wages from annual ones was measured and rejected: BLS rounds the two independently, so a recomputed hourly wage differs by a cent on 12% of values.
+
 ### Tool contract
 
 Every tool is represented by two layers:
@@ -114,7 +116,35 @@ The quality score is 100 points: search-intent evidence 20, unique data/function
 
 Sitemaps are split by family once volume requires it. Structured data is limited to valid `WebSite`, `WebApplication`, `BreadcrumbList`, `Article` and `Dataset` cases. `FAQPage` markup is added only when the same questions are visible on the page (site FAQ, and each tool’s editorial FAQ).
 
-Long-tail queries (state + occupation, loan type + year, “$400,000 30-year payment”) belong in tool `searchTerms`, optional `metaTitle` / `metaDescription`, and a `longTail` section inside `lib/tool-content/`. They do not become generated URL families. Occupation × state salary pages and FHA-limit-by-county pages remain deferred until they have distinct data, not a name swap.
+Long-tail queries (loan type + year, “$400,000 30-year payment”) belong in tool `searchTerms`, optional `metaTitle` / `metaDescription`, and a `longTail` section inside `lib/tool-content/`. They do not become generated URL families. FHA-limit-by-county pages remain deferred until they have distinct data, not a name swap.
+
+### Generated page families
+
+**Chosen:** a family owns its own routes, its own gate and its own publication schedule, separate from the tool registry. The first is salary (`lib/salary-pages.ts`, `app/salary/`).
+
+**Why the registry could not absorb it:** a tool is one page someone built and scored by hand on seven criteria. That is the right instrument for fifty tools and the wrong one for 34,250 pages. A family instead derives its pages from the data: a page exists where BLS published a detailed occupation with both an employment count and a wage, and nowhere else (`isPageWorthyEstimate`). Suppressed estimates produce no URL rather than a thin one, which is the same hard gate the registry applies, enforced by the data instead of by review.
+
+**Levels and publication:** `SALARY_PUBLICATION` records how far the family has been opened. Every level is currently open — the hub, the state index, 51 state hubs, 761 occupation pages and 30,807 occupation-in-state pages, 31,621 URLs across four `sitemaps/salary` files. That is the site owner's decision, taken over the recommendation to open the leaves only after the levels above them had been measured; publishing a corpus this size from a domain with no history is the profile most likely to be crawled slowly or left largely unindexed. The gate is kept because it makes the decision reversible: setting `occupationInState` back to `staged` withdraws those URLs from the sitemap and marks them `noindex` in one edit, without touching a route or a template.
+
+The salary family pages at 10,000 URLs per sitemap file rather than the protocol's 50,000. One file holding the whole family is about six megabytes the Worker rebuilds on every cache miss, and one file a crawler must re-fetch whole whenever any page in it changes.
+
+**Distinctness:** each page composes OEWS wages with the state tax engine (take-home on the median), BEA regional price parities (what the wage buys at national prices), ACS median household income, and the occupation's location quotient. Every one of those varies by state, so the pages differ by data rather than by a substituted place name — which is what the indexability rule above actually asks for.
+
+**Naming.** OEWS titles are classification labels: "Heavy and Tractor-Trailer Truck Drivers", "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive". They are correct and nobody searches them. Three layers separate what was measured from what a page is called:
+
+- The snapshot derives a `displayTitle` by cutting the ", Except …" clause and a trailing ", All Other" — bookkeeping that keeps categories from overlapping, not meaning. Compound titles that genuinely name several jobs are left whole, because shortening them would name a narrower job than the one surveyed.
+- `lib/salary-content.ts` holds hand-written singular, plural and alias names for the occupations most people work in — about 130 entries covering three quarters of measured employment. They are written, not derived: a rule that turns "Waiters and Waitresses" into "Waitress" is worse than no rule. Anything uncurated falls back to the official title.
+- `lib/salary-pages.ts` builds the URL from the curated name where one exists, so the address reads `/salary/hvac-technician` rather than `/salary/heating-air-conditioning-and-refrigeration-mechanics-and-installers`. The family owns addresses; the ingest must not reach up into editorial to describe itself.
+
+The official title always appears on the page beside the figure, so the heading can read naturally without the citation losing what BLS actually measured.
+
+**Residual categories.** OEWS closes each group with an "All Other" bucket so its totals add up. Those carry real figures and get no page — 69 occupations and 2,562 combinations that would never have answered a search. `isPageWorthyEstimate` is where that is enforced, next to the suppression check.
+
+**Questions and structured data.** Every page carries five or six questions in the wording people type, each answered from a different figure the page already shows — the wage, the tax computed on it, the national comparison, the local price level, the distribution, the employment count. `FAQPage` markup is added only because those questions are visible text; `Occupation` markup states the salary distribution in the vocabulary schema.org built for it. Neither restates the other.
+
+**Rendering:** these pages have no inputs, so they are server components that ship no client JavaScript. Occupation-in-state responses carry `s-maxage=86400, stale-while-revalidate=604800`; the figures change once a year.
+
+**Inbound links.** A family reached only from a sitemap is a family of orphans. The footer carries the hub, the state index and six occupations on every page in the site; the header carries the hub in primary navigation; the home page and the money hub each open onto it; and site search matches occupation names and aliases, so "RN" finds the registered nurse page. Inside the family, every occupation page links its states and every state page links its occupations, so the tables are also the link graph.
 
 ### Editorial depth on tool pages
 
@@ -140,7 +170,7 @@ All inputs are validated at runtime and bounded before calculation. There is no 
 
 Every external snapshot records provider, dataset/series, observation range, source status, fetched/verified/published timestamps, adapter/schema versions, validation status, source URL without secrets, attribution, and raw/normalized hashes where available. Calculation results retain `snapshotId` and `calculationVersion`.
 
-Milestone 1 uses EIA monthly residential electricity prices by state, EIA weekly regular gasoline, BLS grocery averages, BLS CPI-U, and Freddie Mac PMMS weekly mortgage rates. Each is labeled as a published average—not a personal quote—and exposes a manual override where that is the honest next step. Abnormal, incomplete, duplicate, unit-changed or historically rewritten candidates are quarantined.
+Milestone 1 uses EIA monthly residential electricity prices by state, EIA weekly regular gasoline, BLS grocery averages, BLS CPI-U, BLS OEWS occupation wages, and Freddie Mac PMMS weekly mortgage rates. Each is labeled as a published average—not a personal quote—and exposes a manual override where that is the honest next step. Abnormal, incomplete, duplicate, unit-changed or historically rewritten candidates are quarantined.
 
 ## Testing strategy
 
@@ -154,7 +184,7 @@ Milestone 1 uses EIA monthly residential electricity prices by state, EIA weekly
 ## Scale checks
 
 - **500 tools:** registry entries and domain engines remain independent; category and relation indexes are derived at build time.
-- **100,000 URLs:** sitemap families paginate at 50,000 URLs; indexability evidence is computed before URL publication.
+- **100,000 URLs:** sitemap families paginate at 50,000 URLs; indexability evidence is computed before URL publication. The salary family adds 31,620 URLs against a measured 2.55 MB gzipped Worker bundle, of which its packed wage columns are 1.16 MB.
 - **External outage:** request paths never depend on provider uptime; last promoted snapshot survives.
 - **Dataset revision:** snapshot identity and calculation version keep results auditable.
 - **Large client bundle:** pages render content on the server; only one calculator island hydrates per tool page.

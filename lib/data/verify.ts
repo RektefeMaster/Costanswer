@@ -23,6 +23,8 @@ import currentGeographyJson from '@/data/geography/current.json';
 import currentPerDiemJson from '@/data/gsa-perdiem/current.json';
 import currentZctaJson from '@/data/zcta-county/current.json';
 import currentGroceryJson from '@/data/bls/current.json';
+import oewsIndexJson from '@/data/bls-oews/index.json';
+import oewsManifestJson from '@/data/bls-oews/manifest.json';
 import currentHudJson from '@/data/hud-fmr/current.json';
 import currentIrsRetirementJson from '@/data/irs-retirement/current.json';
 import currentMortgageRateJson from '@/data/freddie-mac/current.json';
@@ -37,6 +39,7 @@ import { sha256 } from './sha256';
 import { beaRppSnapshotSchema } from './bea-rpp';
 import { blsCpiSnapshotSchema } from './bls-cpi';
 import { blsGrocerySnapshotSchema } from './bls-grocery';
+import { blsOewsIndexSchema, type BlsOewsIndex } from './bls-oews';
 import { censusAcsSnapshotSchema } from './census-acs';
 import { eiaElectricitySnapshotSchema } from './eia-electricity';
 import { eiaGasolineSnapshotSchema } from './eia-gasoline';
@@ -100,6 +103,28 @@ export const validateIrsRetirementEnvelope = envelopeValidator(irsRetirementSnap
 export const validateMortgageRateEnvelope = envelopeValidator(freddieMacPmmsSnapshotSchema, 'Freddie Mac PMMS', DAILY);
 export const validateUsdaFoodEnvelope = envelopeValidator(usdaFoodSnapshotSchema, 'USDA Food Plans');
 
+/**
+ * OEWS commits an index and a manifest rather than a snapshot envelope.
+ *
+ * Its normalized snapshot is 12 MB and stays out of the repository, so what can
+ * be checked here is that the index the application imports names the same
+ * release the manifest promoted. The snapshot's own hash is proved separately,
+ * by `npm run data:oews:rebuild` regenerating it from the committed archives and
+ * refusing to write anything that does not hash to the manifest's value.
+ */
+export function validateOewsIndex(rawIndex: unknown, rawManifest: unknown): BlsOewsIndex {
+  const index = blsOewsIndexSchema.parse(rawIndex);
+  const manifest = manifestSchema().parse(rawManifest);
+  if (
+    manifest.currentSnapshotId !== index.snapshotId
+    || manifest.observationPeriod !== index.observationPeriod
+    || manifest.normalizedSha256 !== index.normalizedSha256
+  ) {
+    throw new Error('Bundled OEWS index does not describe the promoted manifest.');
+  }
+  return index;
+}
+
 /** HUD publishes a release calendar alongside the snapshots it selects between. */
 const hudReleasesSchema = z.object({
   schemaVersion: z.literal('1.0.0'),
@@ -146,6 +171,7 @@ export function verifyBundledSnapshots(): void {
   validateGasolineEnvelope(currentGasolineJson);
   validateGeographyEnvelope(currentGeographyJson);
   validateGroceryEnvelope(currentGroceryJson);
+  validateOewsIndex(oewsIndexJson, oewsManifestJson);
   validateGsaPerDiemEnvelope(currentPerDiemJson);
   validateZctaCountyEnvelope(currentZctaJson);
   validateHudEnvelope(currentHudJson);

@@ -11,6 +11,7 @@ const jobs: RefreshJob[] = [
   { name: 'EIA gasoline', script: 'scripts/ingest-eia-gasoline.ts' },
   { name: 'BLS grocery', script: 'scripts/ingest-bls-grocery.ts' },
   { name: 'BLS CPI-U', script: 'scripts/ingest-bls-cpi.ts' },
+  { name: 'BLS OEWS wages', script: 'scripts/ingest-bls-oews.ts' },
   { name: 'Freddie Mac PMMS', script: 'scripts/ingest-freddie-mac-pmms.ts' },
   { name: 'EIA electricity', script: 'scripts/ingest-eia-electricity.ts', requiredEnv: 'EIA_API_KEY' },
   { name: 'Official location datasets', script: 'scripts/ingest-location-official.ts' },

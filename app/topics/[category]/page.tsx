@@ -73,6 +73,14 @@ export default async function TopicPage({ params }: { params: Promise<{ category
             ))}
           </div>
         </section>
+        {category === 'money' && (
+          <section className="quality-note">
+            <p>Also here</p>
+            <h2>What each job pays, state by state.</h2>
+            <p>Federal wage-survey medians for hundreds of occupations, with take-home pay and local price levels.</p>
+            <Link href="/salary">Salaries by occupation →</Link>
+          </section>
+        )}
         <section className="quality-note">
           <p>How these are built</p>
           <h2>Every calculator shows its work.</h2>

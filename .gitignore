@@ -42,3 +42,10 @@ next-env.d.ts
 /outputs/
 /work/
 *.tsbuildinfo
+
+# The OEWS normalized snapshot is 12 MB — larger than the application itself.
+# Its provenance lives in data/bls-oews/raw (the archives BLS served plus their
+# digests) and its identity in data/bls-oews/manifest.json. Regenerate it with
+# `npm run data:oews:rebuild`, which refuses to write a snapshot that does not
+# hash to the promoted value.
+data/bls-oews/snapshots/

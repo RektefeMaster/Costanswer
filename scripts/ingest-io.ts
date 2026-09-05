@@ -2,8 +2,23 @@ import { createHash } from 'node:crypto';
 import { mkdir, open, readFile, rename, unlink } from 'node:fs/promises';
 import path from 'node:path';
 
+/**
+ * How ingestion identifies itself to the agencies it downloads from.
+ *
+ * BLS blocks requests whose user agent does not identify the caller with a
+ * contactable URL: `www.bls.gov` and `download.bls.gov` answer a bare product
+ * token with HTTP 403 and no body, so a bare token silently broke the CPI
+ * time-series leg. Keep a resolvable URL in this string.
+ */
+export const INGEST_USER_AGENT = 'CostAnswerIngest/1.0 (+https://costanswer.com)';
+
 export function sha256(value: string): string {
   return createHash('sha256').update(value).digest('hex');
+}
+
+/** SHA-256 of the exact bytes a provider served, for binary releases. */
+export function sha256Bytes(bytes: Uint8Array): string {
+  return createHash('sha256').update(bytes).digest('hex');
 }
 
 export function manifestTextFor(snapshot: { snapshotId: string; observationPeriod: string; normalizedSha256: string }): string {
@@ -115,7 +130,7 @@ export async function fetchWithRetry(url: string, init: RequestInit & { timeoutM
       const response = await fetch(url, {
         ...rest,
         headers: {
-          'user-agent': 'CostAnswer ingest/1.0',
+          'user-agent': INGEST_USER_AGENT,
           ...headers,
         },
         signal: AbortSignal.timeout(timeoutMs),
@@ -136,6 +151,15 @@ export async function fetchWithRetry(url: string, init: RequestInit & { timeoutM
 
 export async function fetchText(url: string, init?: RequestInit & { timeoutMs?: number }): Promise<string> {
   return (await fetchWithRetry(url, init)).text();
+}
+
+/** Bytes of a binary release, such as a workbook or an archive. */
+export async function fetchBytes(url: string, init?: RequestInit & { timeoutMs?: number }): Promise<{ bytes: Uint8Array; lastModified: string | null }> {
+  const response = await fetchWithRetry(url, init);
+  return {
+    bytes: new Uint8Array(await response.arrayBuffer()),
+    lastModified: response.headers.get('last-modified'),
+  };
 }
 
 export async function fetchJson(url: string, init?: RequestInit & { timeoutMs?: number }): Promise<unknown> {

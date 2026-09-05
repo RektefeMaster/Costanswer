@@ -1887,3 +1887,20 @@ input, select { font-variant-numeric: tabular-nums; }
 .dataset-summary strong { font-size: 14px; font-weight: 700; }
 .dataset-summary small { grid-column: 2; color: rgba(16,42,42,.72); font-size: 12px; }
 @media (max-width: 600px) { .dataset-summary li { grid-template-columns: 1fr; } .dataset-summary small { grid-column: 1; } }
+
+/* The salary family hub lists every occupation, so the list has to stay
+   readable at 830 entries rather than becoming one long column. */
+.salary-occupation-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 2px 24px; margin: 0; padding: 0; list-style: none; }
+.salary-occupation-list li { padding: 7px 0; border-top: 1px solid rgba(16,42,42,.1); font-size: 12px; line-height: 1.45; }
+.salary-occupation-list a { color: inherit; text-decoration: none; }
+.salary-occupation-list a:hover, .salary-occupation-list a:focus-visible { text-decoration: underline; }
+
+/* Salary pages reuse the editorial FAQ block, plus one line naming the job's
+   other names and the official title the heading deliberately does not use. */
+.salary-questions { padding-top: 8px; }
+.occupation-names { margin: 0 0 22px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+.occupation-names strong { color: var(--ink); font-weight: 700; }
+
+/* The salary family is not a tool category, so its nav entry carries no
+   category chip; the extra leading keeps it from crowding the chips beside it. */
+.top-nav-salary { padding-left: 4px; }

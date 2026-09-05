@@ -19,4 +19,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run verify:data
+      # Regenerates the uncommitted OEWS snapshot from the committed BLS
+      # archives and fails if it does not hash to the promoted manifest.
+      - run: npm run verify:oews
       - run: npm run build

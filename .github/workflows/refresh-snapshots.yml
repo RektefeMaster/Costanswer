@@ -43,9 +43,11 @@ jobs:
             - Groceries: BLS Average Price Data
             - CPI-U: BLS all-items index
             - Mortgage rates: Freddie Mac PMMS weekly averages
+            - Occupation wages: BLS OEWS state and national estimates
 
             Review the diff, then merge so the next deploy ships the new snapshot.
           add-paths: |
+            data/bls-oews/**
             data/eia/**
             data/eia-gasoline/**
             data/bls/**

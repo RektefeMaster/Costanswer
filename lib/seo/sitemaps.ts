@@ -6,9 +6,37 @@ import { cpiSnapshot } from '@/lib/data/cpi-snapshot';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { PUBLISHING_SNAPSHOT_INSTANT } from '@/lib/publishing';
 import { CATEGORY_IDS, evaluateToolIndexability, getToolsByCategory, isCategoryHubIndexable, tools } from '@/lib/tool-registry';
+import { oewsIndex } from '@/lib/data/bls-oews-snapshot';
+import {
+  isSalaryLevelIndexable,
+  nationalSalaryOccupations,
+  salaryFamilyPath,
+  salaryOccupationInStatePath,
+  salaryOccupationPath,
+  salaryStateIndexPath,
+  salaryStatePath,
+  statesWithWageFor,
+} from '@/lib/salary-pages';
+import { STATE_CODES } from '@/lib/location/states';
 
 export const SITEMAP_URL_LIMIT = 50_000;
-export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools'] as const;
+/**
+ * URLs per sitemap file, per family.
+ *
+ * The protocol allows 50,000, but one file holding 31,000 salary URLs is about
+ * six megabytes that the Worker rebuilds whenever the edge copy expires, and it
+ * is also one file a crawler must re-fetch whole whenever any page in it
+ * changes. Splitting the large family keeps each file cheap to serve and lets a
+ * crawler see which part of the corpus moved.
+ */
+const SITEMAP_FAMILY_PAGE_SIZE: Partial<Record<SitemapFamilyId, number>> = {
+  salary: 10_000,
+};
+
+function familyPageSize(family: SitemapFamilyId): number {
+  return SITEMAP_FAMILY_PAGE_SIZE[family] ?? SITEMAP_URL_LIMIT;
+}
+export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary'] as const;
 export type SitemapFamilyId = (typeof SITEMAP_FAMILY_IDS)[number];
 
 export type SitemapEntry = {
@@ -44,6 +72,41 @@ export function paginateSitemapEntries<T>(entries: readonly T[], limit = SITEMAP
   return pages;
 }
 
+/** Salary pages open to search, with the release date they were built from. */
+function salaryEntries(): SitemapEntry[] {
+  const lastModified = oewsIndex.publishedAt > CONTENT_RELEASE_DATE ? oewsIndex.publishedAt : CONTENT_RELEASE_DATE;
+  const entries: SitemapEntry[] = [];
+  if (isSalaryLevelIndexable('familyHub')) {
+    entries.push({ path: salaryFamilyPath(), lastModified, changeFrequency: 'monthly', priority: 0.8 });
+  }
+  if (isSalaryLevelIndexable('stateIndex')) {
+    entries.push({ path: salaryStateIndexPath(), lastModified, changeFrequency: 'monthly', priority: 0.7 });
+  }
+  if (isSalaryLevelIndexable('stateHub')) {
+    for (const state of STATE_CODES) {
+      entries.push({ path: salaryStatePath(state), lastModified, changeFrequency: 'monthly', priority: 0.7 });
+    }
+  }
+  if (isSalaryLevelIndexable('occupation')) {
+    for (const occupation of nationalSalaryOccupations()) {
+      entries.push({ path: salaryOccupationPath(occupation), lastModified, changeFrequency: 'monthly', priority: 0.6 });
+    }
+  }
+  if (isSalaryLevelIndexable('occupationInState')) {
+    for (const occupation of nationalSalaryOccupations()) {
+      for (const state of statesWithWageFor(occupation)) {
+        entries.push({
+          path: salaryOccupationInStatePath(occupation, state),
+          lastModified,
+          changeFrequency: 'monthly',
+          priority: 0.5,
+        });
+      }
+    }
+  }
+  return entries;
+}
+
 export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
   return {
     pages: ['/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq'].map((path) => ({
@@ -60,6 +123,8 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
       changeFrequency: 'weekly',
       priority: 0.75,
     })),
+    /** Whatever `SALARY_PUBLICATION` has opened, hubs first, then the leaves. */
+    salary: salaryEntries(),
     tools: tools.filter((tool) => evaluateToolIndexability(tool).indexable).map((tool) => ({
       path: tool.path,
       lastModified: toolLastModified(tool),
@@ -70,14 +135,15 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
 }
 
 export function getSitemapPage(family: SitemapFamilyId, oneBasedPage: number): SitemapEntry[] | null {
-  const pages = paginateSitemapEntries(getSitemapFamilies()[family]);
+  const pages = paginateSitemapEntries(getSitemapFamilies()[family], familyPageSize(family));
   return pages[oneBasedPage - 1] ?? null;
 }
 
 export function sitemapPagePaths(): Array<{ family: SitemapFamilyId; page: string }> {
   const families = getSitemapFamilies();
   return SITEMAP_FAMILY_IDS.flatMap((family) =>
-    paginateSitemapEntries(families[family]).map((_, index) => ({ family, page: `${index + 1}.xml` })),
+    paginateSitemapEntries(families[family], familyPageSize(family))
+      .map((_, index) => ({ family, page: `${index + 1}.xml` })),
   );
 }
 

@@ -37,6 +37,19 @@ const nextConfig: NextConfig = {
     return [
       { source: '/', headers: securityHeaders },
       { source: '/:path*', headers: securityHeaders },
+      {
+        /**
+         * Occupation-in-state pages are rendered on demand rather than
+         * prerendered: there are 33,369 of them, past the ceiling on static
+         * assets. Their figures change once a year when BLS publishes, so the
+         * edge holds a copy for a day and serves a stale one for a week while
+         * it refreshes — the Worker runs once per page per day at most.
+         */
+        source: '/salary/:occupation/:state',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
     ];
   },
 };

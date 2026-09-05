@@ -68,11 +68,19 @@ export function SiteHeader() {
               {categories[categoryId].name}
             </Link>
           ))}
+          <Link
+            className="top-nav-salary"
+            href="/salary"
+            aria-current={pathname === '/salary' || pathname.startsWith('/salary/') ? 'page' : undefined}
+          >
+            Salaries
+          </Link>
         </nav>
         <Link className="header-search" href="/search" aria-current={searchCurrent}>Search calculators</Link>
         <details className="mobile-menu" ref={menuRef} suppressHydrationWarning>
           <summary aria-label="Open site navigation">Menu</summary>
           <nav aria-label="Mobile navigation">
+            <Link className="mobile-search-link" href="/salary">Salaries</Link>
             <Link className="mobile-search-link" href="/search" aria-current={searchCurrent}>Search calculators</Link>
             {/* The drawer has room for the whole catalogue; the top bar does not. */}
             {CATEGORY_IDS.map((categoryId) => (

@@ -54,11 +54,11 @@ Acceptance criteria:
 - BLS CPI-U inflation/value-over-time tool with a versioned time-series adapter. **Shipped.**
 - Freddie Mac PMMS mortgage payment estimator with national weekly averages. **Shipped.**
 - Home affordability decision screen (this house vs. how much house) on take-home pay. **Shipped.**
-- BLS OEWS salary explorer plus 20 high-intent national occupation pages.
-- 51 state/DC salary hubs only after each page passes the quality gate.
-- Search Console import and opportunity scoring.
+- BLS OEWS salary explorer plus national occupation pages. **Shipped** — 761 pages, one per detailed occupation OEWS publishes a national wage for, excluding the residual "All Other" buckets.
+- 51 state/DC salary hubs only after each page passes the quality gate. **Shipped** — each hub carries the state's own wage distribution, its most common and best-paid occupations, and the occupations most concentrated there.
+- Search Console import and opportunity scoring. **Next, and the gate on everything below.**
 
-Do not launch occupation × state × metro combinations in this wave.
+Occupation × state pages are open: 30,807 pages indexable and in the sitemap, published at the site owner's direction rather than after measurement. Reverting to a staged launch is one word — `occupationInState` in `SALARY_PUBLICATION` — and is the first thing to try if Search Console shows the corpus discovered but not indexed. Metro combinations remain unbuilt: the OEWS metro release is 40 MB and would not fit the Worker bundle the state release fits in, so it needs a storage decision first.
 
 ## Expansion wave 2 — Reuse-led tools
 

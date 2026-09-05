@@ -4,6 +4,7 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { HeroDemo } from '@/components/site/HeroDemo';
 import { HeroHeadline } from '@/components/site/HeroHeadline';
 import { PopularPicks } from '@/components/site/PopularPicks';
+import { SalaryPromo } from '@/components/site/SalaryPromo';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { categories, getTool, type CategoryId } from '@/lib/tool-registry';
@@ -95,6 +96,8 @@ export default function Home() {
           ))}
         </div>
       </section>
+
+      <SalaryPromo />
 
       <PopularPicks />
 

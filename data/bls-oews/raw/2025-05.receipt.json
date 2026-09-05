@@ -1,0 +1,19 @@
+{
+  "observationPeriod": "2025-05",
+  "fetchedAt": "2026-09-04T23:43:40.981Z",
+  "archives": [
+    {
+      "url": "https://www.bls.gov/oes/special-requests/oesm25nat.zip",
+      "bytes": 279525,
+      "sha256": "b5855a37f3e03e779f6fbf173d3bbc94aeeff33426aef32fa95ce6d025bab1af",
+      "lastModified": "Fri, 15 May 2026 13:12:23 GMT"
+    },
+    {
+      "url": "https://www.bls.gov/oes/special-requests/oesm25st.zip",
+      "bytes": 7563829,
+      "sha256": "74d5be0e1df865517d22dc3bd1fc3a8af5f6f9e3052a2163143021505d8e04c6",
+      "lastModified": "Fri, 15 May 2026 13:19:24 GMT"
+    }
+  ],
+  "combinedSha256": "1978864ea90ae1925a2d27235f757f1faea7f618453e806fbcdee1b1ae4b1c51"
+}

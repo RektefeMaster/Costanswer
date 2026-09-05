@@ -3,6 +3,7 @@ export const DATASET_IDS = [
   'eia-gasoline',
   'bls-grocery',
   'bls-cpi',
+  'bls-oews',
   'freddie-mac-pmms',
   'us-tax',
   'census-omb-geography',
@@ -103,6 +104,23 @@ export const DATASET_POLICIES: Record<DatasetId, DatasetPolicy> = {
     releaseIntervalDays: 30,
     publicationLagDays: 13,
     releaseSchedule: 'Monthly, mid-month for the prior month',
+  },
+  'bls-oews': {
+    datasetId: 'bls-oews',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 90,
+    refreshMode: 'scheduled',
+    providerShort: 'BLS',
+    periodKind: 'reference-year',
+    freshnessAnchor: 'published-at',
+    releaseIntervalDays: 365,
+    /**
+     * OEWS is the longest lag of any feed here: the May 2025 reference month
+     * was published in May 2026. Anchoring freshness on the observation period
+     * would label a correctly-updated snapshot stale for most of its life.
+     */
+    publicationLagDays: 380,
+    releaseSchedule: 'Occupational Employment and Wage Statistics, once a year for the previous May',
   },
   'freddie-mac-pmms': {
     datasetId: 'freddie-mac-pmms',
