@@ -34,7 +34,7 @@ export const TOOL_CLUSTERS = {
   },
   vehicle: {
     label: 'Running a car',
-    toolIds: ['car-affordability', 'insurance-cost', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
+    toolIds: ['car-affordability', 'insurance-cost', 'auto-coverage', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
   },
   energy: {
     label: 'Energy at home',

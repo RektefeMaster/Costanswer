@@ -36,6 +36,7 @@ const htmlPaths = [
   '/car/ev-vs-gas',
   '/car/road-trip-fuel',
   '/car/car-affordability',
+  '/car/auto-coverage',
   '/everyday/business-days',
   '/everyday/tip',
   '/everyday/age',

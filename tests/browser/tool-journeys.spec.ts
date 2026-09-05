@@ -34,6 +34,7 @@ const toolPaths = [
   '/car/ev-vs-gas',
   '/car/road-trip-fuel',
   '/car/car-affordability',
+  '/car/auto-coverage',
     '/everyday/business-days',
     '/everyday/per-diem',
     '/everyday/tip',
@@ -552,7 +553,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/marketplace-plans', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/marketplace-plans', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/car/auto-coverage', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -827,4 +828,38 @@ test('the plan cost calculator prices a county to the ceiling, not just the prem
 
   await page.locator('#plans-zip').fill('90012');
   await expect(page.locator('.health-status')).toContainText('Priced by a state exchange');
+});
+
+test('the coverage calculator weighs a capped benefit against an uncapped premium', async ({ page }) => {
+  await page.goto('/car/auto-coverage');
+  await expect(page.getByRole('heading', { name: 'Collision and Comprehensive Worth-It Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.data-callout')).toContainText('NAIC 2023');
+  await expect(page.locator('.result-audit')).toContainText('Method auto-coverage-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('naic-insurance-2023-v1');
+
+  // A $6,000 car with a $500 comprehensive deductible carries $5,500 of cover.
+  await expect(page.locator('.result-stat-grid')).toContainText('$5,500');
+  await expect(page.locator('.primary-result p')).toContainText('Years of premium to equal');
+  // Liability is reported for context and kept out of the comparison.
+  await expect(page.locator('.health-range-note').first()).toContainText('liability alone averaged');
+
+  // Once both deductibles reach the car's value the cover cannot pay anything,
+  // and the page says that rather than showing a very small number. At $400 the
+  // car is below the $1,000 collision and $500 comprehensive deductibles alike.
+  await page.locator('#coverage-value').fill('400');
+  await expect(page.locator('.primary-result p')).toHaveText('This cover cannot pay out on a total loss');
+  await expect(page.locator('.primary-result strong')).toHaveText('None');
+  await expect(page.locator('.health-status')).toContainText('The deductible has overtaken the car');
+  await expect(page.locator('.health-status')).toContainText('Nothing here suggests dropping it');
+
+  // Entered premiums replace the benchmark and retire the snapshot claim.
+  await page.locator('#coverage-value').fill('6000');
+  await page.locator('.health-advanced > summary').click();
+  await page.locator('#coverage-basis').selectOption('custom');
+  await page.locator('#coverage-collision-premium').fill('400');
+  await page.locator('#coverage-comprehensive-premium').fill('200');
+  await expect(page.locator('.result-stat-grid')).toContainText('$600.00');
+  await expect(page.locator('.result-audit')).toContainText('Data Manual inputs / fixed rules');
+  await expect(page.locator('.result-audit')).not.toContainText('naic-insurance-2023-v1');
 });
