@@ -22,7 +22,7 @@ export const TOOL_CLUSTERS = {
   },
   retirement: {
     label: 'Saving and retirement',
-    toolIds: ['401k', 'roth-ira', 'retirement', 'investment', 'compound-interest', 'cd', 'interest'],
+    toolIds: ['401k', 'roth-ira', 'retirement', 'investment', 'compound-interest', 'cd', 'interest', 'medicare-cost'],
   },
   'home-buying': {
     label: 'Buying a home',
@@ -42,7 +42,7 @@ export const TOOL_CLUSTERS = {
   },
   prices: {
     label: 'What things cost',
-    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living', 'health-insurance', 'marketplace-plans'],
+    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living', 'health-insurance', 'marketplace-plans', 'medicare-cost'],
   },
   'home-project': {
     label: 'Measuring a home project',

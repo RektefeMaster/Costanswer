@@ -14,6 +14,7 @@ const htmlPaths = [
   '/money/insurance-cost',
   '/money/health-insurance',
   '/money/marketplace-plans',
+  '/money/medicare-cost',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',

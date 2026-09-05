@@ -33,6 +33,7 @@ import cmsIndexJson from '@/data/cms-marketplace/index.json';
 import cmsPremiumsJson from '@/data/cms-marketplace/premiums.json';
 import currentTaxJson from '@/data/tax/2026.json';
 import acaSubsidyJson from '@/data/aca-subsidy/2026.json';
+import medicareJson from '@/data/medicare/2026.json';
 import currentUsdaJson from '@/data/usda-food/current.json';
 import hudReleasesJson from '@/data/hud-fmr/releases.json';
 import hudFy2026Json from '@/data/hud-fmr/snapshots/hud-fmr-fy2026-revised-2026-05-21-v1.json';
@@ -56,6 +57,7 @@ import { irsRetirementSnapshotSchema } from './irs-retirement';
 import { naicInsuranceSnapshotSchema } from './naic-insurance';
 import { cmsMarketplaceIndexSchema, cmsMarketplacePremiumsSchema, type CmsMarketplaceIndex } from './cms-marketplace';
 import { acaSubsidySnapshotSchema, type AcaSubsidySnapshot } from './aca-subsidy';
+import { medicareSnapshotSchema, type MedicareSnapshot } from './medicare';
 import { usdaFoodSnapshotSchema } from './usda-food';
 import { taxYearSnapshotSchema, type TaxYearSnapshot } from './tax/schema';
 
@@ -203,6 +205,18 @@ export function validateAcaSubsidySnapshot(rawSnapshot: unknown): AcaSubsidySnap
 }
 
 /**
+ * Medicare ships as a bare hashed snapshot too: the CMS tables are transcribed
+ * by hand from a fact sheet, so there is no feed to promote from. The schema
+ * proves the ladder rises; only the hash separates $202.90 from a typed $209.20.
+ */
+export function validateMedicareSnapshot(rawSnapshot: unknown): MedicareSnapshot {
+  const computed = assertNormalizedHash(rawSnapshot as object, 'Bundled Medicare rates');
+  const snapshot = medicareSnapshotSchema.parse(rawSnapshot);
+  if (snapshot.normalizedSha256 !== computed) throw new Error('Medicare snapshot hash does not match the parsed document.');
+  return snapshot;
+}
+
+/**
  * Re-verify every snapshot the app reads at runtime, in one pass.
  *
  * This is the check the runtime modules no longer perform. Tests call it so a
@@ -227,6 +241,7 @@ export function verifyBundledSnapshots(): void {
   validateUsdaFoodEnvelope(currentUsdaJson);
   validateTaxYearSnapshot(currentTaxJson);
   validateAcaSubsidySnapshot(acaSubsidyJson);
+  validateMedicareSnapshot(medicareJson);
   validateCmsMarketplace(cmsIndexJson, cmsPremiumsJson);
   hudFmrSnapshotSchema.parse(hudFy2026Json);
   hudFmrSnapshotSchema.parse(hudFy2027Json);

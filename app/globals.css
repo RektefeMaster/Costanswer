@@ -976,6 +976,7 @@ input, select { font-variant-numeric: tabular-nums; }
 .health-metal-table th, .health-metal-table td { padding: 13px 8px; text-align: right; border-bottom: 1px solid var(--line); }
 .health-metal-table th:first-child { text-align: left; }
 .health-metal-table thead { background: rgba(32,119,103,.06); }
+.health-metal-table tr.is-current { background: rgba(32,119,103,.09); font-weight: 700; }
 .health-metal-table > p { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
 .health-range-note { margin: 0; padding: 20px 30px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; }
 @media (max-width: 600px) {

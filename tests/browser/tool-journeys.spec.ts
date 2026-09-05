@@ -15,6 +15,7 @@ const toolPaths = [
   '/money/insurance-cost',
   '/money/health-insurance',
   '/money/marketplace-plans',
+  '/money/medicare-cost',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',
@@ -553,7 +554,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/marketplace-plans', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/car/auto-coverage', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/marketplace-plans', '/money/medicare-cost', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/car/auto-coverage', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -862,4 +863,40 @@ test('the coverage calculator weighs a capped benefit against an uncapped premiu
   await expect(page.locator('.result-stat-grid')).toContainText('$600.00');
   await expect(page.locator('.result-audit')).toContainText('Data Manual inputs / fixed rules');
   await expect(page.locator('.result-audit')).not.toContainText('naic-insurance-2023-v1');
+});
+
+test('the Medicare calculator shows the income cliff, not just the premium', async ({ page }) => {
+  await page.goto('/money/medicare-cost');
+  await expect(page.getByRole('heading', { name: 'Medicare Cost Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.result-audit')).toContainText('Method medicare-cost-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('medicare-2026-cms');
+
+  // $75,000 of 2024 income: standard $202.90 Part B plus the $40 drug plan.
+  await expect(page.locator('.primary-result strong')).toHaveText('$242.90');
+  await expect(page.locator('.health-status')).toContainText('No income adjustment');
+  // The cliff is the point of the tool and has to be visible without a claim.
+  await expect(page.locator('.health-status')).toContainText('this is a cliff, not a taper');
+  await expect(page.locator('.health-status')).toContainText('$1,148.40');
+  await expect(page.locator('.health-metal-table')).toContainText('$689.90');
+
+  // One dollar over the first threshold applies the whole step at once.
+  await page.locator('#medicare-magi').fill('109000');
+  await expect(page.locator('.health-status')).toContainText('No income adjustment');
+  await page.locator('#medicare-magi').fill('109001');
+  await expect(page.locator('.health-status')).toContainText('Income adjustment: rung 1 of 5');
+  await expect(page.locator('.result-stat-grid')).toContainText('$284.10');
+
+  // Filing separately skips the middle rungs entirely.
+  await page.locator('#medicare-filing').selectOption('married-separate');
+  await expect(page.locator('.health-status')).toContainText('rung 1 of 2');
+  await expect(page.locator('.result-stat-grid')).toContainText('$649.20');
+
+  // Part A is free only with 40 quarters of Medicare-taxed work.
+  await page.locator('#medicare-filing').selectOption('single');
+  await page.locator('#medicare-magi').fill('75000');
+  await expect(page.locator('.result-stat-grid')).toContainText('Free');
+  await page.locator('#medicare-quarters').selectOption('under-30');
+  await expect(page.locator('.result-stat-grid')).toContainText('$565.00');
+  await expect(page.locator('.primary-result strong')).toHaveText('$807.90');
 });
