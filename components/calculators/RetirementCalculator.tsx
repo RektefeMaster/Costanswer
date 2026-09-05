@@ -46,7 +46,11 @@ export function RetirementCalculator() {
         <div className="calculation-output">
           <PrimaryResult label="Projected balance" value={money(calculation.result.value.projectedBalance, 0)} note={`After ${calculation.result.value.years} years under these assumptions`} tone="mint" />
           <StatGrid items={[
-            { label: 'Contributions included', value: money(calculation.result.value.totalContributions, 0) },
+            {
+              label: 'Total invested',
+              value: money(calculation.result.value.totalContributions, 0),
+              note: `${money(calculation.result.value.startingSavings ?? 0, 0)} starting + ${money(calculation.result.value.futureContributions ?? 0, 0)} future contributions`,
+            },
             { label: 'Modeled growth', value: money(calculation.result.value.modeledGrowth, 0) },
             { label: 'Gap vs goal', value: money(calculation.result.value.gap, 0), note: calculation.result.value.gap >= 0 ? 'At or above the modeled goal' : 'Below the modeled goal' },
           ]} />

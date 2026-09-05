@@ -61,6 +61,15 @@ describe('health engine', () => {
     });
     expect(result.value.bodyFatPercent).toBe(round(independent, 1));
     expect(result.calculationVersion).toBe('body-fat-v1.0.0');
+
+    const metricResult = calculateBodyFat({
+      unitSystem: 'metric',
+      sex: 'male',
+      height: 70 * 2.54,
+      neck: 16 * 2.54,
+      waist: 34 * 2.54,
+    });
+    expect(metricResult.value.bodyFatPercent).toBe(result.value.bodyFatPercent);
   });
 
   it('rejects measurements the Navy equations cannot use', () => {

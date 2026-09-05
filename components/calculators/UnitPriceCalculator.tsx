@@ -9,7 +9,7 @@ type PackageOption = { id: string; label: string; price: string; quantity: strin
 
 const unitGroups: Array<{ label: string; units: UnitId[] }> = [
   { label: 'Weight', units: ['oz', 'lb', 'g', 'kg'] },
-  { label: 'Volume', units: ['fl-oz', 'cup', 'pint', 'quart', 'gallon', 'ml', 'l'] },
+  { label: 'Volume', units: ['fl-oz', 'tbsp', 'cup', 'pint', 'quart', 'gallon', 'ml', 'l'] },
   { label: 'Count', units: ['count'] },
 ];
 
@@ -21,6 +21,22 @@ export function UnitPriceCalculator() {
 
   const updatePackage = (id: string, patch: Partial<PackageOption>) => {
     setPackages((current) => current.map((option) => option.id === id ? { ...option, ...patch } : option));
+  };
+
+  const addPackage = () => {
+    if (packages.length >= 6) return;
+    const nextLetter = String.fromCharCode(65 + packages.length);
+    const nextId = nextLetter.toLowerCase();
+    const prevUnit = packages[packages.length - 1]?.unit ?? 'oz';
+    setPackages((current) => [
+      ...current,
+      { id: nextId, label: `Option ${nextLetter}`, price: '10.99', quantity: '16', unit: prevUnit },
+    ]);
+  };
+
+  const removePackage = (id: string) => {
+    if (packages.length <= 2) return;
+    setPackages((current) => current.filter((option) => option.id !== id));
   };
 
   const calculation = useMemo(() => {
@@ -48,7 +64,19 @@ export function UnitPriceCalculator() {
       <div className="package-grid">
         {packages.map((option, index) => (
           <section className="package-card" role="group" key={option.id} aria-labelledby={`package-${option.id}-heading`}>
-            <p id={`package-${option.id}-heading`}>OPTION {String.fromCharCode(65 + index)}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <p id={`package-${option.id}-heading`}>OPTION {String.fromCharCode(65 + index)}</p>
+              {packages.length > 2 && (
+                <button
+                  type="button"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1.1rem', color: 'var(--text-muted)' }}
+                  aria-label={`Remove Option ${String.fromCharCode(65 + index)}`}
+                  onClick={() => removePackage(option.id)}
+                >
+                  ×
+                </button>
+              )}
+            </div>
             <Field label="Label" htmlFor={`package-${option.id}-label`}><span className="input-shell"><input aria-label={`Option ${String.fromCharCode(65 + index)} label`} id={`package-${option.id}-label`} value={option.label} maxLength={60} onChange={(event) => updatePackage(option.id, { label: event.target.value })} /></span></Field>
             <Field label="Package price" htmlFor={`package-${option.id}-price`}><InputShell prefix="$"><input aria-label={`Option ${String.fromCharCode(65 + index)} package price`} id={`package-${option.id}-price`} type="number" min="0.01" step="0.01" value={option.price} onChange={(event) => updatePackage(option.id, { price: event.target.value })} /></InputShell></Field>
             <div className="quantity-unit-row">
@@ -58,6 +86,11 @@ export function UnitPriceCalculator() {
           </section>
         ))}
       </div>
+      {packages.length < 6 && (
+        <div style={{ marginTop: '0.75rem' }}>
+          <button className="add-row-button" type="button" onClick={addPackage}>+ Add another package option</button>
+        </div>
+      )}
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && winner && (
         <div className="calculation-output">
@@ -66,7 +99,7 @@ export function UnitPriceCalculator() {
             value={winningOptions.length > 1 ? winningOptions.map((option) => option.label).join(' & ') : winner.label}
             note={winningOptions.length > 1
               ? `${unitPriceLabel(winner.unitPrice, calculation.result.value.baseUnit)} for each tied option`
-              : `${unitPriceLabel(winner.unitPrice, calculation.result.value.baseUnit)} · ${savingsLabel(winner.savingsVsHighestPercent)} less than the other option`}
+              : `${unitPriceLabel(winner.unitPrice, calculation.result.value.baseUnit)} · ${savingsLabel(winner.savingsVsHighestPercent)} less than highest price`}
             tone="violet"
           />
           <StatGrid items={calculation.result.value.ranked.map((option) => ({

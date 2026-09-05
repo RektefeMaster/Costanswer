@@ -31,6 +31,21 @@ export function BodyFatCalculator() {
     }
   }, [unitSystem, sex, height, neck, waist, hip]);
 
+  const switchUnits = (target: 'us' | 'metric') => {
+    if (target === unitSystem) return;
+    setUnitSystem(target);
+    const convert = (val: string, toMetric: boolean) => {
+      const num = Number(val);
+      if (!Number.isFinite(num) || num <= 0) return val;
+      return toMetric ? String(Math.round(num * 2.54 * 10) / 10) : String(Math.round((num / 2.54) * 10) / 10);
+    };
+    const toMetric = target === 'metric';
+    setHeight((curr) => convert(curr, toMetric));
+    setNeck((curr) => convert(curr, toMetric));
+    setWaist((curr) => convert(curr, toMetric));
+    setHip((curr) => convert(curr, toMetric));
+  };
+
   const suffix = unitSystem === 'metric' ? 'cm' : 'in';
 
   return (
@@ -43,8 +58,8 @@ export function BodyFatCalculator() {
       calculationSignature={JSON.stringify([unitSystem, sex, height, neck, waist, hip])}
     >
       <div className="mode-tabs" role="group" aria-label="Unit system">
-        <button type="button" aria-pressed={unitSystem === 'us'} className={unitSystem === 'us' ? 'active' : ''} onClick={() => setUnitSystem('us')}>US</button>
-        <button type="button" aria-pressed={unitSystem === 'metric'} className={unitSystem === 'metric' ? 'active' : ''} onClick={() => setUnitSystem('metric')}>Metric</button>
+        <button type="button" aria-pressed={unitSystem === 'us'} className={unitSystem === 'us' ? 'active' : ''} onClick={() => switchUnits('us')}>US</button>
+        <button type="button" aria-pressed={unitSystem === 'metric'} className={unitSystem === 'metric' ? 'active' : ''} onClick={() => switchUnits('metric')}>Metric</button>
       </div>
       <div className="mode-tabs" role="group" aria-label="Equation">
         <button type="button" aria-pressed={sex === 'female'} className={sex === 'female' ? 'active' : ''} onClick={() => setSex('female')}>Female equation</button>

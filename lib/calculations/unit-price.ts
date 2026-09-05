@@ -7,6 +7,7 @@ export const UNIT_DEFINITIONS = {
   g: { label: 'g', dimension: 'mass', toBase: 0.0352739619 },
   kg: { label: 'kg', dimension: 'mass', toBase: 35.2739619 },
   'fl-oz': { label: 'fl oz', dimension: 'volume', toBase: 1 },
+  tbsp: { label: 'tbsp', dimension: 'volume', toBase: 0.5 },
   cup: { label: 'cup', dimension: 'volume', toBase: 8 },
   pint: { label: 'pint', dimension: 'volume', toBase: 16 },
   quart: { label: 'quart', dimension: 'volume', toBase: 32 },

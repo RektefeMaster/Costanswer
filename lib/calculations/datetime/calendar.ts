@@ -158,3 +158,7 @@ export type TodayProvider = () => string;
 export function utcTodayDateOnly(now = new Date()): string {
   return now.toISOString().slice(0, 10);
 }
+
+export function calendarDaysBetween(start: Date, end: Date): number {
+  return Math.round((end.getTime() - start.getTime()) / DAY_MS);
+}

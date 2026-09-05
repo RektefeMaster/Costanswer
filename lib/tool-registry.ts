@@ -9,7 +9,7 @@ import { FRACTION_ENGINE_ID, PERCENT_CHANGE_ENGINE_ID, PERCENTAGE_ENGINE_ID, RAN
 import { CONVERSION_ENGINE_ID } from './calculations/conversion/units';
 import { PER_DIEM_ENGINE_ID } from './calculations/travel/version';
 import { GPA_ENGINE_ID, GRADE_ENGINE_ID, SQUARE_FOOTAGE_ENGINE_ID } from './calculations/education/formulas';
-import { CATEGORY_IDS, categories, type CategoryAccent, type CategoryId } from './categories';
+import { CATEGORY_IDS, type CategoryAccent, type CategoryId } from './categories';
 import { CLUSTER_IDS, TOOL_CLUSTERS, clusterNeighbours, clustersForTool } from './clusters';
 import { parsePublishingDate, PUBLISHING_SNAPSHOT_DATE } from './publishing';
 
@@ -255,9 +255,6 @@ export const tools: ToolDefinition[] = [
       'home loan payment',
       'how much is my mortgage',
       'mortgage rate today',
-      'refinance payment',
-      'refinance calculator',
-      'new mortgage payment after refinancing',
       '30 year mortgage payment on 400000',
       'mortgage payment from a quoted rate',
     ],

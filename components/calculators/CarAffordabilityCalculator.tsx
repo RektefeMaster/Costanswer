@@ -376,6 +376,11 @@ export function CarAffordabilityCalculator({
                 That verdict still uses our planning {placeholderInputs.length === 1 ? 'default' : 'defaults'} for {placeholderInputs.join(' and ')}. Enter your own quote to make this yours.
               </p>
             )}
+            {calculation.result.value.stateTaxStatus === 'unsupported' && (
+              <p className="decision-incomplete">
+                {selected.stateName} state income tax is omitted because this release does not model it. Estimated take-home pay is overstated, making this vehicle appear more affordable than it really is.
+              </p>
+            )}
             {thisCar.priceGap !== null && thisCar.priceGap > 0 && (
               <p>Cut the price by <strong>{approxMoney(thisCar.priceGap)}</strong>, or put that much more down, to reach the comfortable range with these running costs.</p>
             )}
@@ -435,6 +440,16 @@ export function CarAffordabilityCalculator({
             <p>
               Those percentages are {siteConfig.name} planning thresholds on take-home pay, not a lender decision and not a rule that fits every household.
             </p>
+            {placeholderInputs.length > 0 && (
+              <p className="decision-incomplete">
+                Those prices still use planning {placeholderInputs.length === 1 ? 'default' : 'defaults'} for {placeholderInputs.join(' and ')}. Enter your own quote to make this yours.
+              </p>
+            )}
+            {calculation.result.value.stateTaxStatus === 'unsupported' && (
+              <p className="decision-incomplete">
+                {selected.stateName} state income tax is omitted because this release does not model it. Estimated take-home pay is overstated, making the affordable vehicle budget higher than it really is.
+              </p>
+            )}
             {howMuch.comfortablePrice === 0 && (
               <p>At these running costs there is nothing left for a payment inside the comfortable range.</p>
             )}

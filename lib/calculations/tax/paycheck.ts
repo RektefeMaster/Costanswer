@@ -73,10 +73,12 @@ export function annualizePaycheckGross(input: PaycheckInput): { annualGross: num
     if (input.hourlyRate == null || input.hoursPerWeek == null || input.weeksPerYear == null) {
       throw new Error('Hourly paycheck inputs are incomplete.');
     }
+    const regularHours = Math.min(input.hoursPerWeek, 40);
+    const overtimeHours = Math.max(input.hoursPerWeek - 40, 0);
     const hourly = calculateHourlySalary({
       hourlyRate: input.hourlyRate,
-      regularHoursPerWeek: input.hoursPerWeek,
-      overtimeHoursPerWeek: 0,
+      regularHoursPerWeek: regularHours,
+      overtimeHoursPerWeek: overtimeHours,
       overtimeMultiplier: 1.5,
       weeksPerYear: input.weeksPerYear,
     });
@@ -140,6 +142,9 @@ export function calculatePaycheck(rawInput: unknown): CalculationResult<Paycheck
     assumptions: [
       'Estimated paycheck based on annualized tax liability, not employer payroll withholding.',
       `Annual tax is divided across ${periods} pay periods.`,
+      ...(input.payFrequency === 'hourly' && (input.hoursPerWeek ?? 0) > 40
+        ? ['Hours over 40 per week are calculated at 1.5× regular pay under standard FLSA overtime rules.']
+        : []),
       ...sharedAssumptions(liability),
     ],
   };

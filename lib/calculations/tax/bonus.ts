@@ -4,7 +4,7 @@ import { getStateName, isStateCode, type StateCode } from '@/lib/location/states
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { calculateFica } from './fica';
 import { calculateStateIncomeTax } from './state';
-import { FILING_STATUSES, type FilingStatus } from './types';
+import { FILING_STATUSES } from './types';
 import { BONUS_TAX_ENGINE_ID, DEFAULT_TAX_YEAR } from './version';
 
 export const bonusTaxInputSchema = z.object({

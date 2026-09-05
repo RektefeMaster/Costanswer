@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { addFractions, createFraction, formatFraction } from '@/lib/calculations/math/fraction';
-import { percentChange, percentOf, percentOfWhat, whatPercent } from '@/lib/calculations/math/percentage';
+import { percentChange, percentOf, percentOff, percentOfWhat, whatPercent } from '@/lib/calculations/math/percentage';
 import { generateRandomNumbers } from '@/lib/calculations/math/random';
 import { evaluateScientific, SCIENTIFIC_LIMITS } from '@/lib/calculations/math/scientific';
 import { calculateFraction, calculatePercentChange, calculatePercentage, calculateScientific } from '@/lib/calculations/math-tools';
@@ -13,6 +13,13 @@ describe('percentage family', () => {
     expect(whatPercent(30, 200)).toBe(15);
     expect(percentOfWhat(30, 15)).toBe(200);
     expect(calculatePercentage({ mode: 'percent-of', first: 15, second: 200 }).value.result).toBe(30);
+  });
+
+  it('calculates percent off discount correctly', () => {
+    expect(percentOff(80, 20)).toEqual({ finalPrice: 64, amountSaved: 16 });
+    const result = calculatePercentage({ mode: 'percent-off', first: 20, second: 80 });
+    expect(result.value.result).toBe(64);
+    expect(result.value.amountSaved).toBe(16);
   });
 
   it('rejects zero denominators instead of returning Infinity', () => {
@@ -55,10 +62,18 @@ describe('scientific parser', () => {
   it('locks order of operations and trig fixtures', () => {
     expect(evaluateScientific('2 + 3 × 4', { angleMode: 'radians' })).toBe(14);
     expect(evaluateScientific('(2 + 3) × 4', { angleMode: 'radians' })).toBe(20);
+    expect(evaluateScientific('2(3 + 4)', { angleMode: 'radians' })).toBe(14);
+    expect(evaluateScientific('(2 + 3)(4 + 5)', { angleMode: 'radians' })).toBe(45);
+    expect(evaluateScientific('2π', { angleMode: 'radians' })).toBeCloseTo(2 * Math.PI, 12);
+    expect(evaluateScientific('2e', { angleMode: 'radians' })).toBeCloseTo(2 * Math.E, 12);
+    expect(evaluateScientific('2e3', { angleMode: 'radians' })).toBe(2000);
+    expect(evaluateScientific('abs(-15)', { angleMode: 'radians' })).toBe(15);
+    expect(evaluateScientific('5!', { angleMode: 'radians' })).toBe(120);
     expect(evaluateScientific('sqrt(9)', { angleMode: 'radians' })).toBe(3);
     expect(evaluateScientific('sin(π/2)', { angleMode: 'radians' })).toBeCloseTo(1, 12);
     expect(evaluateScientific('sin(90)', { angleMode: 'degrees' })).toBeCloseTo(1, 12);
     expect(calculateScientific({ expression: '2 + 3 * 4', angleMode: 'radians' }).value.result).toBe(14);
+    expect(calculateScientific({ expression: '2π', angleMode: 'radians' }).value.result).toBeCloseTo(2 * Math.PI, 6);
   });
 
   it('rejects identifiers, host objects, and oversized expressions', () => {

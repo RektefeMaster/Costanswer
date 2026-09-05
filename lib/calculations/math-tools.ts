@@ -12,7 +12,7 @@ import {
   toMixedNumber,
   type ExactFraction,
 } from './math/fraction';
-import { percentChange, percentOf, percentOfWhat, whatPercent } from './math/percentage';
+import { percentChange, percentOf, percentOff, percentOfWhat, whatPercent } from './math/percentage';
 import { evaluateScientific, type AngleMode } from './math/scientific';
 import {
   FRACTION_ENGINE_ID,
@@ -21,7 +21,7 @@ import {
   SCIENTIFIC_ENGINE_ID,
 } from './math/version';
 
-const percentageModeSchema = z.enum(['percent-of', 'is-what-percent', 'percent-of-what']);
+const percentageModeSchema = z.enum(['percent-of', 'is-what-percent', 'percent-of-what', 'percent-off']);
 
 export const percentageInputSchema = z.object({
   mode: percentageModeSchema,
@@ -32,10 +32,12 @@ export const percentageInputSchema = z.object({
 export function calculatePercentage(rawInput: unknown): CalculationResult<{
   result: number;
   mode: z.infer<typeof percentageModeSchema>;
+  amountSaved?: number;
 }> {
   const input = percentageInputSchema.parse(rawInput);
   let result: number;
   let detail: string;
+  let amountSaved: number | undefined;
   switch (input.mode) {
     case 'percent-of':
       result = percentOf(input.first, input.second);
@@ -49,6 +51,13 @@ export function calculatePercentage(rawInput: unknown): CalculationResult<{
       result = percentOfWhat(input.first, input.second);
       detail = `${formatNumber(input.first, { maximumFractionDigits: 4 })} is ${formatNumber(input.second, { maximumFractionDigits: 4 })}% of what`;
       break;
+    case 'percent-off': {
+      const discount = percentOff(input.second, input.first);
+      result = discount.finalPrice;
+      amountSaved = discount.amountSaved;
+      detail = `${formatNumber(input.first, { maximumFractionDigits: 4 })}% off ${formatNumber(input.second, { maximumFractionDigits: 4 })}`;
+      break;
+    }
     default: {
       const exhaustive: never = input.mode;
       throw new Error(`Unhandled percentage mode: ${exhaustive}`);
@@ -56,12 +65,17 @@ export function calculatePercentage(rawInput: unknown): CalculationResult<{
   }
   if (!Number.isFinite(result)) throw new Error('This percentage operation is not defined for these numbers.');
   return {
-    value: { result: round(result, 6), mode: input.mode },
+    value: {
+      result: round(result, 6),
+      mode: input.mode,
+      ...(amountSaved !== undefined ? { amountSaved: round(amountSaved, 6) } : {}),
+    },
     calculationVersion: PERCENTAGE_ENGINE_ID,
     datasetSnapshotIds: [],
     breakdown: [
       { label: 'Operation', value: detail },
-      { label: 'Result', value: formatNumber(result, { maximumFractionDigits: 6 }) },
+      ...(amountSaved !== undefined ? [{ label: 'Amount saved', value: formatNumber(amountSaved, { maximumFractionDigits: 2 }) }] : []),
+      { label: input.mode === 'percent-off' ? 'Final sale price' : 'Result', value: formatNumber(result, { maximumFractionDigits: 6 }) },
     ],
     assumptions: [
       'Percent of: (percent ÷ 100) × base.',

@@ -4,12 +4,14 @@ import {
   addCalendarMonths,
   addCalendarOffset,
   calendarAge,
+  calendarDaysBetween,
   formatDateOnly,
   parseDateOnly,
 } from '@/lib/calculations/datetime/calendar';
 import { addDurations, shiftWorkedMinutes } from '@/lib/calculations/datetime/duration';
 import {
   calculateAge,
+  calculateDateDifference,
   calculateDateOffset,
   calculateDaysFromToday,
   calculateTime,
@@ -45,6 +47,27 @@ describe('calendar dates', () => {
   it('adds years across a leap day by clamping', () => {
     expect(formatDateOnly(addCalendarOffset(parseDateOnly('2024-02-29'), 1, 'years'))).toBe('2025-02-28');
   });
+
+  it('measures the span between two dates accurately', () => {
+    expect(calendarDaysBetween(parseDateOnly('2026-01-01'), parseDateOnly('2026-01-31'))).toBe(30);
+    const diff = calculateDateDifference({
+      startDate: '2026-01-01',
+      endDate: '2026-01-15',
+    });
+    expect(diff.value.totalDays).toBe(14);
+    expect(diff.value.weeks).toBe(2);
+    expect(diff.value.days).toBe(0);
+    expect(diff.value.isNegative).toBe(false);
+
+    const reverseDiff = calculateDateDifference({
+      startDate: '2026-01-15',
+      endDate: '2026-01-01',
+    });
+    expect(reverseDiff.value.totalDays).toBe(-14);
+    expect(reverseDiff.value.weeks).toBe(2);
+    expect(reverseDiff.value.days).toBe(0);
+    expect(reverseDiff.value.isNegative).toBe(true);
+  });
 });
 
 describe('days from today', () => {
@@ -56,6 +79,12 @@ describe('days from today', () => {
     expect(result.value.today).toBe('2026-09-03');
     expect(result.value.resultDate).toBe('2026-10-03');
     expect(result.value.weekday).toBe('Saturday');
+
+    const agoResult = calculateDaysFromToday(
+      { days: 30, direction: 'ago' },
+      () => '2026-09-03',
+    );
+    expect(agoResult.value.resultDate).toBe('2026-08-04');
   });
 });
 
@@ -75,6 +104,7 @@ describe('durations and time cards', () => {
 
   it('counts 09:00–17:30 minus 30 minutes as 8.0 hours, including overnight', () => {
     expect(shiftWorkedMinutes({ startMinutes: 9 * 60, endMinutes: 17 * 60 + 30, unpaidBreakMinutes: 30 }).decimalHours).toBe(8);
+    expect(shiftWorkedMinutes({ startMinutes: 9 * 60, endMinutes: 9 * 60, unpaidBreakMinutes: 0 }).decimalHours).toBe(0);
     const card = calculateTimeCard({
       shifts: [{ id: 'shift-1', start: '09:00', end: '17:30', unpaidBreakMinutes: 30 }],
     });

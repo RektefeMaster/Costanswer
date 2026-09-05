@@ -69,11 +69,12 @@ function tokenize(source: string): Token[] {
       index += 1;
       while (index < source.length && /[0-9.]/.test(source[index])) index += 1;
       if (index < source.length && (source[index] === 'e' || source[index] === 'E')) {
-        index += 1;
-        if (source[index] === '+' || source[index] === '-') index += 1;
-        const expStart = index;
-        while (index < source.length && /[0-9]/.test(source[index])) index += 1;
-        if (index === expStart) throw new ParseError('Scientific notation is incomplete.');
+        let probe = index + 1;
+        if (probe < source.length && (source[probe] === '+' || source[probe] === '-')) probe += 1;
+        if (probe < source.length && /[0-9]/.test(source[probe])) {
+          index = probe;
+          while (index < source.length && /[0-9]/.test(source[index])) index += 1;
+        }
       }
       const raw = source.slice(start, index);
       if (!/^\d+(\.\d+)?([eE][+-]?\d+)?$|^\.\d+([eE][+-]?\d+)?$/.test(raw)) {
@@ -93,7 +94,35 @@ function tokenize(source: string): Token[] {
     }
     throw new ParseError('This expression contains a character that is not allowed.');
   }
-  return tokens;
+  return insertImplicitMultiplication(tokens);
+}
+
+function isImplicitMulLeft(token?: Token): boolean {
+  if (!token) return false;
+  if (token.kind === 'number' || token.kind === 'rparen') return true;
+  if (token.kind === 'op' && token.value === '!') return true;
+  if (token.kind === 'ident' && (token.value === 'pi' || token.value === 'π' || token.value === 'e')) return true;
+  return false;
+}
+
+function isImplicitMulRight(token?: Token): boolean {
+  if (!token) return false;
+  if (token.kind === 'lparen' || token.kind === 'number') return true;
+  if (token.kind === 'ident') return true;
+  return false;
+}
+
+function insertImplicitMultiplication(tokens: Token[]): Token[] {
+  const result: Token[] = [];
+  for (let i = 0; i < tokens.length; i += 1) {
+    const current = tokens[i];
+    result.push(current);
+    const next = tokens[i + 1];
+    if (next && isImplicitMulLeft(current) && isImplicitMulRight(next)) {
+      result.push({ kind: 'op', value: '*' });
+    }
+  }
+  return result;
 }
 
 function factorial(n: number): number {

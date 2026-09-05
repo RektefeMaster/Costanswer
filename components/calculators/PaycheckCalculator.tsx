@@ -133,10 +133,14 @@ export function PaycheckCalculator() {
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated net paycheck"
+            label={calculation.result.value.stateTaxStatus === 'unsupported'
+              ? `Estimated federal & FICA paycheck (${getStateName(stateCode)} state tax omitted)`
+              : 'Estimated net paycheck'}
             value={money(calculation.result.value.netPaycheck)}
-            note={`${money(calculation.result.value.grossPaycheck)} gross · ${money(calculation.result.value.totalTax)} estimated tax`}
-            tone="mint"
+            note={calculation.result.value.stateTaxStatus === 'unsupported'
+              ? `${money(calculation.result.value.grossPaycheck)} gross · Federal & FICA only · State tax not modeled`
+              : `${money(calculation.result.value.grossPaycheck)} gross · ${money(calculation.result.value.totalTax)} estimated tax`}
+            tone={calculation.result.value.stateTaxStatus === 'unsupported' ? 'amber' : 'mint'}
           />
           <StatGrid items={[
             { label: 'Federal', value: money(calculation.result.value.federal), note: 'Annual liability ÷ periods' },

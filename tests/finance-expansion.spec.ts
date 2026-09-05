@@ -352,5 +352,17 @@ describe('retirement family', () => {
     expect(result.value.projectedBalance).toBe(10_000);
     expect(result.value.gap).toBe(-2_000);
     expect(result.assumptions.join(' ')).toMatch(/under these assumptions/i);
+
+    const contribTest = calculateRetirement({
+      currentAge: 30,
+      retirementAge: 40,
+      currentSavings: 20_000,
+      monthlyContribution: 500,
+      assumedReturnPercent: 7,
+      goalAmount: 100_000,
+    });
+    expect(contribTest.value.startingSavings).toBe(20_000);
+    expect(contribTest.value.futureContributions).toBe(60_000);
+    expect(contribTest.value.totalInvested).toBe(80_000);
   });
 });

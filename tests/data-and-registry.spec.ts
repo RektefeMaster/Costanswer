@@ -349,7 +349,7 @@ describe('search reaches the tool a reader asked for', () => {
       ['student loan', 'loan'],
       ['days until', 'days-from-today'],
       ['w2', 'paycheck'],
-      ['refinance', 'mortgage-payment'],
+      ['refinance', 'refinance'],
       ['take home pay', 'paycheck'],
       ['how much house can i afford', 'home-affordability'],
       ['how old am i', 'age'],
@@ -360,6 +360,7 @@ describe('search reaches the tool a reader asked for', () => {
       ['standard conus rate', 'per-diem'],
       ['texas teacher salary after taxes', 'salary-after-tax'],
       ['mortgage payment from a quoted rate', 'mortgage-payment'],
+      ['days between dates', 'date'],
     ];
     for (const [query, expected] of expectations) {
       const hits = searchTools(query, 3).map((result) => result.tool.id);

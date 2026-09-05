@@ -189,9 +189,26 @@ describe('unit-price and recipe engines', () => {
     ] })).toThrow(/unique/i);
   });
 
+  it('supports tbsp and compares 3 or more packages accurately', () => {
+    const multi = calculateUnitPrices({
+      options: [
+        { id: 'tbsp', label: 'Tablespoons', price: 4, quantity: 16, unit: 'tbsp' },
+        { id: 'cup', label: '1 Cup', price: 4, quantity: 1, unit: 'cup' },
+        { id: 'floz', label: '16 fl oz', price: 6, quantity: 16, unit: 'fl-oz' },
+      ],
+    });
+    expect(multi.value.winnerId).toBe('floz');
+    expect(multi.value.ranked).toHaveLength(3);
+    expect(multi.value.ranked[0].id).toBe('floz');
+  });
+
   it('parses and emits useful kitchen fractions', () => {
     expect(parseQuantity('1½')).toBe(1.5);
     expect(formatKitchenQuantity(1.125)).toBe('1 1/8');
+    expect(formatKitchenQuantity(1 / 3)).toBe('1/3');
+    expect(formatKitchenQuantity(2 / 3)).toBe('2/3');
+    expect(formatKitchenQuantity(4 / 3)).toBe('1 1/3');
+    expect(formatKitchenQuantity(5 / 16)).toBe('5/16');
     const result = scaleRecipe({
       originalServings: 4,
       desiredServings: 6,

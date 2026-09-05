@@ -96,15 +96,19 @@ export function SalaryAfterTaxCalculator() {
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated annual take-home"
+            label={calculation.result.value.stateTaxStatus === 'unsupported'
+              ? `Estimated federal & FICA take-home (${getStateName(stateCode)} state tax omitted)`
+              : 'Estimated annual take-home'}
             value={money(calculation.result.value.annualTakeHome)}
-            note={`${money(calculation.result.value.totalTax)} estimated tax · ${calculation.result.value.effectiveTaxRate.toFixed(2)}% effective rate`}
-            tone="mint"
+            note={calculation.result.value.stateTaxStatus === 'unsupported'
+              ? `${money(calculation.result.value.totalTax)} federal & FICA tax · State income tax is not modeled`
+              : `${money(calculation.result.value.totalTax)} estimated tax · ${calculation.result.value.effectiveTaxRate.toFixed(2)}% effective rate`}
+            tone={calculation.result.value.stateTaxStatus === 'unsupported' ? 'amber' : 'mint'}
           />
           <StatGrid items={[
-            { label: 'Monthly', value: money(calculation.result.value.monthlyTakeHome), note: 'Annual take-home ÷ 12' },
-            { label: 'Biweekly', value: money(calculation.result.value.biweeklyTakeHome), note: '26 pay periods' },
-            { label: 'Weekly', value: money(calculation.result.value.weeklyTakeHome), note: '52 weeks' },
+            { label: 'Monthly', value: money(calculation.result.value.monthlyTakeHome), note: calculation.result.value.stateTaxStatus === 'unsupported' ? 'Federal & FICA net ÷ 12' : 'Annual take-home ÷ 12' },
+            { label: 'Biweekly', value: money(calculation.result.value.biweeklyTakeHome), note: calculation.result.value.stateTaxStatus === 'unsupported' ? '26 pay periods (federal & FICA)' : '26 pay periods' },
+            { label: 'Weekly', value: money(calculation.result.value.weeklyTakeHome), note: calculation.result.value.stateTaxStatus === 'unsupported' ? '52 weeks (federal & FICA)' : '52 weeks' },
           ]} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>

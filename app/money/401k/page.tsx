@@ -19,13 +19,13 @@ export default function K401Page() {
   return (
     <ToolPage
       tool={tool}
-      caution="Employer match is a simple configurable rule. Catch-up, Roth-catch-up, and eligibility are not modeled. Limits are context, not an enforcement engine."
+      caution="Employer match is a configurable formula. Elective deferral and age-based catch-up limits are modeled and capped, but plan-specific eligibility, vesting schedules, and high-wage mandatory Roth catch-up rules are not modeled."
       methodology={[
         { title: 'Each year', body: 'Employee deferral is salary × contribution percent. Employer match is the match rate on deferrals, capped at a percent of salary. The assumed return then grows the balance before the next year.' },
         { title: 'Salary growth', body: 'If you enter a salary-growth percent, next year’s salary is last year’s times (1 + growth). The return is still an assumption, not a market path.' },
         {
-          title: 'IRS context',
-          body: `Tax year ${year} elective deferral limit is ${deferral}. Age 50+ catch-up is ${catchUp50}. For ages 60, 61, 62, or 63 the catch-up limit is ${catchUp60}. Combined defined-contribution limit is ${overall}. Beginning in ${year}, catch-up contributions for employees whose prior-year FICA wages exceeded ${rothWage} must be Roth. This calculator does not cap your typed percent and does not apply those rules.`,
+          title: 'IRS limits and catch-up caps',
+          body: `Tax year ${year} elective deferral limit is ${deferral}. For employees age 50 and older, the catch-up limit increases allowable deferrals by ${catchUp50} (or ${catchUp60} for ages 60 through 63 under SECURE 2.0). The combined defined-contribution limit is ${overall}. The calculation engine applies these limits to cap annual deferrals based on your age. High-wage mandatory Roth catch-up rules and plan-specific vesting are not modeled.`,
         },
       ]}
       sources={[

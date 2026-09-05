@@ -10,7 +10,7 @@ import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 export function PercentageCalculator() {
-  const [mode, setMode] = useState<'percent-of' | 'is-what-percent' | 'percent-of-what'>('percent-of');
+  const [mode, setMode] = useState<'percent-of' | 'is-what-percent' | 'percent-of-what' | 'percent-off'>('percent-of');
   const [first, setFirst] = useState('15');
   const [second, setSecond] = useState('200');
   const calculation = useMemo(() => {
@@ -24,14 +24,17 @@ export function PercentageCalculator() {
     ? { first: 'Percent', second: 'Of this number', firstSuffix: '%', secondSuffix: '' }
     : mode === 'is-what-percent'
       ? { first: 'This amount', second: 'Is what percent of', firstSuffix: '', secondSuffix: '' }
-      : { first: 'This amount', second: 'Is this percent of what', firstSuffix: '', secondSuffix: '%' };
+      : mode === 'percent-of-what'
+        ? { first: 'This amount', second: 'Is this percent of what', firstSuffix: '', secondSuffix: '%' }
+        : { first: 'Discount percent', second: 'Original price', firstSuffix: '%', secondSuffix: '$' };
 
   return (
-    <CalculatorPanel title="Percentage" intro="Three common percent questions. Each stays a separate operation." toolId="percentage" category="math" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={`${mode}|${first}|${second}`}>
+    <CalculatorPanel title="Percentage" intro="Common percent operations and discounts. Each stays a separate calculation." toolId="percentage" category="math" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={`${mode}|${first}|${second}`}>
       <div className="mode-tabs" role="group" aria-label="Percentage operation">
         <button type="button" aria-pressed={mode === 'percent-of'} className={mode === 'percent-of' ? 'active' : ''} onClick={() => setMode('percent-of')}>X% of Y</button>
         <button type="button" aria-pressed={mode === 'is-what-percent'} className={mode === 'is-what-percent' ? 'active' : ''} onClick={() => setMode('is-what-percent')}>X is what % of Y</button>
         <button type="button" aria-pressed={mode === 'percent-of-what'} className={mode === 'percent-of-what' ? 'active' : ''} onClick={() => setMode('percent-of-what')}>X is Y% of what</button>
+        <button type="button" aria-pressed={mode === 'percent-off'} className={mode === 'percent-off' ? 'active' : ''} onClick={() => { setMode('percent-off'); setFirst('20'); setSecond('80'); }}>Percent off</button>
       </div>
       <div className="calc-form-grid">
         <Field label={labels.first} htmlFor="pct-first"><InputShell suffix={labels.firstSuffix || undefined}><input id="pct-first" type="number" step="0.01" inputMode="decimal" value={first} onChange={(event) => setFirst(event.target.value)} /></InputShell></Field>
@@ -40,7 +43,12 @@ export function PercentageCalculator() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Result" value={String(calculation.result.value.result)} tone="violet" />
+          <PrimaryResult
+            label={mode === 'percent-off' ? 'Final sale price' : 'Result'}
+            value={mode === 'percent-off' ? `$${calculation.result.value.result.toFixed(2)}` : String(calculation.result.value.result)}
+            note={mode === 'percent-off' && calculation.result.value.amountSaved !== undefined ? `You save $${calculation.result.value.amountSaved.toFixed(2)}` : undefined}
+            tone="violet"
+          />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>
       )}

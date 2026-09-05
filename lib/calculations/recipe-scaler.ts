@@ -28,22 +28,55 @@ export function parseQuantity(raw: string): number | null {
   return Number.isFinite(total) && total >= 0 && total <= 1_000_000 ? total : null;
 }
 
-function greatestCommonDivisor(a: number, b: number): number {
-  let left = a;
-  let right = b;
-  while (right !== 0) [left, right] = [right, left % right];
-  return left;
-}
+const KITCHEN_CANDIDATES: Array<{ n: number; d: number; val: number }> = [
+  { n: 0, d: 1, val: 0 },
+  { n: 1, d: 16, val: 1 / 16 },
+  { n: 1, d: 8, val: 1 / 8 },
+  { n: 3, d: 16, val: 3 / 16 },
+  { n: 1, d: 4, val: 1 / 4 },
+  { n: 5, d: 16, val: 5 / 16 },
+  { n: 1, d: 3, val: 1 / 3 },
+  { n: 3, d: 8, val: 3 / 8 },
+  { n: 7, d: 16, val: 7 / 16 },
+  { n: 1, d: 2, val: 1 / 2 },
+  { n: 9, d: 16, val: 9 / 16 },
+  { n: 5, d: 8, val: 5 / 8 },
+  { n: 2, d: 3, val: 2 / 3 },
+  { n: 11, d: 16, val: 11 / 16 },
+  { n: 3, d: 4, val: 3 / 4 },
+  { n: 13, d: 16, val: 13 / 16 },
+  { n: 7, d: 8, val: 7 / 8 },
+  { n: 15, d: 16, val: 15 / 16 },
+  { n: 1, d: 1, val: 1 },
+];
 
 export function formatKitchenQuantity(value: number): string {
   if (!Number.isFinite(value) || value < 0) throw new Error('Kitchen quantity must be a finite, non-negative number.');
-  const roundedSixteenths = Math.round(value * 16);
-  if (value > 0 && roundedSixteenths === 0) return '< 1/16';
-  const whole = Math.floor(roundedSixteenths / 16);
-  const numerator = roundedSixteenths % 16;
-  if (numerator === 0) return `${whole}`;
-  const divisor = greatestCommonDivisor(numerator, 16);
-  const fraction = `${numerator / divisor}/${16 / divisor}`;
+  if (value === 0) return '0';
+  if (value > 0 && value < 1 / 32) return '< 1/16';
+
+  let whole = Math.floor(value);
+  const frac = value - whole;
+
+  let best = KITCHEN_CANDIDATES[0];
+  let minDiff = Infinity;
+  for (const c of KITCHEN_CANDIDATES) {
+    const diff = Math.abs(frac - c.val);
+    if (diff < minDiff) {
+      minDiff = diff;
+      best = c;
+    }
+  }
+
+  if (best.val === 1) {
+    whole += 1;
+    return `${whole}`;
+  }
+  if (best.val === 0) {
+    return whole > 0 ? `${whole}` : '< 1/16';
+  }
+
+  const fraction = `${best.n}/${best.d}`;
   return whole > 0 ? `${whole} ${fraction}` : fraction;
 }
 

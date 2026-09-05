@@ -4,6 +4,7 @@ import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult 
 import {
   addCalendarOffset,
   calendarAge,
+  calendarDaysBetween,
   formatDateLongUtc,
   formatDateOnly,
   isValidDateOnly,
@@ -18,7 +19,6 @@ import {
   durationToSeconds,
   formatDuration,
   parseClockToMinutes,
-  secondsToDuration,
   shiftWorkedMinutes,
   subtractDurations,
   type DurationParts,
@@ -228,7 +228,7 @@ export function calculateTimeCard(rawInput: unknown): CalculationResult<{
       { label: 'Total hours', value: `${formatNumber(decimalHours, { maximumFractionDigits: 2 })} h` },
     ],
     assumptions: [
-      'If the end time is not after the start time, the shift is treated as overnight and crosses midnight.',
+      'If the end time is earlier than the start time, the shift is treated as overnight and crosses midnight.',
       'Unpaid break is subtracted from elapsed time. Overtime law is not applied.',
       grossPay === undefined
         ? 'No pay is estimated unless you enter an hourly rate. This is hours worked, not a wage claim.'
@@ -277,6 +277,50 @@ export function calculateDateOffset(rawInput: unknown): CalculationResult<{
     assumptions: [
       'Month and year offsets clamp to the last valid day of the target month. January 31 plus one month is February 28 or 29, not March 3.',
       'This is calendar-date math, not business-day math and not a duration in milliseconds.',
+    ],
+  };
+}
+
+export const dateDifferenceInputSchema = z.object({
+  startDate: dateSchema,
+  endDate: dateSchema,
+});
+
+export function calculateDateDifference(rawInput: unknown): CalculationResult<{
+  totalDays: number;
+  weeks: number;
+  days: number;
+  startDate: string;
+  endDate: string;
+  isNegative: boolean;
+}> {
+  const input = dateDifferenceInputSchema.parse(rawInput);
+  const start = parseDateOnly(input.startDate);
+  const end = parseDateOnly(input.endDate);
+  const totalDays = calendarDaysBetween(start, end);
+  const absDays = Math.abs(totalDays);
+  const weeks = Math.floor(absDays / 7);
+  const days = absDays % 7;
+  return {
+    value: {
+      totalDays,
+      weeks,
+      days,
+      startDate: input.startDate,
+      endDate: input.endDate,
+      isNegative: totalDays < 0,
+    },
+    calculationVersion: DATE_ENGINE_ID,
+    datasetSnapshotIds: [],
+    breakdown: [
+      { label: 'Start date', value: `${weekdayNameUtc(start)}, ${formatDateLongUtc(start)}` },
+      { label: 'End date', value: `${weekdayNameUtc(end)}, ${formatDateLongUtc(end)}` },
+      { label: 'Total calendar days', value: `${totalDays} ${Math.abs(totalDays) === 1 ? 'day' : 'days'}` },
+      { label: 'Weeks and days', value: `${weeks} ${weeks === 1 ? 'week' : 'weeks'}, ${days} ${days === 1 ? 'day' : 'days'}` },
+    ],
+    assumptions: [
+      'This measures the calendar-day difference in UTC. Weekends and holidays count.',
+      'A negative total means the end date is earlier than the start date.',
     ],
   };
 }

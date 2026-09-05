@@ -91,10 +91,10 @@ export function BonusTaxCalculator({ taxYear }: { taxYear: number }) {
       {calculation.result && value && (
         <div className="calculation-output">
           <PrimaryResult
-            label="What lands in your account"
+            label={value.stateTaxStatus === 'unsupported' ? 'What lands in your account (State tax omitted)' : 'What lands in your account'}
             value={money(value.takeHome)}
-            note={`${percent(value.effectiveWithholdingRate)} of the bonus withheld, on a ${money(value.bonusAmount, 0)} bonus`}
-            tone="mint"
+            note={value.stateTaxStatus === 'unsupported' ? 'Federal & FICA withholding only · State withholding omitted' : `${percent(value.effectiveWithholdingRate)} of the bonus withheld, on a ${money(value.bonusAmount, 0)} bonus`}
+            tone={value.stateTaxStatus === 'unsupported' ? 'amber' : 'mint'}
           />
           {value.crossesMandatoryThreshold && (
             <div className="data-callout">

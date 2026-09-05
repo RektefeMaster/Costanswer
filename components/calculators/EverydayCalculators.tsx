@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import {
+  calculateDateDifference,
   calculateDateOffset,
   calculateDaysFromToday,
   calculateRandomNumber,
@@ -61,11 +62,14 @@ export function TimeCalculator() {
 }
 
 export function DateCalculator() {
+  const [operationMode, setOperationMode] = useState<'offset' | 'difference'>('offset');
   const [startDate, setStartDate] = useState('2026-01-31');
+  const [endDate, setEndDate] = useState('2026-12-31');
   const [amount, setAmount] = useState('1');
   const [unit, setUnit] = useState<'days' | 'weeks' | 'months' | 'years'>('months');
   const [direction, setDirection] = useState<'after' | 'before'>('after');
-  const calculation = useMemo(() => {
+
+  const offsetCalc = useMemo(() => {
     try {
       return { result: calculateDateOffset({ startDate, amount: Number(amount), unit, direction }), error: '' };
     } catch (error) {
@@ -73,57 +77,135 @@ export function DateCalculator() {
     }
   }, [startDate, amount, unit, direction]);
 
+  const diffCalc = useMemo(() => {
+    try {
+      return { result: calculateDateDifference({ startDate, endDate }), error: '' };
+    } catch (error) {
+      return { result: null, error: calculationErrorMessage(error) };
+    }
+  }, [startDate, endDate]);
+
+  const activeCalc = operationMode === 'offset' ? offsetCalc : diffCalc;
+
   return (
-    <CalculatorPanel title="Date offset" intro="Move a calendar date by days, weeks, months, or years. End-of-month days are clamped." toolId="date" category="everyday" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={`${startDate}|${amount}|${unit}|${direction}`}>
-      <div className="mode-tabs" role="group" aria-label="Direction">
-        <button type="button" aria-pressed={direction === 'after'} className={direction === 'after' ? 'active' : ''} onClick={() => setDirection('after')}>After</button>
-        <button type="button" aria-pressed={direction === 'before'} className={direction === 'before' ? 'active' : ''} onClick={() => setDirection('before')}>Before</button>
+    <CalculatorPanel
+      title={operationMode === 'offset' ? 'Date offset' : 'Days between dates'}
+      intro={operationMode === 'offset' ? 'Move a calendar date by days, weeks, months, or years. End-of-month days are clamped.' : 'Count the exact number of calendar days, weeks, and days between any two dates.'}
+      toolId="date"
+      category="everyday"
+      calculationState={activeCalc.result ? 'complete' : 'invalid'}
+      calculationSignature={`${operationMode}|${startDate}|${endDate}|${amount}|${unit}|${direction}`}
+    >
+      <div className="mode-tabs" role="group" aria-label="Calculator mode">
+        <button type="button" aria-pressed={operationMode === 'offset'} className={operationMode === 'offset' ? 'active' : ''} onClick={() => setOperationMode('offset')}>Add / Subtract</button>
+        <button type="button" aria-pressed={operationMode === 'difference'} className={operationMode === 'difference' ? 'active' : ''} onClick={() => setOperationMode('difference')}>Days between dates</button>
       </div>
-      <div className="calc-form-grid">
-        <Field label="Starting date" htmlFor="date-start"><span className="input-shell"><input id="date-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
-        <Field label="Amount" htmlFor="date-amount"><InputShell><input id="date-amount" type="number" min="0" step="1" inputMode="numeric" value={amount} onChange={(event) => setAmount(event.target.value)} /></InputShell></Field>
-        <Field label="Unit" htmlFor="date-unit">
-          <span className="input-shell select-shell">
-            <select id="date-unit" value={unit} onChange={(event) => setUnit(event.target.value as typeof unit)}>
-              <option value="days">Days</option>
-              <option value="weeks">Weeks</option>
-              <option value="months">Months</option>
-              <option value="years">Years</option>
-            </select>
-          </span>
-        </Field>
-      </div>
-      {calculation.error && <InlineError message={calculation.error} />}
-      {calculation.result && (
-        <div className="calculation-output">
-          <PrimaryResult label="Resulting date" value={calculation.result.value.resultDate} note={calculation.result.value.weekday} tone="rose" />
-          <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
-        </div>
+
+      {operationMode === 'offset' && (
+        <>
+          <div className="mode-tabs" role="group" aria-label="Direction">
+            <button type="button" aria-pressed={direction === 'after'} className={direction === 'after' ? 'active' : ''} onClick={() => setDirection('after')}>After</button>
+            <button type="button" aria-pressed={direction === 'before'} className={direction === 'before' ? 'active' : ''} onClick={() => setDirection('before')}>Before</button>
+          </div>
+          <div className="calc-form-grid">
+            <Field label="Starting date" htmlFor="date-start"><span className="input-shell"><input id="date-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
+            <Field label="Amount" htmlFor="date-amount"><InputShell><input id="date-amount" type="number" min="0" step="1" inputMode="numeric" value={amount} onChange={(event) => setAmount(event.target.value)} /></InputShell></Field>
+            <Field label="Unit" htmlFor="date-unit">
+              <span className="input-shell select-shell">
+                <select id="date-unit" value={unit} onChange={(event) => setUnit(event.target.value as typeof unit)}>
+                  <option value="days">Days</option>
+                  <option value="weeks">Weeks</option>
+                  <option value="months">Months</option>
+                  <option value="years">Years</option>
+                </select>
+              </span>
+            </Field>
+          </div>
+          {offsetCalc.error && <InlineError message={offsetCalc.error} />}
+          {offsetCalc.result && (
+            <div className="calculation-output">
+              <PrimaryResult label="Resulting date" value={offsetCalc.result.value.resultDate} note={offsetCalc.result.value.weekday} tone="rose" />
+              <ResultDetails breakdown={offsetCalc.result.breakdown} assumptions={offsetCalc.result.assumptions} calculationVersion={offsetCalc.result.calculationVersion} datasetSnapshotIds={offsetCalc.result.datasetSnapshotIds} />
+            </div>
+          )}
+        </>
+      )}
+
+      {operationMode === 'difference' && (
+        <>
+          <div className="calc-form-grid">
+            <Field label="Start date" htmlFor="date-diff-start"><span className="input-shell"><input id="date-diff-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
+            <Field label="End date" htmlFor="date-diff-end"><span className="input-shell"><input id="date-diff-end" type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} /></span></Field>
+          </div>
+          {diffCalc.error && <InlineError message={diffCalc.error} />}
+          {diffCalc.result && (
+            <div className="calculation-output">
+              <PrimaryResult
+                label="Days between"
+                value={`${Math.abs(diffCalc.result.value.totalDays)} ${Math.abs(diffCalc.result.value.totalDays) === 1 ? 'day' : 'days'}`}
+                note={`${diffCalc.result.value.weeks} weeks and ${diffCalc.result.value.days} days`}
+                tone="rose"
+              />
+              <ResultDetails breakdown={diffCalc.result.breakdown} assumptions={diffCalc.result.assumptions} calculationVersion={diffCalc.result.calculationVersion} datasetSnapshotIds={diffCalc.result.datasetSnapshotIds} />
+            </div>
+          )}
+        </>
       )}
     </CalculatorPanel>
   );
 }
 
 export function DaysFromTodayCalculator({ today }: { today: string }) {
+  const [mode, setMode] = useState<'from-today' | 'ago' | 'until'>('from-today');
   const [days, setDays] = useState('30');
-  const [direction, setDirection] = useState<'from-today' | 'ago'>('from-today');
+  const [targetDate, setTargetDate] = useState(() => {
+    try {
+      const parts = today.split('-').map(Number);
+      const d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + 30));
+      return d.toISOString().slice(0, 10);
+    } catch {
+      return today;
+    }
+  });
+
   const calculation = useMemo(() => {
     try {
-      return { result: calculateDaysFromToday({ days: Number(days), direction }, () => today), error: '' };
+      if (mode === 'until') {
+        return { diffResult: calculateDateDifference({ startDate: today, endDate: targetDate }), result: null, error: '' };
+      }
+      return { diffResult: null, result: calculateDaysFromToday({ days: Number(days), direction: mode }, () => today), error: '' };
     } catch (error) {
-      return { result: null, error: calculationErrorMessage(error) };
+      return { diffResult: null, result: null, error: calculationErrorMessage(error) };
     }
-  }, [days, direction, today]);
+  }, [mode, days, targetDate, today]);
 
   return (
-    <CalculatorPanel title="Days from today" intro="A single offset from today’s calendar date. Weekends still count." toolId="days-from-today" category="everyday" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={`${today}|${days}|${direction}`}>
+    <CalculatorPanel
+      title="Days from today"
+      intro={mode === 'until' ? 'Count the days remaining until (or elapsed since) a specific target date.' : 'A single offset from today’s calendar date. Weekends still count.'}
+      toolId="days-from-today"
+      category="everyday"
+      calculationState={(calculation.result || calculation.diffResult) ? 'complete' : 'invalid'}
+      calculationSignature={`${today}|${days}|${targetDate}|${mode}`}
+    >
       <div className="mode-tabs" role="group" aria-label="Direction">
-        <button type="button" aria-pressed={direction === 'from-today'} className={direction === 'from-today' ? 'active' : ''} onClick={() => setDirection('from-today')}>From today</button>
-        <button type="button" aria-pressed={direction === 'ago'} className={direction === 'ago' ? 'active' : ''} onClick={() => setDirection('ago')}>Days ago</button>
+        <button type="button" aria-pressed={mode === 'from-today'} className={mode === 'from-today' ? 'active' : ''} onClick={() => setMode('from-today')}>From today</button>
+        <button type="button" aria-pressed={mode === 'ago'} className={mode === 'ago' ? 'active' : ''} onClick={() => setMode('ago')}>Days ago</button>
+        <button type="button" aria-pressed={mode === 'until'} className={mode === 'until' ? 'active' : ''} onClick={() => setMode('until')}>Days until date</button>
       </div>
-      <div className="calc-form-grid">
-        <Field label="Calendar days" htmlFor="days-n"><InputShell suffix="days"><input id="days-n" type="number" min="0" step="1" inputMode="numeric" value={days} onChange={(event) => setDays(event.target.value)} /></InputShell></Field>
-      </div>
+      {mode === 'until' ? (
+        <div className="calc-form-grid">
+          <Field label="Target date" htmlFor="days-target">
+            <span className="input-shell">
+              <input id="days-target" type="date" value={targetDate} onChange={(event) => setTargetDate(event.target.value)} />
+            </span>
+          </Field>
+        </div>
+      ) : (
+        <div className="calc-form-grid">
+          <Field label="Calendar days" htmlFor="days-n"><InputShell suffix="days"><input id="days-n" type="number" min="0" step="1" inputMode="numeric" value={days} onChange={(event) => setDays(event.target.value)} /></InputShell></Field>
+        </div>
+      )}
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
@@ -133,6 +215,21 @@ export function DaysFromTodayCalculator({ today }: { today: string }) {
             { label: 'Offset', value: pluralize(calculation.result.value.signedDays, 'day', 'days') },
           ]} />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
+        </div>
+      )}
+      {calculation.diffResult && (
+        <div className="calculation-output">
+          <PrimaryResult
+            label={calculation.diffResult.value.totalDays >= 0 ? 'Days until date' : 'Days since date'}
+            value={`${Math.abs(calculation.diffResult.value.totalDays)} ${Math.abs(calculation.diffResult.value.totalDays) === 1 ? 'day' : 'days'}`}
+            note={`${calculation.diffResult.value.weeks} ${calculation.diffResult.value.weeks === 1 ? 'week' : 'weeks'}, ${calculation.diffResult.value.days} ${calculation.diffResult.value.days === 1 ? 'day' : 'days'}`}
+            tone="rose"
+          />
+          <StatGrid items={[
+            { label: 'Today', value: today },
+            { label: 'Target date', value: targetDate },
+          ]} />
+          <ResultDetails breakdown={calculation.diffResult.breakdown} assumptions={calculation.diffResult.assumptions} calculationVersion={calculation.diffResult.calculationVersion} datasetSnapshotIds={calculation.diffResult.datasetSnapshotIds} />
         </div>
       )}
     </CalculatorPanel>

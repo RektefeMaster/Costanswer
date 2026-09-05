@@ -6,9 +6,23 @@ import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 export function BmiCalculator() {
-  const [unitSystem, setUnitSystem] = useState<'metric' | 'us'>('metric');
-  const [weight, setWeight] = useState('70');
-  const [height, setHeight] = useState('175');
+  const [unitSystem, setUnitSystem] = useState<'metric' | 'us'>('us');
+  const [weight, setWeight] = useState('154');
+  const [height, setHeight] = useState('69');
+
+  const switchUnits = (target: 'metric' | 'us') => {
+    if (target === unitSystem) return;
+    setUnitSystem(target);
+    const w = Number(weight);
+    const h = Number(height);
+    if (target === 'metric') {
+      setWeight(Number.isFinite(w) && w > 0 ? String(Math.round((w / 2.20462262) * 10) / 10) : '70');
+      setHeight(Number.isFinite(h) && h > 0 ? String(Math.round(h * 2.54 * 10) / 10) : '175');
+    } else {
+      setWeight(Number.isFinite(w) && w > 0 ? String(Math.round(w * 2.20462262 * 10) / 10) : '154');
+      setHeight(Number.isFinite(h) && h > 0 ? String(Math.round((h / 2.54) * 10) / 10) : '69');
+    }
+  };
 
   const calculation = useMemo(() => {
     try {
@@ -28,8 +42,8 @@ export function BmiCalculator() {
       calculationSignature={JSON.stringify([unitSystem, weight, height])}
     >
       <div className="mode-tabs" role="group" aria-label="Unit system">
-        <button type="button" aria-pressed={unitSystem === 'us'} className={unitSystem === 'us' ? 'active' : ''} onClick={() => { setUnitSystem('us'); setWeight('154'); setHeight('69'); }}>US</button>
-        <button type="button" aria-pressed={unitSystem === 'metric'} className={unitSystem === 'metric' ? 'active' : ''} onClick={() => { setUnitSystem('metric'); setWeight('70'); setHeight('175'); }}>Metric</button>
+        <button type="button" aria-pressed={unitSystem === 'us'} className={unitSystem === 'us' ? 'active' : ''} onClick={() => switchUnits('us')}>US</button>
+        <button type="button" aria-pressed={unitSystem === 'metric'} className={unitSystem === 'metric' ? 'active' : ''} onClick={() => switchUnits('metric')}>Metric</button>
       </div>
       <div className="calc-form-grid">
         <Field label="Weight" htmlFor="bmi-weight">

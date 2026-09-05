@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
+import { finiteNumber, formatMoney, round, type CalculationResult } from './contracts';
 import { compoundInterestGrowth } from './finance/interest';
 import { RETIREMENT_ENGINE_ID } from './finance/version';
 
@@ -20,6 +20,9 @@ export function calculateRetirement(rawInput: unknown): CalculationResult<{
   years: number;
   projectedBalance: number;
   totalContributions: number;
+  startingSavings: number;
+  futureContributions: number;
+  totalInvested: number;
   modeledGrowth: number;
   goalAmount: number;
   gap: number;
@@ -36,11 +39,18 @@ export function calculateRetirement(rawInput: unknown): CalculationResult<{
     contributionTiming: 'end',
   });
   const gap = growth.endingBalance - input.goalAmount;
+  const futureContributions = round(growth.totalContributions, 0);
+  const startingSavings = round(input.currentSavings, 0);
+  const totalInvested = round(startingSavings + futureContributions, 0);
+
   return {
     value: {
       years,
       projectedBalance: round(growth.endingBalance, 0),
-      totalContributions: round(input.currentSavings + growth.totalContributions, 0),
+      totalContributions: totalInvested,
+      startingSavings,
+      futureContributions,
+      totalInvested,
       modeledGrowth: round(growth.totalGrowth, 0),
       goalAmount: round(input.goalAmount, 0),
       gap: round(gap, 0),
@@ -49,6 +59,9 @@ export function calculateRetirement(rawInput: unknown): CalculationResult<{
     datasetSnapshotIds: [],
     breakdown: [
       { label: 'Years until retirement', value: `${years}` },
+      { label: 'Starting savings', value: formatMoney(startingSavings, 0) },
+      { label: 'Future contributions', value: formatMoney(futureContributions, 0), detail: `${years * 12} monthly contributions` },
+      { label: 'Total principal invested', value: formatMoney(totalInvested, 0) },
       { label: 'Projected balance', value: formatMoney(growth.endingBalance, 0), detail: 'Under the return assumption you entered' },
       { label: 'Modeled goal', value: formatMoney(input.goalAmount, 0), detail: gap >= 0 ? 'Projected balance meets or exceeds this goal' : 'Projected balance is below this goal' },
     ],

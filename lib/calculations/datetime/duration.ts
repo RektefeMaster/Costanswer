@@ -68,7 +68,7 @@ export type TimeCardShiftHours = {
 export function shiftWorkedMinutes(shift: TimeCardShift): TimeCardShiftHours {
   if (shift.unpaidBreakMinutes < 0) throw new Error('Break minutes cannot be negative.');
   let elapsed = shift.endMinutes - shift.startMinutes;
-  const overnight = elapsed <= 0;
+  const overnight = elapsed < 0;
   if (overnight) elapsed += 24 * 60;
   const workedMinutes = elapsed - shift.unpaidBreakMinutes;
   if (workedMinutes < 0) throw new Error('Unpaid break cannot be longer than the shift.');

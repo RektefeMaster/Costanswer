@@ -86,12 +86,27 @@ function EnergyFields({
 }
 
 function useEnergyState() {
-  const [unitSystem, setUnitSystem] = useState<'metric' | 'us'>('metric');
+  const [unitSystem, setUnitSystemState] = useState<'metric' | 'us'>('us');
   const [sex, setSex] = useState<BiologicalSex>('male');
   const [age, setAge] = useState('30');
-  const [weight, setWeight] = useState('80');
-  const [height, setHeight] = useState('180');
+  const [weight, setWeight] = useState('175');
+  const [height, setHeight] = useState('70');
   const [activity, setActivity] = useState<ActivityLevel>('sedentary');
+
+  const setUnitSystem = (target: 'metric' | 'us') => {
+    if (target === unitSystem) return;
+    setUnitSystemState(target);
+    const w = Number(weight);
+    const h = Number(height);
+    if (target === 'metric') {
+      if (Number.isFinite(w) && w > 0) setWeight(String(Math.round((w / 2.20462262) * 10) / 10));
+      if (Number.isFinite(h) && h > 0) setHeight(String(Math.round(h * 2.54 * 10) / 10));
+    } else {
+      if (Number.isFinite(w) && w > 0) setWeight(String(Math.round(w * 2.20462262 * 10) / 10));
+      if (Number.isFinite(h) && h > 0) setHeight(String(Math.round((h / 2.54) * 10) / 10));
+    }
+  };
+
   return { unitSystem, setUnitSystem, sex, setSex, age, setAge, weight, setWeight, height, setHeight, activity, setActivity };
 }
 

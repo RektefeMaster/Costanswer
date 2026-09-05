@@ -273,6 +273,29 @@ describe('paycheck', () => {
     });
     expect(paycheck.value.annualGross).toBe(hourlyGross.value.annual);
     expect(paycheck.value.grossPaycheck).toBe(hourlyGross.value.weekly);
+
+    const overtimePaycheck = calculatePaycheck({
+      payFrequency: 'hourly',
+      hourlyRate: 28,
+      hoursPerWeek: 45,
+      weeksPerYear: 52,
+      state: 'TX',
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    // 40h * $28 = $1,120; 5h * ($28 * 1.5) = $210 -> $1,330/week -> $69,160/year
+    expect(overtimePaycheck.value.grossPaycheck).toBe(1330);
+    expect(overtimePaycheck.value.annualGross).toBe(69160);
+
+    const nyPaycheck = calculatePaycheck({
+      payFrequency: 'monthly',
+      amount: 10_000,
+      state: 'NY',
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    expect(nyPaycheck.value.stateTaxStatus).toBe('unsupported');
+    expect(nyPaycheck.value.stateTax).toBe(0);
   });
 });
 
