@@ -14,21 +14,28 @@ export function MedicareCalculator() {
   const [filingStatus, setFilingStatus] = useState<FilingStatus>('single');
   const [annualMagi, setAnnualMagi] = useState('75000');
   const [partAQuarters, setPartAQuarters] = useState<Quarters>('40-or-more');
+  const [hasDrugCoverage, setHasDrugCoverage] = useState(true);
   const [monthlyDrugPlanPremium, setMonthlyDrugPlanPremium] = useState('40');
   const [monthlyMedigapPremium, setMonthlyMedigapPremium] = useState('0');
   const [coverageMonths, setCoverageMonths] = useState('12');
 
-  const input = useMemo(() => ({
-    coverageYear: 2026 as const,
-    filingStatus,
-    annualMagi: Number(annualMagi),
-    partAQuarters,
-    monthlyDrugPlanPremium: monthlyDrugPlanPremium.trim() === '' ? 0 : Number(monthlyDrugPlanPremium),
-    monthlyMedigapPremium: monthlyMedigapPremium.trim() === '' ? 0 : Number(monthlyMedigapPremium),
-    coverageMonths: Number(coverageMonths),
-  }), [filingStatus, annualMagi, partAQuarters, monthlyDrugPlanPremium, monthlyMedigapPremium, coverageMonths]);
+  const input = useMemo(() => {
+    if (annualMagi.trim() === '' || coverageMonths.trim() === '') return null;
+    if (hasDrugCoverage && monthlyDrugPlanPremium.trim() === '') return null;
+    return {
+      coverageYear: 2026 as const,
+      filingStatus,
+      annualMagi: Number(annualMagi),
+      partAQuarters,
+      hasDrugCoverage,
+      monthlyDrugPlanPremium: hasDrugCoverage ? Number(monthlyDrugPlanPremium) : 0,
+      monthlyMedigapPremium: monthlyMedigapPremium.trim() === '' ? 0 : Number(monthlyMedigapPremium),
+      coverageMonths: Number(coverageMonths),
+    };
+  }, [filingStatus, annualMagi, partAQuarters, hasDrugCoverage, monthlyDrugPlanPremium, monthlyMedigapPremium, coverageMonths]);
 
   const calculation = useMemo(() => {
+    if (!input) return { result: null, error: '' };
     try { return { result: calculateMedicareCost(input), error: '' }; }
     catch (error) { return { result: null, error: calculationErrorMessage(error) }; }
   }, [input]);
@@ -77,11 +84,21 @@ export function MedicareCalculator() {
             </select>
           </span>
         </Field>
-        <Field label="Your drug plan premium, per month" htmlFor="medicare-drug" hint="What a Part D or Medicare Advantage drug plan charges, before any income adjustment. Set to zero if you have none.">
-          <InputShell prefix="$">
-            <input id="medicare-drug" type="number" min="0" step="5" value={monthlyDrugPlanPremium} onChange={(event) => setMonthlyDrugPlanPremium(event.target.value)} />
-          </InputShell>
+        <Field label="Drug coverage" htmlFor="medicare-drug-coverage" hint="Part D IRMAA is owed only if you have a Part D or Medicare Advantage drug plan. A $0-premium plan still owes it.">
+          <span className="input-shell select-shell">
+            <select id="medicare-drug-coverage" value={hasDrugCoverage ? 'enrolled' : 'none'} onChange={(event) => setHasDrugCoverage(event.target.value === 'enrolled')}>
+              <option value="enrolled">I have a Part D or Medicare Advantage drug plan</option>
+              <option value="none">I do not have drug coverage</option>
+            </select>
+          </span>
         </Field>
+        {hasDrugCoverage && (
+          <Field label="Your drug plan premium, per month" htmlFor="medicare-drug" hint="What the plan charges before any income adjustment. $0 is a real premium on some plans and still owes the adjustment.">
+            <InputShell prefix="$">
+              <input id="medicare-drug" type="number" min="0" step="5" value={monthlyDrugPlanPremium} onChange={(event) => setMonthlyDrugPlanPremium(event.target.value)} />
+            </InputShell>
+          </Field>
+        )}
       </div>
 
       <details className="health-advanced">
@@ -106,7 +123,7 @@ export function MedicareCalculator() {
           <PrimaryResult
             label="Monthly premium total"
             value={formatMoney(value.monthlyTotal)}
-            note={`${formatMoney(value.coveragePeriodTotal)} over ${input.coverageMonths} month${input.coverageMonths === 1 ? '' : 's'} · ${value.irmaaApplies ? 'includes an income adjustment' : 'standard premium'}`}
+            note={`${formatMoney(value.coveragePeriodTotal)} over ${input?.coverageMonths ?? 12} month${(input?.coverageMonths ?? 12) === 1 ? '' : 's'} · ${value.irmaaApplies ? 'includes an income adjustment' : 'standard premium'}`}
           />
 
           {/*
@@ -119,15 +136,17 @@ export function MedicareCalculator() {
             <ul>
               {value.irmaaApplies ? (
                 <li>
-                  Your {medicareSnapshot.irmaaIncomeTaxYear} income adds {formatMoney(value.partBIrmaa)} to Part B and {formatMoney(value.partDIrmaa)} to drug coverage every month,
-                  which is {formatMoney((value.partBIrmaa + value.partDIrmaa) * 12)} over the year on top of the standard premiums.
+                  Your {medicareSnapshot.irmaaIncomeTaxYear} income adds {formatMoney(value.partBIrmaa)} to Part B
+                  {value.hasDrugCoverage
+                    ? ` and ${formatMoney(value.partDIrmaa)} to drug coverage every month, which is ${formatMoney((value.partBIrmaa + value.partDIrmaa) * 12)} over the year on top of the standard premiums.`
+                    : ` every month (${formatMoney(value.partBIrmaa * 12)} over the year). A Part D plan would add ${formatMoney(value.partDIrmaa)} more per month, which is not in this total because you have no drug coverage.`}
                 </li>
               ) : (
                 <li>Your {medicareSnapshot.irmaaIncomeTaxYear} income is below the first threshold, so the standard {formatMoney(value.partBStandardPremium)} Part B premium applies.</li>
               )}
               {value.nextIrmaaThreshold !== null && value.annualCostOfNextThreshold !== null && (
                 <li>
-                  The next rung starts above {formatMoney(value.nextIrmaaThreshold, 0)}, which is {formatMoney(value.distanceToNextThreshold ?? 0, 0)} away.
+                  The next rung starts {value.nextIrmaaThresholdIsInclusive ? 'at' : 'above'} {formatMoney(value.nextIrmaaThreshold, 0)}, which is {formatMoney(value.distanceToNextThreshold ?? 0, 0)} away.
                   Crossing it by a single dollar costs {formatMoney(value.annualCostOfNextThreshold)} for the year: this is a cliff, not a taper.
                 </li>
               )}

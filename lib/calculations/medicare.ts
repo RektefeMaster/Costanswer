@@ -22,11 +22,23 @@ export const medicareCostInputSchema = z.object({
   partAQuarters: z.enum(['40-or-more', '30-to-39', 'under-30']),
   /** What a chosen Part D or Medicare Advantage drug plan charges, before IRMAA. */
   monthlyDrugPlanPremium: dollars('Drug plan premium', 10_000).default(0),
+  /**
+   * Whether the person is enrolled in Part D or a Medicare Advantage drug plan.
+   *
+   * Part D IRMAA is owed only with that coverage. A $0-premium plan still owes
+   * it; having no plan does not. When omitted, enrollment is inferred from a
+   * positive premium so a typed plan is never ignored, and a blank premium is
+   * never charged an adjustment the person would not pay.
+   */
+  hasDrugCoverage: z.boolean().optional(),
   /** A Medigap policy is priced by its insurer and is not part of any federal table. */
   monthlyMedigapPremium: dollars('Medigap premium', 10_000).default(0),
   /** Whole months of coverage in the year, for a mid-year start. */
   coverageMonths: z.number().int().min(1).max(12).default(12),
-});
+}).transform((input) => ({
+  ...input,
+  hasDrugCoverage: input.hasDrugCoverage ?? input.monthlyDrugPlanPremium > 0,
+}));
 export type MedicareCostInput = z.infer<typeof medicareCostInputSchema>;
 
 export type MedicareCostValue = {
@@ -36,9 +48,11 @@ export type MedicareCostValue = {
   irmaaApplies: boolean;
   /** Income at which the next rung starts, so the cliff is visible. */
   nextIrmaaThreshold: number | null;
+  nextIrmaaThresholdIsInclusive: boolean | null;
   distanceToNextThreshold: number | null;
   /** What crossing that threshold would add for a whole year. */
   annualCostOfNextThreshold: number | null;
+  hasDrugCoverage: boolean;
   partAMonthlyPremium: number;
   partBStandardPremium: number;
   partBIrmaa: number;
@@ -73,13 +87,17 @@ export function calculateMedicareCost(
     : input.partAQuarters === '30-to-39' ? snapshot.partA.monthlyPremium30To39Quarters
       : snapshot.partA.monthlyPremiumUnder30Quarters;
   const partBMonthly = round(snapshot.partB.standardMonthlyPremium + bracket.partBMonthlyAdjustment);
-  const drugTotal = round(input.monthlyDrugPlanPremium + bracket.partDMonthlyAdjustment);
+  const drugTotal = input.hasDrugCoverage
+    ? round(input.monthlyDrugPlanPremium + bracket.partDMonthlyAdjustment)
+    : 0;
   const monthlyTotal = round(partAMonthlyPremium + partBMonthly + drugTotal + input.monthlyMedigapPremium);
 
   const nextBracket = snapshot.irmaaBrackets[input.filingStatus][index + 1];
+  const partDStep = input.hasDrugCoverage && nextBracket
+    ? nextBracket.partDMonthlyAdjustment - bracket.partDMonthlyAdjustment
+    : 0;
   const stepUp = nextBracket
-    ? round(((nextBracket.partBMonthlyAdjustment - bracket.partBMonthlyAdjustment)
-      + (nextBracket.partDMonthlyAdjustment - bracket.partDMonthlyAdjustment)) * 12)
+    ? round(((nextBracket.partBMonthlyAdjustment - bracket.partBMonthlyAdjustment) + partDStep) * 12)
     : null;
 
   const value: MedicareCostValue = {
@@ -88,8 +106,10 @@ export function calculateMedicareCost(
     irmaaBracketIndex: index,
     irmaaApplies: index > 0,
     nextIrmaaThreshold: nextThreshold,
+    nextIrmaaThresholdIsInclusive: nextBracket?.thresholdIsInclusive ?? null,
     distanceToNextThreshold: nextThreshold === null ? null : round(Math.max(0, nextThreshold - input.annualMagi)),
     annualCostOfNextThreshold: stepUp,
+    hasDrugCoverage: input.hasDrugCoverage,
     partAMonthlyPremium: round(partAMonthlyPremium),
     partBStandardPremium: round(snapshot.partB.standardMonthlyPremium),
     partBIrmaa: round(bracket.partBMonthlyAdjustment),
@@ -112,7 +132,9 @@ export function calculateMedicareCost(
     'Part A is premium-free with 40 quarters of Medicare-taxed work. The premiums shown for fewer quarters are the voluntary-enrollment amounts, and a spouse’s work record can qualify you without your own.',
     'The Part A deductible is per benefit period, not per year: a new hospital stay more than 60 days after the last one starts a new one, so it can be owed more than once in a year.',
     'Part B pays 80% of the approved amount after its annual deductible, and the remaining 20% has no cap. A total cost of care cannot be produced from these tables, which is why only premiums and deductibles are totalled here.',
-    'Drug plan and Medigap premiums are whatever the insurer charges and are entered by you. Any income adjustment on Part D is added to your plan premium and paid separately, usually to Medicare rather than the plan.',
+    input.hasDrugCoverage
+      ? 'Drug plan and Medigap premiums are whatever the insurer charges and are entered by you. Any income adjustment on Part D is added to your plan premium and paid separately, usually to Medicare rather than the plan.'
+      : 'No Part D or Medicare Advantage drug plan is enrolled in this scenario, so the Part D income adjustment is not in the total. It would be added if you enrol, even on a plan with a $0 premium.',
     'Medicare Advantage replaces the way Parts A and B pay rather than the Part B premium, which is still owed. Its own premium, network, and cost sharing are outside these tables.',
     'Medicaid, a Medicare Savings Program, Extra Help, employer retiree coverage, and state pharmaceutical assistance can all reduce these amounts and are not modelled.',
   ];
@@ -126,13 +148,17 @@ export function calculateMedicareCost(
         ? [{ label: 'Part A hospital', value: 'No premium', detail: '40 or more quarters of Medicare-taxed work' }]
         : [{ label: 'Part A hospital', value: formatMoney(partAMonthlyPremium), detail: input.partAQuarters === '30-to-39' ? '30 to 39 quarters, reduced voluntary premium' : 'Fewer than 30 quarters, full voluntary premium' }]),
       { label: 'Part B medical', value: formatMoney(partBMonthly), detail: value.irmaaApplies ? `${formatMoney(snapshot.partB.standardMonthlyPremium)} standard + ${formatMoney(bracket.partBMonthlyAdjustment)} income adjustment` : 'Standard premium, no income adjustment' },
-      ...(drugTotal === 0 ? [] : [{ label: 'Drug coverage', value: formatMoney(drugTotal), detail: bracket.partDMonthlyAdjustment > 0 ? `${formatMoney(input.monthlyDrugPlanPremium)} plan + ${formatMoney(bracket.partDMonthlyAdjustment)} income adjustment` : 'Your entered plan premium' }]),
+      ...(input.hasDrugCoverage && drugTotal === 0 && bracket.partDMonthlyAdjustment === 0 ? [] : input.hasDrugCoverage
+        ? [{ label: 'Drug coverage', value: formatMoney(drugTotal), detail: bracket.partDMonthlyAdjustment > 0 ? `${formatMoney(input.monthlyDrugPlanPremium)} plan + ${formatMoney(bracket.partDMonthlyAdjustment)} income adjustment` : 'Your entered plan premium' }]
+        : value.irmaaApplies
+          ? [{ label: 'Drug coverage', value: 'Not enrolled', detail: `Part D income adjustment of ${formatMoney(bracket.partDMonthlyAdjustment)} a month is not included; it would apply if you enrol` }]
+          : []),
       ...(input.monthlyMedigapPremium === 0 ? [] : [{ label: 'Medigap', value: formatMoney(input.monthlyMedigapPremium), detail: 'Your entered supplement premium' }]),
       { label: 'Monthly premium total', value: formatMoney(monthlyTotal), detail: `${formatMoney(value.annualPremiumTotal)} across twelve months` },
       { label: 'Before any of it pays', value: formatMoney(value.partBDeductible, 0), detail: `Part B annual deductible, plus ${formatMoney(value.partADeductible, 0)} per hospital benefit period` },
     ],
     assumptions: value.irmaaApplies
-      ? [`Your ${snapshot.irmaaIncomeTaxYear} income places you on rung ${index} of ${snapshot.irmaaBrackets[input.filingStatus].length - 1}, adding ${formatMoney(round((bracket.partBMonthlyAdjustment + bracket.partDMonthlyAdjustment) * 12))} over a year.`, ...assumptions]
-      : [`Your ${snapshot.irmaaIncomeTaxYear} income is below the first adjustment threshold, so the standard premium applies. The next rung starts above ${nextThreshold === null ? 'the top of the table' : formatNumber(nextThreshold, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}.`, ...assumptions],
+      ? [`Your ${snapshot.irmaaIncomeTaxYear} income places you on rung ${index} of ${snapshot.irmaaBrackets[input.filingStatus].length - 1}, adding ${formatMoney(round((bracket.partBMonthlyAdjustment + (input.hasDrugCoverage ? bracket.partDMonthlyAdjustment : 0)) * 12))} over a year${input.hasDrugCoverage ? '' : ', not counting Part D because this scenario has no drug plan'}.`, ...assumptions]
+      : [`Your ${snapshot.irmaaIncomeTaxYear} income is below the first adjustment threshold, so the standard premium applies. The next rung starts ${nextBracket?.thresholdIsInclusive ? 'at' : 'above'} ${nextThreshold === null ? 'the top of the table' : formatNumber(nextThreshold, { style: 'currency', currency: 'USD', maximumFractionDigits: 0 })}.`, ...assumptions],
   };
 }

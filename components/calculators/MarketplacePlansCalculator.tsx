@@ -8,12 +8,10 @@ import { formatMoney } from '@/lib/calculations/contracts';
 import { CMS_METALS, type CmsMetal } from '@/lib/data/cms-marketplace';
 import {
   benchmarkForHousehold, cmsCountiesForZip, cmsMarketplaceIndex, lowestMetalForHousehold, metalSummary,
+  parseEnrollingAges,
 } from '@/lib/data/cms-marketplace-snapshot';
 import { US_STATES, type StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
-
-const parseAges = (text: string): number[] => text.split(',').map((part) => Number(part.trim()))
-  .filter((age) => Number.isInteger(age) && age >= 0 && age <= 120);
 
 const METAL_LABEL: Record<CmsMetal, string> = { bronze: 'Bronze', silver: 'Silver', gold: 'Gold' };
 /** Read the table the way the levels are named, poorest cost sharing first. */
@@ -31,7 +29,7 @@ export function MarketplacePlansCalculator() {
   const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
   const matches = lookup.status === 'covered' ? lookup.counties : [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
-  const ages = useMemo(() => parseAges(enrollingAges), [enrollingAges]);
+  const ages = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
 
   const priced = useMemo(() => {
     if (!county || ages.length === 0) return null;
@@ -147,6 +145,9 @@ export function MarketplacePlansCalculator() {
       )}
 
       {calculation.error && <InlineError message={calculation.error} />}
+      {county && ages.length === 0 && (
+        <InlineError message="Enter the ages of everyone enrolling, as whole numbers separated by commas." />
+      )}
       {result && value && cheapestNow && (
         <div className="calculation-output">
           <PrimaryResult
@@ -180,7 +181,7 @@ export function MarketplacePlansCalculator() {
 
           <div className="health-metal-table">
             <table>
-              <caption>Cost of a year at each metal level, cheapest plan in this county</caption>
+              <caption>Cost of a year at each metal level. Premiums are the cheapest filed; deductibles are the county median at that level.</caption>
               <thead>
                 <tr>
                   <th scope="col">Level</th><th scope="col">Per month</th><th scope="col">No claims</th>

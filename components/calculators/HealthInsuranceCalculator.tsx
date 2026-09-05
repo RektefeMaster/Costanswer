@@ -7,7 +7,7 @@ import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
 import {
   benchmarkForHousehold, cmsCountiesForZip, cmsMarketplaceIndex, costSharingLevelForIncome,
-  costSharingVariant, lowestMetalForHousehold, metalSummary,
+  costSharingVariant, lowestMetalForHousehold, metalSummary, parseEnrollingAges,
 } from '@/lib/data/cms-marketplace-snapshot';
 import { US_STATES, type StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
@@ -31,9 +31,6 @@ const STATUS_LABELS: Record<AcaSubsidyStatus, { tag: string; tone: 'estimate' | 
   ineligible: { tag: 'No credit in this scenario', tone: 'review' },
 };
 
-const parseAges = (text: string): number[] => text.split(',').map((part) => Number(part.trim()))
-  .filter((age) => Number.isInteger(age) && age >= 0 && age <= 120);
-
 export function HealthInsuranceCalculator() {
   const [zip, setZip] = useState('77002');
   const [chosenFips, setChosenFips] = useState('');
@@ -48,7 +45,7 @@ export function HealthInsuranceCalculator() {
   const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
   const matches = lookup.status === 'covered' ? lookup.counties : [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
-  const ages = useMemo(() => parseAges(enrollingAges), [enrollingAges]);
+  const ages = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
   /*
    * The poverty guideline depends on the state, and Alaska and Hawaii have their
    * own. Defaulting to a contiguous state when the ZIP names none would move the
@@ -84,6 +81,9 @@ export function HealthInsuranceCalculator() {
 
   const calculation = useMemo(() => {
     if (usedBenchmark === null || usedPlan === null || usedPlan === undefined || resolvedStateCode === null) {
+      return { result: null, error: '' };
+    }
+    if (annualHouseholdMagi.trim() === '' || householdSize.trim() === '' || coverageMonths.trim() === '') {
       return { result: null, error: '' };
     }
     try {
@@ -198,7 +198,10 @@ export function HealthInsuranceCalculator() {
         </p>
       )}
       {quotes && !quotes.benchmark.exactForAges && (
-        <p className="data-footnote">Premiums for this county are published at set ages only, so an age between them is quoted at the nearest published one.</p>
+        <p className="data-footnote">
+          Premiums for this county are published at set ages only, so an age between them is quoted at the nearest published one on the same side of 21.
+          The credit below is sized from that quoted figure, not from an unpublished exact premium.
+        </p>
       )}
       {quotes && quotes.benchmark.unbilledChildCount > 0 && (
         <p className="data-footnote">
@@ -237,7 +240,9 @@ export function HealthInsuranceCalculator() {
       </details>
 
       {calculation.error && <InlineError message={calculation.error} />}
-      {!county && lookup.status === 'covered' && <InlineError message="Enter the ages of everyone enrolling to price a plan." />}
+      {county && ages.length === 0 && (
+        <InlineError message="Enter the ages of everyone enrolling, as whole numbers separated by commas." />
+      )}
       {result && value && status && (
         <div className="calculation-output">
           <PrimaryResult

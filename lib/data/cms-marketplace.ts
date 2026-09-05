@@ -300,6 +300,21 @@ export function premiumForAge(
 export type CmsHouseholdQuote = { premium: number; exactForAges: boolean; billedMemberCount: number; unbilledChildCount: number };
 
 /**
+ * Ages typed as a comma-separated list.
+ *
+ * Empty segments from a trailing comma or a double comma are dropped rather
+ * than becoming age 0. `Number('')` is 0, and 0 is a real infant rate, so a
+ * stray comma would silently add a child to the household.
+ */
+export function parseEnrollingAges(text: string): number[] {
+  return text.split(',')
+    .map((part) => part.trim())
+    .filter((part) => part !== '')
+    .map((part) => Number(part))
+    .filter((age) => Number.isInteger(age) && age >= 0 && age <= 120);
+}
+
+/**
  * Household premium under the federal rating rules: every member aged 21 and
  * over, plus the three oldest children under 21. A fourth child adds nothing,
  * which is the rule households most often get wrong adding a quote up by hand.

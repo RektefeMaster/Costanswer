@@ -96,7 +96,16 @@ export function InsuranceCalculator() {
       <ResultDetails breakdown={result.breakdown} assumptions={result.assumptions} calculationVersion={result.calculationVersion} datasetSnapshotIds={result.datasetSnapshotIds} />
       {housingType === 'homeowners' && <p className="insurance-next-step">Planning a purchase? Enter <strong>{formatMoney(result.value.housingAnnual)} per year</strong> as homeowners insurance in the <Link href="/money/mortgage-payment">mortgage calculator →</Link></p>}
     </div>}
-      <div className="insurance-cushion"><Field label="Optional budget cushion" htmlFor="insurance-buffer" hint="Your planning scenario; not a predicted price range."><InputShell suffix="%"><input id="insurance-buffer" type="number" min="0" max="100" step="5" value={planningBufferPercent} onChange={(event) => setPlanningBufferPercent(event.target.value)} /></InputShell></Field><p><span>With your cushion</span><strong>{formatMoney(result?.value.monthlyWithBuffer ?? 0)}<small> / month</small></strong><span>{formatMoney(result?.value.annualWithBuffer ?? 0)} per year</span></p></div>
+      <div className="insurance-cushion">
+        <Field label="Optional budget cushion" htmlFor="insurance-buffer" hint="Your planning scenario; not a predicted price range.">
+          <InputShell suffix="%"><input id="insurance-buffer" type="number" min="0" max="100" step="5" value={planningBufferPercent} onChange={(event) => setPlanningBufferPercent(event.target.value)} /></InputShell>
+        </Field>
+        <p>
+          <span>With your cushion</span>
+          <strong>{result ? formatMoney(result.value.monthlyWithBuffer) : '—'}<small> / month</small></strong>
+          <span>{result ? `${formatMoney(result.value.annualWithBuffer)} per year` : 'Enter a complete budget first'}</span>
+        </p>
+      </div>
     <InsuranceDeductibleComparison />
   </CalculatorPanel>;
 }

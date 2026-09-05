@@ -77,21 +77,29 @@ describe('Medicare premium cost', () => {
     expect(over.value.irmaaApplies).toBe(true);
     expect(over.value.partBIrmaa).toBe(81.2);
     expect(over.value.partBMonthlyPremium).toBeCloseTo(284.1, 2);
-    // One dollar of income costs (81.20 + 14.50) x 12 for the year.
-    expect(under.value.annualCostOfNextThreshold).toBeCloseTo((81.2 + 14.5) * 12, 2);
+    // One dollar of income costs (81.20 + 14.50) x 12 for the year when a drug plan is enrolled.
+    expect(calculateMedicareCost({ ...base, annualMagi: 109_000, hasDrugCoverage: true }).value.annualCostOfNextThreshold)
+      .toBeCloseTo((81.2 + 14.5) * 12, 2);
+    // Without a drug plan the Part D step is not in the total they would pay.
+    expect(calculateMedicareCost({ ...base, annualMagi: 109_000 }).value.annualCostOfNextThreshold)
+      .toBeCloseTo(81.2 * 12, 2);
   });
 
   it('reads the top rung as at-or-above, unlike every rung below it', () => {
     // CMS prints ">= $500,000" for the top bracket and "more than" for the rest.
-    const at = calculateMedicareCost({ ...base, annualMagi: 500_000 });
+    const at = calculateMedicareCost({ ...base, annualMagi: 500_000, hasDrugCoverage: true });
     expect(at.value.irmaaBracketIndex).toBe(5);
     expect(at.value.partBIrmaa).toBe(487);
     expect(at.value.partDIrmaa).toBe(91);
     expect(at.value.nextIrmaaThreshold).toBeNull();
+    expect(at.value.nextIrmaaThresholdIsInclusive).toBeNull();
     expect(at.value.annualCostOfNextThreshold).toBeNull();
-    const justUnder = calculateMedicareCost({ ...base, annualMagi: 499_999 });
+    const justUnder = calculateMedicareCost({ ...base, annualMagi: 499_999, hasDrugCoverage: true });
     expect(justUnder.value.irmaaBracketIndex).toBe(4);
     expect(justUnder.value.partBIrmaa).toBe(446.3);
+    expect(justUnder.value.nextIrmaaThreshold).toBe(500_000);
+    expect(justUnder.value.nextIrmaaThresholdIsInclusive).toBe(true);
+    expect(calculateMedicareCost(base).assumptions[0]).toMatch(/starts above/);
   });
 
   it('uses a different ladder for each filing status', () => {
@@ -115,11 +123,27 @@ describe('Medicare premium cost', () => {
     const result = calculateMedicareCost({
       ...base, annualMagi: 150_000, monthlyDrugPlanPremium: 40, monthlyMedigapPremium: 180,
     });
+    expect(result.value.hasDrugCoverage).toBe(true);
     expect(result.value.partDIrmaa).toBe(37.5);
     expect(result.value.drugPlanMonthlyTotal).toBeCloseTo(77.5, 2);
     expect(result.value.medigapMonthlyPremium).toBe(180);
     expect(result.value.monthlyTotal).toBeCloseTo(405.8 + 77.5 + 180, 2);
     expect(result.assumptions.join(' ')).toContain('paid separately');
+  });
+
+  it('does not charge Part D IRMAA when there is no drug plan, even at a high income', () => {
+    const none = calculateMedicareCost({ ...base, annualMagi: 150_000 });
+    expect(none.value.hasDrugCoverage).toBe(false);
+    expect(none.value.partBMonthlyPremium).toBeCloseTo(405.8, 2);
+    expect(none.value.partDIrmaa).toBe(37.5);
+    expect(none.value.drugPlanMonthlyTotal).toBe(0);
+    expect(none.value.monthlyTotal).toBeCloseTo(405.8, 2);
+    expect(none.assumptions.join(' ')).toContain('not in the total');
+
+    // A $0-premium plan is still enrolled coverage and still owes the adjustment.
+    const zeroPremium = calculateMedicareCost({ ...base, annualMagi: 150_000, monthlyDrugPlanPremium: 0, hasDrugCoverage: true });
+    expect(zeroPremium.value.drugPlanMonthlyTotal).toBe(37.5);
+    expect(zeroPremium.value.monthlyTotal).toBeCloseTo(405.8 + 37.5, 2);
   });
 
   it('totals a partial year of premiums without prorating a deductible', () => {

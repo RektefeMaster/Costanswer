@@ -18,6 +18,7 @@ import { countiesForZip } from './zcta-county-snapshot';
 import {
   costSharingLevelForIncome,
   householdPremium,
+  parseEnrollingAges,
   premiumForAge,
   unpackBenchmarkSilver,
   unpackCostSharing,
@@ -133,4 +134,4 @@ export function cmsCountiesForZip(zip: string): CmsZipLookup {
   return { status: 'not-in-this-release', stateCodes };
 }
 
-export { costSharingLevelForIncome, premiumForAge };
+export { costSharingLevelForIncome, parseEnrollingAges, premiumForAge };

@@ -7,7 +7,7 @@ import premiumsJson from '@/data/cms-marketplace/premiums.json';
 import {
   CMS_ABSENT, CMS_AGE_COUNT, CMS_COLUMNS_PER_COUNTY, CMS_COST_SHARING_LEVELS, CMS_METALS, CMS_PUBLISHED_AGES,
   FEDERAL_DEFAULT_AGE_CURVE, cmsMarketplaceIndexSchema, cmsMarketplacePremiumsSchema,
-  costSharingLevelForIncome, householdPremium, nearestPublishedAge, premiumForAge,
+  costSharingLevelForIncome, householdPremium, nearestPublishedAge, parseEnrollingAges, premiumForAge,
 } from '@/lib/data/cms-marketplace';
 import {
   benchmarkForHousehold, benchmarkSilverByAge, cmsCountiesForState, cmsCountiesForZip, cmsMarketplaceIndex,
@@ -197,6 +197,15 @@ describe('CMS Marketplace landscape snapshot', () => {
     // A 20-year-old is a child for rating and competes for those three slots.
     expect(householdPremium(BOTH_FEDERAL, benchmark, [40, 20, 19, 18, 2]).billedMemberCount).toBe(4);
     expect(() => householdPremium(BOTH_FEDERAL, benchmark, [])).toThrow(/at least one member/);
+  });
+
+  it('drops empty age tokens instead of turning a trailing comma into an infant', () => {
+    expect(parseEnrollingAges('40, 38, 10')).toEqual([40, 38, 10]);
+    expect(parseEnrollingAges('40, 38, 10,')).toEqual([40, 38, 10]);
+    expect(parseEnrollingAges('40,,38')).toEqual([40, 38]);
+    expect(parseEnrollingAges('0')).toEqual([0]);
+    expect(parseEnrollingAges('')).toEqual([]);
+    expect(parseEnrollingAges('abc')).toEqual([]);
   });
 
   it('reads a real county end to end', () => {
