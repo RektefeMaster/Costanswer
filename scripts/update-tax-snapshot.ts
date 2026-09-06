@@ -182,6 +182,29 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'Local earned income tax is levied separately by municipality and school district and is named as an omission rather than estimated.',
     ],
   }],
+  ['NC', {
+    ...meta('NC'),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    /*
+     * The rate is 2026's; the deduction is 2025's, because that is the newest
+     * NCDOR has published. Declaring the older of the two is the honest choice:
+     * it is the figure a reader could disagree with, and the note says exactly
+     * which part came from where.
+     */
+    scheduleTaxYear: 2025,
+    rate: 0.0399,
+    // NC gives no personal exemption. The deduction does that work.
+    exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    standardDeductionByFilingStatus: filingAmounts(12_750, 25_500, 12_750, 19_125),
+    notes: [
+      'North Carolina taxes individual income at a flat 3.99% for taxable years after 2025 (NCDOR Tax Rate Schedules; G.S. 105-153.7).',
+      'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
+      'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
+      'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
   ['MA', {
     ...meta('MA'),
     status: 'supported',

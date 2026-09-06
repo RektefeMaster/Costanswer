@@ -1336,6 +1336,26 @@ the bundled imports and the budget check is the only thing that then fails.
 not published 2026, use the latest schedule and set `scheduleTaxYear` — the
 existing honest fallback.
 
+**Access constraint, measured 2026-09-06.** Most state revenue sites cannot be
+read programmatically. Of eleven probed: NCDOR and Minnesota Revenue returned
+usable content; Colorado, Arizona, Utah and Michigan returned HTTP 403;
+Wisconsin and Virginia failed DNS resolution; Ohio 404'd on its published path;
+New York publishes only through 2025 on its rate-schedule index; and
+Minnesota's deduction page sits behind bot detection. Roughly one state in
+three is machine-readable.
+
+This does not change what the data has to be — it changes who fetches it.
+Transcribing a bracket table from a search summary is exactly the unverifiable
+input `verify-states.ts` exists to reject, so the remaining states need their
+figures supplied from the primary source by someone who can open it. The
+engineering is done and waiting: each state is one entry in
+`scripts/update-tax-snapshot.ts` plus three golden vectors.
+
+**Sequence, therefore:** do the reachable states as they are reached; leave the
+rest `unsupported`, which the site already renders honestly, until their
+figures arrive. **Do not** open the salary leaves on a partial transcription —
+that is the failure this whole phase exists to prevent.
+
 **Tests.** As above, plus: monotonicity in income for all 51; no state returns a
 tax exceeding income; `unsupported` count is 0 (asserted).
 

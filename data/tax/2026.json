@@ -721,9 +721,29 @@
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-03T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for North Carolina. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "rate": 0.0399,
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 12750,
+        "marriedFilingJointly": 25500,
+        "marriedFilingSeparately": 12750,
+        "headOfHousehold": 19125
+      },
+      "notes": [
+        "North Carolina taxes individual income at a flat 3.99% for taxable years after 2025 (NCDOR Tax Rate Schedules; G.S. 105-153.7).",
+        "The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.",
+        "Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.",
+        "The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "ND",
@@ -1191,5 +1211,5 @@
       ]
     }
   ],
-  "normalizedSha256": "71658817417be776670861cb8bb1e080cc85e361656a327e1f60fffa141704a7"
+  "normalizedSha256": "22bd0e7affcec0697068e435490bf391d668d0e8cb8dc907036fa16731466e6a"
 }
