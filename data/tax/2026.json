@@ -415,7 +415,12 @@
       },
       "additionalTax": {
         "name": "Mental Health Services Tax",
-        "threshold": 1000000,
+        "thresholdByFilingStatus": {
+          "single": 1000000,
+          "marriedFilingJointly": 1000000,
+          "marriedFilingSeparately": 1000000,
+          "headOfHousehold": 1000000
+        },
         "rate": 0.01
       },
       "notes": [
@@ -680,14 +685,131 @@
     {
       "stateCode": "ME",
       "provider": "Maine Revenue Services",
-      "sourceName": "Maine Revenue Services",
-      "sourceUrl": "https://www.maine.gov/revenue/",
+      "sourceName": "State of Maine, 2026 Individual Income Tax Rates (revised May 20, 2026), with the 2026 deduction and exemption phase-out worksheets",
+      "sourceUrl": "https://www.maine.gov/revenue/sites/maine.gov.revenue/files/2026-05/ind_tax_rate_sched_2026_rev.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Maine. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 27400,
+            "rate": 0.058
+          },
+          {
+            "notOver": 64850,
+            "rate": 0.0675
+          },
+          {
+            "notOver": null,
+            "rate": 0.0715
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 27400,
+            "rate": 0.058
+          },
+          {
+            "notOver": 64850,
+            "rate": 0.0675
+          },
+          {
+            "notOver": null,
+            "rate": 0.0715
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 54850,
+            "rate": 0.058
+          },
+          {
+            "notOver": 129750,
+            "rate": 0.0675
+          },
+          {
+            "notOver": null,
+            "rate": 0.0715
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 41100,
+            "rate": 0.058
+          },
+          {
+            "notOver": 97300,
+            "rate": 0.0675
+          },
+          {
+            "notOver": null,
+            "rate": 0.0715
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 15700,
+        "marriedFilingJointly": 31400,
+        "marriedFilingSeparately": 15700,
+        "headOfHousehold": 23550
+      },
+      "standardDeductionPhaseOut": {
+        "startIncomeByFilingStatus": {
+          "single": 102250,
+          "marriedFilingJointly": 204550,
+          "marriedFilingSeparately": 102250,
+          "headOfHousehold": 153400
+        },
+        "rangeByFilingStatus": {
+          "single": 75000,
+          "marriedFilingJointly": 150000,
+          "marriedFilingSeparately": 75000,
+          "headOfHousehold": 112500
+        }
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 5300,
+        "marriedFilingJointly": 10600,
+        "marriedFilingSeparately": 5300,
+        "headOfHousehold": 5300
+      },
+      "personalExemptionPhaseOut": {
+        "startIncomeByFilingStatus": {
+          "single": 341000,
+          "marriedFilingJointly": 409150,
+          "marriedFilingSeparately": 204575,
+          "headOfHousehold": 375050
+        },
+        "rangeByFilingStatus": {
+          "single": 125000,
+          "marriedFilingJointly": 125000,
+          "marriedFilingSeparately": 62500,
+          "headOfHousehold": 125000
+        }
+      },
+      "additionalTax": {
+        "name": "Maine income tax surcharge",
+        "thresholdByFilingStatus": {
+          "single": 1000000,
+          "marriedFilingJointly": 1500000,
+          "marriedFilingSeparately": 750000,
+          "headOfHousehold": 1500000
+        },
+        "rate": 0.02
+      },
+      "notes": [
+        "Maine income tax rates for tax year 2026 are 5.8%, 6.75% and 7.15% (36 M.R.S. 5111 as inflation-adjusted under 36 M.R.S. 5403; Maine Revenue Services, 2026 Individual Income Tax Rates, revised May 20, 2026).",
+        "Standard deduction for 2026: $15,700 single and married filing separately, $31,400 married filing jointly, $23,550 head of household. Personal exemption is $5,300 for the taxpayer, doubled on a joint return.",
+        "Both are phased out in proportion to income above $102,250 single, $153,400 head of household and $204,550 filing jointly, reaching zero $75,000, $112,500 and $150,000 further up. That band starts inside ordinary salaries, so it is modeled rather than noted.",
+        "A 2% surcharge applies to Maine taxable income above $1,000,000 single, $750,000 married filing separately and $1,500,000 filing jointly or head of household, for tax years beginning on or after January 1, 2026.",
+        "The rate schedule states that it must not be used to compute withholding from wages; this model estimates annual liability, not withholding.",
+        "Maine credits, itemized deductions and the additional deduction for age or blindness are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "MI",
@@ -892,14 +1014,71 @@
     {
       "stateCode": "MT",
       "provider": "Montana Department of Revenue",
-      "sourceName": "Montana Department of Revenue",
-      "sourceUrl": "https://mtrevenue.gov/",
+      "sourceName": "2025 Montana Tax Tables and Deductions, with the 2025 Form 2 instruction booklet",
+      "sourceUrl": "https://mtrevenue.gov/taxes/tax-tables-and-deductions/2025",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Montana. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "taxableIncomeBasis": "federal-taxable-income",
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 21100,
+            "rate": 0.047
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 21100,
+            "rate": 0.047
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 42200,
+            "rate": 0.047
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 31700,
+            "rate": 0.047
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "notes": [
+        "Montana taxes ordinary income at 4.7% on the first $21,100 single or married filing separately, $42,200 married filing jointly and $31,700 head of household, and 5.9% above that (Montana DOR, 2025 Montana Tax Tables and Deductions; MCA 15-30-2103).",
+        "Montana Form 2 starts from federal taxable income, so the federal standard deduction is already out of the base and Montana adds no deduction of its own.",
+        "The department publishes 2025 rates and had not published 2026 at verification, so this row declares the 2025 schedule.",
+        "Montana taxes net long-term capital gains at separate 3.0% and 4.1% rates. Those do not apply to wages and are not modeled.",
+        "The $5,660 subtraction for taxpayers 65 and older, Montana additions and subtractions, and credits are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "NC",
@@ -936,14 +1115,87 @@
     {
       "stateCode": "ND",
       "provider": "North Dakota Office of State Tax Commissioner",
-      "sourceName": "North Dakota Office of State Tax Commissioner",
-      "sourceUrl": "https://www.tax.nd.gov/",
+      "sourceName": "North Dakota Office of State Tax Commissioner, Individual Income Tax rate tables, with Form ND-1 (SFN 28702, 12-2025) line 1b",
+      "sourceUrl": "https://www.tax.nd.gov/individual-income-tax",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for North Dakota. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "taxableIncomeBasis": "federal-taxable-income",
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 48475,
+            "rate": 0
+          },
+          {
+            "notOver": 244825,
+            "rate": 0.0195
+          },
+          {
+            "notOver": null,
+            "rate": 0.025
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 80975,
+            "rate": 0
+          },
+          {
+            "notOver": 298075,
+            "rate": 0.0195
+          },
+          {
+            "notOver": null,
+            "rate": 0.025
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 40475,
+            "rate": 0
+          },
+          {
+            "notOver": 149025,
+            "rate": 0.0195
+          },
+          {
+            "notOver": null,
+            "rate": 0.025
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 64950,
+            "rate": 0
+          },
+          {
+            "notOver": 271450,
+            "rate": 0.0195
+          },
+          {
+            "notOver": null,
+            "rate": 0.025
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "notes": [
+        "North Dakota taxes North Dakota taxable income at 0%, 1.95% and 2.50% (Office of State Tax Commissioner, Individual Income Tax rate tables for tax year 2025; N.D.C.C. 57-38-30.3).",
+        "The zero bracket runs to $48,475 single, $80,975 married filing jointly, $40,475 married filing separately and $64,950 head of household, so many North Dakota wage earners owe no state income tax at all.",
+        "Form ND-1 line 1b starts from federal taxable income, so North Dakota has no deduction or exemption of its own and the federal standard deduction is read from this same snapshot.",
+        "The commissioner had published 2025 rate tables and not 2026 at verification, so this row declares the 2025 schedule.",
+        "North Dakota additions, subtractions including the long-term capital gain exclusion, and credits are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "NE",
@@ -1250,14 +1502,85 @@
     {
       "stateCode": "SC",
       "provider": "South Carolina Department of Revenue",
-      "sourceName": "South Carolina Department of Revenue",
-      "sourceUrl": "https://dor.sc.gov/",
+      "sourceName": "SCDOR Information Letter #26-20, 2026 legislative update (brackets, rates and the South Carolina Income Adjusted Deduction)",
+      "sourceUrl": "https://dor.sc.gov/sites/dor/files/policies/IL26-20.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for South Carolina. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 30000,
+            "rate": 0.0199
+          },
+          {
+            "notOver": null,
+            "rate": 0.0521
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 30000,
+            "rate": 0.0199
+          },
+          {
+            "notOver": null,
+            "rate": 0.0521
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 30000,
+            "rate": 0.0199
+          },
+          {
+            "notOver": null,
+            "rate": 0.0521
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 30000,
+            "rate": 0.0199
+          },
+          {
+            "notOver": null,
+            "rate": 0.0521
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 15000,
+        "marriedFilingJointly": 30000,
+        "marriedFilingSeparately": 15000,
+        "headOfHousehold": 22500
+      },
+      "standardDeductionPhaseOut": {
+        "startIncomeByFilingStatus": {
+          "single": 40000,
+          "marriedFilingJointly": 80000,
+          "marriedFilingSeparately": 40000,
+          "headOfHousehold": 60000
+        },
+        "rangeByFilingStatus": {
+          "single": 55000,
+          "marriedFilingJointly": 110000,
+          "marriedFilingSeparately": 55000,
+          "headOfHousehold": 82500
+        },
+        "roundReductionDownToMultipleOf": 10
+      },
+      "notes": [
+        "South Carolina has two brackets for tax year 2026: 1.99% below $30,000 of taxable income and 5.21% above it, which the state writes as 5.21% minus $966 (SCDOR Information Letter #26-20; S.C. Code 12-6-510).",
+        "For 2026 South Carolina decoupled from the federal deductions in IRC 63(b)-(g), so its starting point is federal adjusted gross income rather than federal taxable income. For a wage-only filer that is gross pay.",
+        "The South Carolina Income Adjusted Deduction replaces the federal standard deduction: $15,000 single and married filing separately, $22,500 head of household, $30,000 married filing jointly. It falls to zero across AGI of $40,000-$95,000, $60,000-$142,500 and $80,000-$190,000 respectively, and the reduction is rounded down to the next lowest $10.",
+        "The dependent exemption, the 125% earned income credit capped at $200, and other South Carolina credits are not modeled. The starting point is gross wages.",
+        "The 5.21% top rate is scheduled to fall in later years when revenue triggers are met; this row is the 2026 schedule as published."
+      ]
     },
     {
       "stateCode": "SD",
@@ -1433,5 +1756,5 @@
       ]
     }
   ],
-  "normalizedSha256": "bbd34a75380dfe03fec9f90cfdae5ce49f40ffd4679e3fda4b2e4a831baa4a92"
+  "normalizedSha256": "5268be1c456a35d1f7d741003ff1c99918b94576e3dc6fb28167f04f723b9412"
 }

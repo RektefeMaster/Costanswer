@@ -116,6 +116,31 @@ const percentageDeductionSchema = z.object({
 }).strict();
 
 /**
+ * A deduction or exemption that shrinks in proportion to income above a start.
+ *
+ * Maine is the case: above about $102,000 of adjusted gross income the standard
+ * deduction is reduced by the fraction of a $75,000 band the filer has crossed,
+ * reaching zero at the top of it. Ignoring that overstates the deduction for
+ * anyone in the band and understates their tax, in a range where a great many
+ * of this site's readers actually sit — unlike the phase-outs that only bite
+ * above a quarter of a million dollars.
+ */
+const proportionalPhaseOutSchema = z.object({
+  startIncomeByFilingStatus: filingStatusNumberSchema,
+  /** Dollars of income over which the amount falls from full to nothing. */
+  rangeByFilingStatus: filingStatusNumberSchema,
+  /**
+   * Some states round the reduction down to a step before applying it.
+   *
+   * South Carolina rounds it down to the next lowest $10, which leaves the
+   * filer slightly more deduction than the raw fraction would. It is worth
+   * about half a dollar of tax — small enough to look like noise, which is
+   * exactly why it is stated rather than silently dropped.
+   */
+  roundReductionDownToMultipleOf: z.number().finite().positive().optional(),
+}).strict();
+
+/**
  * Federal income tax deducted from state taxable income.
  *
  * A few states allow it, some with a cap. It makes state tax depend on federal
@@ -212,13 +237,21 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   standardDeductionByFilingStatus: filingStatusNumberSchema,
   /** Where the deduction is a share of income rather than a flat amount. */
   percentageStandardDeduction: percentageDeductionSchema.optional(),
+  /** Where the deduction shrinks with income rather than staying flat. */
+  standardDeductionPhaseOut: proportionalPhaseOutSchema.optional(),
   bracketsByFilingStatus: filingStatusBracketsSchema,
   additionalTax: z.object({
     name: z.string().min(1),
-    threshold: z.number().finite().positive(),
+    /*
+     * Per filing status, because Maine's surcharge starts at $1,000,000 single,
+     * $750,000 filing separately and $1,500,000 filing jointly. A single number
+     * would have quietly applied the wrong one to three filers out of four.
+     */
+    thresholdByFilingStatus: filingStatusNumberSchema,
     rate: z.number().finite().min(0).max(1),
   }).strict().optional(),
   personalExemptionByFilingStatus: filingStatusNumberSchema.optional(),
+  personalExemptionPhaseOut: proportionalPhaseOutSchema.optional(),
   perDependentExemption: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),

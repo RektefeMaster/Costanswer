@@ -45,14 +45,14 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   KS: { provider: 'Kansas Department of Revenue', sourceUrl: 'https://www.ksrevenue.gov/' },
   KY: { provider: 'Kentucky Department of Revenue', sourceUrl: 'https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf' },
   LA: { provider: 'Louisiana Department of Revenue', sourceUrl: 'https://revenue.louisiana.gov/' },
-  ME: { provider: 'Maine Revenue Services', sourceUrl: 'https://www.maine.gov/revenue/' },
+  ME: { provider: 'Maine Revenue Services', sourceUrl: 'https://www.maine.gov/revenue/sites/maine.gov.revenue/files/2026-05/ind_tax_rate_sched_2026_rev.pdf' },
   MD: { provider: 'Comptroller of Maryland', sourceUrl: 'https://www.marylandtaxes.gov/' },
   MA: { provider: 'Massachusetts Department of Revenue', sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates' },
   MI: { provider: 'Michigan Department of Treasury', sourceUrl: 'https://www.michigan.gov/taxes' },
   MN: { provider: 'Minnesota Department of Revenue', sourceUrl: 'https://www.revenue.state.mn.us/' },
   MS: { provider: 'Mississippi Department of Revenue', sourceUrl: 'https://www.dor.ms.gov/individual/tax-rates' },
   MO: { provider: 'Missouri Department of Revenue', sourceUrl: 'https://dor.mo.gov/' },
-  MT: { provider: 'Montana Department of Revenue', sourceUrl: 'https://mtrevenue.gov/' },
+  MT: { provider: 'Montana Department of Revenue', sourceUrl: 'https://mtrevenue.gov/taxes/tax-tables-and-deductions/2025' },
   NE: { provider: 'Nebraska Department of Revenue', sourceUrl: 'https://revenue.nebraska.gov/' },
   NV: { provider: 'Nevada Department of Taxation', sourceUrl: 'https://tax.nv.gov/' },
   NH: { provider: 'New Hampshire Department of Revenue Administration', sourceUrl: 'https://www.revenue.nh.gov/interest-dividends-tax' },
@@ -60,13 +60,13 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   NM: { provider: 'New Mexico Taxation and Revenue Department', sourceUrl: 'https://www.tax.newmexico.gov/' },
   NY: { provider: 'New York State Department of Taxation and Finance', sourceUrl: 'https://www.tax.ny.gov/pit/file/tax_tables.htm' },
   NC: { provider: 'North Carolina Department of Revenue', sourceUrl: 'https://www.ncdor.gov/' },
-  ND: { provider: 'North Dakota Office of State Tax Commissioner', sourceUrl: 'https://www.tax.nd.gov/' },
+  ND: { provider: 'North Dakota Office of State Tax Commissioner', sourceUrl: 'https://www.tax.nd.gov/individual-income-tax' },
   OH: { provider: 'Ohio Department of Taxation', sourceUrl: 'https://tax.ohio.gov/' },
   OK: { provider: 'Oklahoma Tax Commission', sourceUrl: 'https://oklahoma.gov/tax.html' },
   OR: { provider: 'Oregon Department of Revenue', sourceUrl: 'https://www.oregon.gov/dor' },
   PA: { provider: 'Pennsylvania Department of Revenue', sourceUrl: 'https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM' },
   RI: { provider: 'Rhode Island Division of Taxation', sourceUrl: 'https://tax.ri.gov/' },
-  SC: { provider: 'South Carolina Department of Revenue', sourceUrl: 'https://dor.sc.gov/' },
+  SC: { provider: 'South Carolina Department of Revenue', sourceUrl: 'https://dor.sc.gov/sites/dor/files/policies/IL26-20.pdf' },
   SD: { provider: 'South Dakota Department of Revenue', sourceUrl: 'https://dor.sd.gov/' },
   TN: { provider: 'Tennessee Department of Revenue', sourceUrl: 'https://www.tn.gov/revenue/taxes/hall-income-tax.html' },
   TX: { provider: 'Texas Comptroller of Public Accounts', sourceUrl: 'https://comptroller.texas.gov/economy/fiscal-notes/archive/2016/february/starting.php' },
@@ -255,6 +255,146 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
     ],
   }],
+  ['MT', {
+    ...meta('MT', {
+      sourceName: '2025 Montana Tax Tables and Deductions, with the 2025 Form 2 instruction booklet',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Form 2 starts from federal taxable income: line 1 is federal AGI, line 2
+     * the federal deduction, line 3 the difference. Montana's own deduction of
+     * federal income tax was repealed with the 2024 restructure, so despite
+     * what older summaries say there is nothing here to deduct.
+     */
+    taxableIncomeBasis: 'federal-taxable-income',
+    bracketsByFilingStatus: {
+      single: brackets([[21_100, 0.047], [null, 0.059]]),
+      marriedFilingSeparately: brackets([[21_100, 0.047], [null, 0.059]]),
+      marriedFilingJointly: brackets([[42_200, 0.047], [null, 0.059]]),
+      headOfHousehold: brackets([[31_700, 0.047], [null, 0.059]]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    notes: [
+      'Montana taxes ordinary income at 4.7% on the first $21,100 single or married filing separately, $42,200 married filing jointly and $31,700 head of household, and 5.9% above that (Montana DOR, 2025 Montana Tax Tables and Deductions; MCA 15-30-2103).',
+      'Montana Form 2 starts from federal taxable income, so the federal standard deduction is already out of the base and Montana adds no deduction of its own.',
+      'The department publishes 2025 rates and had not published 2026 at verification, so this row declares the 2025 schedule.',
+      'Montana taxes net long-term capital gains at separate 3.0% and 4.1% rates. Those do not apply to wages and are not modeled.',
+      'The $5,660 subtraction for taxpayers 65 and older, Montana additions and subtractions, and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['ND', {
+    ...meta('ND', {
+      sourceName: 'North Dakota Office of State Tax Commissioner, Individual Income Tax rate tables, with Form ND-1 (SFN 28702, 12-2025) line 1b',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    // The commissioner's rate tables are published for tax year 2025; 2026
+    // schedules were not available at verification.
+    scheduleTaxYear: 2025,
+    // Form ND-1 line 1b starts from federal taxable income, so the federal
+    // standard deduction is already out of the base.
+    taxableIncomeBasis: 'federal-taxable-income',
+    bracketsByFilingStatus: {
+      single: brackets([[48_475, 0], [244_825, 0.0195], [null, 0.025]]),
+      marriedFilingJointly: brackets([[80_975, 0], [298_075, 0.0195], [null, 0.025]]),
+      marriedFilingSeparately: brackets([[40_475, 0], [149_025, 0.0195], [null, 0.025]]),
+      headOfHousehold: brackets([[64_950, 0], [271_450, 0.0195], [null, 0.025]]),
+    },
+    // North Dakota gives no deduction of its own; the federal one is inside
+    // the starting figure.
+    standardDeductionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    notes: [
+      'North Dakota taxes North Dakota taxable income at 0%, 1.95% and 2.50% (Office of State Tax Commissioner, Individual Income Tax rate tables for tax year 2025; N.D.C.C. 57-38-30.3).',
+      'The zero bracket runs to $48,475 single, $80,975 married filing jointly, $40,475 married filing separately and $64,950 head of household, so many North Dakota wage earners owe no state income tax at all.',
+      'Form ND-1 line 1b starts from federal taxable income, so North Dakota has no deduction or exemption of its own and the federal standard deduction is read from this same snapshot.',
+      'The commissioner had published 2025 rate tables and not 2026 at verification, so this row declares the 2025 schedule.',
+      'North Dakota additions, subtractions including the long-term capital gain exclusion, and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['SC', {
+    ...meta('SC', {
+      sourceName: 'SCDOR Information Letter #26-20, 2026 legislative update (brackets, rates and the South Carolina Income Adjusted Deduction)',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
+    /*
+     * South Carolina states its 2026 schedule as "1.99% below $30,000" and
+     * "5.21% minus $966 at $30,000 or more". Those are the same curve: at
+     * $30,000 both give $597, so the subtraction is just the cumulative tax of
+     * the lower band written out. Storing it as two marginal brackets keeps one
+     * shape in the engine and reproduces the state's formula exactly.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([[30_000, 0.0199], [null, 0.0521]]),
+      marriedFilingSeparately: brackets([[30_000, 0.0199], [null, 0.0521]]),
+      marriedFilingJointly: brackets([[30_000, 0.0199], [null, 0.0521]]),
+      headOfHousehold: brackets([[30_000, 0.0199], [null, 0.0521]]),
+    },
+    // The SCIAD, which replaced the federal standard deduction for 2026.
+    standardDeductionByFilingStatus: filingAmounts(15_000, 30_000, 15_000, 22_500),
+    standardDeductionPhaseOut: {
+      startIncomeByFilingStatus: filingAmounts(40_000, 80_000, 40_000, 60_000),
+      rangeByFilingStatus: filingAmounts(55_000, 110_000, 55_000, 82_500),
+      roundReductionDownToMultipleOf: 10,
+    },
+    notes: [
+      'South Carolina has two brackets for tax year 2026: 1.99% below $30,000 of taxable income and 5.21% above it, which the state writes as 5.21% minus $966 (SCDOR Information Letter #26-20; S.C. Code 12-6-510).',
+      'For 2026 South Carolina decoupled from the federal deductions in IRC 63(b)-(g), so its starting point is federal adjusted gross income rather than federal taxable income. For a wage-only filer that is gross pay.',
+      'The South Carolina Income Adjusted Deduction replaces the federal standard deduction: $15,000 single and married filing separately, $22,500 head of household, $30,000 married filing jointly. It falls to zero across AGI of $40,000-$95,000, $60,000-$142,500 and $80,000-$190,000 respectively, and the reduction is rounded down to the next lowest $10.',
+      'The dependent exemption, the 125% earned income credit capped at $200, and other South Carolina credits are not modeled. The starting point is gross wages.',
+      'The 5.21% top rate is scheduled to fall in later years when revenue triggers are met; this row is the 2026 schedule as published.',
+    ],
+  }],
+  ['ME', {
+    ...meta('ME', {
+      sourceName: 'State of Maine, 2026 Individual Income Tax Rates (revised May 20, 2026), with the 2026 deduction and exemption phase-out worksheets',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
+    // 36 M.R.S. 5111, as inflation-adjusted for 2026 by 36 M.R.S. 5403.
+    bracketsByFilingStatus: {
+      single: brackets([[27_400, 0.058], [64_850, 0.0675], [null, 0.0715]]),
+      marriedFilingSeparately: brackets([[27_400, 0.058], [64_850, 0.0675], [null, 0.0715]]),
+      marriedFilingJointly: brackets([[54_850, 0.058], [129_750, 0.0675], [null, 0.0715]]),
+      headOfHousehold: brackets([[41_100, 0.058], [97_300, 0.0675], [null, 0.0715]]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(15_700, 31_400, 15_700, 23_550),
+    standardDeductionPhaseOut: {
+      startIncomeByFilingStatus: filingAmounts(102_250, 204_550, 102_250, 153_400),
+      rangeByFilingStatus: filingAmounts(75_000, 150_000, 75_000, 112_500),
+    },
+    // $5,300 for the taxpayer, and again for a spouse on a joint return.
+    personalExemptionByFilingStatus: filingAmounts(5_300, 10_600, 5_300, 5_300),
+    personalExemptionPhaseOut: {
+      startIncomeByFilingStatus: filingAmounts(341_000, 409_150, 204_575, 375_050),
+      rangeByFilingStatus: filingAmounts(125_000, 125_000, 62_500, 125_000),
+    },
+    additionalTax: {
+      name: 'Maine income tax surcharge',
+      thresholdByFilingStatus: filingAmounts(1_000_000, 1_500_000, 750_000, 1_500_000),
+      rate: 0.02,
+    },
+    notes: [
+      'Maine income tax rates for tax year 2026 are 5.8%, 6.75% and 7.15% (36 M.R.S. 5111 as inflation-adjusted under 36 M.R.S. 5403; Maine Revenue Services, 2026 Individual Income Tax Rates, revised May 20, 2026).',
+      'Standard deduction for 2026: $15,700 single and married filing separately, $31,400 married filing jointly, $23,550 head of household. Personal exemption is $5,300 for the taxpayer, doubled on a joint return.',
+      'Both are phased out in proportion to income above $102,250 single, $153,400 head of household and $204,550 filing jointly, reaching zero $75,000, $112,500 and $150,000 further up. That band starts inside ordinary salaries, so it is modeled rather than noted.',
+      'A 2% surcharge applies to Maine taxable income above $1,000,000 single, $750,000 married filing separately and $1,500,000 filing jointly or head of household, for tax years beginning on or after January 1, 2026.',
+      'The rate schedule states that it must not be used to compute withholding from wages; this model estimates annual liability, not withholding.',
+      'Maine credits, itemized deductions and the additional deduction for age or blindness are not modeled. The starting point is gross wages.',
+    ],
+  }],
   ['KY', {
     ...meta('KY', {
       sourceName: '2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025)',
@@ -424,7 +564,7 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     },
     additionalTax: {
       name: 'Mental Health Services Tax',
-      threshold: 1_000_000,
+      thresholdByFilingStatus: filingAmounts(1_000_000, 1_000_000, 1_000_000, 1_000_000),
       rate: 0.01,
     },
     notes: [

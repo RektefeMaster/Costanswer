@@ -51,6 +51,26 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const MT_SOURCE = {
+  sourceName: '2025 Montana Form 2 instructions, worked example on page 24; 2025 Montana Tax Tables and Deductions',
+  sourceUrl: 'https://mtrevenue.gov/taxes/tax-tables-and-deductions/2025',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const ND_SOURCE = {
+  sourceName: 'North Dakota Office of State Tax Commissioner, Individual Income Tax rate tables (tax year 2025)',
+  sourceUrl: 'https://www.tax.nd.gov/individual-income-tax',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const SC_SOURCE = {
+  sourceName: 'SCDOR Information Letter #26-20, 2026 legislative update',
+  sourceUrl: 'https://dor.sc.gov/sites/dor/files/policies/IL26-20.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const ME_SOURCE = {
+  sourceName: 'State of Maine, 2026 Individual Income Tax Rates (revised May 20, 2026)',
+  sourceUrl: 'https://www.maine.gov/revenue/sites/maine.gov.revenue/files/2026-05/ind_tax_rate_sched_2026_rev.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const KY_SOURCE = {
   sourceName: '2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025)',
   sourceUrl: 'https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf',
@@ -143,6 +163,53 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('KY', 'marriedFilingJointly', 150_000, 5_132.40, 'worked-from-schedule', KY_SOURCE),
   // Below the deduction Kentucky owes nothing rather than a negative figure.
   vector('KY', 'single', 3_360, 0, 'worked-from-schedule', KY_SOURCE),
+
+  /*
+   * Maine prints the cumulative tax at each bracket edge — $1,589 and $4,117
+   * single, $3,181 filing jointly — so these vectors check the thresholds and
+   * the rates against the state's own arithmetic rather than a repeat of ours.
+   * Each gross figure is the bracket edge plus that status's deduction and
+   * exemption, chosen below the phase-out start so nothing else is in play.
+   */
+  /*
+   * South Carolina publishes the same schedule two ways — marginal bands, and
+   * "5.21% of taxable income minus $966" — and the second is an independent
+   * check on the first. Both AGI figures sit at the top of the full-deduction
+   * range, so the deduction is exactly the SCIAD and nothing else is moving.
+   * $40,000 single leaves $25,000 taxable at 1.99%; $80,000 filing jointly
+   * leaves $50,000, where the state's formula gives $2,605 - $966 = $1,639.
+   */
+  /*
+   * North Dakota's zero bracket reaches $48,475 of taxable income, so a
+   * $60,000 salary owes nothing at all — the vector that would catch a
+   * threshold accidentally transcribed as a deduction.
+   */
+  /*
+   * Montana's instruction booklet works an example all the way to a number:
+   * $50,000 of Montana taxable income, single, gives $2,697 of ordinary income
+   * tax. $66,100 of wages less the federal standard deduction lands exactly
+   * there, so this checks the base, both rates and the threshold at once.
+   */
+  vector('MT', 'single', 66_100, 2_697, 'published-example', MT_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  vector('MT', 'single', 40_000, 1_156.90, 'worked-from-schedule', MT_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  vector('MT', 'marriedFilingJointly', 150_000, 6_443.80, 'worked-from-schedule', MT_SOURCE, { federalStandardDeduction: FED_2026.marriedFilingJointly }),
+
+  vector('ND', 'single', 60_000, 0, 'worked-from-schedule', ND_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  vector('ND', 'single', 100_000, 690.79, 'worked-from-schedule', ND_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  vector('ND', 'single', 300_000, 4_805.70, 'worked-from-schedule', ND_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  vector('ND', 'marriedFilingJointly', 150_000, 718.09, 'worked-from-schedule', ND_SOURCE, { federalStandardDeduction: FED_2026.marriedFilingJointly }),
+
+  vector('SC', 'single', 40_000, 497.50, 'published-example', SC_SOURCE),
+  vector('SC', 'marriedFilingJointly', 80_000, 1_639, 'published-example', SC_SOURCE),
+  // Inside the SCIAD phase-out, including its round-down-to-$10 rule.
+  vector('SC', 'single', 60_000, 1_662.44, 'worked-from-schedule', SC_SOURCE),
+  vector('SC', 'marriedFilingJointly', 150_000, 6_280.59, 'worked-from-schedule', SC_SOURCE),
+
+  vector('ME', 'single', 48_400, 1_589, 'published-table', ME_SOURCE),
+  vector('ME', 'single', 85_850, 4_117, 'published-table', ME_SOURCE),
+  vector('ME', 'marriedFilingJointly', 96_850, 3_181, 'published-table', ME_SOURCE),
+  // Inside the deduction phase-out band, which the bracket edges never reach.
+  vector('ME', 'single', 120_000, 6_824.47, 'worked-from-schedule', ME_SOURCE),
 
   vector('IL', 'single', 60_000, 2_825.21, 'worked-from-schedule', IL_SOURCE),
   vector('IL', 'single', 120_000, 5_795.21, 'worked-from-schedule', IL_SOURCE),

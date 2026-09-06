@@ -81,15 +81,21 @@ function computeSupportedStateTax(
       break;
     }
     case 'progressive': {
-      const deduction = policy.percentageStandardDeduction
+      const fullDeduction = policy.percentageStandardDeduction
         ? boundedPercentageDeduction(policy.percentageStandardDeduction, income, filingStatus)
         : policy.standardDeductionByFilingStatus[filingStatus];
-      const exemptions = (policy.personalExemptionByFilingStatus?.[filingStatus] ?? 0)
-        + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
+      const deduction = afterPhaseOut(fullDeduction, policy.standardDeductionPhaseOut, income, filingStatus);
+      const personalExemption = afterPhaseOut(
+        policy.personalExemptionByFilingStatus?.[filingStatus] ?? 0,
+        policy.personalExemptionPhaseOut,
+        income,
+        filingStatus,
+      );
+      const exemptions = personalExemption + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
       const taxableIncome = Math.max(0, income - deduction - exemptions);
       taxBeforeCredits = calculateProgressiveTax(taxableIncome, policy.bracketsByFilingStatus[filingStatus])
         + (policy.additionalTax
-          ? Math.max(0, taxableIncome - policy.additionalTax.threshold) * policy.additionalTax.rate
+          ? Math.max(0, taxableIncome - policy.additionalTax.thresholdByFilingStatus[filingStatus]) * policy.additionalTax.rate
           : 0);
       break;
     }
@@ -108,6 +114,38 @@ function computeSupportedStateTax(
     exemptionCredit,
     federalTaxDeducted,
   };
+}
+
+/**
+ * What is left of a deduction or exemption once income has eaten into it.
+ *
+ * The reduction is the fraction of the phase-out band the filer has crossed, so
+ * it is gradual rather than a cliff — someone $1 over the start keeps almost
+ * all of it. Clamping the fraction at 1 is what stops a very high income from
+ * turning the deduction negative and adding tax that no state charges.
+ */
+type ProportionalPhaseOut = {
+  startIncomeByFilingStatus: Record<FilingStatus, number>;
+  rangeByFilingStatus: Record<FilingStatus, number>;
+  roundReductionDownToMultipleOf?: number;
+};
+
+function afterPhaseOut(
+  amount: number,
+  spec: ProportionalPhaseOut | undefined,
+  income: number,
+  filingStatus: FilingStatus,
+): number {
+  if (!spec || amount === 0) return amount;
+  const range = spec.rangeByFilingStatus[filingStatus];
+  if (range <= 0) return amount;
+  const over = income - spec.startIncomeByFilingStatus[filingStatus];
+  if (over <= 0) return amount;
+
+  let reduction = amount * Math.min(1, over / range);
+  const step = spec.roundReductionDownToMultipleOf;
+  if (step !== undefined) reduction = Math.floor(reduction / step) * step;
+  return Math.max(0, amount - reduction);
 }
 
 function boundedPercentageDeduction(
