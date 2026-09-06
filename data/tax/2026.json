@@ -3408,14 +3408,246 @@
     {
       "stateCode": "OR",
       "provider": "Oregon Department of Revenue",
-      "sourceName": "Oregon Department of Revenue",
-      "sourceUrl": "https://www.oregon.gov/dor",
+      "sourceName": "2025 Publication OR-40-FY, Form OR-40 instructions: tax rate charts, tax tables, Table 4 and Table 5",
+      "sourceUrl": "https://www.oregon.gov/dor/forms/FormsPubs/form-or-40-inst_101-040-1_2025.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Oregon. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 4400,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 11100,
+            "rate": 0.0675
+          },
+          {
+            "notOver": 125000,
+            "rate": 0.0875
+          },
+          {
+            "notOver": null,
+            "rate": 0.099,
+            "baseTax": 10627
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 4400,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 11100,
+            "rate": 0.0675
+          },
+          {
+            "notOver": 125000,
+            "rate": 0.0875
+          },
+          {
+            "notOver": null,
+            "rate": 0.099,
+            "baseTax": 10627
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 8800,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 22200,
+            "rate": 0.0675
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.0875
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.0875,
+            "baseTax": 3756
+          },
+          {
+            "notOver": null,
+            "rate": 0.099,
+            "baseTax": 21256
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 8800,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 22200,
+            "rate": 0.0675
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.0875
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.0875,
+            "baseTax": 3756
+          },
+          {
+            "notOver": null,
+            "rate": 0.099,
+            "baseTax": 21256
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 2835,
+        "marriedFilingJointly": 5670,
+        "marriedFilingSeparately": 2835,
+        "headOfHousehold": 4560
+      },
+      "federalDeduction": {
+        "capByFilingStatus": {
+          "single": 8500,
+          "marriedFilingJointly": 8500,
+          "marriedFilingSeparately": 4250,
+          "headOfHousehold": 8500
+        },
+        "capStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 125000,
+              "amount": 8500
+            },
+            {
+              "notOver": 130000,
+              "amount": 6800
+            },
+            {
+              "notOver": 135000,
+              "amount": 5100
+            },
+            {
+              "notOver": 140000,
+              "amount": 3400
+            },
+            {
+              "notOver": 145000,
+              "amount": 1700
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 125000,
+              "amount": 4250
+            },
+            {
+              "notOver": 130000,
+              "amount": 3400
+            },
+            {
+              "notOver": 135000,
+              "amount": 2550
+            },
+            {
+              "notOver": 140000,
+              "amount": 1700
+            },
+            {
+              "notOver": 145000,
+              "amount": 850
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 250000,
+              "amount": 8500
+            },
+            {
+              "notOver": 260000,
+              "amount": 6800
+            },
+            {
+              "notOver": 270000,
+              "amount": 5100
+            },
+            {
+              "notOver": 280000,
+              "amount": 3400
+            },
+            {
+              "notOver": 290000,
+              "amount": 1700
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 250000,
+              "amount": 8500
+            },
+            {
+              "notOver": 260000,
+              "amount": 6800
+            },
+            {
+              "notOver": 270000,
+              "amount": 5100
+            },
+            {
+              "notOver": 280000,
+              "amount": 3400
+            },
+            {
+              "notOver": 290000,
+              "amount": 1700
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ]
+        }
+      },
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 256,
+          "marriedFilingJointly": 512,
+          "marriedFilingSeparately": 256,
+          "headOfHousehold": 256
+        },
+        "perDependent": 256,
+        "disallowedAboveIncomeByFilingStatus": {
+          "single": 100000,
+          "marriedFilingJointly": 200000,
+          "marriedFilingSeparately": 100000,
+          "headOfHousehold": 200000
+        }
+      },
+      "notes": [
+        "Oregon taxes taxable income at 4.75%, 6.75%, 8.75% and 9.9% for tax year 2025 (2025 Form OR-40 instructions, tax rate charts and tax tables; ORS 316.037).",
+        "Standard deduction for 2025 is $2,835 single or married filing separately, $5,670 married filing jointly, $4,560 head of household.",
+        "Oregon subtracts federal income tax from state taxable income, capped at $8,500 ($4,250 married filing separately). That cap falls in five steps to nothing between $125,000 and $145,000 of adjusted gross income, and between $250,000 and $290,000 on a joint return.",
+        "The exemption credit is $256 a person against tax, and is not allowed at all above $100,000 of adjusted gross income single or married filing separately, or $200,000 for other filers.",
+        "Oregon publishes its tax tables and its rate charts with a dollar of disagreement at $50,000 for joint filers. The chart is used from $50,000 upward because that is what the state tells those filers to use.",
+        "The federal subtraction here uses federal income tax after credits as this engine computes it, which is the same figure for a wage-only filer. The kicker credit, the political contribution credit and Oregon local transit taxes are not modeled."
+      ]
     },
     {
       "stateCode": "PA",
@@ -3720,5 +3952,5 @@
       ]
     }
   ],
-  "normalizedSha256": "f0b27045845a0f54b95a85359bead8a725d0d1efba627a4fb5c8c5d33a5368b0"
+  "normalizedSha256": "66c9e4604a632005fbf4c7c5dee53018d17d396e450f5de01ac468e89cdbafad"
 }

@@ -74,6 +74,12 @@ const noneStateSchema = stateMetadataSchema.extend({
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
 
+const exemptionStepsSchema = z.array(z.object({
+  /** Highest income this step covers; null for the open top step. */
+  notOver: z.number().finite().positive().nullable(),
+  amount: z.number().finite().min(0),
+}).strict()).min(1);
+
 /**
  * A per-person credit subtracted after tax is computed.
  *
@@ -96,6 +102,15 @@ const exemptionCreditSchema = z.object({
    * quietly wrong, in the direction of overcharging, for every one after.
    */
   rateOfFederalStandardDeduction: z.number().finite().min(0).max(1).optional(),
+  /**
+   * Income above which the credit is not allowed at all.
+   *
+   * A cliff rather than a taper, which is how Oregon writes it: above $100,000
+   * of adjusted gross income single, or $200,000 otherwise, the instruction is
+   * to enter zero. A linear phase-out cannot express that without inventing a
+   * ramp the state does not have.
+   */
+  disallowedAboveIncomeByFilingStatus: filingStatusNumberSchema.optional(),
   /** Some states phase the credit out. Absent means it does not. */
   phaseOut: z.object({
     startIncomeByFilingStatus: filingStatusNumberSchema,
@@ -170,12 +185,6 @@ const alternativeLowIncomeScheduleSchema = z.object({
  * the proportional phase-out shape would give the wrong figure everywhere
  * except at the step edges.
  */
-const exemptionStepsSchema = z.array(z.object({
-  /** Highest income this step covers; null for the open top step. */
-  notOver: z.number().finite().positive().nullable(),
-  amount: z.number().finite().min(0),
-}).strict()).min(1);
-
 const steppedExemptionSchema = z.object({
   /**
    * Amount per exemption, by the income it applies at, per filing status.
@@ -204,6 +213,21 @@ const steppedExemptionSchema = z.object({
 const federalDeductionSchema = z.object({
   /** Cap on the deduction, or null where the state allows it in full. */
   capByFilingStatus: filingStatusNumberSchema.nullable(),
+  /**
+   * Where the cap itself falls away as income rises.
+   *
+   * Oregon's subtraction is $8,500 up to $125,000 of adjusted gross income and
+   * then drops in five steps to nothing by $145,000 — $250,000 to $290,000 on
+   * a joint return. Treating the headline $8,500 as the cap would hand a
+   * deduction to precisely the filers Oregon takes it away from, and be wrong
+   * by up to $8,500 of taxable income.
+   */
+  capStepsByFilingStatus: z.object({
+    single: exemptionStepsSchema,
+    marriedFilingJointly: exemptionStepsSchema,
+    marriedFilingSeparately: exemptionStepsSchema,
+    headOfHousehold: exemptionStepsSchema,
+  }).strict().optional(),
 }).strict();
 
 /**

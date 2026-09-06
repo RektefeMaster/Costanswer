@@ -183,10 +183,8 @@ function steppedExemptionAt(
   filingStatus: FilingStatus,
   dependents: number,
 ): number {
-  const step = spec.amountStepsByFilingStatus[filingStatus]
-    .find((candidate) => candidate.notOver === null || income <= candidate.notOver);
-  if (!step) throw new Error('Stepped exemption has no open top step, so high incomes fall through it.');
-  return step.amount * (spec.countByFilingStatus[filingStatus] + dependents);
+  const amount = amountAtIncomeStep(spec.amountStepsByFilingStatus[filingStatus], income);
+  return amount * (spec.countByFilingStatus[filingStatus] + dependents);
 }
 
 function boundedPercentageDeduction(
@@ -232,10 +230,28 @@ function federalDeductionFor(policy: SupportedPolicy, input: StateTaxInput): num
       `${input.state} deducts federal income tax from state taxable income, so federalIncomeTax is required.`,
     );
   }
-  const cap = spec.capByFilingStatus?.[input.filingStatus];
+  const stepped = spec.capStepsByFilingStatus?.[input.filingStatus];
+  const cap = stepped
+    ? amountAtIncomeStep(stepped, input.taxableIncome)
+    : spec.capByFilingStatus?.[input.filingStatus];
   return cap === undefined || cap === null
     ? Math.max(0, input.federalIncomeTax)
     : Math.min(Math.max(0, input.federalIncomeTax), cap);
+}
+
+/**
+ * The amount on the step of a staircase that this income lands on.
+ *
+ * Shared by the exemptions that step down and the deduction caps that do, since
+ * both are the same lookup and states write them the same way.
+ */
+function amountAtIncomeStep(
+  steps: ReadonlyArray<{ notOver: number | null; amount: number }>,
+  income: number,
+): number {
+  const step = steps.find((candidate) => candidate.notOver === null || income <= candidate.notOver);
+  if (!step) throw new Error('Income staircase has no open top step, so high incomes fall through it.');
+  return step.amount;
 }
 
 function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBeforeCredits: number): number {
@@ -251,6 +267,9 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
     }
     federalShare = spec.rateOfFederalStandardDeduction * input.federalStandardDeduction;
   }
+
+  const cliff = spec.disallowedAboveIncomeByFilingStatus?.[input.filingStatus];
+  if (cliff !== undefined && input.taxableIncome > cliff) return 0;
 
   const full = spec.perFilerByFilingStatus[input.filingStatus]
     + spec.perDependent * (input.dependents ?? 0)

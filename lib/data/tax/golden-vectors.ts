@@ -51,6 +51,11 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const OR_SOURCE = {
+  sourceName: '2025 Publication OR-40-FY, Form OR-40 instructions: tax tables and tax rate charts',
+  sourceUrl: 'https://www.oregon.gov/dor/forms/FormsPubs/form-or-40-inst_101-040-1_2025.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const MD_SOURCE = {
   sourceName: 'Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets',
   sourceUrl: 'https://www.marylandtaxes.gov/individual/income/tax-info/tax-rates.php',
@@ -275,6 +280,21 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * staircase has already run out — which is what makes them a check on the
    * staircase and not only on the brackets.
    */
+  /*
+   * Oregon's tax depends on the federal figure, so each vector states it.
+   * Zero federal tax isolates the schedule itself: $25,885 of wages less the
+   * $2,835 deduction is $23,050 of taxable income, where the state's table
+   * prints $1,707 before the $256 exemption credit. The last two exercise the
+   * parts that only appear higher up — the subtraction cap stepping down, and
+   * the credit switching off entirely above $100,000.
+   */
+  vector('OR', 'single', 25_885, 1_451, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),
+  vector('OR', 'marriedFilingJointly', 28_720, 885, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),
+  vector('OR', 'single', 52_835, 3_809, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),
+  vector('OR', 'marriedFilingJointly', 65_670, 4_119, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),
+  vector('OR', 'single', 127_835, 10_032.50, 'worked-from-schedule', OR_SOURCE, { federalIncomeTax: 20_000 }),
+  vector('OR', 'single', 150_000, 12_821.34, 'worked-from-schedule', OR_SOURCE, { federalIncomeTax: 25_000 }),
+
   vector('MD', 'single', 9_550, 90, 'published-table', MD_SOURCE),
   vector('MD', 'single', 96_550, 4_222.50, 'published-table', MD_SOURCE),
   vector('MD', 'marriedFilingJointly', 113_100, 4_697.50, 'published-table', MD_SOURCE),

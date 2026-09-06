@@ -55,6 +55,37 @@ function filingAmounts(single: number, joint: number, separate: number, head: nu
  * department's "minus adjustment" figures into this engine's shape without
  * changing what they compute. Each one is `rate * floor - adjustment`.
  */
+/**
+ * Oregon's federal tax subtraction cap, from Table 4 of the OR-40 instructions.
+ *
+ * Five steps down to zero. The bands are AGI, which for a wage-only filer is
+ * gross pay, so this is looked up on the same income the brackets use.
+ */
+const OR_FEDERAL_CAP_SINGLE: ExemptionStep[] = [
+  { notOver: 125_000, amount: 8_500 },
+  { notOver: 130_000, amount: 6_800 },
+  { notOver: 135_000, amount: 5_100 },
+  { notOver: 140_000, amount: 3_400 },
+  { notOver: 145_000, amount: 1_700 },
+  { notOver: null, amount: 0 },
+];
+const OR_FEDERAL_CAP_SEPARATE: ExemptionStep[] = [
+  { notOver: 125_000, amount: 4_250 },
+  { notOver: 130_000, amount: 3_400 },
+  { notOver: 135_000, amount: 2_550 },
+  { notOver: 140_000, amount: 1_700 },
+  { notOver: 145_000, amount: 850 },
+  { notOver: null, amount: 0 },
+];
+const OR_FEDERAL_CAP_JOINT: ExemptionStep[] = [
+  { notOver: 250_000, amount: 8_500 },
+  { notOver: 260_000, amount: 6_800 },
+  { notOver: 270_000, amount: 5_100 },
+  { notOver: 280_000, amount: 3_400 },
+  { notOver: 290_000, amount: 1_700 },
+  { notOver: null, amount: 0 },
+];
+
 /** Maryland's exemption staircase, from the Exemption Amount Chart (10A). */
 const MD_EXEMPTION_STEPS_SINGLE: ExemptionStep[] = [
   { notOver: 100_000, amount: 3_200 },
@@ -147,7 +178,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   ND: { provider: 'North Dakota Office of State Tax Commissioner', sourceUrl: 'https://www.tax.nd.gov/individual-income-tax' },
   OH: { provider: 'Ohio Department of Taxation', sourceUrl: 'https://tax.ohio.gov/individual/resources/annual-tax-rates' },
   OK: { provider: 'Oklahoma Tax Commission', sourceUrl: 'https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf' },
-  OR: { provider: 'Oregon Department of Revenue', sourceUrl: 'https://www.oregon.gov/dor' },
+  OR: { provider: 'Oregon Department of Revenue', sourceUrl: 'https://www.oregon.gov/dor/forms/FormsPubs/form-or-40-inst_101-040-1_2025.pdf' },
   PA: { provider: 'Pennsylvania Department of Revenue', sourceUrl: 'https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM' },
   RI: { provider: 'Rhode Island Division of Taxation', sourceUrl: 'https://tax.ri.gov/' },
   SC: { provider: 'South Carolina Department of Revenue', sourceUrl: 'https://dor.sc.gov/sites/dor/files/policies/IL26-20.pdf' },
@@ -337,6 +368,63 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['OR', {
+    ...meta('OR', {
+      sourceName: '2025 Publication OR-40-FY, Form OR-40 instructions: tax rate charts, tax tables, Table 4 and Table 5',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Oregon publishes the same schedule twice and the two do not quite agree.
+     * Its tax tables imply $3,755 of tax at $50,000 for a joint filer; its rate
+     * chart states $3,756. The chart is what a filer at or above $50,000 is
+     * told to use, so its constants are carried as `baseTax` from that point
+     * and the dollar step at the boundary is Oregon's.
+     */
+    bracketsByFilingStatus: {
+      single: brackets3([
+        [4_400, 0.0475, undefined], [11_100, 0.0675, undefined], [125_000, 0.0875, undefined], [null, 0.099, 10_627],
+      ]),
+      marriedFilingSeparately: brackets3([
+        [4_400, 0.0475, undefined], [11_100, 0.0675, undefined], [125_000, 0.0875, undefined], [null, 0.099, 10_627],
+      ]),
+      marriedFilingJointly: brackets3([
+        [8_800, 0.0475, undefined], [22_200, 0.0675, undefined], [50_000, 0.0875, undefined],
+        [250_000, 0.0875, 3_756], [null, 0.099, 21_256],
+      ]),
+      headOfHousehold: brackets3([
+        [8_800, 0.0475, undefined], [22_200, 0.0675, undefined], [50_000, 0.0875, undefined],
+        [250_000, 0.0875, 3_756], [null, 0.099, 21_256],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(2_835, 5_670, 2_835, 4_560),
+    federalDeduction: {
+      capByFilingStatus: filingAmounts(8_500, 8_500, 4_250, 8_500),
+      capStepsByFilingStatus: {
+        single: OR_FEDERAL_CAP_SINGLE,
+        marriedFilingSeparately: OR_FEDERAL_CAP_SEPARATE,
+        marriedFilingJointly: OR_FEDERAL_CAP_JOINT,
+        headOfHousehold: OR_FEDERAL_CAP_JOINT,
+      },
+    },
+    exemptionCredit: {
+      perFilerByFilingStatus: filingAmounts(256, 512, 256, 256),
+      perDependent: 256,
+      // Oregon's instruction is to enter zero above these, not to taper.
+      disallowedAboveIncomeByFilingStatus: filingAmounts(100_000, 200_000, 100_000, 200_000),
+    },
+    notes: [
+      'Oregon taxes taxable income at 4.75%, 6.75%, 8.75% and 9.9% for tax year 2025 (2025 Form OR-40 instructions, tax rate charts and tax tables; ORS 316.037).',
+      'Standard deduction for 2025 is $2,835 single or married filing separately, $5,670 married filing jointly, $4,560 head of household.',
+      'Oregon subtracts federal income tax from state taxable income, capped at $8,500 ($4,250 married filing separately). That cap falls in five steps to nothing between $125,000 and $145,000 of adjusted gross income, and between $250,000 and $290,000 on a joint return.',
+      'The exemption credit is $256 a person against tax, and is not allowed at all above $100,000 of adjusted gross income single or married filing separately, or $200,000 for other filers.',
+      'Oregon publishes its tax tables and its rate charts with a dollar of disagreement at $50,000 for joint filers. The chart is used from $50,000 upward because that is what the state tells those filers to use.',
+      'The federal subtraction here uses federal income tax after credits as this engine computes it, which is the same figure for a wage-only filer. The kicker credit, the political contribution credit and Oregon local transit taxes are not modeled.',
     ],
   }],
   ['MD', {
