@@ -3086,14 +3086,155 @@
     {
       "stateCode": "NM",
       "provider": "New Mexico Taxation and Revenue Department",
-      "sourceName": "New Mexico Taxation and Revenue Department",
-      "sourceUrl": "https://www.tax.newmexico.gov/",
+      "sourceName": "Laws 2024, Chapter 67 (H.B. 252), amending 7-2-7 NMSA 1978 for tax years beginning 2025, with the 2025 PIT-1 instructions for the federal standard deduction and the low- and middle-income exemption worksheet",
+      "sourceUrl": "https://www.nmlegis.gov/sessions/24%20Regular/final/HB0252.PDF",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for New Mexico. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 5500,
+            "rate": 0.015
+          },
+          {
+            "notOver": 16500,
+            "rate": 0.032
+          },
+          {
+            "notOver": 33500,
+            "rate": 0.043
+          },
+          {
+            "notOver": 66500,
+            "rate": 0.047
+          },
+          {
+            "notOver": 210000,
+            "rate": 0.049
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 4000,
+            "rate": 0.015
+          },
+          {
+            "notOver": 12500,
+            "rate": 0.032
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.043
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.047
+          },
+          {
+            "notOver": 157500,
+            "rate": 0.049
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 8000,
+            "rate": 0.015
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.032
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.043
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.047
+          },
+          {
+            "notOver": 315000,
+            "rate": 0.049
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 8000,
+            "rate": 0.015
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.032
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.043
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.047
+          },
+          {
+            "notOver": 315000,
+            "rate": 0.049
+          },
+          {
+            "notOver": null,
+            "rate": 0.059
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 15750,
+        "marriedFilingJointly": 31500,
+        "marriedFilingSeparately": 15750,
+        "headOfHousehold": 23625
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 2500,
+        "marriedFilingJointly": 5000,
+        "marriedFilingSeparately": 2500,
+        "headOfHousehold": 2500
+      },
+      "personalExemptionPhaseOut": {
+        "startIncomeByFilingStatus": {
+          "single": 20000,
+          "marriedFilingJointly": 30000,
+          "marriedFilingSeparately": 15000,
+          "headOfHousehold": 30000
+        },
+        "rangeByFilingStatus": {
+          "single": 16666.666666666668,
+          "marriedFilingJointly": 25000,
+          "marriedFilingSeparately": 12500,
+          "headOfHousehold": 25000
+        }
+      },
+      "notes": [
+        "New Mexico taxes New Mexico taxable income at 1.5%, 3.2%, 4.3%, 4.7%, 4.9% and 5.9% for tax years beginning on or after January 1, 2025 (7-2-7 NMSA 1978 as amended by Laws 2024, Chapter 67 (H.B. 252)).",
+        "The starting point is federal adjusted gross income. PIT-1 line 12 then subtracts the federal standard deduction — $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household, from the 2025 Form 1040 instructions.",
+        "A low- and middle-income exemption of $2,500 a person applies at or below $36,667 of federal AGI single, $27,500 married filing separately, and $55,000 filing jointly or head of household. It is the full $2,500 below $20,000 / $15,000 / $30,000 and then falls by 15¢, 20¢ or 10¢ per dollar (2025 PIT-1 instructions, line 14 worksheet). A joint return claims two.",
+        "The 2025 Tax Look Up Table the instructions point to is a separate document; NMAC 3.3.7.9 says to use 7-2-7 itself when taxable income is outside that table. These bands are the statute. The table is midpoint-based over $50 income bands, so its printed figure can differ from this by about a dollar.",
+        "The $4,000 deduction for certain dependents on a joint or head-of-household return, the Working Families Tax Credit, the child income tax credit, the low-income comprehensive tax rebate and other PIT-ADJ / PIT-RC items are not modeled. New Mexico does not levy a local wage income tax.",
+        "The department had published the 2025 PIT-1 and not a 2026 schedule at verification, so this row declares the 2025 schedule."
+      ]
     },
     {
       "stateCode": "NV",
@@ -3721,14 +3862,93 @@
     {
       "stateCode": "RI",
       "provider": "Rhode Island Division of Taxation",
-      "sourceName": "Rhode Island Division of Taxation",
-      "sourceUrl": "https://tax.ri.gov/",
+      "sourceName": "2025 Rhode Island Tax Tables and Tax Computation Worksheet, with the 2025 RI-1040 instructions for the standard deduction and personal exemption",
+      "sourceUrl": "https://tax.ri.gov/sites/g/files/xkgbur541/files/2026-01/2025%20RI%20Tax%20Tables_Full.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Rhode Island. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 79900,
+            "rate": 0.0375
+          },
+          {
+            "notOver": 181650,
+            "rate": 0.0475
+          },
+          {
+            "notOver": null,
+            "rate": 0.0599
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 79900,
+            "rate": 0.0375
+          },
+          {
+            "notOver": 181650,
+            "rate": 0.0475
+          },
+          {
+            "notOver": null,
+            "rate": 0.0599
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 79900,
+            "rate": 0.0375
+          },
+          {
+            "notOver": 181650,
+            "rate": 0.0475
+          },
+          {
+            "notOver": null,
+            "rate": 0.0599
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 79900,
+            "rate": 0.0375
+          },
+          {
+            "notOver": 181650,
+            "rate": 0.0475
+          },
+          {
+            "notOver": null,
+            "rate": 0.0599
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 10900,
+        "marriedFilingJointly": 21800,
+        "marriedFilingSeparately": 10900,
+        "headOfHousehold": 16350
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 5100,
+        "marriedFilingJointly": 10200,
+        "marriedFilingSeparately": 5100,
+        "headOfHousehold": 5100
+      },
+      "notes": [
+        "Rhode Island taxes Rhode Island taxable income at 3.75%, 4.75% and 5.99% for tax year 2025, the same bands for every filing status (2025 Rhode Island Tax Tables, page T-1 computation worksheet).",
+        "Standard deduction for 2025 is $10,900 single or married filing separately, $21,800 married filing jointly, $16,350 head of household. The personal exemption is $5,100 a person, doubled on a joint return. Rhode Island does not allow federal itemized deductions.",
+        "Both the deduction and the exemption phase out above $254,250 of modified federal AGI. That band is well above ordinary wages, so it is noted rather than modelled; this overstates the deduction for those filers.",
+        "The 2025 table is midpoint-based over $50 income bands, so its printed figure can differ from the exact 3.75% by up to about a dollar. The booklet’s own example is $950 of tax at $25,300–$25,350 of taxable income.",
+        "The percentage of allowable federal credits, the earned income credit at 16% of the federal credit, and other Rhode Island credits are not modeled. The starting point is gross wages.",
+        "The division had published the 2025 RI-1040 and not a 2026 schedule at verification, so this row declares the 2025 schedule."
+      ]
     },
     {
       "stateCode": "SC",
@@ -3921,14 +4141,141 @@
     {
       "stateCode": "VT",
       "provider": "Vermont Department of Taxes",
-      "sourceName": "Vermont Department of Taxes",
-      "sourceUrl": "https://tax.vermont.gov/",
+      "sourceName": "2025 Vermont IN-111 instructions, standard deduction chart, personal exemption, and tax rate schedules X, Y-1, Y-2 and Z",
+      "sourceUrl": "https://tax.vermont.gov/sites/tax/files/documents/IN-111-Instr-2025.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Vermont. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 49400,
+            "rate": 0.0335
+          },
+          {
+            "notOver": 75000,
+            "rate": 0.066,
+            "baseTax": 1655
+          },
+          {
+            "notOver": 119700,
+            "rate": 0.066,
+            "baseTax": 3345
+          },
+          {
+            "notOver": 249700,
+            "rate": 0.076,
+            "baseTax": 6295
+          },
+          {
+            "notOver": null,
+            "rate": 0.0875,
+            "baseTax": 16175
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 41250,
+            "rate": 0.0335
+          },
+          {
+            "notOver": 75000,
+            "rate": 0.066,
+            "baseTax": 1382
+          },
+          {
+            "notOver": 99725,
+            "rate": 0.066,
+            "baseTax": 3609
+          },
+          {
+            "notOver": 152000,
+            "rate": 0.076,
+            "baseTax": 5241
+          },
+          {
+            "notOver": null,
+            "rate": 0.0875,
+            "baseTax": 9214
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 75000,
+            "rate": 0.0335
+          },
+          {
+            "notOver": 82500,
+            "rate": 0.0335,
+            "baseTax": 2513
+          },
+          {
+            "notOver": 199450,
+            "rate": 0.066,
+            "baseTax": 2764
+          },
+          {
+            "notOver": 304000,
+            "rate": 0.076,
+            "baseTax": 10482
+          },
+          {
+            "notOver": null,
+            "rate": 0.0875,
+            "baseTax": 18428
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 66200,
+            "rate": 0.0335
+          },
+          {
+            "notOver": 75000,
+            "rate": 0.066,
+            "baseTax": 2218
+          },
+          {
+            "notOver": 171000,
+            "rate": 0.066,
+            "baseTax": 2799
+          },
+          {
+            "notOver": 276850,
+            "rate": 0.076,
+            "baseTax": 9135
+          },
+          {
+            "notOver": null,
+            "rate": 0.0875,
+            "baseTax": 17179
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 7650,
+        "marriedFilingJointly": 15300,
+        "marriedFilingSeparately": 7650,
+        "headOfHousehold": 11450
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 5300,
+        "marriedFilingJointly": 10600,
+        "marriedFilingSeparately": 5300,
+        "headOfHousehold": 5300
+      },
+      "notes": [
+        "Vermont taxes Vermont taxable income at 3.35%, 6.60%, 7.60% and 8.75% for tax year 2025 (2025 IN-111 instructions, tax rate schedules X, Y-1, Y-2 and Z).",
+        "Standard deduction for 2025 is $7,650 single or married filing separately, $15,300 married filing jointly, $11,450 head of household. The personal exemption is $5,300 a person, doubled on a joint return.",
+        "The booklet works a married filing jointly example: $85,000 of Vermont taxable income is $2,929 of tax, which is the $2,764 printed at $82,500 plus 6.60% of the $2,500 excess.",
+        "Above $150,000 of federal adjusted gross income Vermont charges the greater of the schedule and 3% of that AGI. On a wage-only return with these deductions the schedule is already higher, so the floor is noted rather than modelled.",
+        "The additional standard deduction for age or blindness, the charitable contribution credit and Vermont school district taxes are not modeled. The starting point is gross wages.",
+        "The department had published the 2025 IN-111 and not a 2026 schedule at verification, so this row declares the 2025 schedule."
+      ]
     },
     {
       "stateCode": "WA",
@@ -3987,5 +4334,5 @@
       ]
     }
   ],
-  "normalizedSha256": "2c49a5bf197747a9270bda6e030b7579d8ab2562d482f0776c44b88cf7771462"
+  "normalizedSha256": "84138a8dd356db719fb8ab840f9b41892ba9b47fd90df2524c074a7ece00edc7"
 }

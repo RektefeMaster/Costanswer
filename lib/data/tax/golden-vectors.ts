@@ -51,6 +51,21 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const VT_SOURCE = {
+  sourceName: '2025 Vermont IN-111 instructions, tax rate schedules and worked example',
+  sourceUrl: 'https://tax.vermont.gov/sites/tax/files/documents/IN-111-Instr-2025.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const RI_SOURCE = {
+  sourceName: '2025 Rhode Island Tax Tables and Tax Computation Worksheet',
+  sourceUrl: 'https://tax.ri.gov/sites/g/files/xkgbur541/files/2026-01/2025%20RI%20Tax%20Tables_Full.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const NM_SOURCE = {
+  sourceName: 'Laws 2024, Chapter 67 (H.B. 252), 7-2-7 NMSA 1978 as amended, with the 2025 PIT-1 low- and middle-income exemption worksheet',
+  sourceUrl: 'https://www.nmlegis.gov/sessions/24%20Regular/final/HB0252.PDF',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const MI_SOURCE = {
   sourceName: 'Michigan Department of Treasury, Tax Year 2025 Information',
   sourceUrl: 'https://www.michigan.gov/taxes/iit/tax-guidance/tax-year-info/tax-year-2025-guidance',
@@ -298,6 +313,22 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * parts that only appear higher up — the subtraction cap stepping down, and
    * the credit switching off entirely above $100,000.
    */
+  vector('VT', 'marriedFilingJointly', 110_900, 2_929, 'published-example', VT_SOURCE),
+  vector('VT', 'single', 62_350, 1_655, 'published-table', VT_SOURCE),
+  vector('VT', 'single', 12_950, 0, 'worked-from-schedule', VT_SOURCE),
+
+  vector('RI', 'single', 41_325, 950, 'published-table', RI_SOURCE),
+  vector('RI', 'single', 66_000, 1_875, 'published-table', RI_SOURCE),
+  vector('RI', 'single', 116_000, 3_951, 'published-example', RI_SOURCE),
+  vector('RI', 'marriedFilingJointly', 100_000, 2_550, 'worked-from-schedule', RI_SOURCE),
+
+  vector('NM', 'single', 82_250, 2_716.50, 'published-example', NM_SOURCE),
+  vector('NM', 'marriedFilingJointly', 81_500, 1_739, 'published-example', NM_SOURCE),
+  // Inside the low- and middle-income exemption phase-out, which the bracket
+  // edges never reach: $30,000 of AGI keeps $1,000 of the $2,500.
+  vector('NM', 'single', 30_000, 330.50, 'worked-from-schedule', NM_SOURCE),
+  vector('NM', 'single', 15_750, 0, 'worked-from-schedule', NM_SOURCE),
+
   vector('MI', 'single', 60_000, 2_303.50, 'worked-from-schedule', MI_SOURCE),
   vector('MI', 'marriedFilingJointly', 120_000, 4_607.00, 'worked-from-schedule', MI_SOURCE),
   vector('MI', 'single', 5_800, 0, 'worked-from-schedule', MI_SOURCE),

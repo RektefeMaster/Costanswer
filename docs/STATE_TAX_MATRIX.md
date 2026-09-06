@@ -2,8 +2,8 @@
 
 Working document for P2. Status as of 2026-09-07.
 
-**Supported: 29 / 51** — twenty with a real schedule, nine that levy no wage tax.
-Remaining: 22.
+**Supported: 38 / 51** — twenty-nine with a real schedule, nine that levy no wage tax.
+Remaining: 13.
 
 Every supported state carries at least three golden vectors and passes
 `npm run verify:tax`, which is now a gate that can fail rather than a module
@@ -61,7 +61,7 @@ even when its text layer will not extract, and can then be read directly.
 Every state also needs a source URL, a source document name, and **three golden
 vectors** reproducing the state's own published figure at three incomes.
 
-## Done — twenty with a schedule
+## Done — twenty-nine with a schedule
 
 Schedule year is the year the figures were published for, not the snapshot year.
 "Evidence" is the strongest vector behind the row.
@@ -83,11 +83,19 @@ Schedule year is the year the figures were published for, not the snapshot year.
 | NC | Flat | 2025 | worked from schedule | NCDOR rate schedules + NC-30 |
 | ND | Progressive on federal taxable income | 2025 | worked from schedule | Commissioner's rate tables + ND-1 |
 | NJ | Progressive | 2025 | worked from schedule | NJ-1040 rate schedules |
+| NM | Progressive + AGI-phased exemption | 2025 | **published example** | H.B. 252 / 7-2-7 NMSA 1978 + 2025 PIT-1 worksheet |
 | OH | Progressive, discontinuous | 2025 | **published example** | Annual rates page + IT 1040 booklet |
 | OK | Progressive, six bands | 2025 | **published table** | Form 511 packet tax table |
+| OR | Progressive + federal subtraction cap | 2025 | **published table** | Form OR-40 instructions, charts and Table 4 |
 | PA | Flat + local EIT named | 2026 | worked from schedule | Act 46 of 2003 |
 | SC | Progressive + SCIAD | 2026 | **published example** | Information Letter #26-20 |
 | UT | Flat + taxpayer credit | 2025 | worked from schedule | Tax Rates + TC-40 instructions |
+| AR | Progressive + low-income tables | 2025 | **published table** | 2025 Indexed Tax Brackets + tax tables |
+| DE | Progressive + personal credits | 2025 | **published table** | 2025 Income Tax Table + PIT-RES |
+| LA | Flat 3% | 2025 | worked from schedule | 2025 IT-540 instructions + RIB 25-012 |
+| MD | Progressive + county tax named | 2025 | **published table** | Comptroller rates page + 2025 booklet |
+| RI | Progressive, one schedule | 2025 | **published table** | 2025 RI Tax Tables + computation worksheet |
+| VT | Progressive | 2025 | **published example** | 2025 IN-111 instructions, rate schedules |
 
 Nine levy no wage tax and need no schedule: AK, FL, NH, NV, SD, TN, TX, WA, WY.
 
@@ -101,14 +109,15 @@ number that was wrong in a specific, checkable way.
 | --- | --- | --- |
 | `taxableIncomeBasis: 'federal-taxable-income'` | CO, IA, MT, ND | Taxing the federal standard deduction a second time |
 | `exemptionCredit.rateOfFederalStandardDeduction` | UT | A credit frozen at today's federal deduction going stale each January |
-| `standardDeductionPhaseOut` / `personalExemptionPhaseOut` | ME, SC | Giving a full deduction to filers whose state takes it away from $102,250 |
+| `standardDeductionPhaseOut` / `personalExemptionPhaseOut` | ME, SC, NM | Giving a full deduction to filers whose state takes it away |
 | `roundReductionDownToMultipleOf` | SC | About fifty cents, stated rather than dropped |
 | `additionalTax.thresholdByFilingStatus` | ME | A surcharge starting at the wrong income for three filers in four |
-| `TaxBracket.baseTax` | OH | Undercharging $18.69 for every filer over $100,000 |
-| `steppedPersonalExemption` | OH | An exemption that steps rather than tapers |
-| `localAddOn.typicalRateRange` optional | KY, OH | Inventing a band for taxes set by hundreds of separate jurisdictions |
+| `TaxBracket.baseTax` | OH, VT | Undercharging where the published constant does not sum from the bands beneath it |
+| `steppedPersonalExemption` | OH, MD | An exemption that steps rather than tapers |
+| `localAddOn.typicalRateRange` optional | KY, OH, MI | Inventing a band for taxes set by hundreds of separate jurisdictions |
+| `personalExemptionPhaseOut` reused for a per-person AGI taper | NM | Treating the $2,500 low-income exemption as a flat deduction for filers between $20,000 and $36,667 |
 
-## The 22 remaining
+## The 13 remaining
 
 Model is a hypothesis to verify against the source, not data.
 
@@ -136,17 +145,8 @@ Model is a hypothesis to verify against the source, not data.
 
 | State | Model hypothesis | Blocker |
 | --- | --- | --- |
-| NM | Progressive | Rate tables live in a separate "Tax Look Up Table" document not yet located |
-| MD | Progressive + **county** tax | Booklet URL not yet found; county band needed for the omission |
-| AR | Progressive, low-income tables | Instruction URL not yet found |
-| DE | Progressive + personal credits | PIT-RES instructions located, not yet read |
-| OR | Progressive + **federal subtraction** (capped, phased) | Rate charts are a linked PDF not yet located |
-| LA | Flat since 2025 | 403; PDF route untried |
-| MI | Flat + **city** tax | 403; PDF route untried |
-| MO | Progressive + **federal deduction** (capped) | 403; PDF route untried |
-| RI | Progressive, indexed | 403; PDF route untried |
-| VT | Progressive | 403; PDF route untried |
-| AL | Progressive + **federal deduction** + local occupational | Untested |
+| MO | Progressive + **federal deduction** as a share of federal tax by AGI band, capped | Documents in hand; needs a new schema shape before it can be entered honestly |
+| AL | Progressive + **federal deduction** + local occupational | 2025 Form 40 booklet in hand; standard-deduction chart and rate table not yet transcribed |
 
 ### Blocked on publication
 
@@ -167,9 +167,9 @@ official source publishes one, and without a band where none does.
 | IA | school district + county EMS | Named, 0%–20% of state tax (DOR table 41-027) |
 | KY | county / city occupational | Named, **size not stated** — no statewide figure published |
 | OH | municipality + school district | Named, **size not stated** — two separate local levies |
-| MD | county | Not yet reached. Often comparable to the state tax itself |
+| MD | county | Named, 2.25%–3.30% (Comptroller) |
 | NY | NYC and Yonkers only | Not yet reached |
-| MI | city | Not yet reached |
+| MI | city | Named, **size not stated** — Treasury lists 24 cities without a statewide rate |
 | IN | county | Not yet reached |
 | AL | municipality occupational | Not yet reached |
 | MO | Kansas City and St. Louis only | Not yet reached |
@@ -179,15 +179,15 @@ figure being right.
 
 ## Order of remaining work
 
-1. **Reachable and unread** — DE, AR, NM, MD, OR: the documents exist and the
-   hosts answer.
-2. **403 but PDF untried** — LA, MI, MO, RI, VT, AL: the PDF route beat the HTML
-   route for North Carolina and Kentucky and is worth trying before giving up.
-3. **Unreachable hosts** — ID, IN, VA, WI, KS, NE, WV, CT: nothing to try from
+1. **Documents in hand, shape missing** — MO, AL: the official booklets are
+   readable. Missouri deducts a *percentage* of federal tax that steps down
+   with AGI, which this engine cannot yet express; Alabama's standard deduction
+   is a chart by income. Both need a schema extension, not another search.
+2. **Unreachable hosts** — ID, IN, VA, WI, KS, NE, WV, CT: nothing to try from
    here. These need a different network path, not a different approach.
-4. **Human-verification widgets** — GA, AZ: out of reach on principle, not on
+3. **Human-verification widgets** — GA, AZ: out of reach on principle, not on
    capability.
-5. **NY** — when its 2026 schedules are published.
+4. **NY** — when its 2026 schedules are published.
 
 A state is only entered when every required piece is in hand. A rate without its
 deduction, or a deduction without its rate, is not a tax calculation.

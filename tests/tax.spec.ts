@@ -239,6 +239,39 @@ describe('state income tax', () => {
     // TC-40 line 22 says enter zero rather than pay the difference out.
     expect(calculateStateIncomeTax({ ...base, taxableIncome: 20_000 }).tax).toBe(0);
   });
+
+  it('gives New Mexico the 2025 brackets and phases the low-income exemption on AGI', () => {
+    // 7-2-7 prints $2,716.50 of tax at $66,500 of taxable income, single.
+    // $82,250 of wages less the 2025 federal standard deduction of $15,750
+    // lands exactly there, with the exemption already gone.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'single', taxableIncome: 82_250,
+    }).tax).toBeCloseTo(2_716.50, 2);
+    // $30,000 of AGI is inside the exemption phase-out: $2,500 less 15¢ on
+    // each of the $10,000 over $20,000 leaves $1,000, so taxable income is
+    // $13,250 and tax is $82.50 + 3.2% of $7,750.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'single', taxableIncome: 30_000,
+    }).tax).toBeCloseTo(330.50, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'single', taxableIncome: 15_750,
+    }).tax).toBe(0);
+  });
+
+  it('reproduces Vermont\'s published joint example and Rhode Island\'s tax table', () => {
+    // IN-111 works $85,000 of Vermont taxable income, married filing jointly,
+    // to $2,929. $110,900 of wages less the deduction and two exemptions lands
+    // there.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'VT', filingStatus: 'marriedFilingJointly', taxableIncome: 110_900,
+    }).tax).toBeCloseTo(2_929, 2);
+    // RI-1040 example: $25,300–$25,350 of taxable income is $950 of tax.
+    // $41,325 of wages less the $10,900 deduction and $5,100 exemption is the
+    // $25,325 midpoint of that row.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'RI', filingStatus: 'single', taxableIncome: 41_325,
+    }).tax).toBeCloseTo(950, 0);
+  });
 });
 
 describe('salary after tax', () => {

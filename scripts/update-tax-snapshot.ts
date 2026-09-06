@@ -172,7 +172,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   NV: { provider: 'Nevada Department of Taxation', sourceUrl: 'https://tax.nv.gov/' },
   NH: { provider: 'New Hampshire Department of Revenue Administration', sourceUrl: 'https://www.revenue.nh.gov/interest-dividends-tax' },
   NJ: { provider: 'New Jersey Division of Taxation', sourceUrl: 'https://www.nj.gov/treasury/taxation/nj1040faqs.shtml' },
-  NM: { provider: 'New Mexico Taxation and Revenue Department', sourceUrl: 'https://www.tax.newmexico.gov/' },
+  NM: { provider: 'New Mexico Taxation and Revenue Department', sourceUrl: 'https://www.nmlegis.gov/sessions/24%20Regular/final/HB0252.PDF' },
   NY: { provider: 'New York State Department of Taxation and Finance', sourceUrl: 'https://www.tax.ny.gov/pit/file/tax_tables.htm' },
   NC: { provider: 'North Carolina Department of Revenue', sourceUrl: 'https://www.ncdor.gov/' },
   ND: { provider: 'North Dakota Office of State Tax Commissioner', sourceUrl: 'https://www.tax.nd.gov/individual-income-tax' },
@@ -180,13 +180,13 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   OK: { provider: 'Oklahoma Tax Commission', sourceUrl: 'https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf' },
   OR: { provider: 'Oregon Department of Revenue', sourceUrl: 'https://www.oregon.gov/dor/forms/FormsPubs/form-or-40-inst_101-040-1_2025.pdf' },
   PA: { provider: 'Pennsylvania Department of Revenue', sourceUrl: 'https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM' },
-  RI: { provider: 'Rhode Island Division of Taxation', sourceUrl: 'https://tax.ri.gov/' },
+  RI: { provider: 'Rhode Island Division of Taxation', sourceUrl: 'https://tax.ri.gov/sites/g/files/xkgbur541/files/2026-01/2025%20RI%20Tax%20Tables_Full.pdf' },
   SC: { provider: 'South Carolina Department of Revenue', sourceUrl: 'https://dor.sc.gov/sites/dor/files/policies/IL26-20.pdf' },
   SD: { provider: 'South Dakota Department of Revenue', sourceUrl: 'https://dor.sd.gov/' },
   TN: { provider: 'Tennessee Department of Revenue', sourceUrl: 'https://www.tn.gov/revenue/taxes/hall-income-tax.html' },
   TX: { provider: 'Texas Comptroller of Public Accounts', sourceUrl: 'https://comptroller.texas.gov/economy/fiscal-notes/archive/2016/february/starting.php' },
   UT: { provider: 'Utah State Tax Commission', sourceUrl: 'https://incometax.utah.gov/paying/tax-rates' },
-  VT: { provider: 'Vermont Department of Taxes', sourceUrl: 'https://tax.vermont.gov/' },
+  VT: { provider: 'Vermont Department of Taxes', sourceUrl: 'https://tax.vermont.gov/sites/tax/files/documents/IN-111-Instr-2025.pdf' },
   VA: { provider: 'Virginia Department of Taxation', sourceUrl: 'https://www.tax.virginia.gov/' },
   WA: { provider: 'Washington Department of Revenue', sourceUrl: 'https://dor.wa.gov/taxes-rates/income-tax' },
   WV: { provider: 'West Virginia State Tax Department', sourceUrl: 'https://tax.wv.gov/' },
@@ -396,6 +396,132 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'Twenty-four Michigan cities levy their own income tax, Detroit\u2019s administered by Treasury and the rest by the cities themselves. Treasury publishes the list but no statewide rate, so that tax is named here without a size.',
       'Treasury had published 2025 amounts and not 2026 at verification, so this row declares the 2025 schedule.',
       'The special exemption for disability, the qualified disabled veteran deduction, retirement and pension subtractions, the homestead property tax credit and the home heating credit are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['NM', {
+    ...meta('NM', {
+      sourceName: 'Laws 2024, Chapter 67 (H.B. 252), amending 7-2-7 NMSA 1978 for tax years beginning 2025, with the 2025 PIT-1 instructions for the federal standard deduction and the low- and middle-income exemption worksheet',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * 7-2-7 prints each band as "$X plus Y% of the excess", and every constant
+     * reconciles with the band beneath it to the cent, so plain marginal
+     * brackets say the same thing. Heads of household share the joint
+     * schedule; separate filers have their own, half-width, version.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [5_500, 0.015], [16_500, 0.032], [33_500, 0.043], [66_500, 0.047], [210_000, 0.049], [null, 0.059],
+      ]),
+      marriedFilingSeparately: brackets([
+        [4_000, 0.015], [12_500, 0.032], [25_000, 0.043], [50_000, 0.047], [157_500, 0.049], [null, 0.059],
+      ]),
+      marriedFilingJointly: brackets([
+        [8_000, 0.015], [25_000, 0.032], [50_000, 0.043], [100_000, 0.047], [315_000, 0.049], [null, 0.059],
+      ]),
+      headOfHousehold: brackets([
+        [8_000, 0.015], [25_000, 0.032], [50_000, 0.043], [100_000, 0.047], [315_000, 0.049], [null, 0.059],
+      ]),
+    },
+    /*
+     * PIT-1 line 12 is the federal standard deduction. These are the 2025
+     * Form 1040 amounts, because that is the year this schedule belongs to.
+     */
+    standardDeductionByFilingStatus: filingAmounts(15_750, 31_500, 15_750, 23_625),
+    // $2,500 a person, doubled on a joint return, from the PIT-1 worksheet.
+    personalExemptionByFilingStatus: filingAmounts(2_500, 5_000, 2_500, 2_500),
+    personalExemptionPhaseOut: {
+      startIncomeByFilingStatus: filingAmounts(20_000, 30_000, 15_000, 30_000),
+      /*
+       * The worksheet subtracts 15¢ / 10¢ / 20¢ per dollar over the floor from
+       * the $2,500, which is the same curve as a proportional fall across
+       * $2,500 divided by that rate. Written that way so a later editor does
+       * not have to reverse-engineer 16,666.67.
+       */
+      rangeByFilingStatus: filingAmounts(2_500 / 0.15, 2_500 / 0.10, 2_500 / 0.20, 2_500 / 0.10),
+    },
+    notes: [
+      'New Mexico taxes New Mexico taxable income at 1.5%, 3.2%, 4.3%, 4.7%, 4.9% and 5.9% for tax years beginning on or after January 1, 2025 (7-2-7 NMSA 1978 as amended by Laws 2024, Chapter 67 (H.B. 252)).',
+      'The starting point is federal adjusted gross income. PIT-1 line 12 then subtracts the federal standard deduction \u2014 $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household, from the 2025 Form 1040 instructions.',
+      'A low- and middle-income exemption of $2,500 a person applies at or below $36,667 of federal AGI single, $27,500 married filing separately, and $55,000 filing jointly or head of household. It is the full $2,500 below $20,000 / $15,000 / $30,000 and then falls by 15\u00a2, 20\u00a2 or 10\u00a2 per dollar (2025 PIT-1 instructions, line 14 worksheet). A joint return claims two.',
+      'The 2025 Tax Look Up Table the instructions point to is a separate document; NMAC 3.3.7.9 says to use 7-2-7 itself when taxable income is outside that table. These bands are the statute. The table is midpoint-based over $50 income bands, so its printed figure can differ from this by about a dollar.',
+      'The $4,000 deduction for certain dependents on a joint or head-of-household return, the Working Families Tax Credit, the child income tax credit, the low-income comprehensive tax rebate and other PIT-ADJ / PIT-RC items are not modeled. New Mexico does not levy a local wage income tax.',
+      'The department had published the 2025 PIT-1 and not a 2026 schedule at verification, so this row declares the 2025 schedule.',
+    ],
+  }],
+  ['VT', {
+    ...meta('VT', {
+      sourceName: '2025 Vermont IN-111 instructions, standard deduction chart, personal exemption, and tax rate schedules X, Y-1, Y-2 and Z',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Vermont prints a base tax at each band floor. Several of those constants
+     * are a few tens of cents away from summing the band beneath them, so the
+     * published figure is carried rather than smoothed.
+     */
+    bracketsByFilingStatus: {
+      single: brackets3([
+        [49_400, 0.0335, undefined], [75_000, 0.066, 1_655], [119_700, 0.066, 3_345],
+        [249_700, 0.076, 6_295], [null, 0.0875, 16_175],
+      ]),
+      marriedFilingSeparately: brackets3([
+        [41_250, 0.0335, undefined], [75_000, 0.066, 1_382], [99_725, 0.066, 3_609],
+        [152_000, 0.076, 5_241], [null, 0.0875, 9_214],
+      ]),
+      marriedFilingJointly: brackets3([
+        [75_000, 0.0335, undefined], [82_500, 0.0335, 2_513], [199_450, 0.066, 2_764],
+        [304_000, 0.076, 10_482], [null, 0.0875, 18_428],
+      ]),
+      headOfHousehold: brackets3([
+        [66_200, 0.0335, undefined], [75_000, 0.066, 2_218], [171_000, 0.066, 2_799],
+        [276_850, 0.076, 9_135], [null, 0.0875, 17_179],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(7_650, 15_300, 7_650, 11_450),
+    personalExemptionByFilingStatus: filingAmounts(5_300, 10_600, 5_300, 5_300),
+    notes: [
+      'Vermont taxes Vermont taxable income at 3.35%, 6.60%, 7.60% and 8.75% for tax year 2025 (2025 IN-111 instructions, tax rate schedules X, Y-1, Y-2 and Z).',
+      'Standard deduction for 2025 is $7,650 single or married filing separately, $15,300 married filing jointly, $11,450 head of household. The personal exemption is $5,300 a person, doubled on a joint return.',
+      'The booklet works a married filing jointly example: $85,000 of Vermont taxable income is $2,929 of tax, which is the $2,764 printed at $82,500 plus 6.60% of the $2,500 excess.',
+      'Above $150,000 of federal adjusted gross income Vermont charges the greater of the schedule and 3% of that AGI. On a wage-only return with these deductions the schedule is already higher, so the floor is noted rather than modelled.',
+      'The additional standard deduction for age or blindness, the charitable contribution credit and Vermont school district taxes are not modeled. The starting point is gross wages.',
+      'The department had published the 2025 IN-111 and not a 2026 schedule at verification, so this row declares the 2025 schedule.',
+    ],
+  }],
+  ['RI', {
+    ...meta('RI', {
+      sourceName: '2025 Rhode Island Tax Tables and Tax Computation Worksheet, with the 2025 RI-1040 instructions for the standard deduction and personal exemption',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    // One schedule for every filing status. 3.75% of $79,900 is exactly the
+    // $2,996.25 the computation worksheet prints at that floor.
+    bracketsByFilingStatus: {
+      single: brackets([[79_900, 0.0375], [181_650, 0.0475], [null, 0.0599]]),
+      marriedFilingSeparately: brackets([[79_900, 0.0375], [181_650, 0.0475], [null, 0.0599]]),
+      marriedFilingJointly: brackets([[79_900, 0.0375], [181_650, 0.0475], [null, 0.0599]]),
+      headOfHousehold: brackets([[79_900, 0.0375], [181_650, 0.0475], [null, 0.0599]]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(10_900, 21_800, 10_900, 16_350),
+    personalExemptionByFilingStatus: filingAmounts(5_100, 10_200, 5_100, 5_100),
+    notes: [
+      'Rhode Island taxes Rhode Island taxable income at 3.75%, 4.75% and 5.99% for tax year 2025, the same bands for every filing status (2025 Rhode Island Tax Tables, page T-1 computation worksheet).',
+      'Standard deduction for 2025 is $10,900 single or married filing separately, $21,800 married filing jointly, $16,350 head of household. The personal exemption is $5,100 a person, doubled on a joint return. Rhode Island does not allow federal itemized deductions.',
+      'Both the deduction and the exemption phase out above $254,250 of modified federal AGI. That band is well above ordinary wages, so it is noted rather than modelled; this overstates the deduction for those filers.',
+      'The 2025 table is midpoint-based over $50 income bands, so its printed figure can differ from the exact 3.75% by up to about a dollar. The booklet\u2019s own example is $950 of tax at $25,300\u2013$25,350 of taxable income.',
+      'The percentage of allowable federal credits, the earned income credit at 16% of the federal credit, and other Rhode Island credits are not modeled. The starting point is gross wages.',
+      'The division had published the 2025 RI-1040 and not a 2026 schedule at verification, so this row declares the 2025 schedule.',
     ],
   }],
   ['LA', {
