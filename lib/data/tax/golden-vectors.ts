@@ -51,6 +51,16 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const MI_SOURCE = {
+  sourceName: 'Michigan Department of Treasury, Tax Year 2025 Information',
+  sourceUrl: 'https://www.michigan.gov/taxes/iit/tax-guidance/tax-year-info/tax-year-2025-guidance',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const LA_SOURCE = {
+  sourceName: '2025 Louisiana IT-540 instructions, lines 8 and 11',
+  sourceUrl: 'https://dam.ldr.la.gov/taxforms/IT540i%20WEB(2025)D11.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const OR_SOURCE = {
   sourceName: '2025 Publication OR-40-FY, Form OR-40 instructions: tax tables and tax rate charts',
   sourceUrl: 'https://www.oregon.gov/dor/forms/FormsPubs/form-or-40-inst_101-040-1_2025.pdf',
@@ -288,6 +298,15 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * parts that only appear higher up — the subtraction cap stepping down, and
    * the credit switching off entirely above $100,000.
    */
+  vector('MI', 'single', 60_000, 2_303.50, 'worked-from-schedule', MI_SOURCE),
+  vector('MI', 'marriedFilingJointly', 120_000, 4_607.00, 'worked-from-schedule', MI_SOURCE),
+  vector('MI', 'single', 5_800, 0, 'worked-from-schedule', MI_SOURCE),
+
+  vector('LA', 'single', 60_000, 1_425, 'worked-from-schedule', LA_SOURCE),
+  vector('LA', 'marriedFilingJointly', 100_000, 2_250, 'worked-from-schedule', LA_SOURCE),
+  // At the deduction Louisiana owes nothing rather than a negative figure.
+  vector('LA', 'single', 12_500, 0, 'worked-from-schedule', LA_SOURCE),
+
   vector('OR', 'single', 25_885, 1_451, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),
   vector('OR', 'marriedFilingJointly', 28_720, 885, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),
   vector('OR', 'single', 52_835, 3_809, 'published-table', OR_SOURCE, { federalIncomeTax: 0 }),

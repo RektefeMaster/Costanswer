@@ -159,11 +159,11 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   IA: { provider: 'Iowa Department of Revenue', sourceUrl: 'https://revenue.iowa.gov/taxes/tax-guidance/individual-income-tax/1040-expanded-instructions/iowa-tax' },
   KS: { provider: 'Kansas Department of Revenue', sourceUrl: 'https://www.ksrevenue.gov/' },
   KY: { provider: 'Kentucky Department of Revenue', sourceUrl: 'https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf' },
-  LA: { provider: 'Louisiana Department of Revenue', sourceUrl: 'https://revenue.louisiana.gov/' },
+  LA: { provider: 'Louisiana Department of Revenue', sourceUrl: 'https://dam.ldr.la.gov/taxforms/IT540i%20WEB(2025)D11.pdf' },
   ME: { provider: 'Maine Revenue Services', sourceUrl: 'https://www.maine.gov/revenue/sites/maine.gov.revenue/files/2026-05/ind_tax_rate_sched_2026_rev.pdf' },
   MD: { provider: 'Comptroller of Maryland', sourceUrl: 'https://www.marylandtaxes.gov/individual/income/tax-info/tax-rates.php' },
   MA: { provider: 'Massachusetts Department of Revenue', sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates' },
-  MI: { provider: 'Michigan Department of Treasury', sourceUrl: 'https://www.michigan.gov/taxes' },
+  MI: { provider: 'Michigan Department of Treasury', sourceUrl: 'https://www.michigan.gov/taxes/iit/tax-guidance/tax-year-info/tax-year-2025-guidance' },
   MN: { provider: 'Minnesota Department of Revenue', sourceUrl: 'https://www.revenue.state.mn.us/' },
   MS: { provider: 'Mississippi Department of Revenue', sourceUrl: 'https://www.dor.ms.gov/individual/tax-rates' },
   MO: { provider: 'Missouri Department of Revenue', sourceUrl: 'https://dor.mo.gov/' },
@@ -368,6 +368,55 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['MI', {
+    ...meta('MI', {
+      sourceName: 'Michigan Department of Treasury, Tax Year 2025 Information (rate and exemption amounts)',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    rate: 0.0425,
+    // Michigan gives no standard deduction; the personal exemption is the
+    // whole of what comes off income, and a joint return claims two.
+    exemptionByFilingStatus: filingAmounts(5_800, 11_600, 5_800, 5_800),
+    localAddOn: {
+      label: 'Michigan city income tax',
+      basis: 'municipality',
+      appliesTo: 'taxable-income',
+      // Twenty-four cities levy one and Treasury publishes the list without a
+      // statewide rate, so the size is left unstated rather than invented.
+    },
+    notes: [
+      'Michigan taxes income at a flat 4.25% for tax year 2025 (Michigan Department of Treasury, Tax Year 2025 Information; MCL 206.51).',
+      'The personal exemption is $5,800 a person for 2025, and a joint return claims two. Michigan has no standard deduction of its own.',
+      'Twenty-four Michigan cities levy their own income tax, Detroit\u2019s administered by Treasury and the rest by the cities themselves. Treasury publishes the list but no statewide rate, so that tax is named here without a size.',
+      'Treasury had published 2025 amounts and not 2026 at verification, so this row declares the 2025 schedule.',
+      'The special exemption for disability, the qualified disabled veteran deduction, retirement and pension subtractions, the homestead property tax credit and the home heating credit are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['LA', {
+    ...meta('LA', {
+      sourceName: '2025 Louisiana IT-540 instructions, lines 7, 8 and 11, with Revenue Information Bulletin 25-012',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    rate: 0.03,
+    // IT-540 line 7 is federal AGI, which for a wage-only filer is gross pay,
+    // and line 8 is one combined deduction figure.
+    exemptionByFilingStatus: filingAmounts(12_500, 25_000, 12_500, 25_000),
+    notes: [
+      'Louisiana taxes income at a flat 3% from tax year 2025, replacing the old 1.85%/3.50%/4.25% brackets (2025 IT-540 instructions, line 11; Act 11 of the 2024 Third Extraordinary Session; RIB 25-012).',
+      'The standard deduction is $12,500 filing single or separately and $25,000 filing jointly, as a surviving spouse or as head of household \u2014 nearly triple the old $4,500 and $9,000.',
+      'Act 11 indexes those amounts to CPI-U with the first adjustment on January 1, 2026. The department had not published the adjusted figures at verification, so this row declares the 2025 schedule.',
+      'The additional exemptions for dependents, blindness and age were repealed, though the deduction for taxpayers 65 and older was raised to $12,000 a person and is not modeled here.',
+      'Louisiana credits and Schedule E adjustments are not modeled. The starting point is gross wages.',
     ],
   }],
   ['OR', {
