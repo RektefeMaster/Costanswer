@@ -1,6 +1,7 @@
 'use client';
 
 import type { MonetizationContext } from '@/lib/monetization/context';
+import { currentAttribution } from '@/lib/monetization/attribution/capture';
 
 /**
  * One outbound link.
@@ -48,6 +49,7 @@ export function AffiliateOfferLink({
           locale: context.locale,
           vertical: context.vertical,
           placement: 'after-result',
+          attribution: currentAttribution(),
         })], { type: 'application/json' }),
       );
     } catch {

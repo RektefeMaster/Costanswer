@@ -8,6 +8,7 @@
  * counts things ever holds a phone number.
  */
 import type { Locale } from '@/lib/i18n/locales';
+import type { Attribution } from '../attribution/types';
 import type { LeadVerticalId } from '../policy';
 
 export const LEAD_STATUSES = [
@@ -73,6 +74,8 @@ export type LeadRequest = {
   readonly routingReason?: string;
   readonly duplicateState: DuplicateState;
   readonly qualityScore?: number;
+  /** Where this request came from. Never a person, only a source. */
+  readonly attribution: Attribution;
   readonly createdAt: string;
   readonly updatedAt: string;
   readonly purgeAfter: string;

@@ -5,7 +5,7 @@ import { MonetizationImpressions } from './MonetizationImpressions';
 import { NextActionChoice } from './NextActionChoice';
 import type { AffiliateOffer } from '@/lib/monetization/affiliate/types';
 import { affiliateForbidden, relevantCategories } from '@/lib/monetization/affiliate/relevance';
-import { callCtaModel, liveCallCampaign } from '@/lib/monetization/calls/types';
+import { callCtaModel, type CallCampaign } from '@/lib/monetization/calls/types';
 import type { MonetizationContext } from '@/lib/monetization/context';
 import { getMonetizationPolicy } from '@/lib/monetization/policy';
 import { resolveFlag, type FlagOverrides } from '@/lib/monetization/flags';
@@ -28,13 +28,13 @@ export function NextActionModule({
   offers = [],
   overrides = {},
   showIntentSwitch = false,
-  now = new Date(),
+  callCampaign = null,
 }: {
   context: MonetizationContext;
   offers?: readonly AffiliateOffer[];
   overrides?: FlagOverrides;
   showIntentSwitch?: boolean;
-  now?: Date;
+  callCampaign?: CallCampaign | null;
 }) {
   const policy = getMonetizationPolicy(context.pageId);
 
@@ -48,15 +48,6 @@ export function NextActionModule({
     && !affiliateForbidden(context)
     && resolveFlag('affiliate.enabled', process.env, overrides)
     && relevantCategories(context).length > 0;
-
-  const callCampaign = leadAllowed && resolveFlag('calls.enabled', process.env, overrides) && policy.lead.vertical
-    ? liveCallCampaign({
-        vertical: policy.lead.vertical,
-        state: context.location?.state,
-        asOf: now.toISOString().slice(0, 10),
-        at: now,
-      })
-    : null;
 
   if (!leadAllowed && !affiliateAllowed) return null;
 
@@ -78,7 +69,9 @@ export function NextActionModule({
             qualityTier: context.project?.qualityTier,
           }}
         />
-        {callCampaign && <CallCta model={callCtaModel(callCampaign, context.locale)} context={context} />}
+        {leadAllowed && callCampaign && (
+          <CallCta model={callCtaModel(callCampaign, context.locale)} context={context} />
+        )}
       </>
     )
     : null;

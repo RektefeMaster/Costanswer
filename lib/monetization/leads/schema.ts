@@ -7,6 +7,7 @@
  */
 import { z } from 'zod';
 import { LOCALES } from '@/lib/i18n/locales';
+import { REFERRER_CATEGORIES } from '../attribution/types';
 
 const ZIP = /^\d{5}$/;
 const STATE = /^[A-Z]{2}$/;
@@ -50,6 +51,23 @@ export const leadContactSchema = z.object({
   city: z.string().trim().max(80).optional(),
 }).strict();
 
+/**
+ * Attribution as it arrives from the browser.
+ *
+ * Bounded here as well as sanitized on the server: this is attacker-controlled
+ * input on the one endpoint that also handles a phone number.
+ */
+export const attributionSchema = z.object({
+  landingPath: z.string().max(200).optional(),
+  referrerCategory: z.enum(REFERRER_CATEGORIES).optional(),
+  referrerHost: z.string().max(80).optional(),
+  utmSource: z.string().max(80).optional(),
+  utmMedium: z.string().max(80).optional(),
+  utmCampaign: z.string().max(80).optional(),
+  sessionId: z.string().max(80).optional(),
+  placement: z.string().max(40).optional(),
+}).strict();
+
 export const leadSubmissionSchema = z.object({
   vertical: z.string().min(1).max(64),
   pageId: z.string().min(1).max(120),
@@ -65,10 +83,18 @@ export const leadSubmissionSchema = z.object({
     accepted: z.literal(true, { message: 'Tick the box so we can send your request.' }),
     partnerName: z.string().min(1).max(120),
   }).strict(),
-  /** Anti-bot. A filled honeypot is a silent success, never an error message. */
-  website: z.string().max(0).optional(),
+  /**
+   * Anti-bot honeypot.
+   *
+   * Accepted at any value and judged later by `silentRejectionFor`. Rejecting a
+   * filled honeypot here instead would return a validation error naming the
+   * field, which tells a bot exactly which input to stop filling — the opposite
+   * of what a honeypot is for. It is bounded only so the body stays small.
+   */
+  website: z.string().max(200).optional(),
   /** Milliseconds the form was on screen. Sub-second completion is not a person. */
   elapsedMs: z.number().int().nonnegative().max(86_400_000).optional(),
+  attribution: attributionSchema.optional(),
 }).strict().superRefine((value, context) => {
   if (!value.contact.phone && !value.contact.email) {
     context.addIssue({

@@ -6,6 +6,7 @@ import type { MonetizationContext } from '@/lib/monetization/context';
 import type { LeadVerticalId } from '@/lib/monetization/policy';
 import { activeConsentVersion, renderConsent } from '@/lib/monetization/consent/versions';
 import { emitMonetizationEvent } from '@/lib/monetization/events';
+import { currentAttribution } from '@/lib/monetization/attribution/capture';
 import { UI_STRINGS } from '@/lib/monetization/ui/strings';
 
 /**
@@ -174,6 +175,7 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
         consent: { version: consent.version.version, accepted: true, partnerName },
         website: honeypot,
         elapsedMs: elapsedMs(),
+        attribution: { ...currentAttribution(), placement: 'after-result' },
       }, { 'idempotency-key': idempotencyKey() });
 
       if (!ok) {

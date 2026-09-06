@@ -283,7 +283,54 @@ generation in substance. They are now gated behind
 
 ---
 
-## 8. Events
+## 8. Attribution
+
+First-party, and deliberately not a profile.
+
+- **No cookie.** Capture happens in `sessionStorage`, which is per-origin and
+  per-tab, is never attached to a request automatically, and dies with the tab.
+  The privacy page's "no tracking cookies" promise stays literally true.
+- **The session id lives as long as one tab.** It is random, it is not stable,
+  and it cannot join two visits together.
+- **The referrer is reduced to a category and a host** before it is stored. Which
+  search engine sent someone is useful; the URL of the forum thread they came
+  from is not ours to keep.
+- **A query string is discarded, not trimmed.** That is where a search term or a
+  personal value sits.
+- **Paid search is decided by the campaign parameters, never guessed from the
+  host** — a paid and an organic Google referrer look identical, and guessing
+  would attribute organic traffic to spend that never happened.
+
+Attribution is stored on the record it explains — a lead, a click — rather than
+in a visitor table. There is no row per person anywhere in this schema.
+
+## 9. Operating it without a deploy
+
+Section 66 of the brief asks that a business operator never need a deploy to
+change what is live. `POST /api/monetization/admin` accepts exactly these, each
+audited, each refusing anything the routing engine cannot actually use:
+
+| Action | Changes |
+| --- | --- |
+| `kill-switch` | Disable a channel. Only ever *off* — the environment is the floor |
+| `upsert-provider` · `upsert-campaign` · `set-campaign-active` | Coverage, caps, priority, payout, required fields, pause |
+| `upsert-call-campaign` · `set-call-campaign-active` | A tracked number, its hours and its coverage |
+| `upsert-affiliate-offer` · `set-affiliate-offer-enabled` | Offers and their commercial weight |
+| `import-conversions` | An affiliate network's own statement, as CSV |
+| `lead-dossier` | Everything held about one request, masked by default |
+| `process-deletion` | Erase a person, keep the record, suppress future use |
+
+There is no generic "update this table" action. The set of writable things is
+the set of cases above, so a consent record, a delivery and a ledger row have no
+edit path at all.
+
+`/admin/monetization` is the dashboard over the same endpoint. It holds the
+token in memory for the session and never persists it, renders nothing before
+authentication, carries `noindex`, and is disallowed in `robots.txt` along with
+the API. A wrong token gets 404, not 401: the endpoint does not confirm its own
+existence to somebody guessing.
+
+## 10. Events
 
 Calculator events keep their existing names in `lib/analytics.ts`. Monetization
 adds the taxonomy in `lib/monetization/events.ts`:
@@ -325,7 +372,7 @@ not ad RPM. Ad RPM optimizes for the thing that damages the product fastest.
 
 ---
 
-## 9. Provider onboarding
+## 11. Provider onboarding
 
 Every integration below is `configuration_required`, which is the accurate
 status rather than a placeholder. Each adapter is complete except the request
@@ -379,7 +426,7 @@ forgery primitive with a consumer's phone number attached.
 
 ---
 
-## 10. Activation
+## 12. Activation
 
 Nothing turns on by deploying. Each channel is a configuration change.
 
@@ -410,7 +457,7 @@ completion drops materially, the calculator wins.
 
 ---
 
-## 11. Failure runbook
+## 13. Failure runbook
 
 The safe action is almost always: **disable the affected provider, not the site.**
 
@@ -439,7 +486,7 @@ start sending consumer data to a network nobody approved.
 
 ---
 
-## 12. Defects found in review, and what they changed
+## 14. Defects found in review, and what they changed
 
 The first implementation passed 626 tests and still carried these. Each is
 pinned by a regression test now; they are recorded because the shape of the
@@ -468,7 +515,18 @@ mistake is more useful than the fix.
 The two that would have cost money silently are 1 and 6. The two that would
 have looked like someone else's fault are 11 and 3.
 
-## 13. What is deliberately not built
+## 15. A second review, after the remaining surfaces landed
+
+| # | Defect | Consequence |
+| --- | --- | --- |
+| 18 | The privacy dossier reported the *lead* record's retention as the contact's | Told someone their phone number is kept four years when it is erased in six months — in the one answer where being precise is the entire point |
+| 19 | The honeypot was rejected by the schema before `silentRejectionFor` could see it | A bot got a validation error naming the field, which is instructions on which input to stop filling |
+| 20 | The Do Not Sell control was interactive before it was hydrated | A click in that window was accepted by the browser and discarded by React — someone believing they had opted out when they had not |
+
+Nineteen and twenty share a shape worth naming: both were places where the
+system behaved correctly *eventually* and misled somebody in the meantime.
+
+## 16. What is deliberately not built
 
 Per the frozen scope: no public API, no white-label, no chatbot, no contractor
 marketplace, dashboard, bidding engine or CRM, no premium subscription, no

@@ -18,18 +18,24 @@ import { getMonetizationPolicy } from './policy';
 import { monetizationStore } from './store/d1';
 import { loadFlagOverrides } from './store/repositories/governance';
 import { offersForCategories } from './store/repositories/affiliate';
+import { activeCallCampaigns } from './store/repositories/calls';
+import { liveCallCampaign } from './calls/types';
+import type { CallCampaign } from './calls/types';
 
 export type MonetizationSurface = {
   readonly offers: readonly AffiliateOffer[];
   readonly overrides: FlagOverrides;
   /** Whether the hire/DIY question is worth asking on this page. */
   readonly showIntentSwitch: boolean;
+  /** A tracked number that is live, in coverage, and answered right now. */
+  readonly callCampaign: CallCampaign | null;
 };
 
 export const EMPTY_SURFACE: MonetizationSurface = Object.freeze({
   offers: [],
   overrides: {},
   showIntentSwitch: false,
+  callCampaign: null,
 });
 
 /**
@@ -54,16 +60,34 @@ export async function resolveMonetizationSurface(
     const overrides = await loadFlagOverrides(store.database);
     const showIntentSwitch = intentSwitchVisible(context, overrides);
 
+    /*
+     * A tracked number is only offered when its campaign is live, covers the
+     * caller, and its buyer is actually open. Sending a motivated caller to
+     * voicemail burns the intent that produced the click.
+     */
+    const callsAllowed = policy.lead.enabled
+      && policy.lead.vertical !== undefined
+      && resolveFlag('calls.enabled', process.env, overrides);
+    const callCampaign = callsAllowed && policy.lead.vertical
+      ? liveCallCampaign({
+          vertical: policy.lead.vertical,
+          state: context.location?.state,
+          asOf: new Date().toISOString().slice(0, 10),
+          at: new Date(),
+          campaigns: await activeCallCampaigns(store.database, policy.lead.vertical),
+        })
+      : null;
+
     const affiliateAllowed = context.affiliateEligible
       && policy.affiliate.enabled
       && !affiliateForbidden(context)
       && resolveFlag('affiliate.enabled', process.env, overrides);
 
-    if (!affiliateAllowed) return { offers: [], overrides, showIntentSwitch };
+    if (!affiliateAllowed) return { offers: [], overrides, showIntentSwitch, callCampaign };
 
     const categories = relevantCategories(context).map((entry) => entry.categoryId);
     const offers = await offersForCategories(store.database, categories, context.locale);
-    return { offers, overrides, showIntentSwitch };
+    return { offers, overrides, showIntentSwitch, callCampaign };
   } catch {
     return { ...EMPTY_SURFACE, showIntentSwitch: intentSwitchVisible(context, {}) };
   }

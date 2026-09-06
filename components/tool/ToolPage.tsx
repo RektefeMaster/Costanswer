@@ -133,6 +133,7 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
               offers={surface.offers}
               overrides={surface.overrides}
               showIntentSwitch={surface.showIntentSwitch}
+              callCampaign={surface.callCampaign}
             />
             <AffiliateOffers toolId={tool.id} />
             <AdSlot placement="in-content" pageId={tool.id} />

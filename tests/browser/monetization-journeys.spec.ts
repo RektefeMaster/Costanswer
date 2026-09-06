@@ -118,3 +118,85 @@ test.describe('the disclosure page', () => {
     await expect(page.locator('footer a[href="/disclosure"]').first()).toBeVisible();
   });
 });
+
+test.describe('the admin surface', () => {
+  test('shows a prompt and no data without a token', async ({ page }) => {
+    await page.goto('/admin/monetization');
+    await expect(page.getByRole('heading', { name: 'Monetization' })).toBeVisible();
+    await expect(page.getByLabel('Admin token')).toBeVisible();
+    // Nothing about the business is in the HTML before authentication.
+    const html = await page.content();
+    expect(html).not.toContain('Realized');
+    expect(html).not.toContain('revenuePerThousandSessions');
+  });
+
+  test('is excluded from crawling', async ({ request }) => {
+    const robots = await (await request.get('/robots.txt')).text();
+    expect(robots).toContain('/admin/');
+    expect(robots).toContain('/api/monetization/');
+  });
+
+  test('carries a noindex directive of its own', async ({ page }) => {
+    await page.goto('/admin/monetization');
+    const robots = page.locator('meta[name="robots"]');
+    await expect(robots).toHaveAttribute('content', /noindex/);
+  });
+
+  test('rejects every write action without a token', async ({ request }) => {
+    for (const action of ['upsert-campaign', 'import-conversions', 'process-deletion', 'lead-dossier']) {
+      const response = await request.post('/api/monetization/admin', { data: { action } });
+      expect(response.status(), action).toBe(404);
+    }
+  });
+});
+
+test.describe('privacy choices', () => {
+  test('offers a do-not-sell control that persists in the browser', async ({ page }) => {
+    await page.goto('/privacy');
+    const optOut = page.getByLabel(/Do not sell or share/i);
+    await expect(optOut).toBeVisible();
+    // The control ships disabled and enables itself once its handler is real,
+    // so waiting for that is also the assertion that the guard works.
+    await expect(optOut).toBeEnabled();
+    await expect(optOut).not.toBeChecked();
+
+    await optOut.check();
+    await expect(optOut).toBeChecked();
+
+    // Choosing not to share necessarily withdraws personalisation; the two must
+    // not be able to contradict each other.
+    await expect(page.getByLabel(/Allow personalised advertising/i)).toBeDisabled();
+
+    await page.reload();
+    await expect(page.getByLabel(/Do not sell or share/i)).toBeChecked();
+  });
+
+  test('says plainly that the choice does not follow you to another device', async ({ page }) => {
+    await page.goto('/privacy');
+    await expect(page.getByText(/stored in this browser only/i)).toBeVisible();
+  });
+});
+
+test.describe('attribution', () => {
+  test('records a source in this tab without setting a cookie', async ({ page, context }) => {
+    await page.goto('/money/mortgage-payment?utm_source=newsletter&utm_medium=email');
+    await page.waitForFunction(() => sessionStorage.getItem('costanswer:attribution') !== null);
+
+    const stored = await page.evaluate(() => JSON.parse(sessionStorage.getItem('costanswer:attribution') ?? '{}'));
+    expect(stored.utmSource).toBe('newsletter');
+    expect(stored.landingPath).toBe('/money/mortgage-payment');
+    expect(stored.sessionId).toBeTruthy();
+
+    // The privacy page promises no tracking cookies. That has to stay literally true.
+    const cookies = await context.cookies();
+    expect(cookies.filter((cookie) => cookie.name.includes('costanswer'))).toEqual([]);
+  });
+
+  test('keeps the landing page of the visit, not the last page seen', async ({ page }) => {
+    await page.goto('/money/mortgage-payment');
+    await page.waitForFunction(() => sessionStorage.getItem('costanswer:attribution') !== null);
+    await page.goto('/money/car-loan');
+    const stored = await page.evaluate(() => JSON.parse(sessionStorage.getItem('costanswer:attribution') ?? '{}'));
+    expect(stored.landingPath).toBe('/money/mortgage-payment');
+  });
+});

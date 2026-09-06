@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { InfoPage } from '@/components/site/InfoPage';
 import { integrationConfig } from '@/lib/integration-config';
 import { resolveFlag } from '@/lib/monetization/flags';
+import { PrivacyChoices } from '@/components/monetization/PrivacyChoices';
 import { DEFAULT_CONTACT_RETENTION_DAYS, DEFAULT_LEAD_RETENTION_DAYS } from '@/lib/monetization/leads/service';
 import { CONSENT_EVIDENCE_RETENTION_DAYS } from '@/lib/monetization/store/repositories/consents';
 import { formatPublishingDateLong, PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
@@ -21,6 +22,7 @@ const CONTENTS = [
   { id: 'referrals', label: 'Requesting estimates' },
   { id: 'retention', label: 'How long we keep things' },
   { id: 'your-choices', label: 'Your choices' },
+  { id: 'ad-choices', label: 'Advertising choices' },
   { id: 'cookies', label: 'Cookies' },
   { id: 'corrections', label: 'Corrections and requests' },
 ];
@@ -130,6 +132,12 @@ export default function PrivacyPage() {
         behavioural advertising. A referral you asked for is not a sale of your data, but if you would
         rather it had not happened, tell us and we will suppress your details from any future use.
       </p>
+
+      {/* The control itself, on the page that describes it, rather than a
+          promise that a control exists somewhere. */}
+      <div id="ad-choices">
+        <PrivacyChoices locale="en-US" />
+      </div>
 
       <h2 id="cookies">Cookies</h2>
       <p>

@@ -35,13 +35,15 @@ export async function saveLeadRequest(
     INSERT INTO lead_requests (
       lead_id, status, vertical, page_id, calculator_id, locale, state, zip,
       project_json, qualification_json, consent_id, selected_campaign_id,
-      routing_reason, duplicate_state, quality_score, created_at, updated_at, purge_after
-    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+      routing_reason, duplicate_state, quality_score, attribution_json,
+      created_at, updated_at, purge_after
+    ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
   `).bind(
     row.leadId, row.status, row.vertical, row.pageId, row.calculatorId ?? null, row.locale,
     row.state ?? null, row.zip ?? null, toJson(row.project), toJson(row.qualification),
     row.consentId ?? null, row.selectedCampaignId ?? null, row.routingReason ?? null,
-    row.duplicateState, row.qualityScore ?? null, row.createdAt, row.updatedAt, row.purgeAfter,
+    row.duplicateState, row.qualityScore ?? null, toJson(row.attribution),
+    row.createdAt, row.updatedAt, row.purgeAfter,
   ).run();
 
   return row;
@@ -131,6 +133,17 @@ export async function loadLeadContactForDelivery(
   };
 }
 
+/** When this person's contact details are erased. Their own clock, not the lead's. */
+export async function contactRetentionFor(
+  database: D1DatabaseLike,
+  leadId: string,
+): Promise<string | null> {
+  const row = await database.prepare(
+    'SELECT purge_after FROM lead_contacts WHERE lead_id = ?',
+  ).bind(leadId).first<{ purge_after: string }>();
+  return row ? String(row.purge_after) : null;
+}
+
 export async function findDuplicateLead(
   database: D1DatabaseLike,
   input: { phoneHash?: string; emailHash?: string; vertical: string; since: string; excludeLeadId: string },
@@ -200,6 +213,7 @@ function leadFromRow(row: Record<string, unknown>): LeadRequest {
     routingReason: optionalString(row.routing_reason),
     duplicateState: String(row.duplicate_state) as DuplicateState,
     qualityScore: row.quality_score === null || row.quality_score === undefined ? undefined : Number(row.quality_score),
+    attribution: fromJson(row.attribution_json, {}),
     createdAt: String(row.created_at),
     updatedAt: String(row.updated_at),
     purgeAfter: String(row.purge_after),

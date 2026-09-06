@@ -40,8 +40,8 @@
     "data:perdiem": "tsx scripts/ingest-gsa-perdiem.ts",
     "data:zcta": "tsx scripts/ingest-census-zcta.ts",
     "verify:oews": "tsx scripts/ingest-bls-oews.ts --rebuild",
-    "monetization:migrate:local": "wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0001_monetization.sql",
-    "monetization:migrate": "wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0001_monetization.sql",
+    "monetization:migrate:local": "wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
+    "monetization:migrate": "wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
     "monetization:drain": "tsx scripts/monetization-drain.ts"
   },
   "dependencies": {

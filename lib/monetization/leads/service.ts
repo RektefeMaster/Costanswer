@@ -37,6 +37,7 @@ import {
 import { incrementEventCounter, recordRevenue } from '../store/repositories/revenue';
 import { money } from '../money';
 import { checkDuplicate, hashContact, DEFAULT_DUPLICATE_POLICY, type DuplicatePolicy } from './dedupe';
+import { sanitizeAttribution } from '../attribution/types';
 import { attemptDelivery, dispositionFor, mayAttemptFallback, type SubmissionDisposition } from './delivery';
 import { providerIdempotencyKey } from './idempotency';
 import { createLeadProvider, enabledLeadProviderIds } from './providers/registry';
@@ -348,6 +349,38 @@ export async function deliver(
     input.now,
   );
 
+  /*
+   * The provider half of the funnel, counted where it actually happens.
+   *
+   * These cannot be emitted from the browser: the reader is long gone by the
+   * time a retry settles, and a delivery that succeeds on the third attempt
+   * would otherwise never be counted at all.
+   */
+  const providerEvent = outcome.status === 'accepted' ? 'lead_provider_accept'
+    : outcome.status === 'rejected' ? 'lead_provider_reject'
+    : outcome.failureReason?.includes('did not respond') ? 'lead_provider_timeout'
+    : null;
+
+  await incrementEventCounter(database, {
+    eventName: 'lead_provider_submit',
+    pageId: leadRow.pageId,
+    calculatorId: leadRow.calculatorId,
+    vertical: leadRow.vertical,
+    locale: leadRow.locale,
+    providerId: campaign.providerId,
+  }, input.now);
+
+  if (providerEvent) {
+    await incrementEventCounter(database, {
+      eventName: providerEvent,
+      pageId: leadRow.pageId,
+      calculatorId: leadRow.calculatorId,
+      vertical: leadRow.vertical,
+      locale: leadRow.locale,
+      providerId: campaign.providerId,
+    }, input.now);
+  }
+
   if (outcome.status === 'accepted') {
     // A retry that finally succeeds walks the lead forward from wherever it
     // was; a lead already marked accepted stays accepted rather than throwing
@@ -416,6 +449,9 @@ function baseLead(
     zip: input.zip,
     project: input.project,
     qualification: input.qualification,
+    // Sanitized again here rather than trusted from the schema: this is
+    // attacker-controlled input on the endpoint that also handles a phone number.
+    attribution: sanitizeAttribution(input.attribution),
     purgeAfter: plusDays(config.leadRetentionDays ?? DEFAULT_LEAD_RETENTION_DAYS, now),
   };
 }

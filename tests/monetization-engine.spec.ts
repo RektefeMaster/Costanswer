@@ -865,7 +865,7 @@ describe('storage, fail closed', () => {
     const database = new FakeD1();
     await saveLeadRequest(database, {
       leadId: 'ld_1', vertical: 'roofing', pageId: 'job-roof-replacement', locale: 'en-US',
-      zip: '75201', project: {}, qualification: {}, purgeAfter: '2030-01-01T00:00:00Z',
+      zip: '75201', project: {}, qualification: {}, attribution: {}, purgeAfter: '2030-01-01T00:00:00Z',
     });
     await saveLeadContact(database, { leadId: 'ld_1', phone: '2145551234', phoneHash: 'h' }, '2027-01-01T00:00:00Z');
 
@@ -878,7 +878,7 @@ describe('storage, fail closed', () => {
     const database = new FakeD1();
     await saveLeadRequest(database, {
       leadId: 'ld_1', vertical: 'roofing', pageId: 'p', locale: 'en-US',
-      zip: '75201', project: {}, qualification: {}, purgeAfter: '2030-01-01T00:00:00Z',
+      zip: '75201', project: {}, qualification: {}, attribution: {}, purgeAfter: '2030-01-01T00:00:00Z',
     });
     await saveLeadContact(database, { leadId: 'ld_1', phone: '2145551234' }, '2027-01-01T00:00:00Z');
     await purgeLeadContact(database, 'ld_1');
@@ -1056,5 +1056,26 @@ describe('content security policy follows the ad configuration', () => {
     // A half-configured network must not widen the policy: the script would be
     // allowed and would still have nothing to load.
     expect(adCspSources({ AD_PROVIDER: 'adsense' }).script).toEqual([]);
+  });
+});
+
+describe('the honeypot stays silent', () => {
+  const valid = {
+    vertical: 'roofing', pageId: 'job-roof-replacement', locale: 'en-US' as const,
+    zip: '75201', project: {}, qualification: {},
+    contact: { phone: '2145551234' },
+    consent: { version: '2026-09-06.1', accepted: true as const, partnerName: 'Partner A' },
+  };
+
+  it('accepts a filled honeypot at the schema and judges it later', () => {
+    /*
+     * Rejecting it in the schema returned a validation error naming the field,
+     * which tells a bot exactly which input to stop filling. The whole value of
+     * a honeypot is that tripping it looks like success.
+     */
+    const parsed = leadSubmissionSchema.safeParse({ ...valid, website: 'http://spam.example' });
+    expect(parsed.success).toBe(true);
+    if (!parsed.success) return;
+    expect(silentRejectionFor(parsed.data)).toBe('honeypot');
   });
 });
