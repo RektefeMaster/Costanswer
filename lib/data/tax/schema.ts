@@ -143,6 +143,26 @@ const proportionalPhaseOutSchema = z.object({
 }).strict();
 
 /**
+ * A second schedule that replaces the ordinary one for low incomes.
+ *
+ * Arkansas is the case. Below about $17,500 single or $29,000 filing jointly a
+ * qualifying filer uses the Low Income Tax Table instead of the regular one,
+ * and its instructions say to enter zero for the standard deduction — so it is
+ * not an adjustment to the normal calculation but a different calculation. A
+ * single filer with $14,643 of income owes nothing at all, where the regular
+ * schedule would have charged about $112. Leaving it out would overstate tax
+ * for exactly the people with least room for it.
+ *
+ * A zero threshold means the alternative never applies to that filing status,
+ * which is how Arkansas excludes separate filers from it.
+ */
+const alternativeLowIncomeScheduleSchema = z.object({
+  appliesAtOrBelowByFilingStatus: filingStatusNumberSchema,
+  /** Applied to income before any deduction or exemption, and instead of them. */
+  bracketsByFilingStatus: filingStatusBracketsSchema,
+}).strict();
+
+/**
  * A per-person exemption that steps down as income rises.
  *
  * Ohio's is $2,400 up to $40,000 of modified adjusted gross income, $2,150 to
@@ -275,6 +295,8 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   personalExemptionPhaseOut: proportionalPhaseOutSchema.optional(),
   /** Where the exemption steps down with income instead of being flat. */
   steppedPersonalExemption: steppedExemptionSchema.optional(),
+  /** A separate schedule that replaces this one below a stated income. */
+  alternativeLowIncomeSchedule: alternativeLowIncomeScheduleSchema.optional(),
   perDependentExemption: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),

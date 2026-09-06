@@ -51,6 +51,16 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const AR_SOURCE = {
+  sourceName: '2025 Arkansas Tax Tables (low income and regular) and 2025 Indexed Tax Brackets',
+  sourceUrl: 'https://www.dfa.arkansas.gov/wp-content/uploads/2025_TaxTables.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const DE_SOURCE = {
+  sourceName: '2025 Delaware Income Tax Table and State Income Tax Schedule',
+  sourceUrl: 'https://revenuefiles.delaware.gov/2025/TY25_taxtable.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const OH_SOURCE = {
   sourceName: '2025 Ohio IT 1040 instruction booklet, nonbusiness income tax bracket table and worked example',
   sourceUrl: 'https://tax.ohio.gov/individual/resources/annual-tax-rates',
@@ -237,6 +247,34 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * together. The $102,150 vector is the one that would fail if the published
    * $2,394.32 were smoothed into a running total.
    */
+  /*
+   * Each Delaware figure is the state's own table or schedule amount less the
+   * $110-a-person credit it publishes separately, since the table stops at the
+   * tax and the credit comes off afterwards. The bands are what is being
+   * checked, and the state prints them at four points: $2,112 at $45,025 of
+   * taxable income, $2,390 at $50,025, $2,943.50 at $60,000, and its worked
+   * example of $3,455.06 at $67,751.
+   */
+  /*
+   * Arkansas is checked on both of its schedules. The first three are read out
+   * of the Low Income Tax Table, where a single filer owes nothing to $14,643;
+   * the last two out of the regular table, less the $29 credit it does not
+   * include. $97,221 of wages sits inside the stretch where the bracket
+   * adjustment is being taken back, which is the part that would be missing if
+   * only the headline bands had been transcribed.
+   */
+  vector('AR', 'single', 14_643, 0, 'published-table', AR_SOURCE),
+  vector('AR', 'single', 17_450, 222, 'published-table', AR_SOURCE),
+  vector('AR', 'marriedFilingJointly', 28_950, 524, 'published-table', AR_SOURCE),
+  vector('AR', 'headOfHousehold', 20_950, 77, 'published-table', AR_SOURCE),
+  vector('AR', 'single', 96_521, 3_219, 'published-table', AR_SOURCE),
+  vector('AR', 'single', 97_221, 3_267, 'published-table', AR_SOURCE),
+
+  vector('DE', 'single', 48_275, 2_002, 'published-table', DE_SOURCE),
+  vector('DE', 'marriedFilingJointly', 56_525, 2_170, 'published-table', DE_SOURCE),
+  vector('DE', 'single', 63_250, 2_833.50, 'published-table', DE_SOURCE),
+  vector('DE', 'single', 71_001, 3_345.06, 'published-example', DE_SOURCE),
+
   vector('OH', 'single', 70_200, 1_497, 'published-example', OH_SOURCE),
   vector('OH', 'single', 40_000, 659.63, 'worked-from-schedule', OH_SOURCE),
   vector('OH', 'single', 102_150, 2_402.13, 'worked-from-schedule', OH_SOURCE),

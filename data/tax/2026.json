@@ -220,14 +220,870 @@
     {
       "stateCode": "AR",
       "provider": "Arkansas Department of Finance and Administration",
-      "sourceName": "Arkansas Department of Finance and Administration",
-      "sourceUrl": "https://www.dfa.arkansas.gov/",
+      "sourceName": "2025 Arkansas Indexed Tax Brackets, with the 2025 Tax Tables and the AR1000F instructions",
+      "sourceUrl": "https://www.dfa.arkansas.gov/wp-content/uploads/2025_TaxBrackets.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Arkansas. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 5599,
+            "rate": 0
+          },
+          {
+            "notOver": 11199,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 15999,
+            "rate": 0.03,
+            "baseTax": 112
+          },
+          {
+            "notOver": 26399,
+            "rate": 0.034,
+            "baseTax": 255.996
+          },
+          {
+            "notOver": 94700,
+            "rate": 0.039,
+            "baseTax": 609.601
+          },
+          {
+            "notOver": 94800,
+            "rate": 0.039,
+            "baseTax": 3294
+          },
+          {
+            "notOver": 94900,
+            "rate": 0.039,
+            "baseTax": 3307.8999999999996
+          },
+          {
+            "notOver": 95000,
+            "rate": 0.039,
+            "baseTax": 3321.7999999999997
+          },
+          {
+            "notOver": 95100,
+            "rate": 0.039,
+            "baseTax": 3335.7
+          },
+          {
+            "notOver": 95200,
+            "rate": 0.039,
+            "baseTax": 3349.6
+          },
+          {
+            "notOver": 95300,
+            "rate": 0.039,
+            "baseTax": 3363.5
+          },
+          {
+            "notOver": 95400,
+            "rate": 0.039,
+            "baseTax": 3377.3999999999996
+          },
+          {
+            "notOver": 95500,
+            "rate": 0.039,
+            "baseTax": 3391.2999999999997
+          },
+          {
+            "notOver": 95600,
+            "rate": 0.039,
+            "baseTax": 3405.2
+          },
+          {
+            "notOver": 95700,
+            "rate": 0.039,
+            "baseTax": 3419.1
+          },
+          {
+            "notOver": 95800,
+            "rate": 0.039,
+            "baseTax": 3433
+          },
+          {
+            "notOver": 95900,
+            "rate": 0.039,
+            "baseTax": 3446.8999999999996
+          },
+          {
+            "notOver": 96000,
+            "rate": 0.039,
+            "baseTax": 3460.7999999999997
+          },
+          {
+            "notOver": 96100,
+            "rate": 0.039,
+            "baseTax": 3474.7
+          },
+          {
+            "notOver": 96200,
+            "rate": 0.039,
+            "baseTax": 3488.6
+          },
+          {
+            "notOver": 96300,
+            "rate": 0.039,
+            "baseTax": 3502.5
+          },
+          {
+            "notOver": 96400,
+            "rate": 0.039,
+            "baseTax": 3516.3999999999996
+          },
+          {
+            "notOver": 96500,
+            "rate": 0.039,
+            "baseTax": 3530.2999999999997
+          },
+          {
+            "notOver": 96600,
+            "rate": 0.039,
+            "baseTax": 3544.2
+          },
+          {
+            "notOver": 96700,
+            "rate": 0.039,
+            "baseTax": 3558.1
+          },
+          {
+            "notOver": 96800,
+            "rate": 0.039,
+            "baseTax": 3572
+          },
+          {
+            "notOver": 96900,
+            "rate": 0.039,
+            "baseTax": 3585.8999999999996
+          },
+          {
+            "notOver": 97000,
+            "rate": 0.039,
+            "baseTax": 3599.7999999999997
+          },
+          {
+            "notOver": 97100,
+            "rate": 0.039,
+            "baseTax": 3613.7
+          },
+          {
+            "notOver": 97200,
+            "rate": 0.039,
+            "baseTax": 3627.6
+          },
+          {
+            "notOver": 97300,
+            "rate": 0.039,
+            "baseTax": 3641.5
+          },
+          {
+            "notOver": 97400,
+            "rate": 0.039,
+            "baseTax": 3655.3999999999996
+          },
+          {
+            "notOver": 97500,
+            "rate": 0.039,
+            "baseTax": 3669.2999999999997
+          },
+          {
+            "notOver": 97600,
+            "rate": 0.039,
+            "baseTax": 3683.2
+          },
+          {
+            "notOver": 97700,
+            "rate": 0.039,
+            "baseTax": 3697.1
+          },
+          {
+            "notOver": 97800,
+            "rate": 0.039,
+            "baseTax": 3711
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.039,
+            "baseTax": 3724.8999999999996
+          },
+          {
+            "notOver": null,
+            "rate": 0.039,
+            "baseTax": 3809
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 5599,
+            "rate": 0
+          },
+          {
+            "notOver": 11199,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 15999,
+            "rate": 0.03,
+            "baseTax": 112
+          },
+          {
+            "notOver": 26399,
+            "rate": 0.034,
+            "baseTax": 255.996
+          },
+          {
+            "notOver": 94700,
+            "rate": 0.039,
+            "baseTax": 609.601
+          },
+          {
+            "notOver": 94800,
+            "rate": 0.039,
+            "baseTax": 3294
+          },
+          {
+            "notOver": 94900,
+            "rate": 0.039,
+            "baseTax": 3307.8999999999996
+          },
+          {
+            "notOver": 95000,
+            "rate": 0.039,
+            "baseTax": 3321.7999999999997
+          },
+          {
+            "notOver": 95100,
+            "rate": 0.039,
+            "baseTax": 3335.7
+          },
+          {
+            "notOver": 95200,
+            "rate": 0.039,
+            "baseTax": 3349.6
+          },
+          {
+            "notOver": 95300,
+            "rate": 0.039,
+            "baseTax": 3363.5
+          },
+          {
+            "notOver": 95400,
+            "rate": 0.039,
+            "baseTax": 3377.3999999999996
+          },
+          {
+            "notOver": 95500,
+            "rate": 0.039,
+            "baseTax": 3391.2999999999997
+          },
+          {
+            "notOver": 95600,
+            "rate": 0.039,
+            "baseTax": 3405.2
+          },
+          {
+            "notOver": 95700,
+            "rate": 0.039,
+            "baseTax": 3419.1
+          },
+          {
+            "notOver": 95800,
+            "rate": 0.039,
+            "baseTax": 3433
+          },
+          {
+            "notOver": 95900,
+            "rate": 0.039,
+            "baseTax": 3446.8999999999996
+          },
+          {
+            "notOver": 96000,
+            "rate": 0.039,
+            "baseTax": 3460.7999999999997
+          },
+          {
+            "notOver": 96100,
+            "rate": 0.039,
+            "baseTax": 3474.7
+          },
+          {
+            "notOver": 96200,
+            "rate": 0.039,
+            "baseTax": 3488.6
+          },
+          {
+            "notOver": 96300,
+            "rate": 0.039,
+            "baseTax": 3502.5
+          },
+          {
+            "notOver": 96400,
+            "rate": 0.039,
+            "baseTax": 3516.3999999999996
+          },
+          {
+            "notOver": 96500,
+            "rate": 0.039,
+            "baseTax": 3530.2999999999997
+          },
+          {
+            "notOver": 96600,
+            "rate": 0.039,
+            "baseTax": 3544.2
+          },
+          {
+            "notOver": 96700,
+            "rate": 0.039,
+            "baseTax": 3558.1
+          },
+          {
+            "notOver": 96800,
+            "rate": 0.039,
+            "baseTax": 3572
+          },
+          {
+            "notOver": 96900,
+            "rate": 0.039,
+            "baseTax": 3585.8999999999996
+          },
+          {
+            "notOver": 97000,
+            "rate": 0.039,
+            "baseTax": 3599.7999999999997
+          },
+          {
+            "notOver": 97100,
+            "rate": 0.039,
+            "baseTax": 3613.7
+          },
+          {
+            "notOver": 97200,
+            "rate": 0.039,
+            "baseTax": 3627.6
+          },
+          {
+            "notOver": 97300,
+            "rate": 0.039,
+            "baseTax": 3641.5
+          },
+          {
+            "notOver": 97400,
+            "rate": 0.039,
+            "baseTax": 3655.3999999999996
+          },
+          {
+            "notOver": 97500,
+            "rate": 0.039,
+            "baseTax": 3669.2999999999997
+          },
+          {
+            "notOver": 97600,
+            "rate": 0.039,
+            "baseTax": 3683.2
+          },
+          {
+            "notOver": 97700,
+            "rate": 0.039,
+            "baseTax": 3697.1
+          },
+          {
+            "notOver": 97800,
+            "rate": 0.039,
+            "baseTax": 3711
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.039,
+            "baseTax": 3724.8999999999996
+          },
+          {
+            "notOver": null,
+            "rate": 0.039,
+            "baseTax": 3809
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 5599,
+            "rate": 0
+          },
+          {
+            "notOver": 11199,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 15999,
+            "rate": 0.03,
+            "baseTax": 112
+          },
+          {
+            "notOver": 26399,
+            "rate": 0.034,
+            "baseTax": 255.996
+          },
+          {
+            "notOver": 94700,
+            "rate": 0.039,
+            "baseTax": 609.601
+          },
+          {
+            "notOver": 94800,
+            "rate": 0.039,
+            "baseTax": 3294
+          },
+          {
+            "notOver": 94900,
+            "rate": 0.039,
+            "baseTax": 3307.8999999999996
+          },
+          {
+            "notOver": 95000,
+            "rate": 0.039,
+            "baseTax": 3321.7999999999997
+          },
+          {
+            "notOver": 95100,
+            "rate": 0.039,
+            "baseTax": 3335.7
+          },
+          {
+            "notOver": 95200,
+            "rate": 0.039,
+            "baseTax": 3349.6
+          },
+          {
+            "notOver": 95300,
+            "rate": 0.039,
+            "baseTax": 3363.5
+          },
+          {
+            "notOver": 95400,
+            "rate": 0.039,
+            "baseTax": 3377.3999999999996
+          },
+          {
+            "notOver": 95500,
+            "rate": 0.039,
+            "baseTax": 3391.2999999999997
+          },
+          {
+            "notOver": 95600,
+            "rate": 0.039,
+            "baseTax": 3405.2
+          },
+          {
+            "notOver": 95700,
+            "rate": 0.039,
+            "baseTax": 3419.1
+          },
+          {
+            "notOver": 95800,
+            "rate": 0.039,
+            "baseTax": 3433
+          },
+          {
+            "notOver": 95900,
+            "rate": 0.039,
+            "baseTax": 3446.8999999999996
+          },
+          {
+            "notOver": 96000,
+            "rate": 0.039,
+            "baseTax": 3460.7999999999997
+          },
+          {
+            "notOver": 96100,
+            "rate": 0.039,
+            "baseTax": 3474.7
+          },
+          {
+            "notOver": 96200,
+            "rate": 0.039,
+            "baseTax": 3488.6
+          },
+          {
+            "notOver": 96300,
+            "rate": 0.039,
+            "baseTax": 3502.5
+          },
+          {
+            "notOver": 96400,
+            "rate": 0.039,
+            "baseTax": 3516.3999999999996
+          },
+          {
+            "notOver": 96500,
+            "rate": 0.039,
+            "baseTax": 3530.2999999999997
+          },
+          {
+            "notOver": 96600,
+            "rate": 0.039,
+            "baseTax": 3544.2
+          },
+          {
+            "notOver": 96700,
+            "rate": 0.039,
+            "baseTax": 3558.1
+          },
+          {
+            "notOver": 96800,
+            "rate": 0.039,
+            "baseTax": 3572
+          },
+          {
+            "notOver": 96900,
+            "rate": 0.039,
+            "baseTax": 3585.8999999999996
+          },
+          {
+            "notOver": 97000,
+            "rate": 0.039,
+            "baseTax": 3599.7999999999997
+          },
+          {
+            "notOver": 97100,
+            "rate": 0.039,
+            "baseTax": 3613.7
+          },
+          {
+            "notOver": 97200,
+            "rate": 0.039,
+            "baseTax": 3627.6
+          },
+          {
+            "notOver": 97300,
+            "rate": 0.039,
+            "baseTax": 3641.5
+          },
+          {
+            "notOver": 97400,
+            "rate": 0.039,
+            "baseTax": 3655.3999999999996
+          },
+          {
+            "notOver": 97500,
+            "rate": 0.039,
+            "baseTax": 3669.2999999999997
+          },
+          {
+            "notOver": 97600,
+            "rate": 0.039,
+            "baseTax": 3683.2
+          },
+          {
+            "notOver": 97700,
+            "rate": 0.039,
+            "baseTax": 3697.1
+          },
+          {
+            "notOver": 97800,
+            "rate": 0.039,
+            "baseTax": 3711
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.039,
+            "baseTax": 3724.8999999999996
+          },
+          {
+            "notOver": null,
+            "rate": 0.039,
+            "baseTax": 3809
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 5599,
+            "rate": 0
+          },
+          {
+            "notOver": 11199,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 15999,
+            "rate": 0.03,
+            "baseTax": 112
+          },
+          {
+            "notOver": 26399,
+            "rate": 0.034,
+            "baseTax": 255.996
+          },
+          {
+            "notOver": 94700,
+            "rate": 0.039,
+            "baseTax": 609.601
+          },
+          {
+            "notOver": 94800,
+            "rate": 0.039,
+            "baseTax": 3294
+          },
+          {
+            "notOver": 94900,
+            "rate": 0.039,
+            "baseTax": 3307.8999999999996
+          },
+          {
+            "notOver": 95000,
+            "rate": 0.039,
+            "baseTax": 3321.7999999999997
+          },
+          {
+            "notOver": 95100,
+            "rate": 0.039,
+            "baseTax": 3335.7
+          },
+          {
+            "notOver": 95200,
+            "rate": 0.039,
+            "baseTax": 3349.6
+          },
+          {
+            "notOver": 95300,
+            "rate": 0.039,
+            "baseTax": 3363.5
+          },
+          {
+            "notOver": 95400,
+            "rate": 0.039,
+            "baseTax": 3377.3999999999996
+          },
+          {
+            "notOver": 95500,
+            "rate": 0.039,
+            "baseTax": 3391.2999999999997
+          },
+          {
+            "notOver": 95600,
+            "rate": 0.039,
+            "baseTax": 3405.2
+          },
+          {
+            "notOver": 95700,
+            "rate": 0.039,
+            "baseTax": 3419.1
+          },
+          {
+            "notOver": 95800,
+            "rate": 0.039,
+            "baseTax": 3433
+          },
+          {
+            "notOver": 95900,
+            "rate": 0.039,
+            "baseTax": 3446.8999999999996
+          },
+          {
+            "notOver": 96000,
+            "rate": 0.039,
+            "baseTax": 3460.7999999999997
+          },
+          {
+            "notOver": 96100,
+            "rate": 0.039,
+            "baseTax": 3474.7
+          },
+          {
+            "notOver": 96200,
+            "rate": 0.039,
+            "baseTax": 3488.6
+          },
+          {
+            "notOver": 96300,
+            "rate": 0.039,
+            "baseTax": 3502.5
+          },
+          {
+            "notOver": 96400,
+            "rate": 0.039,
+            "baseTax": 3516.3999999999996
+          },
+          {
+            "notOver": 96500,
+            "rate": 0.039,
+            "baseTax": 3530.2999999999997
+          },
+          {
+            "notOver": 96600,
+            "rate": 0.039,
+            "baseTax": 3544.2
+          },
+          {
+            "notOver": 96700,
+            "rate": 0.039,
+            "baseTax": 3558.1
+          },
+          {
+            "notOver": 96800,
+            "rate": 0.039,
+            "baseTax": 3572
+          },
+          {
+            "notOver": 96900,
+            "rate": 0.039,
+            "baseTax": 3585.8999999999996
+          },
+          {
+            "notOver": 97000,
+            "rate": 0.039,
+            "baseTax": 3599.7999999999997
+          },
+          {
+            "notOver": 97100,
+            "rate": 0.039,
+            "baseTax": 3613.7
+          },
+          {
+            "notOver": 97200,
+            "rate": 0.039,
+            "baseTax": 3627.6
+          },
+          {
+            "notOver": 97300,
+            "rate": 0.039,
+            "baseTax": 3641.5
+          },
+          {
+            "notOver": 97400,
+            "rate": 0.039,
+            "baseTax": 3655.3999999999996
+          },
+          {
+            "notOver": 97500,
+            "rate": 0.039,
+            "baseTax": 3669.2999999999997
+          },
+          {
+            "notOver": 97600,
+            "rate": 0.039,
+            "baseTax": 3683.2
+          },
+          {
+            "notOver": 97700,
+            "rate": 0.039,
+            "baseTax": 3697.1
+          },
+          {
+            "notOver": 97800,
+            "rate": 0.039,
+            "baseTax": 3711
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.039,
+            "baseTax": 3724.8999999999996
+          },
+          {
+            "notOver": null,
+            "rate": 0.039,
+            "baseTax": 3809
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 2470,
+        "marriedFilingJointly": 4940,
+        "marriedFilingSeparately": 2470,
+        "headOfHousehold": 2470
+      },
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 29,
+          "marriedFilingJointly": 58,
+          "marriedFilingSeparately": 29,
+          "headOfHousehold": 58
+        },
+        "perDependent": 29
+      },
+      "alternativeLowIncomeSchedule": {
+        "appliesAtOrBelowByFilingStatus": {
+          "single": 17500,
+          "marriedFilingJointly": 29000,
+          "marriedFilingSeparately": 0,
+          "headOfHousehold": 25300
+        },
+        "bracketsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 14643,
+              "rate": 0
+            },
+            {
+              "notOver": 14700,
+              "rate": 0,
+              "baseTax": 29
+            },
+            {
+              "notOver": null,
+              "rate": 0.07,
+              "baseTax": 29.5
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 24695,
+              "rate": 0
+            },
+            {
+              "notOver": 24700,
+              "rate": 0,
+              "baseTax": 77
+            },
+            {
+              "notOver": null,
+              "rate": 0.104,
+              "baseTax": 81.8
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 20820,
+              "rate": 0
+            },
+            {
+              "notOver": 20900,
+              "rate": 0,
+              "baseTax": 67
+            },
+            {
+              "notOver": null,
+              "rate": 0.094,
+              "baseTax": 72.3
+            }
+          ]
+        }
+      },
+      "notes": [
+        "Arkansas taxes net taxable income at 0%, 2%, 3%, 3.4% and 3.9% for tax year 2025 (2025 Arkansas Indexed Tax Brackets; Act 1 of the Second Extraordinary Session of 2024).",
+        "The department publishes the schedule as a rate times income less an adjustment. This row carries those adjustments as the tax owed at each band floor, so it reproduces the published formula rather than approximating it.",
+        "Standard deduction for 2025 is $2,470, or $4,940 on a joint return. Each personal tax credit is $29 against tax: one for the taxpayer, one for a spouse filing jointly, and one more for head of household.",
+        "Below $17,500 single, $25,300 head of household and $29,000 filing jointly, a qualifying filer uses the Low Income Tax Table instead, which is modeled here. Under that table a single filer owes nothing up to $14,643 of income, and a couple filing jointly nothing up to $24,695.",
+        "Above $94,700 Arkansas takes its bracket adjustment back $10 at a time for every $100 of income, until it settles at $89.30. Those bands are carried as published; they raise tax by up to about $330 across that stretch.",
+        "The published schedule does not quite meet itself at $100,000: continuing the band below gives $3,810.70 where the state states $3,809 plus 3.9% of the excess. The state’s figure is used and the $1.70 step is its own.",
+        "Arkansas rounds its own tables to the midpoint of $100 income bands, so its printed figure can differ from this by up to about two dollars.",
+        "The additional credit for net income up to $27,600, the child care credit and itemized deductions are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "AZ",
@@ -620,14 +1476,159 @@
     {
       "stateCode": "DE",
       "provider": "Delaware Division of Revenue",
-      "sourceName": "Delaware Division of Revenue",
-      "sourceUrl": "https://revenue.delaware.gov/",
+      "sourceName": "2025 Delaware Income Tax Table and State Income Tax Schedule, with the PIT-RES instructions for the standard deduction and personal credits",
+      "sourceUrl": "https://revenuefiles.delaware.gov/2025/TY25_taxtable.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Delaware. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 2000,
+            "rate": 0
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.022
+          },
+          {
+            "notOver": 10000,
+            "rate": 0.039
+          },
+          {
+            "notOver": 20000,
+            "rate": 0.048
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.052
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0555
+          },
+          {
+            "notOver": null,
+            "rate": 0.066
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 2000,
+            "rate": 0
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.022
+          },
+          {
+            "notOver": 10000,
+            "rate": 0.039
+          },
+          {
+            "notOver": 20000,
+            "rate": 0.048
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.052
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0555
+          },
+          {
+            "notOver": null,
+            "rate": 0.066
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 2000,
+            "rate": 0
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.022
+          },
+          {
+            "notOver": 10000,
+            "rate": 0.039
+          },
+          {
+            "notOver": 20000,
+            "rate": 0.048
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.052
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0555
+          },
+          {
+            "notOver": null,
+            "rate": 0.066
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 2000,
+            "rate": 0
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.022
+          },
+          {
+            "notOver": 10000,
+            "rate": 0.039
+          },
+          {
+            "notOver": 20000,
+            "rate": 0.048
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.052
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0555
+          },
+          {
+            "notOver": null,
+            "rate": 0.066
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 3250,
+        "marriedFilingJointly": 6500,
+        "marriedFilingSeparately": 3250,
+        "headOfHousehold": 3250
+      },
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 110,
+          "marriedFilingJointly": 220,
+          "marriedFilingSeparately": 110,
+          "headOfHousehold": 110
+        },
+        "perDependent": 110
+      },
+      "notes": [
+        "Delaware taxes taxable income in seven bands from 0% to 6.60% (2025 Delaware Income Tax Table and State Income Tax Schedule; 30 Del. C. 1102).",
+        "The same bands apply to every filing status. Above $60,000 the state prints the tax as $2,943.50 plus 6.60% of the excess, which is exactly what these bands sum to.",
+        "Standard deduction for 2025 is $3,250, or $6,500 on a joint return. Head of household uses $3,250, the same as single.",
+        "Delaware gives $110 per person as a credit against tax rather than a deduction from income — $110 filing single, $220 filing jointly, and $110 for each dependent.",
+        "The additional deductions for age and blindness, the $110 credit for filers 60 and over, the child care credit and the earned income credit are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "FL",
@@ -2387,5 +3388,5 @@
       ]
     }
   ],
-  "normalizedSha256": "3aa4a692f7d1292d021b79738116a41b2c6344a23562372e84e22fcebdd0b5d0"
+  "normalizedSha256": "7ae5d12bab2c3a6b43ca56880cc7437b3b13bd2caad1da65044a3e25ba9e30f6"
 }

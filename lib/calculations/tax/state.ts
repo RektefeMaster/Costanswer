@@ -81,6 +81,24 @@ function computeSupportedStateTax(
       break;
     }
     case 'progressive': {
+      /*
+       * A qualifying low income filer is not on this schedule at all, so the
+       * deduction, the exemptions and the credit below never come into it. The
+       * alternative table already has all of that built into its figures.
+       */
+      const alternative = policy.alternativeLowIncomeSchedule;
+      if (alternative) {
+        const ceiling = alternative.appliesAtOrBelowByFilingStatus[filingStatus];
+        if (ceiling > 0 && income <= ceiling) {
+          return {
+            tax: calculateProgressiveTax(income, alternative.bracketsByFilingStatus[filingStatus]),
+            taxBeforeCredits: calculateProgressiveTax(income, alternative.bracketsByFilingStatus[filingStatus]),
+            exemptionCredit: 0,
+            federalTaxDeducted,
+          };
+        }
+      }
+
       const fullDeduction = policy.percentageStandardDeduction
         ? boundedPercentageDeduction(policy.percentageStandardDeduction, income, filingStatus)
         : policy.standardDeductionByFilingStatus[filingStatus];

@@ -36,15 +36,62 @@ function filingAmounts(single: number, joint: number, separate: number, head: nu
   };
 }
 
+/**
+ * Arkansas's 2025 regular schedule, as the state publishes it.
+ *
+ * The third column is the tax owed at the band's floor, which is what turns the
+ * department's "minus adjustment" figures into this engine's shape without
+ * changing what they compute. Each one is `rate * floor - adjustment`.
+ */
+const AR_RATE_TOP = 0.039;
+
+/**
+ * The adjustment Arkansas subtracts, band by band, above $94,700.
+ *
+ * This is the state's bracket adjustment being taken back: the $419.96 that
+ * applies through $94,700 shrinks by $10 for every $100 of income until it
+ * settles at $89.30, which raises tax by up to $330 across that stretch.
+ * Dropping it would undercharge every Arkansas filer earning between $94,700
+ * and $100,000, so the bands are generated from the published list rather than
+ * approximated by a rate.
+ */
+function arAdjustmentPhaseOut(): Array<readonly [number | null, number, number | undefined]> {
+  const rows: Array<readonly [number | null, number, number | undefined]> = [];
+  for (let step = 0; step <= 30; step += 1) {
+    const floor = 94_700 + step * 100;
+    const adjustment = 399.30 - step * 10;
+    rows.push([floor + 100, AR_RATE_TOP, AR_RATE_TOP * floor - adjustment]);
+  }
+  // $97,801 and over carries $89.30, up to where the table stops.
+  rows.push([100_000, AR_RATE_TOP, AR_RATE_TOP * 97_800 - 89.30]);
+  /*
+   * Above $100,000 the state states the tax outright as "$3,809 plus 3.9% of
+   * the excess". Continuing the band below would give $3,810.70 at $100,000,
+   * so the two do not meet. The published figure is used, and the $1.70 step is
+   * Arkansas's, not this model's.
+   */
+  rows.push([null, AR_RATE_TOP, 3_809]);
+  return rows;
+}
+
+const AR_REGULAR: Array<readonly [number | null, number, number | undefined]> = [
+  [5_599, 0, undefined],
+  [11_199, 0.02, 0],           // 2.00% less $111.98
+  [15_999, 0.03, 112.00],      // 3.00% less $223.97
+  [26_399, 0.034, 255.996],    // 3.40% less $287.97
+  [94_700, 0.039, 609.601],    // 3.90% less $419.96
+  ...arAdjustmentPhaseOut(),
+];
+
 const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   AL: { provider: 'Alabama Department of Revenue', sourceUrl: 'https://www.revenue.alabama.gov/' },
   AK: { provider: 'Alaska Department of Revenue', sourceUrl: 'https://www.tax.alaska.gov/' },
   AZ: { provider: 'Arizona Department of Revenue', sourceUrl: 'https://azdor.gov/' },
-  AR: { provider: 'Arkansas Department of Finance and Administration', sourceUrl: 'https://www.dfa.arkansas.gov/' },
+  AR: { provider: 'Arkansas Department of Finance and Administration', sourceUrl: 'https://www.dfa.arkansas.gov/wp-content/uploads/2025_TaxBrackets.pdf' },
   CA: { provider: 'California Franchise Tax Board', sourceUrl: 'https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2025/10.html' },
   CO: { provider: 'Colorado Department of Revenue', sourceUrl: 'https://tax.colorado.gov/sites/tax/files/documents/Book104_2025.pdf' },
   CT: { provider: 'Connecticut Department of Revenue Services', sourceUrl: 'https://portal.ct.gov/drs' },
-  DE: { provider: 'Delaware Division of Revenue', sourceUrl: 'https://revenue.delaware.gov/' },
+  DE: { provider: 'Delaware Division of Revenue', sourceUrl: 'https://revenuefiles.delaware.gov/2025/TY25_taxtable.pdf' },
   DC: { provider: 'D.C. Office of Tax and Revenue', sourceUrl: 'https://otr.cfo.dc.gov/page/dc-individual-and-fiduciary-income-tax-rates' },
   FL: { provider: 'Florida Department of Revenue', sourceUrl: 'https://floridarevenue.com/' },
   GA: { provider: 'Georgia Department of Revenue', sourceUrl: 'https://dor.georgia.gov/' },
@@ -264,6 +311,105 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['AR', {
+    ...meta('AR', {
+      sourceName: '2025 Arkansas Indexed Tax Brackets, with the 2025 Tax Tables and the AR1000F instructions',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Arkansas publishes its schedule as "rate times income, minus an
+     * adjustment" rather than as marginal bands, and the two are not quite the
+     * same curve — its constants are rounded. Carrying the state's own figure
+     * at each band floor as `baseTax` reproduces the published formula to the
+     * cent: 2% less $111.98, 3% less $223.97, 3.4% less $287.97, 3.9% less
+     * $419.96, each of which is `baseTax` plus the rate times the band.
+     *
+     * The 2025 table is midpoint-based over $100 bands, so the figure Arkansas
+     * prints for a given income can sit up to about two dollars either side of
+     * the exact arithmetic here.
+     */
+    bracketsByFilingStatus: {
+      single: brackets3(AR_REGULAR),
+      marriedFilingJointly: brackets3(AR_REGULAR),
+      marriedFilingSeparately: brackets3(AR_REGULAR),
+      headOfHousehold: brackets3(AR_REGULAR),
+    },
+    standardDeductionByFilingStatus: filingAmounts(2_470, 4_940, 2_470, 2_470),
+    exemptionCredit: {
+      // $29 a credit. One for the taxpayer, one for a spouse on a joint
+      // return, and one more for head of household or surviving spouse.
+      perFilerByFilingStatus: filingAmounts(29, 58, 29, 58),
+      perDependent: 29,
+    },
+    alternativeLowIncomeSchedule: {
+      // Separate filers cannot use the low income tables at all: Arkansas
+      // requires a joint return to qualify.
+      appliesAtOrBelowByFilingStatus: filingAmounts(17_500, 29_000, 0, 25_300),
+      bracketsByFilingStatus: {
+        single: brackets3([[14_643, 0, undefined], [14_700, 0, 29], [null, 0.07, 29.50]]),
+        marriedFilingJointly: brackets3([[24_695, 0, undefined], [24_700, 0, 77], [null, 0.104, 81.80]]),
+        marriedFilingSeparately: brackets3([[null, 0, undefined]]),
+        headOfHousehold: brackets3([[20_820, 0, undefined], [20_900, 0, 67], [null, 0.094, 72.30]]),
+      },
+    },
+    notes: [
+      'Arkansas taxes net taxable income at 0%, 2%, 3%, 3.4% and 3.9% for tax year 2025 (2025 Arkansas Indexed Tax Brackets; Act 1 of the Second Extraordinary Session of 2024).',
+      'The department publishes the schedule as a rate times income less an adjustment. This row carries those adjustments as the tax owed at each band floor, so it reproduces the published formula rather than approximating it.',
+      'Standard deduction for 2025 is $2,470, or $4,940 on a joint return. Each personal tax credit is $29 against tax: one for the taxpayer, one for a spouse filing jointly, and one more for head of household.',
+      'Below $17,500 single, $25,300 head of household and $29,000 filing jointly, a qualifying filer uses the Low Income Tax Table instead, which is modeled here. Under that table a single filer owes nothing up to $14,643 of income, and a couple filing jointly nothing up to $24,695.',
+      'Above $94,700 Arkansas takes its bracket adjustment back $10 at a time for every $100 of income, until it settles at $89.30. Those bands are carried as published; they raise tax by up to about $330 across that stretch.',
+      'The published schedule does not quite meet itself at $100,000: continuing the band below gives $3,810.70 where the state states $3,809 plus 3.9% of the excess. The state\u2019s figure is used and the $1.70 step is its own.',
+      'Arkansas rounds its own tables to the midpoint of $100 income bands, so its printed figure can differ from this by up to about two dollars.',
+      'The additional credit for net income up to $27,600, the child care credit and itemized deductions are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['DE', {
+    ...meta('DE', {
+      sourceName: '2025 Delaware Income Tax Table and State Income Tax Schedule, with the PIT-RES instructions for the standard deduction and personal credits',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * One schedule for every filing status; Delaware's table has a single tax
+     * column. The bands reproduce the state's own $2,943.50 at $60,000 exactly,
+     * which is the figure its schedule prints for everything above that.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [2_000, 0], [5_000, 0.022], [10_000, 0.039], [20_000, 0.048], [25_000, 0.052], [60_000, 0.0555], [null, 0.066],
+      ]),
+      marriedFilingSeparately: brackets([
+        [2_000, 0], [5_000, 0.022], [10_000, 0.039], [20_000, 0.048], [25_000, 0.052], [60_000, 0.0555], [null, 0.066],
+      ]),
+      marriedFilingJointly: brackets([
+        [2_000, 0], [5_000, 0.022], [10_000, 0.039], [20_000, 0.048], [25_000, 0.052], [60_000, 0.0555], [null, 0.066],
+      ]),
+      headOfHousehold: brackets([
+        [2_000, 0], [5_000, 0.022], [10_000, 0.039], [20_000, 0.048], [25_000, 0.052], [60_000, 0.0555], [null, 0.066],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(3_250, 6_500, 3_250, 3_250),
+    exemptionCredit: {
+      // $110 a person, and the instructions' own example says a joint return
+      // with no dependents enters $220.
+      perFilerByFilingStatus: filingAmounts(110, 220, 110, 110),
+      perDependent: 110,
+    },
+    notes: [
+      'Delaware taxes taxable income in seven bands from 0% to 6.60% (2025 Delaware Income Tax Table and State Income Tax Schedule; 30 Del. C. 1102).',
+      'The same bands apply to every filing status. Above $60,000 the state prints the tax as $2,943.50 plus 6.60% of the excess, which is exactly what these bands sum to.',
+      'Standard deduction for 2025 is $3,250, or $6,500 on a joint return. Head of household uses $3,250, the same as single.',
+      'Delaware gives $110 per person as a credit against tax rather than a deduction from income \u2014 $110 filing single, $220 filing jointly, and $110 for each dependent.',
+      'The additional deductions for age and blindness, the $110 credit for filers 60 and over, the child care credit and the earned income credit are not modeled. The starting point is gross wages.',
     ],
   }],
   ['OH', {
