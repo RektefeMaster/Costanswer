@@ -247,12 +247,25 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   for (const path of toolPaths) {
     const html = await (await request.get(path)).text();
     expect(html, path).not.toMatch(/<meta[^>]+name="robots"[^>]+content="noindex/i);
+    expect(html, path).toContain('editorial-section');
+    expect(html, path).toContain('Terms used here');
+
+    /*
+     * Health pages are `restricted` in the monetization policy and carry no ad
+     * slot at all, so the reservations are asserted per page rather than
+     * globally. BMI and body fat are pages people arrive at feeling bad about
+     * themselves; the site's answer to that should not be adjacent to something
+     * being sold, and that is a deliberate rule rather than an oversight.
+     */
+    const restricted = path.startsWith('/health/');
+    if (restricted) {
+      expect(html, path).not.toContain('data-ad-placement=');
+      continue;
+    }
     expect(html, path).toContain('data-ad-placement="desktop-rail"');
     expect(html, path).toContain('data-ad-placement="header-leaderboard"');
     expect(html, path).toContain('data-ad-placement="in-content"');
     expect(html, path).toContain('data-ad-status="empty"');
-    expect(html, path).toContain('editorial-section');
-    expect(html, path).toContain('Terms used here');
   }
   const search = await (await request.get('/search?q=concrete')).text();
   expect(search).toMatch(/<meta[^>]+name="robots"[^>]+content="noindex, follow"/i);

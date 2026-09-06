@@ -237,7 +237,7 @@ describe('registry and intent search', () => {
       expect(tools.every((tool) => evaluateToolIndexability(tool).indexable)).toBe(true);
       expect(tools.every((tool) => (toolMetadata(tool).robots as { index?: boolean }).index === true)).toBe(true);
       expect(getSitemapFamilies().pages.map((entry) => entry.path)).toEqual([
-        '/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq',
+        '/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/disclosure', '/contact', '/faq',
       ]);
       expect(getSitemapFamilies().pages.every((entry) => entry.lastModified === PUBLISHING_SNAPSHOT_INSTANT)).toBe(true);
       expect(getSitemapFamilies().tools).toHaveLength(tools.length);

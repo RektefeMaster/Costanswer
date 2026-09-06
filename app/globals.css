@@ -1503,7 +1503,17 @@ input, select { font-variant-numeric: tabular-nums; }
   font-size: 13px;
   font-weight: 750;
 }
-.policy-nav span[aria-current] { color: rgba(16, 42, 42, .45); }
+/*
+ * The current page in this nav has to be visibly the current page and still be
+ * readable. At .45 alpha it measured 2.67:1 against the page ground, which axe
+ * flags as a serious failure — so the distinction is carried by weight and a
+ * marker instead of by fading the text below the contrast floor.
+ */
+.policy-nav span[aria-current] {
+  color: rgba(16, 42, 42, .72);
+  font-weight: 800;
+}
+.policy-nav span[aria-current]::before { content: '· '; }
 .policy-nav-stacked {
   flex-direction: column;
   gap: 0;
@@ -2083,3 +2093,188 @@ input, select { font-variant-numeric: tabular-nums; }
 .salary-questions { padding-top: 4px; }
 .occupation-names { margin: 0; max-width: 40em; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .occupation-names strong { color: var(--ink); font-weight: 700; }
+
+/* ── Monetization surfaces ──────────────────────────────────────────────────
+   The rule these styles exist to hold: a commercial module must never be
+   mistakable for the answer. Everything here reads as an aside — quieter
+   ground, no accent border shared with a result card, and a label above it. */
+
+.next-action {
+  display: grid;
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+.lead-cta,
+.affiliate-module {
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: color-mix(in srgb, canvas 96%, currentColor 4%);
+}
+
+.lead-cta h2,
+.affiliate-module h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.35rem;
+}
+
+.affiliate-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin: 0 0 0.5rem;
+}
+
+.commercial-disclosure,
+.affiliate-order-note {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+}
+
+.lead-cta-button,
+.lead-actions button,
+.affiliate-offer-link {
+  /* 44px minimum target on touch, per WCAG 2.5.5. */
+  min-height: 44px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: color-mix(in srgb, canvas 88%, currentColor 12%);
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.affiliate-offer-link { text-decoration: none; }
+
+.lead-cta-button:focus-visible,
+.lead-actions button:focus-visible,
+.affiliate-offer-link:focus-visible,
+.intent-option:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.affiliate-offers {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.affiliate-offers li { display: grid; gap: 0.3rem; }
+.affiliate-category { font-size: 0.75rem; opacity: 0.7; margin: 0; }
+
+/* ── Lead form ──────────────────────────────────────────────────────────── */
+
+.lead-form { display: grid; gap: 1rem; margin-top: 1rem; }
+.lead-form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+.lead-form legend { font-weight: 600; padding: 0; margin-bottom: 0.3rem; }
+
+.lead-form label { font-size: 0.9rem; font-weight: 500; }
+
+.lead-form input[type='text'],
+.lead-form input[type='tel'],
+.lead-form input[type='email'],
+.lead-form select {
+  min-height: 44px;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: canvas;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.lead-form input[aria-invalid='true'] {
+  border-color: color-mix(in srgb, red 55%, currentColor);
+}
+
+.lead-hint, .lead-form small { font-size: 0.8rem; opacity: 0.75; line-height: 1.5; }
+
+.lead-consent ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.4rem; font-size: 0.9rem; }
+.lead-consent-check { display: flex; gap: 0.6rem; align-items: flex-start; margin-top: 0.5rem; }
+.lead-consent-check input { min-width: 22px; min-height: 22px; margin-top: 0.15rem; }
+.lead-consent-check label { font-weight: 400; line-height: 1.5; }
+
+.lead-error {
+  color: color-mix(in srgb, red 70%, currentColor);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.lead-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.lead-back-button { background: transparent; font-weight: 500; }
+
+/* Hidden from people and from assistive technology alike. Not display:none —
+   some bots skip those, and this one needs to look fillable. */
+.lead-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.lead-success h3 { margin: 0 0 0.4rem; }
+.lead-success h4 { margin: 1rem 0 0.3rem; font-size: 0.95rem; }
+.lead-estimate-note { font-size: 0.85rem; opacity: 0.8; }
+
+/* ── Intent switch ──────────────────────────────────────────────────────── */
+
+.intent-switch { border: 0; padding: 0; margin: 0 0 1rem; }
+.intent-switch legend { font-weight: 600; margin-bottom: 0.5rem; padding: 0; }
+.intent-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.intent-option {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Selection is carried by the pressed state and a fill, never by colour alone. */
+.intent-option[aria-pressed='true'] {
+  background: color-mix(in srgb, canvas 80%, currentColor 20%);
+  font-weight: 600;
+}
+
+.intent-option[aria-pressed='true']::before { content: '✓ '; }
+
+/* ── Call CTA ───────────────────────────────────────────────────────────── */
+
+.call-cta { margin-top: 1rem; display: grid; gap: 0.25rem; }
+.call-cta-heading { font-weight: 600; margin: 0; }
+.call-cta-number { font-size: 1.25rem; font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
+.call-cta-partner { font-size: 0.8rem; opacity: 0.7; margin: 0; }
+
+/* ── Ad slots ───────────────────────────────────────────────────────────── */
+
+/* An empty slot is quiet reserved height, never hatched "fake ad" chrome. */
+.ad-slot[data-ad-status='empty'] { background: transparent; }
+
+@media (max-width: 920px) {
+  .ad-slot-header-leaderboard { display: none; }
+}
+@media (max-width: 680px) {
+  .ad-slot-desktop-rail { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-cta-button, .intent-option, .affiliate-offer-link { transition: none; }
+}

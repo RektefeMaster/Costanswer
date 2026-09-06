@@ -3,6 +3,8 @@ import type { ReactNode } from 'react';
 import { RelatedToolLink } from '@/components/analytics/RelatedToolLink';
 import { AdSlot } from '@/components/monetization/AdSlot';
 import { AffiliateOffers } from '@/components/monetization/AffiliateOffers';
+import { NextActionModule } from '@/components/monetization/NextActionModule';
+import { toolMonetizationContext } from '@/lib/monetization/tool-context';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
@@ -69,6 +71,12 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
   // exist beyond "more of the same category".
   const clusters = getToolClusters(tool.id);
   const editorialContent = getToolEditorial(tool.id);
+  /*
+   * Built from the registry entry, not from a live calculation. The interactive
+   * island owns the numbers; this page only knows which tool it is and what its
+   * policy row permits, which is all the commercial layer is entitled to.
+   */
+  const monetization = toolMonetizationContext(tool);
   const breadcrumbs = [
     { name: siteConfig.name, path: '/' },
     { name: category.name, path: `/topics/${tool.category}` },
@@ -101,14 +109,21 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
         </header>
 
         <div className="ad-leaderboard-wrap">
-          <AdSlot placement="header-leaderboard" />
+          <AdSlot placement="header-leaderboard" pageId={tool.id} />
         </div>
 
         <div className="tool-workspace">
           <div className="tool-main-column">
             {children}
+            {/*
+              Order is load-bearing and asserted by `assertPlacementOrder`: the
+              answer, then the next step someone might take, and only then an
+              advertisement. Nothing commercial sits between an input and its
+              result.
+            */}
+            <NextActionModule context={monetization} />
             <AffiliateOffers toolId={tool.id} />
-            <AdSlot placement="in-content" />
+            <AdSlot placement="in-content" pageId={tool.id} />
             <CalculatorEditorial toolPath={tool.path} content={editorialContent} />
             {methodology.length > 0 && (
               <section className="engine-notes" aria-labelledby="engine-notes-title">
@@ -132,7 +147,7 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
               <h2>{RESULT_NOTES[tool.resultNature].heading}</h2>
               <p>{caution ?? RESULT_NOTES[tool.resultNature].body}</p>
             </div>
-            <AdSlot placement="desktop-rail" />
+            <AdSlot placement="desktop-rail" pageId={tool.id} />
           </aside>
         </div>
 

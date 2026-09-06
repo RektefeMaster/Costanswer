@@ -50,6 +50,7 @@ export function SiteFooter() {
           <p id="footer-legal-heading" className="footer-kicker">Legal</p>
           <Link href="/terms">User agreement</Link>
           <Link href="/privacy">Privacy</Link>
+          <Link href="/disclosure">Disclosure</Link>
         </nav>
       </div>
       <p className="footer-legal">
@@ -58,6 +59,8 @@ export function SiteFooter() {
         <Link href="/terms">User agreement</Link>
         <span aria-hidden="true"> · </span>
         <Link href="/privacy">Privacy</Link>
+        <span aria-hidden="true"> · </span>
+        <Link href="/disclosure">Disclosure</Link>
         <span aria-hidden="true"> · </span>
         <Link href="/faq">FAQ</Link>
         <span aria-hidden="true"> · </span>
