@@ -2,7 +2,10 @@ import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { STATE_CODES, type StateCode } from '@/lib/location/states';
-import oewsIndexFixture from '@/data/bls-oews/index.json';
+// Declared `unknown` so the compiler does not infer a literal type for 582 KB
+// on every run; parsed through the schema here, which is what the assertions
+// are actually about.
+import oewsIndexRaw from '@/data/bls-oews/index.json';
 import oewsManifestFixture from '@/data/bls-oews/manifest.json';
 import {
   blsOewsIndexSchema,
@@ -102,6 +105,12 @@ const NORMALIZE_INPUT = {
   rawSha256: 'a'.repeat(64),
   sourceUrl: 'https://www.bls.gov/oes/special-requests/oesm25st.zip',
   nationalSourceUrl: 'https://www.bls.gov/oes/special-requests/oesm25nat.zip',
+};
+
+const oewsIndexFixture = oewsIndexRaw as {
+  nationalCoverage: number[];
+  occupations: Array<{ code: string; residual: boolean; group: string }>;
+  coverageByState: Record<string, number[]>;
 };
 
 describe('OEWS occupation slugs', () => {

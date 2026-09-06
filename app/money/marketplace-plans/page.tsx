@@ -1,6 +1,6 @@
 import { MarketplacePlansCalculator } from '@/components/calculators/MarketplacePlansCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
-import { cmsMarketplaceIndex } from '@/lib/data/cms-marketplace-snapshot';
+import { cmsMarketplaceIndex, cmsReleaseSummary } from '@/lib/data/cms-marketplace-snapshot';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';
 
@@ -45,7 +45,7 @@ export default function MarketplacePlansPage() {
         },
       ]}
     >
-      <MarketplacePlansCalculator />
+      <MarketplacePlansCalculator release={cmsReleaseSummary()} />
     </ToolPage>
   );
 }

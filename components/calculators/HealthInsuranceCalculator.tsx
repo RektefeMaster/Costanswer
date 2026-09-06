@@ -5,10 +5,9 @@ import { calculateAcaSubsidy, type AcaSubsidyStatus } from '@/lib/calculations/a
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
-import {
-  benchmarkForHousehold, cmsCountiesForZip, cmsMarketplaceIndex, costSharingLevelForIncome,
-  costSharingVariant, lowestMetalForHousehold, metalSummary, parseEnrollingAges,
-} from '@/lib/data/cms-marketplace-snapshot';
+import { costSharingLevelForIncome, parseEnrollingAges } from '@/lib/data/cms-marketplace';
+import type { CmsReleaseSummary } from '@/lib/data/cms-marketplace-client';
+import { useCmsQuote } from './useCmsQuote';
 import { US_STATES, type StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
@@ -31,7 +30,7 @@ const STATUS_LABELS: Record<AcaSubsidyStatus, { tag: string; tone: 'estimate' | 
   ineligible: { tag: 'No credit in this scenario', tone: 'review' },
 };
 
-export function HealthInsuranceCalculator() {
+export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSummary }) {
   const [zip, setZip] = useState('77002');
   const [chosenFips, setChosenFips] = useState('');
   const [enrollingAges, setEnrollingAges] = useState('40, 38, 10');
@@ -42,8 +41,14 @@ export function HealthInsuranceCalculator() {
   const [planOverride, setPlanOverride] = useState('');
   const [coverageMonths, setCoverageMonths] = useState('12');
 
-  const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
-  const matches = lookup.status === 'covered' ? lookup.counties : [];
+  /*
+   * Priced on the server. This page needs one county; the file covers 2,055,
+   * and shipping all of them to answer for one was 3.8 MB in the browser.
+   */
+  const quote = useCmsQuote(zip, enrollingAges, chosenFips || undefined);
+  const covered = quote.data?.status === 'covered' ? quote.data : null;
+  const lookup = quote.data && 'lookup' in quote.data ? quote.data.lookup : null;
+  const matches = covered?.lookup.counties ?? [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
   const parsedAges = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
   const ages = parsedAges.invalidTokens.length === 0 ? parsedAges.ages : [];
@@ -53,7 +58,7 @@ export function HealthInsuranceCalculator() {
    * credit by tens of dollars a month without saying so, so the calculation is
    * withheld instead.
    */
-  const resolvedStateCode = county?.stateCode ?? lookup.stateCodes[0] ?? null;
+  const resolvedStateCode = county?.stateCode ?? lookup?.stateCodes[0] ?? null;
 
   /**
    * The benchmark and the sticker price of each metal level, for these ages in
@@ -61,19 +66,14 @@ export function HealthInsuranceCalculator() {
    * that the figure came from the published file.
    */
   const quotes = useMemo(() => {
-    if (!county || ages.length === 0) return null;
-    try {
-      const benchmark = benchmarkForHousehold(county.countyFips, ages);
-      return {
-        benchmark,
-        bronze: lowestMetalForHousehold(county.countyFips, 'bronze', ages),
-        silver: lowestMetalForHousehold(county.countyFips, 'silver', ages),
-        gold: lowestMetalForHousehold(county.countyFips, 'gold', ages),
-      };
-    } catch {
-      return null;
-    }
-  }, [county, ages]);
+    if (!covered?.benchmark || ages.length === 0) return null;
+    return {
+      benchmark: covered.benchmark,
+      bronze: covered.metals.bronze?.quote ?? null,
+      silver: covered.metals.silver?.quote ?? null,
+      gold: covered.metals.gold?.quote ?? null,
+    };
+  }, [covered, ages]);
 
   const overrideBenchmark = benchmarkOverride.trim() === '' ? null : Number(benchmarkOverride);
   const usedBenchmark = overrideBenchmark ?? quotes?.benchmark.premium ?? null;
@@ -98,7 +98,7 @@ export function HealthInsuranceCalculator() {
           monthlyPlanPremium: usedPlan,
           eligibility,
           coverageMonths: Number(coverageMonths),
-          benchmarkSnapshotId: overrideBenchmark === null ? cmsMarketplaceIndex.snapshotId : undefined,
+          benchmarkSnapshotId: overrideBenchmark === null ? release.snapshotId : undefined,
           benchmarkAgesExact: overrideBenchmark === null ? quotes?.benchmark.exactForAges : undefined,
         }),
         error: '',
@@ -114,8 +114,8 @@ export function HealthInsuranceCalculator() {
   const hasCredit = value?.monthlyNetPremium !== null && value?.monthlyNetPremium !== undefined;
   const credit = value?.monthlyPremiumTaxCredit ?? null;
   const csrLevel = value && value.status === 'estimated' ? costSharingLevelForIncome(value.incomePercentFpl) : null;
-  const csr = county && csrLevel ? costSharingVariant(county.countyFips, csrLevel) : null;
-  const standardSilver = county ? metalSummary(county.countyFips, 'silver') : null;
+  const csr = covered && csrLevel ? covered.costSharing[csrLevel] ?? null : null;
+  const standardSilver = covered?.metals.silver?.summary ?? null;
   const afterCredit = (full: number | null | undefined) =>
     full === null || full === undefined || credit === null ? null : Math.max(0, Math.round((full - credit) * 100) / 100);
 
@@ -132,11 +132,11 @@ export function HealthInsuranceCalculator() {
         <span>2026 PLAN YEAR</span>
         <p>
           <strong>CMS county plan filings · IRS contribution table · HHS {acaSubsidySnapshot.povertyGuidelineYear} guidelines</strong>
-          <small>{cmsMarketplaceIndex.snapshotId} · {acaSubsidySnapshot.snapshotId}</small>
+          <small>{release.snapshotId} · {acaSubsidySnapshot.snapshotId}</small>
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="ZIP code" htmlFor="health-zip" hint={`Premiums are filed by county. ${cmsMarketplaceIndex.counties.length.toLocaleString('en-US')} counties across ${cmsMarketplaceIndex.coveredStateCodes.length} HealthCare.gov states are priced here.`}>
+        <Field label="ZIP code" htmlFor="health-zip" hint={`Premiums are filed by county. ${release.countyCount.toLocaleString('en-US')} counties across ${release.coveredStateCount} HealthCare.gov states are priced here.`}>
           <InputShell>
             <input id="health-zip" type="text" inputMode="numeric" maxLength={5} value={zip} onChange={(event) => { setZip(event.target.value); setChosenFips(''); }} />
           </InputShell>
@@ -163,7 +163,7 @@ export function HealthInsuranceCalculator() {
         two counties in one ZIP can file different benchmarks and so different
         credits, and picking one silently would hide that.
       */}
-      {lookup.status === 'covered' && matches.length > 1 && (
+      {lookup?.status === 'covered' && matches.length > 1 && (
         <div className="health-county-choice">
           <p>ZIP {zip} spans {matches.length} counties, which file separately.</p>
           <div className="mode-tabs">
@@ -175,18 +175,18 @@ export function HealthInsuranceCalculator() {
           </div>
         </div>
       )}
-      {lookup.status === 'not-in-this-release' && (
+      {lookup?.status === 'not-in-this-release' && (
         <div className="health-status health-status-review" role="status">
           <span>Priced by a state exchange</span>
           <ul>
             <li>
-              {lookup.stateCodes.map((code) => US_STATES[code as StateCode]).join(' and ') || 'This state'} runs its own Marketplace and files premiums separately, so this release carries no plans for it.
+              {lookup?.stateCodes.map((code) => US_STATES[code as StateCode]).join(' and ') || 'This state'} runs its own Marketplace and files premiums separately, so this release carries no plans for it.
               The credit rules below are federal and still apply: enter your own benchmark premium to use them.
             </li>
           </ul>
         </div>
       )}
-      {lookup.status === 'unknown-zip' && zip.trim() !== '' && (
+      {lookup?.status === 'unknown-zip' && zip.trim() !== '' && (
         <div className="health-status health-status-review" role="status">
           <span>ZIP not recognised</span>
           <ul><li>Enter a five-digit ZIP code that the Census ZCTA file maps to a county.</li></ul>
@@ -342,7 +342,7 @@ export function HealthInsuranceCalculator() {
             assumptions={result.assumptions}
             calculationVersion={result.calculationVersion}
             datasetSnapshotIds={quotes
-              ? [...new Set([...result.datasetSnapshotIds, cmsMarketplaceIndex.snapshotId])]
+              ? [...new Set([...result.datasetSnapshotIds, release.snapshotId])]
               : result.datasetSnapshotIds}
           />
           <p className="health-range-note">

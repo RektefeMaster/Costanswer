@@ -367,3 +367,21 @@ export function costSharingLevelForIncome(incomePercentFpl: number): CmsCostShar
   if (incomePercentFpl <= 250) return 73;
   return null;
 }
+
+/**
+ * What a ZIP lookup can conclude.
+ *
+ * Declared here rather than beside the lookup itself so that a browser-facing
+ * module can name the shape without importing the snapshot that produces it —
+ * even a type-only import of that module makes the compiler read 3.8 MB of
+ * premium columns, and it is one careless edit away from becoming a value
+ * import that ships them.
+ *
+ * The three failures are kept apart because a page has to say the right one:
+ * "your state publishes elsewhere" and "check the digits" are different
+ * problems with different next steps.
+ */
+export type CmsZipLookup =
+  | { status: 'covered'; counties: CmsCountyIdentity[]; stateCodes: StateCode[] }
+  | { status: 'not-in-this-release'; stateCodes: StateCode[] }
+  | { status: 'unknown-zip'; stateCodes: [] };

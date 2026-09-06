@@ -31,6 +31,7 @@ import {
   type CmsMarketplacePremiums,
   type CmsMetal,
   type CmsMetalSummary,
+  type CmsZipLookup,
 } from './cms-marketplace';
 import type { StateCode } from '@/lib/location/states';
 
@@ -101,11 +102,6 @@ export function lowestMetalForHousehold(countyFips: string, metal: CmsMetal, age
   return householdPremium(county, summary.lowestByAge, ages);
 }
 
-export type CmsZipLookup =
-  | { status: 'covered'; counties: CmsCountyIdentity[]; stateCodes: StateCode[] }
-  | { status: 'not-in-this-release'; stateCodes: StateCode[] }
-  | { status: 'unknown-zip'; stateCodes: [] };
-
 /** GEOID's leading two digits are the state FIPS; the gazetteer names the state. */
 const stateCodeByFips = new Map<string, StateCode>(
   geographySnapshot.counties.map((county) => [county.stateFips, county.state as StateCode]),
@@ -135,3 +131,24 @@ export function cmsCountiesForZip(zip: string): CmsZipLookup {
 }
 
 export { costSharingLevelForIncome, parseEnrollingAges, premiumForAge };
+
+/**
+ * The handful of figures a page prints about this release.
+ *
+ * Built here so a browser island can be handed them as props instead of
+ * importing the module that produces them — importing it pulls 3.8 MB of
+ * premium columns into the bundle to render one line of text.
+ */
+export function cmsReleaseSummary(): {
+  snapshotId: string;
+  countyCount: number;
+  coveredStateCount: number;
+  planYear: string;
+} {
+  return {
+    snapshotId: cmsMarketplaceIndex.snapshotId,
+    countyCount: cmsMarketplaceIndex.counties.length,
+    coveredStateCount: cmsMarketplaceIndex.coveredStateCodes.length,
+    planYear: cmsMarketplaceIndex.observationPeriod,
+  };
+}

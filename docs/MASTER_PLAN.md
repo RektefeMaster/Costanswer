@@ -1,6 +1,12 @@
 # CostAnswer master plan
 
-Status: proposed · drafted 2026-09-06 · owner: site owner · executor: coding agents
+Status: **v2, reconciled against HEAD** · drafted 2026-09-06 · revised 2026-09-06
+owner: site owner · executor: coding agents
+
+> **Read this first.** v1's audit described the repository *before* the
+> monetization layer existed. Handing that version to an agent risked it
+> reverting work that is now shipped. This version is reconciled against the
+> current HEAD (`14e4d0e`), and §A.0 lists what must be preserved.
 
 This plan is written to be executed sequentially by coding agents. Each phase
 states its goal, the files it touches, the work, its data dependencies, its
@@ -44,6 +50,41 @@ This is fixed before launch or the salary corpus does not go to search.
 
 ## A. Current state audit
 
+### A.0 Already built — preserve, do not re-plan
+
+Three commits after v1 was written, the monetization layer is real. It is
+**existing architecture**, not future work, and no phase below may remove or
+rebuild it.
+
+| Shipped | Where |
+| --- | --- |
+| Calculation/monetization boundary, enforced three ways | `lib/monetization/boundary.ts`, `tests/monetization-boundary.spec.ts` |
+| Per-page eligibility policy (data, not inference) | `lib/monetization/policy.ts` |
+| Feature flags: env floor + stored kill switches | `lib/monetization/flags.ts` |
+| Lead engine: coverage → consent → routing → delivery | `lib/monetization/leads/` |
+| Versioned consent, hashed as rendered, both locales | `lib/monetization/consent/` |
+| Affiliate engine: relevance scored apart from commerce | `lib/monetization/affiliate/` |
+| Advertising provider abstraction, slots, consent gating | `lib/monetization/ads/` |
+| Pay-per-call model and persistence | `lib/monetization/calls/`, `call_campaigns` |
+| Revenue ledger, five statuses, signed reversals | `lib/monetization/revenue/` |
+| First-party attribution, no cookie | `lib/monetization/attribution/` |
+| **19 D1 tables**, two migrations | `lib/monetization/store/migrations/` |
+| 10 API routes incl. admin, webhooks, drain | `app/api/monetization/`, `app/api/marketplace/` |
+| 16 commercial components | `components/monetization/` |
+| Admin dashboard + privacy tooling | `app/admin/monetization/`, `lib/monetization/admin/` |
+| Disclosure page, Do Not Sell control | `app/disclosure/`, `components/monetization/PrivacyChoices.tsx` |
+
+**54 TypeScript modules under `lib/monetization/`.** Every external provider is
+disabled; the infrastructure is not.
+
+**The sentence v1 got wrong.** It said affiliate and lead-gen "stay unbuilt
+until traffic justifies them". Correct statement:
+
+> Affiliate and lead-generation infrastructure is already implemented and must
+> be preserved. External providers remain disabled until approval, credentials,
+> current provider documentation and compliance review are all satisfied.
+> **Launch does not depend on activating any provider.**
+
 ### A.1 What exists and works
 
 | Area | State | Evidence |
@@ -58,11 +99,22 @@ This is fixed before launch or the salary corpus does not go to search.
 | Editorial depth | Shipped | Every tool has guide + FAQ + glossary + tips + caveats; registry asserts coverage |
 | Calculation Receipt | Shipped (unnamed) | `ResultDetails` renders "How we got this" / "What we assumed" / method version + snapshot ids |
 | SEO plumbing | Shipped | Self-canonicals, sitemap index + family partitioning, JSON-LD (`WebApplication`, `Article`, `BreadcrumbList`, `FAQPage`, `Occupation`, `Dataset`), robots |
-| Tests | Good | 31 spec files, 496 unit tests, all green; 908-line Playwright journey suite |
+| Tests | Good | 36 spec files, 683 unit tests, all green; Playwright journey suites for tools and monetization |
 | Security headers | Shipped | CSP, HSTS, COOP, frame-deny, permissions-policy in `next.config.ts` |
 
-**Verified this session on Node 22.23.1:** `typecheck` clean, `test` 496/496 pass,
-`build` exits 0.
+**Measured at HEAD (`14e4d0e` + P1) on Node 22.23.1:**
+
+| | v1 audit | Now |
+| --- | --- | --- |
+| Registry tools | 58 | 58 |
+| Unit tests | 496 | **683**, 36 files |
+| Browser tests | 34 (6 failing) | **42 (3 failing, all pre-existing)** |
+| Lint | 2 errors, 14 warnings | **0 errors**, 14 warnings |
+| Typecheck | 538s | **8s** |
+| Largest client chunk | 3.84 MB | **186 KB** |
+| Worker, gzipped | 2.35 MB | 2.26 MB |
+| Supported state tax schedules | 14/51 | 14/51 — **still P2** |
+| Salary URLs indexable | 31,621 | **813** (leaves staged) |
 
 ### A.2 What is incomplete
 
@@ -80,7 +132,7 @@ This is fixed before launch or the salary corpus does not go to search.
 | **Basic/Advanced pattern** | Not standardized. Eight components hand-roll `<details>`; `CalculatorUI.tsx` exports no advanced-section primitive | The §4 calculator standard applied consistently across 101 tools |
 | **Scenario compare / reverse solve / confidence** | Ad hoc where present (`home-affordability` has an inverse; `concrete` has ranges). No shared contract | §4 depth promise |
 | **GSA per diem refresh** | Policy says `refreshMode: 'scheduled'` but the script is in neither `scripts/refresh-snapshots.ts` nor `scripts/ingest-location-official.ts`. It never refreshes | FY2027 per diem (effective 2026-10-01) |
-| **GSA published-vs-effective** | HUD does this correctly via `data/hud-fmr/releases.json` + `resolveEffectiveHudRelease`. GSA has a single snapshot and derives `publishedAt` as `${fy-1}-10-01`, which is wrong — GSA publishes in August | Per diem correctness across the 1 Oct boundary |
+| **GSA published-vs-effective** | HUD does this correctly via `data/hud-fmr/releases.json`. GSA has a single snapshot and derives `publishedAt` as `${fy-1}-10-01`, which is wrong twice over: GSA announces a fiscal year and publishes its dataset on two different earlier dates | Per diem correctness across the 1 Oct boundary |
 | **Freshness enforcement** | `evaluateFreshness` is computed and displayed but no CI gate fails on `stale`, and nothing alerts on a missed release | Data-freshness SLA |
 | **Frozen freshness clock** | `evaluateFreshness(..., asOf = PUBLISHING_SNAPSHOT_DATE)`. A deployed build that is never rebuilt keeps claiming `current` forever | Freshness honesty between deploys |
 | **Custom domain** | Not deployed. `.openai/hosting.json` has `d1: null, r2: null`; `.wrangler/deploy/config.json` points at a local build | Launch |
@@ -126,15 +178,16 @@ This is fixed before launch or the salary corpus does not go to search.
 
 ### A.4 Blockers to launch, in order
 
-| # | Blocker | Phase |
-| --- | --- | --- |
-| B1 | CMS snapshot in the client bundle | P1 |
-| B2 | 37 states have no income tax schedule | P2 |
-| B3 | No production deployment on a custom domain | P1 |
-| B4 | No analytics sink, no Search Console, no Bing | P1 / P9 |
-| B5 | `verify` red (lint), CI green — the gates disagree | P1 |
-| B6 | Mortgage rate snapshot already `update-due`; refresh cron is Tuesday for a Thursday release | P3 |
-| B7 | 30,807 leaf URLs staged to publish at once from a zero-history domain, 72% of them with a federal-only take-home | P2 / P9 |
+| # | Blocker | Phase | Status |
+| --- | --- | --- | --- |
+| B1 | CMS snapshot in the client bundle | P1 | **closed** |
+| B2 | 37 states have no income tax schedule | P2 | open — the launch blocker |
+| B3 | No production deployment on a custom domain | P1 | open — needs credentials |
+| B4 | No analytics sink, no Search Console, no Bing | P9 | open |
+| B5 | `verify` red (lint), CI green — the gates disagree | P1 | **closed** |
+| B6 | Mortgage rate `update-due`; cron is Tuesday for a Thursday release | P3 | open |
+| B7 | 30,807 leaf URLs with a federal-only take-home, published at once | P2 / P9 | **staged** — reopens only after B2 |
+| B8 | Nine-minute typecheck, so the release gate gets skipped | P1 | **closed** (538s → 8s) |
 
 ---
 
@@ -191,25 +244,53 @@ is corrected.
 | **Medical engine** | `lib/medical/` | New vertical (wave 2) |
 | **Shared depth primitives** | `components/calculators/CalculatorUI.tsx` | `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceBadge`, `CalculationReceipt` — so §4 is a contract, not 101 hand-rolled variants |
 
-### B.3 Storage tiering — the one genuinely new architectural decision
+### B.3 Storage tiering — reference data and transactional data are different problems
 
-**Chosen:** three tiers, chosen by size and access shape.
+**Chosen:** split by what the data *is*, not by how big it is.
 
-| Tier | Mechanism | Budget | Holds today | Will hold |
-| --- | --- | --- | --- | --- |
-| 1 | Bundled JSON import | ≤ 400 KB gz per dataset, ≤ 3 MB gz Worker total | tax, IRS limits, geography, RPP, ACS, CPI, EIA, PMMS, NAIC, ACA, Medicare, OEWS index | job recipes, material basket, locale strings |
-| 2 | Worker static assets, fetched server-side by key | unlimited count, ≤ 25 MB per file | — | OEWS wage columns, CMS premium columns, job labor tables, medical procedure tables |
-| 3 | Workers KV | — | — | anything needing per-key reads at high cardinality (deferred; not needed at launch) |
+```text
+REFERENCE / CALCULATOR DATA        TRANSACTIONAL MONETIZATION DATA
+immutable, versioned, read-only    mutable, PII-bearing, queried, audited
+        │                                        │
+        ▼                                        ▼
+  bundled JSON  +  Worker static assets        D1  (MONETIZATION_DB)
+```
 
-**Why not D1:** no D1 is provisioned (`.openai/hosting.json` → `d1: null`), and
-nothing at launch needs a relational query. Introducing a database before a
-query needs one is the overengineering §30 warns about. The tier-2 boundary is
-`lib/data/store/asset.ts` with a `readDatasetAsset(key)` signature that a D1 or
-R2 implementation can satisfy later without touching a caller.
+v1 said "CostAnswer does not use D1" and called it overengineering. Half of
+that was right and it is worth keeping the right half:
 
-**Immediate consequence:** CMS premium columns and OEWS wage columns move to
-tier 2 in P1. That is what fixes B1 and simultaneously buys ~1.5 MB gz of
-Worker headroom for the Job Engine.
+- **D1 is unnecessary for calculator and reference datasets.** A mortgage rate,
+  a wage table, a per diem schedule — these are immutable snapshots with a hash
+  and a manifest. Putting them in a database adds a failure mode and removes an
+  audit trail. That decision stands.
+- **D1 is necessary for monetization.** A consent record is mutable,
+  transactional, PII-bearing, queried four different ways, and legally required
+  to be retrievable years later. It is already implemented against
+  `MONETIZATION_DB`, an optional binding whose absence disables lead capture and
+  leaves every calculator untouched.
+
+| Tier | Mechanism | Holds |
+| --- | --- | --- |
+| 1 | Bundled JSON | tax, IRS limits, geography, RPP, ACS, CPI, EIA, PMMS, NAIC, ACA, Medicare, OEWS index, job recipes, locale strings |
+| 2 | Worker static assets | OEWS wage columns, CMS premium columns, job labor/material tables, medical procedure tables |
+| 3 | D1 (`MONETIZATION_DB`) | leads, consent, deliveries, provider events, revenue, campaigns, suppression, audit — **19 tables, shipped** |
+
+**Why tier 2 for the large reference tables.** Cloudflare serves static asset
+requests separately from Worker invocations, with a 25 MiB per-file ceiling and
+tens of thousands of files per version. Packed wage and premium columns belong
+there rather than inside the Worker's JavaScript.
+
+**On the Worker size budget.** v1 justified a 2.8 MB gzipped budget as a
+platform ceiling. That justification was wrong — Cloudflare's own Worker size
+limit is far above it. The budget stays, with the honest reason:
+
+> 2.8 MB gzipped is **our** budget, not the platform's. It protects cold-start
+> and deploy time, and it is the thing that stops a dataset drifting into the
+> bundle. A budget set at the platform limit never fires, and the failure it
+> would have caught arrives on somebody's phone instead.
+
+Enforced by `scripts/check-bundle-budget.mjs` in CI, alongside a 200 KB
+per-chunk client budget.
 
 ### B.4 Deployment
 
@@ -395,9 +476,27 @@ type JobRecipe = {
 };
 ```
 
-Every scalar in a recipe carries a `RecipeSource`. A recipe with an uncited
-number fails its own validation test. This is the rule that keeps §15's
-"productivity recipes are CostAnswer IP" from degrading into invented numbers.
+Every scalar in a recipe carries a `RecipeSource`, and a recipe with an uncited
+number fails its own validation test. But "cite everything" collapses the
+moment a number has no source to cite — `overheadRate`, `profitRate` and
+`contingencyRate` are the obvious cases, and a rule that demands a citation for
+them produces a fabricated one. So a source declares which kind it is:
+
+```ts
+type RecipeSource =
+  | { kind: 'official_data'; provider: string; url: string; retrievedAt: string }
+  | { kind: 'published_specification'; publisher: string; document: string; retrievedAt: string }
+  | { kind: 'observed_market'; dataset: string; observations: number; window: string }
+  | { kind: 'model_assumption';
+      rationale: string;          // why this value, in a sentence
+      confidenceImpact: 'none' | 'lowers_to_medium' | 'lowers_to_low';
+      reviewedBy: string; reviewedAt: string };
+```
+
+A `model_assumption` is a legitimate, honest input — an overhead rate is a
+business assumption and always will be. What it must not do is masquerade as a
+measurement, so it lowers the estimate's confidence by its own declaration and
+the page can say which numbers are modelled rather than sourced.
 
 ### D.3 Calculation model
 
@@ -471,9 +570,21 @@ type MaterialComponent = {
 ```
 
 Current price = `baselinePrice × (PPI_now / PPI_baseline) × regionalFactor`.
-The baseline date and the escalation factor are both shown on the page. V1
-target: **120 components** covering the 10 recipes completely; 300–500 is the
-wave-2 target once more recipes exist to need them.
+The baseline date and the escalation factor are both shown on the page.
+
+**Where a baseline may come from:** public procurement and bid data,
+manufacturer-published prices, licensed or permitted price feeds, open
+commercial catalogue data. **Never scraped from a retailer.**
+
+**Where it may not come from:** a guess. A component with no usable source is
+`unsupported` — it drops out of the recipe, the recipe says a material is
+unpriced, and the estimate's confidence falls. Filling 120 rows with plausible
+numbers to make the basket look complete is the failure this state exists to
+prevent, because an invented material price is invisible inside a total.
+
+V1 target: **as many of ~120 components as have real sources**, covering the 10
+recipes; a recipe with unpriced components ships saying so. 300–500 is the
+wave-2 target once more recipes need them.
 
 ### D.7 Confidence
 
@@ -731,13 +842,26 @@ search intent
  → editorial pass             (voice, no spintax, no number-swapped variants)
  → financial fact check       (numbers reproduced from the cited source)
  → citation check             (every URL resolves; every date is real)
- → semantic similarity check  (reject ≥0.85 cosine against the existing corpus)
+ → semantic similarity check  (review signal — see below)
  → quality score              (same 100-point rubric as the tool gate; ≥75 to publish)
  → publish | reject
 ```
 
 Rejection is normal and logged. A rejected brief is not re-run with different
 wording — that is the spintax failure mode §H forbids.
+
+**On the similarity threshold.** v1 hard-rejected anything scoring ≥0.85 cosine
+against the corpus. That number is a guess until there is a corpus to calibrate
+it on, and a guessed threshold rejecting real work is worse than no threshold:
+two guides about different states' tax rules *should* score high and are not
+duplicates.
+
+So similarity is a **review signal** first. It flags, a human decides, and the
+decision is recorded. After the first 500–1,000 published guides the
+distribution is known — the score where genuine near-duplicates actually sit —
+and only then does it become a hard gate at a calibrated value. Until then the
+hard gates are the ones that do not need calibration: intent duplication,
+citation resolution, and the quality score.
 
 ### H.3 Guide page contract
 
@@ -814,17 +938,23 @@ Two facts have changed since that decision:
 2. The domain still has **zero** Search Console history, and Search Console is
    still not connected.
 
-**Recommendation:** set `occupationInState: 'staged'` for launch. Ship 813 salary
-URLs (hub + state index + 51 state hubs + 761 occupations) — already a
-substantial corpus. Open the 30,807 leaves in four waves *after* P2 lands the 37
-state schedules and Search Console shows the upper levels indexing above 70%.
-This is one word, fully reversible, and it is what §7 and §25 of the brief ask for
-in every other context.
+**Decided: `occupationInState: 'staged'`.** Applied at HEAD. The site ships 813
+salary URLs — hub, state index, 51 state hubs, 761 occupation pages — which is
+already a substantial corpus and carries no such defect, because a hub reports a
+distribution rather than one person's take-home.
 
-**This is the owner's call, not mine.** If the answer is "publish everything at
-launch", P2 (state tax) becomes an absolute day-4 blocker with no slack, because
-publishing 22,000 pages with a federal-only take-home is worse than publishing
-none.
+The leaves open when **both** are true, in waves, measuring between them:
+
+```text
+51 verified state schedules (P2)
++ Search Console showing the levels above indexing
+        ↓
+    10k leaves → measure → next wave → measure → 30,807
+```
+
+Reversing this is one word. Opening it before P2 is not on the table: publishing
+22,000 pages whose headline figure knowingly omits state income tax is worse
+than publishing none of them.
 
 ### J.2 Launch indexation budget
 
@@ -832,7 +962,7 @@ none.
 | --- | --- |
 | Tools | 101 |
 | Topic hubs + site pages | ~20 |
-| Salary (staged) | 813 |
+| Salary (leaves staged) | 813 |
 | Guides EN | 30 |
 | Job cost | 13 (`/cost`, 2 entry points, 10 job pages) |
 | ES slice | ~60 |
@@ -884,6 +1014,15 @@ remove the hardcoded nvm path from `playwright.config.ts`.
 ---
 
 ## L. Ten-day execution plan
+
+> **Day 10 is a go/no-go checkpoint, not an unconditional launch date.**
+>
+> The scope below is roughly 30 engineer-days. Three strong parallel agents make
+> it reachable; nothing makes it certain. The quality gates in §M decide whether
+> day 10 ships, and a gate that has not passed is a reason to hold, not a reason
+> to lower the gate. Specifically: launching with fewer than 51 verified state
+> tax schedules, or with the salary leaves open while any are missing, is a
+> no-go regardless of the date.
 
 Three lanes. **Lane A** = data and correctness. **Lane B** = calculators and UI.
 **Lane C** = platform, i18n, job engine. Phases inside a lane are sequential;
@@ -957,15 +1096,16 @@ doubled at days 15–17. Say the word and I will re-cut the day map.
 
 ## M. Acceptance criteria by phase
 
-**P1 — Platform and blockers**
-- `https://costanswer.com` serves the production build over TLS; `www` redirects.
-- `npm run verify` exits 0 (lint included).
-- `verify.yml` runs `lint` and `test:e2e`; `playwright.config.ts` contains no absolute local path.
-- No client chunk exceeds **150 KB gzipped**; asserted by a CI check that fails the build.
-- `dist/client/_next/static/chunks/` contains no dataset chunk over 100 KB.
-- Worker bundle ≤ 2.8 MB gzipped, asserted in CI.
-- `lib/plural 2.ts`, `lib/data/verify 2.ts`, `lib/calculations/col/coverage 2.ts` deleted.
-- `/money/marketplace-plans` and `/money/health-insurance` still pass their Playwright journeys after the tier-2 move.
+**P1 — Platform and blockers** — met except deployment
+- ✅ `npm run verify` exits 0; lint has zero errors.
+- ✅ `verify.yml` runs `lint`, the bundle budget and `test:e2e`; no absolute local path in `playwright.config.ts`.
+- ✅ No client chunk over **200 KB**; no dataset chunk at all. Asserted in CI.
+- ✅ Worker ≤ 2.8 MB gzipped — **our** budget for cold-start and deploy time, not a platform ceiling.
+- ✅ The three conflict copies are deleted.
+- ✅ Typecheck under 30s.
+- ⬜ `https://costanswer.com` serves the production build over TLS; `www` redirects.
+- ⬜ D1 provisioned and migrated; `MONETIZATION_*` secrets set.
+- ⬜ `/money/marketplace-plans` and `/money/health-insurance` re-verified in a browser after the tier move.
 
 **P2 — State tax**
 - `data/tax/2026.json` has **51 supported** rows; zero `unsupported`.
@@ -1095,9 +1235,23 @@ complete product: calculate, compare, reverse-solve, full results, all guides an
 data pages. If accounts are added later they add save/resume/history and nothing
 else. No registration wall, no email gate on a result — ever.
 
-**Monetization** (§28): display ads only, in the three reserved slots that
-already exist, none between input and result. Affiliate, lead-gen, embeds, data
-products and API stay unbuilt until traffic justifies them.
+**Monetization.** The infrastructure is **already implemented pre-launch** and
+must be preserved — see §A.0. What remains gated is activation, not
+construction:
+
+- Display advertising, affiliate commerce, home-services lead generation and
+  pay-per-call all have working engines, adapters, consent, ledger and admin.
+- **Every external provider is disabled.** Each is `configuration_required`
+  because its posting specification, credentials or programme approval is
+  genuinely outstanding — not because the code is missing.
+- **Launch does not depend on activating any provider.** Turning one on is
+  credentials plus a configuration change, staged per `docs/MONETIZATION.md` §12.
+- Financial, insurance and health lead generation stay off by policy, and
+  health calculators are `restricted`: no ads, no affiliate, no leads, whatever
+  the flags say.
+
+Still genuinely unbuilt and deliberately so: embeds, data products, a public
+API, white-label, premium subscriptions.
 
 **Real Quote Dataset** (§20): the optional anonymous "did you get a quote?"
 capture. `lib/job/calibration.ts` is the seam it plugs into. Not required for
@@ -1111,57 +1265,42 @@ Each card is executable as written.
 
 ---
 
-### P1 — Platform, deployment, and the bundle blocker
+### P1 — Platform, deployment, and the bundle blocker · **DONE except deploy**
 
 **Goal.** A live custom domain, a green release gate, and no dataset in the
 browser.
 
-**Files.** `components/calculators/HealthInsuranceCalculator.tsx` ·
-`components/calculators/MarketplacePlansCalculator.tsx` ·
-`app/money/marketplace-plans/page.tsx` · `app/money/health-insurance/page.tsx` ·
-`lib/data/cms-marketplace-snapshot.ts` · **new** `lib/data/store/asset.ts` ·
-`lib/data/bls-oews-snapshot.ts` · `components/calculators/CalculatorUI.tsx:199` ·
-`components/calculators/CostOfLivingCalculator.tsx:85` · `.github/workflows/verify.yml` ·
-`playwright.config.ts` · `next.config.ts` · delete `lib/plural 2.ts`,
-`lib/data/verify 2.ts`, `lib/calculations/col/coverage 2.ts`.
+**What landed.**
 
-**Work.**
-1. Introduce `lib/data/store/asset.ts` with `readDatasetAsset<T>(key): Promise<T>`
-   backed by Workers static assets. One implementation, one signature that a
-   future R2/D1 backing can satisfy.
-2. Move `data/cms-marketplace/premiums.json` and `data/bls-oews/wages.json` to
-   tier 2. Keep the small indexes bundled.
-3. Convert the two ACA calculators to fetch priced results from a server route
-   (`app/api/marketplace/quote/route.ts`) instead of importing county columns.
-   The island keeps its inputs and its receipt; only the data lookup moves.
-4. Fix both `react-hooks/set-state-in-effect` errors by deriving state instead of
-   setting it in an effect.
-5. Delete the three conflict copies.
-6. Add `lint` and `test:e2e` to `verify.yml`; remove the nvm path from
-   `playwright.config.ts` (CI sets its own PATH).
-7. Add a CI step asserting no client chunk > 150 KB gz and Worker ≤ 2.8 MB gz.
-8. Add `s-maxage=86400, stale-while-revalidate=604800` to `/salary/:occupation`
-   and `/salary/states/:state` in `next.config.ts`.
-9. `wrangler deploy`; bind `costanswer.com`; verify TLS and the apex/www redirect.
+| # | Was | Now |
+| --- | --- | --- |
+| 1 | 3,842,883-byte CMS chunk shipped to every visitor of two YMYL pages | **0.** Priced server-side via `app/api/marketplace/quote`; largest client chunk is 186 KB, which is React |
+| 2 | 2 lint errors, so `npm run verify` was red while CI was green | **0 errors.** Both were state synced in an effect; both are now derived, which also fixed a one-frame stale suggestion list |
+| 3 | 3 committed iCloud conflict copies, one a stale dataset verifier | Deleted |
+| 4 | CI ran neither `lint` nor `test:e2e`; Playwright carried a developer's own nvm path | Both run; the path is gone |
+| 5 | Nothing measured the bundle | `scripts/check-bundle-budget.mjs`, in CI and in `verify` |
+| 6 | 812 salary pages ran the Worker on every request | Edge-cached like the leaves — same data, same annual cadence |
+| 7 | — | **Typecheck 538s → 8s.** `resolveJsonModule` was inferring literal types for 5.7 MB of JSON that the code discards with `as unknown as`; `types/data-json.d.ts` declares those four modules instead |
 
-**Data dependencies.** None.
+Number 7 was not on v1's list because nobody had timed it. A nine-minute
+release gate is a gate people skip, and every phase below pays for it.
 
-**Tests.** Bundle-budget CI assertion · existing Playwright journeys for both ACA
-tools must still pass · a test asserting `readDatasetAsset` is never imported
-from a `'use client'` module.
+**Files.** `app/api/marketplace/quote/route.ts` ·
+`lib/data/cms-marketplace-client.ts` · `components/calculators/useCmsQuote.ts` ·
+`components/calculators/{Health,MarketplacePlans}*.tsx` ·
+`types/data-json.d.ts` · `scripts/check-bundle-budget.mjs` ·
+`next.config.ts` · `.github/workflows/verify.yml` · `playwright.config.ts`
 
-**Acceptance.** §M P1.
+**Still open — needs credentials, not engineering.**
 
-**Risks.** The tier-2 move changes how two shipped calculators get their data;
-their Playwright journeys are the safety net. Vinext's static-asset binding may
-need a `wrangler.json` field the build does not emit — if so, fall back to a
-server route reading the file from the server bundle, which still keeps it out
-of the browser.
+- `wrangler d1 create costanswer-monetization`, then `npm run monetization:migrate`
+- Set `MONETIZATION_D1_DATABASE_ID`, `MONETIZATION_HASH_PEPPER`, `MONETIZATION_ADMIN_TOKEN`
+- `wrangler deploy`; bind `costanswer.com`; verify TLS and the apex/www redirect
 
-**Rollback.** Revert the tier-2 commit; the bundled imports still work, and the
-bundle-budget assertion is the only thing that fails.
+**Acceptance.** §M P1 — met except the deployment items above.
 
----
+**Rollback.** The tier boundary is one route and one hook; reverting restores
+the bundled imports and the budget check is the only thing that then fails.
 
 ### P2 — Complete the 2026 state tax engine
 
@@ -1224,18 +1363,56 @@ current when the provider has published a newer one.
 `scripts/ingest-gsa-perdiem.ts` · `lib/data/freshness.ts` · `lib/publishing.ts`.
 
 **Work.**
-1. Split the single Tuesday cron into per-cadence jobs matched to each provider's
-   own calendar: PMMS Thursday 18:00 UTC (published Thursday noon ET); EIA
-   gasoline Monday 22:00 UTC; BLS monthly mid-month; annual datasets on their
-   release month. The current Tuesday cron guarantees the mortgage rate is up to
-   five days stale — which is exactly the freshness failure already on record.
+1. Split the single Tuesday cron into per-cadence jobs matched to each
+   provider's own calendar. The current Tuesday cron guarantees the mortgage
+   rate is up to five days stale, which is exactly the freshness failure
+   already on record.
+
+   **A weekday is not a calendar.** PMMS normally publishes Thursday around
+   noon ET, but a US holiday moves it earlier in the week. A cron pinned to
+   Thursday therefore misses the release it was written for on precisely the
+   weeks it matters. Freshness needs three parts, not one:
+
+   ```text
+   expected publication calendar   the provider's own stated cadence
+   + holiday exceptions            federal holidays shift the release
+   + release detection             poll, compare observation period, promote on change
+   ```
+
+   Detection is what makes the other two advisory rather than load-bearing: the
+   job runs on a schedule that is usually right, and promotes on what it
+   actually finds. EIA gasoline Monday, BLS monthly mid-month, annual datasets
+   in their release month — same shape.
 2. Add `gsa-perdiem` to `scripts/refresh-snapshots.ts` (its policy already says
    `scheduled` and it is in neither refresh script).
-3. Give GSA the HUD treatment: `data/gsa-perdiem/releases.json` +
-   `resolveEffectivePerDiemRelease(releases, asOf)` +
-   `resolveLatestPublishedPerDiemRelease(releases)`, mirroring
-   `lib/data/hud-fmr.ts:126-138`. Stop deriving `publishedAt` from the fiscal
-   year; record the date GSA actually published.
+3. Give GSA the HUD treatment plus one date more than HUD needs.
+
+   A fiscal year has three distinct moments and collapsing them loses the
+   ability to answer "is this the newest data?" separately from "is this the
+   rate that applies to my trip?":
+
+   ```ts
+   type PerDiemRelease = {
+     fiscalYear: number;
+     announcementPublishedAt: string;  // the bulletin
+     datasetPublishedAt: string;       // the ZIP file the ingest reads
+     effectiveFrom: string;            // travel on or after this date
+     effectiveTo: string;
+   };
+   ```
+
+   For FY2027 those are three different dates in three different weeks, with
+   the rates applying from 1 October 2026. The invariants to hold, whatever the
+   calendar says:
+
+   ```text
+   latest_published      = the newest datasetPublishedAt
+   currently_effective   = the release whose window contains today
+   ```
+
+   Those must be allowed to name different fiscal years — that is the entire
+   point — and `resolveEffectivePerDiemRelease` / `resolveLatestPublishedPerDiemRelease`
+   are the two functions, mirroring `lib/data/hud-fmr.ts:126-138`.
 4. New `freshness.yml`, daily: evaluate every dataset, fail on `stale`, open an
    issue on `update-due` that persists past its grace window.
 5. Address the frozen clock: `evaluateFreshness` defaults `asOf` to
@@ -1287,6 +1464,26 @@ with four additions:
 
 **Data dependencies.** §E new rows: `irs-pub15t`, `irs-credits`, `irs-rmd`,
 `ssa-benefits`, `irs-hsa`, `fha-va`, `sofr-index`. P2 for anything state-aware.
+
+**Rule-dependent tools do not ship to hit a count.** Nine of the 43 compute a
+statutory entitlement rather than applying arithmetic to what someone typed:
+
+> `student-loan` · `eitc` · `child-tax-credit` · `social-security` ·
+> `fha-loan` · `va-loan` · `hsa` · `capital-gains` · `w4-withholding`
+
+Each is bound to a dated official rule snapshot or it does not ship. The
+existing 2026 federal snapshot is the model — it carries Rev. Proc. 2025-32 as
+its source, its publication date, and a standard deduction of $16,100 single
+and $32,200 married filing jointly, transcribed rather than estimated.
+
+Student loan repayment is the sharpest case: federal plan rules are subject to
+statutory and regulatory change, so the tool models **named plans with an
+effective date and a source**, states which rules it applied, and refuses a
+plan it has no verified rules for. It does not interpolate between regimes.
+
+If a snapshot cannot be verified in time, **the tool waits.** The catalogue
+reaching 101 is a target, not a deadline, and a wrong entitlement figure on a
+YMYL page costs more than a missing calculator.
 
 **Tests.** Per tool: boundary, invariant, regression fixture. Per tax tool: a
 golden vector against the IRS's own published example. Registry-wide:

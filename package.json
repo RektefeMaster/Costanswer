@@ -22,7 +22,7 @@
     "test:e2e": "playwright test",
     "verify:data": "tsx scripts/verify-eia-data.ts",
     "verify:tax": "tsx scripts/validate-tax-data.ts",
-    "verify": "npm run typecheck && npm run lint && npm run test && npm run verify:data && npm run verify:tax && npm run verify:insurance && npm run verify:cms && npm run verify:oews && npm run build && npm run test:e2e",
+    "verify": "npm run typecheck && npm run lint && npm run test && npm run verify:data && npm run verify:tax && npm run verify:insurance && npm run verify:cms && npm run verify:oews && npm run build && npm run verify:bundle && npm run test:e2e",
     "data:eia": "tsx scripts/ingest-eia-electricity.ts",
     "data:eia-gasoline": "tsx scripts/ingest-eia-gasoline.ts",
     "data:bls-grocery": "tsx scripts/ingest-bls-grocery.ts",
@@ -42,7 +42,8 @@
     "verify:oews": "tsx scripts/ingest-bls-oews.ts --rebuild",
     "monetization:migrate:local": "wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
     "monetization:migrate": "wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
-    "monetization:drain": "tsx scripts/monetization-drain.ts"
+    "monetization:drain": "tsx scripts/monetization-drain.ts",
+    "verify:bundle": "node scripts/check-bundle-budget.mjs"
   },
   "dependencies": {
     "next": "16.3.4",

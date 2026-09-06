@@ -5,11 +5,9 @@ import { useMemo, useState } from 'react';
 import { calculateMarketplacePlanCost } from '@/lib/calculations/marketplace-plans';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { formatMoney } from '@/lib/calculations/contracts';
-import { CMS_METALS, type CmsMetal } from '@/lib/data/cms-marketplace';
-import {
-  benchmarkForHousehold, cmsCountiesForZip, cmsMarketplaceIndex, lowestMetalForHousehold, metalSummary,
-  parseEnrollingAges,
-} from '@/lib/data/cms-marketplace-snapshot';
+import { CMS_METALS, parseEnrollingAges, type CmsMetal } from '@/lib/data/cms-marketplace';
+import type { CmsReleaseSummary } from '@/lib/data/cms-marketplace-client';
+import { useCmsQuote } from './useCmsQuote';
 import { US_STATES, type StateCode } from '@/lib/location/states';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
@@ -19,39 +17,43 @@ const METAL_DISPLAY_ORDER: CmsMetal[] = ['bronze', 'silver', 'gold'];
 const byDisplayOrder = <T extends { metal: CmsMetal }>(rows: T[]): T[] =>
   [...rows].sort((left, right) => METAL_DISPLAY_ORDER.indexOf(left.metal) - METAL_DISPLAY_ORDER.indexOf(right.metal));
 
-export function MarketplacePlansCalculator() {
+export function MarketplacePlansCalculator({ release }: { release: CmsReleaseSummary }) {
   const [zip, setZip] = useState('77002');
   const [chosenFips, setChosenFips] = useState('');
   const [enrollingAges, setEnrollingAges] = useState('40');
   const [monthlyCredit, setMonthlyCredit] = useState('0');
   const [expectedCare, setExpectedCare] = useState('2000');
 
-  const lookup = useMemo(() => cmsCountiesForZip(zip.trim()), [zip]);
-  const matches = lookup.status === 'covered' ? lookup.counties : [];
+  /*
+   * Priced on the server. The premium columns cover 2,055 counties and belong
+   * there; this page needs one county's answer, which is a few hundred bytes.
+   */
+  const quote = useCmsQuote(zip, enrollingAges, chosenFips || undefined);
+  const covered = quote.data?.status === 'covered' ? quote.data : null;
+  // The lookup is carried for every outcome, not only a covered one: "your
+  // state files separately" and "check the digits" are different answers and
+  // the page has to be able to give each of them.
+  const lookup = quote.data && 'lookup' in quote.data ? quote.data.lookup : null;
+  const matches = covered?.lookup.counties ?? [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
   const parsedAges = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
   const ages = parsedAges.invalidTokens.length === 0 ? parsedAges.ages : [];
 
   const priced = useMemo(() => {
-    if (!county || ages.length === 0) return null;
-    try {
-      const metals = CMS_METALS.flatMap((metal) => {
-        const quote = lowestMetalForHousehold(county.countyFips, metal, ages);
-        const summary = metalSummary(county.countyFips, metal);
-        if (!quote || !summary) return [];
-        return [{
-          metal,
-          monthlyPremium: quote.premium,
-          individualDeductible: summary.individualDeductible,
-          individualMaximumOutOfPocket: summary.individualMaximumOutOfPocket,
-        }];
-      });
-      if (metals.length === 0) return null;
-      return { metals, benchmark: benchmarkForHousehold(county.countyFips, ages) };
-    } catch {
-      return null;
-    }
-  }, [county, ages]);
+    if (!covered || !county || ages.length === 0) return null;
+    const metals = CMS_METALS.flatMap((metal: CmsMetal) => {
+      const entry = covered.metals[metal];
+      if (!entry?.quote || !entry.summary) return [];
+      return [{
+        metal,
+        monthlyPremium: entry.quote.premium,
+        individualDeductible: entry.summary.individualDeductible,
+        individualMaximumOutOfPocket: entry.summary.individualMaximumOutOfPocket,
+      }];
+    });
+    if (metals.length === 0 || !covered.benchmark) return null;
+    return { metals, benchmark: covered.benchmark };
+  }, [covered, county, ages]);
 
   const calculation = useMemo(() => {
     if (!priced) return { result: null, error: '' };
@@ -88,14 +90,14 @@ export function MarketplacePlansCalculator() {
       calculationSignature={JSON.stringify([zip, chosenFips, enrollingAges, monthlyCredit, expectedCare])}
     >
       <div className="data-callout">
-        <span>{cmsMarketplaceIndex.observationPeriod} PLAN YEAR</span>
+        <span>{release.planYear} PLAN YEAR</span>
         <p>
           <strong>CMS county plan filings</strong>
-          <small>{cmsMarketplaceIndex.snapshotId}</small>
+          <small>{release.snapshotId}</small>
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="ZIP code" htmlFor="plans-zip" hint={`${cmsMarketplaceIndex.counties.length.toLocaleString('en-US')} counties across ${cmsMarketplaceIndex.coveredStateCodes.length} HealthCare.gov states are priced here.`}>
+        <Field label="ZIP code" htmlFor="plans-zip" hint={`${release.countyCount.toLocaleString('en-US')} counties across ${release.coveredStateCount} HealthCare.gov states are priced here.`}>
           <InputShell>
             <input id="plans-zip" type="text" inputMode="numeric" maxLength={5} value={zip} onChange={(event) => { setZip(event.target.value); setChosenFips(''); }} />
           </InputShell>
@@ -117,7 +119,7 @@ export function MarketplacePlansCalculator() {
         </Field>
       </div>
 
-      {lookup.status === 'covered' && matches.length > 1 && (
+      {lookup?.status === 'covered' && matches.length > 1 && (
         <div className="health-county-choice">
           <p>ZIP {zip} spans {matches.length} counties, which file separately.</p>
           <div className="mode-tabs">
@@ -129,13 +131,13 @@ export function MarketplacePlansCalculator() {
           </div>
         </div>
       )}
-      {lookup.status === 'not-in-this-release' && (
+      {lookup?.status === 'not-in-this-release' && (
         <div className="health-status health-status-review" role="status">
           <span>Priced by a state exchange</span>
           <ul><li>{lookup.stateCodes.map((code) => US_STATES[code as StateCode]).join(' and ') || 'This state'} runs its own Marketplace and files premiums separately, so this release carries no plans for it.</li></ul>
         </div>
       )}
-      {lookup.status === 'unknown-zip' && zip.trim() !== '' && (
+      {lookup?.status === 'unknown-zip' && zip.trim() !== '' && (
         <div className="health-status health-status-review" role="status">
           <span>ZIP not recognised</span>
           <ul><li>Enter a five-digit ZIP code that the Census ZCTA file maps to a county.</li></ul>
@@ -231,7 +233,7 @@ export function MarketplacePlansCalculator() {
             breakdown={result.breakdown}
             assumptions={result.assumptions}
             calculationVersion={result.calculationVersion}
-            datasetSnapshotIds={[cmsMarketplaceIndex.snapshotId]}
+            datasetSnapshotIds={[release.snapshotId]}
           />
           <p className="health-range-note">
             These are full prices unless you entered a credit. To find out what assistance you qualify for, and whether your income unlocks a lower Silver deductible,

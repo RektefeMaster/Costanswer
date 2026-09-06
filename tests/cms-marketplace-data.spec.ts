@@ -2,8 +2,11 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { calculateAcaSubsidy } from '@/lib/calculations/aca-subsidy';
-import indexJson from '@/data/cms-marketplace/index.json';
-import premiumsJson from '@/data/cms-marketplace/premiums.json';
+// Declared `unknown` so the compiler does not infer literal types for 1.7 MB
+// of premium columns on every run. Cast to the schema types here, which is what
+// the ingest already proves at write time and `verify:cms` proves by hash.
+import indexRaw from '@/data/cms-marketplace/index.json';
+import premiumsRaw from '@/data/cms-marketplace/premiums.json';
 import {
   CMS_ABSENT, CMS_AGE_COUNT, CMS_COLUMNS_PER_COUNTY, CMS_COST_SHARING_LEVELS, CMS_METALS, CMS_PUBLISHED_AGES,
   FEDERAL_DEFAULT_AGE_CURVE, cmsMarketplaceIndexSchema, cmsMarketplacePremiumsSchema,
@@ -19,6 +22,9 @@ import { sha256 } from '@/lib/data/sha256';
 const AGE_21 = CMS_PUBLISHED_AGES.indexOf(21);
 const BOTH_FEDERAL = { ageCurve: 'federal-default', childAgeCurve: 'federal-default' } as const;
 const BOTH_FILED = { ageCurve: 'state-filed', childAgeCurve: 'state-filed' } as const;
+
+const indexJson = indexRaw as import('@/lib/data/cms-marketplace').CmsMarketplaceIndex;
+const premiumsJson = premiumsRaw as import('@/lib/data/cms-marketplace').CmsMarketplacePremiums;
 
 describe('CMS Marketplace landscape snapshot', () => {
   it('matches its own digests, its manifest, and its immutable copy', async () => {

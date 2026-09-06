@@ -49,11 +49,14 @@ type CoverageState =
   | { status: 'loading'; value: LocationCoverage | null }
   | { status: 'error'; value: null; message: string };
 
+/** One empty array, so the derived list keeps a stable identity between renders. */
+const NO_MATCHES: LocationSearchHit[] = [];
+
 export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: LocationCoverage }) {
   const [query, setQuery] = useState('Austin, TX');
   const [selected, setSelected] = useState<LocationSearchHit | null>(AUSTIN);
   const [coverage, setCoverage] = useState<CoverageState>({ status: 'ready', value: initialCoverage });
-  const [matches, setMatches] = useState<LocationSearchHit[]>([]);
+  const [matches, setMatches] = useState<LocationSearchHit[]>(NO_MATCHES);
   const [residentialState, setResidentialState] = useState<StateCode | ''>('');
   const [countyGeoid, setCountyGeoid] = useState('');
   const [bedrooms, setBedrooms] = useState<ColBedroom>('br2');
@@ -79,12 +82,20 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
 
   const showingSelection = Boolean(selected) && query === selected?.displayName;
 
+  /*
+   * The list is derived, not synced.
+   *
+   * Clearing it from inside the effect meant the rendered list lagged the query
+   * by a render: for one frame after picking a place, the suggestions that led
+   * there were still on screen under the thing they had produced. Deriving it
+   * makes "showing a selection" and "showing suggestions" mutually exclusive by
+   * construction rather than by timing.
+   */
+  const suggestions = showingSelection || query.trim() === '' ? NO_MATCHES : matches;
+
   // Typeahead runs on the server, so the national geography tables never ship here.
   useEffect(() => {
-    if (showingSelection || query.trim() === '') {
-      setMatches([]);
-      return;
-    }
+    if (showingSelection || query.trim() === '') return;
     const controller = new AbortController();
     const timer = setTimeout(() => {
       fetch(`/api/location/search?q=${encodeURIComponent(query)}`, { signal: controller.signal })
@@ -220,9 +231,9 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
             />
           </InputShell>
           {selected?.id && <p className="location-selected">Selected: {selected.displayName}</p>}
-          {matches.length > 0 && (
+          {suggestions.length > 0 && (
             <ul className="location-results" role="listbox" aria-label="Matching locations">
-              {matches.map((hit) => (
+              {suggestions.map((hit) => (
                 <li key={hit.id} role="option" aria-selected={selected?.id === hit.id}>
                   <button
                     type="button"

@@ -1,7 +1,7 @@
 import { HealthInsuranceCalculator } from '@/components/calculators/HealthInsuranceCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
-import { cmsMarketplaceIndex } from '@/lib/data/cms-marketplace-snapshot';
+import { cmsMarketplaceIndex, cmsReleaseSummary } from '@/lib/data/cms-marketplace-snapshot';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';
 
@@ -78,7 +78,7 @@ export default function HealthInsurancePage() {
         },
       ]}
     >
-      <HealthInsuranceCalculator />
+      <HealthInsuranceCalculator release={cmsReleaseSummary()} />
     </ToolPage>
   );
 }
