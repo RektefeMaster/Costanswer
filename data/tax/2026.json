@@ -523,26 +523,283 @@
     {
       "stateCode": "HI",
       "provider": "Hawaii Department of Taxation",
-      "sourceName": "Hawaii Department of Taxation",
-      "sourceUrl": "https://tax.hawaii.gov/",
+      "sourceName": "Instructions for Form N-11 (Rev. 2025), 2025 Tax Rate Schedules I-III and the standard deduction and exemption tables",
+      "sourceUrl": "https://files.hawaii.gov/tax/forms/current/n11ins.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Hawaii. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 9600,
+            "rate": 0.014
+          },
+          {
+            "notOver": 14400,
+            "rate": 0.032
+          },
+          {
+            "notOver": 19200,
+            "rate": 0.055
+          },
+          {
+            "notOver": 24000,
+            "rate": 0.064
+          },
+          {
+            "notOver": 36000,
+            "rate": 0.068
+          },
+          {
+            "notOver": 48000,
+            "rate": 0.072
+          },
+          {
+            "notOver": 125000,
+            "rate": 0.076
+          },
+          {
+            "notOver": 175000,
+            "rate": 0.079
+          },
+          {
+            "notOver": 225000,
+            "rate": 0.0825
+          },
+          {
+            "notOver": 275000,
+            "rate": 0.09
+          },
+          {
+            "notOver": 325000,
+            "rate": 0.1
+          },
+          {
+            "notOver": null,
+            "rate": 0.11
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 9600,
+            "rate": 0.014
+          },
+          {
+            "notOver": 14400,
+            "rate": 0.032
+          },
+          {
+            "notOver": 19200,
+            "rate": 0.055
+          },
+          {
+            "notOver": 24000,
+            "rate": 0.064
+          },
+          {
+            "notOver": 36000,
+            "rate": 0.068
+          },
+          {
+            "notOver": 48000,
+            "rate": 0.072
+          },
+          {
+            "notOver": 125000,
+            "rate": 0.076
+          },
+          {
+            "notOver": 175000,
+            "rate": 0.079
+          },
+          {
+            "notOver": 225000,
+            "rate": 0.0825
+          },
+          {
+            "notOver": 275000,
+            "rate": 0.09
+          },
+          {
+            "notOver": 325000,
+            "rate": 0.1
+          },
+          {
+            "notOver": null,
+            "rate": 0.11
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 19200,
+            "rate": 0.014
+          },
+          {
+            "notOver": 28800,
+            "rate": 0.032
+          },
+          {
+            "notOver": 38400,
+            "rate": 0.055
+          },
+          {
+            "notOver": 48000,
+            "rate": 0.064
+          },
+          {
+            "notOver": 72000,
+            "rate": 0.068
+          },
+          {
+            "notOver": 96000,
+            "rate": 0.072
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.076
+          },
+          {
+            "notOver": 350000,
+            "rate": 0.079
+          },
+          {
+            "notOver": 450000,
+            "rate": 0.0825
+          },
+          {
+            "notOver": 550000,
+            "rate": 0.09
+          },
+          {
+            "notOver": 650000,
+            "rate": 0.1
+          },
+          {
+            "notOver": null,
+            "rate": 0.11
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 14400,
+            "rate": 0.014
+          },
+          {
+            "notOver": 21600,
+            "rate": 0.032
+          },
+          {
+            "notOver": 28800,
+            "rate": 0.055
+          },
+          {
+            "notOver": 36000,
+            "rate": 0.064
+          },
+          {
+            "notOver": 54000,
+            "rate": 0.068
+          },
+          {
+            "notOver": 72000,
+            "rate": 0.072
+          },
+          {
+            "notOver": 187500,
+            "rate": 0.076
+          },
+          {
+            "notOver": 262500,
+            "rate": 0.079
+          },
+          {
+            "notOver": 337500,
+            "rate": 0.0825
+          },
+          {
+            "notOver": 412500,
+            "rate": 0.09
+          },
+          {
+            "notOver": 487500,
+            "rate": 0.1
+          },
+          {
+            "notOver": null,
+            "rate": 0.11
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 4400,
+        "marriedFilingJointly": 8800,
+        "marriedFilingSeparately": 4400,
+        "headOfHousehold": 6424
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 1144,
+        "marriedFilingJointly": 2288,
+        "marriedFilingSeparately": 1144,
+        "headOfHousehold": 1144
+      },
+      "perDependentExemption": 1144,
+      "notes": [
+        "Hawaii taxes taxable income in twelve brackets from 1.40% to 11.00% (Instructions for Form N-11, Rev. 2025, Tax Rate Schedules I, II and III; HRS 235-51).",
+        "Standard deduction for 2025: $4,400 single and married filing separately, $8,800 married filing jointly, $6,424 head of household. Each personal exemption is $1,144 as a deduction from income.",
+        "Hawaii did not adopt the federal suspension of personal exemptions, so it still allows one for the taxpayer, spouse and each dependent.",
+        "The department had published Rev. 2025 forms and not 2026 at verification, so this row declares the 2025 schedule. Hawaii has legislated further standard deduction increases in later years.",
+        "The alternative tax on capital gains, the additional exemption for taxpayers 65 and older, Hawaii credits and itemized deductions are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "IA",
       "provider": "Iowa Department of Revenue",
-      "sourceName": "Iowa Department of Revenue",
-      "sourceUrl": "https://tax.iowa.gov/",
+      "sourceName": "Iowa IA 1040 Expanded Instructions (instruction year 2025), lines 2, 5, 8 and 19, and the exemption credit instructions",
+      "sourceUrl": "https://revenue.iowa.gov/taxes/tax-guidance/individual-income-tax/1040-expanded-instructions/iowa-tax",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Iowa. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "taxableIncomeBasis": "federal-taxable-income",
+      "rate": 0.038,
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 40,
+          "marriedFilingJointly": 80,
+          "marriedFilingSeparately": 40,
+          "headOfHousehold": 80
+        },
+        "perDependent": 40
+      },
+      "localAddOn": {
+        "label": "Iowa school district surtax",
+        "basis": "school-district",
+        "appliesTo": "state-tax-liability",
+        "typicalRateRange": {
+          "low": 0,
+          "high": 0.2
+        }
+      },
+      "notes": [
+        "Iowa taxes income at a flat 3.8% (Iowa DOR, IA 1040 Expanded Instructions, line 5).",
+        "IA 1040 line 2 starts from federal taxable income, so the federal standard deduction is already out of the base and Iowa adds none of its own.",
+        "The exemption credit is $40 per personal credit — one filing single or separately, two filing jointly or as head of household — plus $40 per dependent. It is a credit against tax, not a deduction, and cannot take the bill below zero.",
+        "Iowa school districts levy a surtax as a percentage of state tax after credits, from 0% to 20% in the department’s 2025 table, and six counties add an emergency medical services surtax. It depends on where you live and is not included here.",
+        "The Iowa alternate tax computation, available to filers other than single, is not modeled. The additional $20 credits for age and blindness are not modeled either."
+      ]
     },
     {
       "stateCode": "ID",
@@ -1432,14 +1689,141 @@
     {
       "stateCode": "OK",
       "provider": "Oklahoma Tax Commission",
-      "sourceName": "Oklahoma Tax Commission",
-      "sourceUrl": "https://oklahoma.gov/tax.html",
+      "sourceName": "2025 Oklahoma Resident Individual Income Tax Forms and Instructions (Form 511 packet), income tax table and tax computation worksheets",
+      "sourceUrl": "https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Oklahoma. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 1000,
+            "rate": 0.0025
+          },
+          {
+            "notOver": 2500,
+            "rate": 0.0075
+          },
+          {
+            "notOver": 3750,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 4900,
+            "rate": 0.0275
+          },
+          {
+            "notOver": 7200,
+            "rate": 0.0375
+          },
+          {
+            "notOver": null,
+            "rate": 0.0475
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 1000,
+            "rate": 0.0025
+          },
+          {
+            "notOver": 2500,
+            "rate": 0.0075
+          },
+          {
+            "notOver": 3750,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 4900,
+            "rate": 0.0275
+          },
+          {
+            "notOver": 7200,
+            "rate": 0.0375
+          },
+          {
+            "notOver": null,
+            "rate": 0.0475
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 2000,
+            "rate": 0.0025
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.0075
+          },
+          {
+            "notOver": 7500,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 9800,
+            "rate": 0.0275
+          },
+          {
+            "notOver": 14400,
+            "rate": 0.0375
+          },
+          {
+            "notOver": null,
+            "rate": 0.0475
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 2000,
+            "rate": 0.0025
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.0075
+          },
+          {
+            "notOver": 7500,
+            "rate": 0.0175
+          },
+          {
+            "notOver": 9800,
+            "rate": 0.0275
+          },
+          {
+            "notOver": 14400,
+            "rate": 0.0375
+          },
+          {
+            "notOver": null,
+            "rate": 0.0475
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 6350,
+        "marriedFilingJointly": 12700,
+        "marriedFilingSeparately": 6350,
+        "headOfHousehold": 9350
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 1000,
+        "marriedFilingJointly": 2000,
+        "marriedFilingSeparately": 1000,
+        "headOfHousehold": 1000
+      },
+      "perDependentExemption": 1000,
+      "notes": [
+        "Oklahoma taxes Oklahoma taxable income in six bands from 0.25% to 4.75% (2025 Form 511 packet, Oklahoma income tax table and tax computation worksheets; 68 O.S. 2355).",
+        "Standard deduction for 2025: $6,350 single and married filing separately, $12,700 married filing jointly, $9,350 head of household. Each exemption is worth $1,000 as a deduction from income.",
+        "Married filing jointly and head of household use the same doubled bands, which is how Oklahoma’s own table is laid out.",
+        "The Tax Commission had published 2025 forms and not 2026 at verification, so this row declares the 2025 schedule.",
+        "Oklahoma additions, subtractions, the capital gain deduction and credits are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "OR",
@@ -1756,5 +2140,5 @@
       ]
     }
   ],
-  "normalizedSha256": "5268be1c456a35d1f7d741003ff1c99918b94576e3dc6fb28167f04f723b9412"
+  "normalizedSha256": "0722561611870b227073fc8963d1e407f6311cef7712ddb3f5376d3fb9d8aebe"
 }

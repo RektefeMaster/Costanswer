@@ -51,6 +51,21 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const HI_SOURCE = {
+  sourceName: 'Instructions for Form N-11 (Rev. 2025), 2025 Tax Rate Schedules I-III',
+  sourceUrl: 'https://files.hawaii.gov/tax/forms/current/n11ins.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const OK_SOURCE = {
+  sourceName: '2025 Oklahoma Form 511 packet, income tax table and tax computation worksheets',
+  sourceUrl: 'https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const IA_SOURCE = {
+  sourceName: 'Iowa IA 1040 Expanded Instructions (instruction year 2025), lines 2, 5 and 8',
+  sourceUrl: 'https://revenue.iowa.gov/taxes/tax-guidance/individual-income-tax/1040-expanded-instructions/iowa-tax',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const MT_SOURCE = {
   sourceName: '2025 Montana Form 2 instructions, worked example on page 24; 2025 Montana Tax Tables and Deductions',
   sourceUrl: 'https://mtrevenue.gov/taxes/tax-tables-and-deductions/2025',
@@ -190,6 +205,32 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * tax. $66,100 of wages less the federal standard deduction lands exactly
    * there, so this checks the base, both rates and the threshold at once.
    */
+  /*
+   * Every Oklahoma vector is a figure printed in the state's own table. Each
+   * gross amount is the table's taxable income plus that status's deduction and
+   * exemptions, so nothing here is this project's arithmetic checking itself.
+   */
+  /*
+   * Hawaii prints the running total at every one of its twelve bracket edges,
+   * so these check the thresholds at four points across three schedules. Each
+   * gross figure is the edge plus that status's deduction and exemption.
+   */
+  vector('HI', 'single', 29_544, 859, 'published-table', HI_SOURCE),
+  vector('HI', 'single', 130_544, 8_391, 'published-table', HI_SOURCE),
+  vector('HI', 'marriedFilingJointly', 107_088, 5_078, 'published-table', HI_SOURCE),
+  vector('HI', 'headOfHousehold', 79_568, 3_809, 'published-table', HI_SOURCE),
+
+  vector('OK', 'single', 22_125, 513, 'published-table', OK_SOURCE),
+  vector('OK', 'marriedFilingJointly', 29_475, 325, 'published-table', OK_SOURCE),
+  vector('OK', 'single', 107_350, 4_562, 'published-table', OK_SOURCE),
+  vector('OK', 'marriedFilingJointly', 114_700, 4_373, 'published-table', OK_SOURCE),
+
+  vector('IA', 'single', 60_000, 1_628.20, 'worked-from-schedule', IA_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  vector('IA', 'marriedFilingJointly', 100_000, 2_496.40, 'worked-from-schedule', IA_SOURCE, { federalStandardDeduction: FED_2026.marriedFilingJointly }),
+  // At the federal standard deduction Iowa's base is zero, and the exemption
+  // credit stays a credit rather than becoming a payment.
+  vector('IA', 'single', 16_100, 0, 'worked-from-schedule', IA_SOURCE, { federalStandardDeduction: FED_2026.single }),
+
   vector('MT', 'single', 66_100, 2_697, 'published-example', MT_SOURCE, { federalStandardDeduction: FED_2026.single }),
   vector('MT', 'single', 40_000, 1_156.90, 'worked-from-schedule', MT_SOURCE, { federalStandardDeduction: FED_2026.single }),
   vector('MT', 'marriedFilingJointly', 150_000, 6_443.80, 'worked-from-schedule', MT_SOURCE, { federalStandardDeduction: FED_2026.marriedFilingJointly }),

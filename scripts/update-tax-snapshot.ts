@@ -37,11 +37,11 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   DC: { provider: 'D.C. Office of Tax and Revenue', sourceUrl: 'https://otr.cfo.dc.gov/' },
   FL: { provider: 'Florida Department of Revenue', sourceUrl: 'https://floridarevenue.com/' },
   GA: { provider: 'Georgia Department of Revenue', sourceUrl: 'https://dor.georgia.gov/' },
-  HI: { provider: 'Hawaii Department of Taxation', sourceUrl: 'https://tax.hawaii.gov/' },
+  HI: { provider: 'Hawaii Department of Taxation', sourceUrl: 'https://files.hawaii.gov/tax/forms/current/n11ins.pdf' },
   ID: { provider: 'Idaho State Tax Commission', sourceUrl: 'https://tax.idaho.gov/' },
   IL: { provider: 'Illinois Department of Revenue', sourceUrl: 'https://tax.illinois.gov/research/taxrates/income.html' },
   IN: { provider: 'Indiana Department of Revenue', sourceUrl: 'https://www.in.gov/dor/' },
-  IA: { provider: 'Iowa Department of Revenue', sourceUrl: 'https://tax.iowa.gov/' },
+  IA: { provider: 'Iowa Department of Revenue', sourceUrl: 'https://revenue.iowa.gov/taxes/tax-guidance/individual-income-tax/1040-expanded-instructions/iowa-tax' },
   KS: { provider: 'Kansas Department of Revenue', sourceUrl: 'https://www.ksrevenue.gov/' },
   KY: { provider: 'Kentucky Department of Revenue', sourceUrl: 'https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf' },
   LA: { provider: 'Louisiana Department of Revenue', sourceUrl: 'https://revenue.louisiana.gov/' },
@@ -62,7 +62,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   NC: { provider: 'North Carolina Department of Revenue', sourceUrl: 'https://www.ncdor.gov/' },
   ND: { provider: 'North Dakota Office of State Tax Commissioner', sourceUrl: 'https://www.tax.nd.gov/individual-income-tax' },
   OH: { provider: 'Ohio Department of Taxation', sourceUrl: 'https://tax.ohio.gov/' },
-  OK: { provider: 'Oklahoma Tax Commission', sourceUrl: 'https://oklahoma.gov/tax.html' },
+  OK: { provider: 'Oklahoma Tax Commission', sourceUrl: 'https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf' },
   OR: { provider: 'Oregon Department of Revenue', sourceUrl: 'https://www.oregon.gov/dor' },
   PA: { provider: 'Pennsylvania Department of Revenue', sourceUrl: 'https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM' },
   RI: { provider: 'Rhode Island Division of Taxation', sourceUrl: 'https://tax.ri.gov/' },
@@ -253,6 +253,126 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['HI', {
+    ...meta('HI', {
+      sourceName: 'Instructions for Form N-11 (Rev. 2025), 2025 Tax Rate Schedules I-III and the standard deduction and exemption tables',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Twelve brackets a status, which is the most of any state and the easiest
+     * to fumble. Hawaii prints the cumulative tax at every edge, and all ten
+     * checked reproduce to within its own dollar rounding.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [9_600, 0.014], [14_400, 0.032], [19_200, 0.055], [24_000, 0.064], [36_000, 0.068], [48_000, 0.072],
+        [125_000, 0.076], [175_000, 0.079], [225_000, 0.0825], [275_000, 0.09], [325_000, 0.10], [null, 0.11],
+      ]),
+      marriedFilingSeparately: brackets([
+        [9_600, 0.014], [14_400, 0.032], [19_200, 0.055], [24_000, 0.064], [36_000, 0.068], [48_000, 0.072],
+        [125_000, 0.076], [175_000, 0.079], [225_000, 0.0825], [275_000, 0.09], [325_000, 0.10], [null, 0.11],
+      ]),
+      marriedFilingJointly: brackets([
+        [19_200, 0.014], [28_800, 0.032], [38_400, 0.055], [48_000, 0.064], [72_000, 0.068], [96_000, 0.072],
+        [250_000, 0.076], [350_000, 0.079], [450_000, 0.0825], [550_000, 0.09], [650_000, 0.10], [null, 0.11],
+      ]),
+      headOfHousehold: brackets([
+        [14_400, 0.014], [21_600, 0.032], [28_800, 0.055], [36_000, 0.064], [54_000, 0.068], [72_000, 0.072],
+        [187_500, 0.076], [262_500, 0.079], [337_500, 0.0825], [412_500, 0.09], [487_500, 0.10], [null, 0.11],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(4_400, 8_800, 4_400, 6_424),
+    // $1,144 an exemption. Hawaii never adopted the federal suspension of the
+    // personal exemption, so it still has one.
+    personalExemptionByFilingStatus: filingAmounts(1_144, 2_288, 1_144, 1_144),
+    perDependentExemption: 1_144,
+    notes: [
+      'Hawaii taxes taxable income in twelve brackets from 1.40% to 11.00% (Instructions for Form N-11, Rev. 2025, Tax Rate Schedules I, II and III; HRS 235-51).',
+      'Standard deduction for 2025: $4,400 single and married filing separately, $8,800 married filing jointly, $6,424 head of household. Each personal exemption is $1,144 as a deduction from income.',
+      'Hawaii did not adopt the federal suspension of personal exemptions, so it still allows one for the taxpayer, spouse and each dependent.',
+      'The department had published Rev. 2025 forms and not 2026 at verification, so this row declares the 2025 schedule. Hawaii has legislated further standard deduction increases in later years.',
+      'The alternative tax on capital gains, the additional exemption for taxpayers 65 and older, Hawaii credits and itemized deductions are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['OK', {
+    ...meta('OK', {
+      sourceName: '2025 Oklahoma Resident Individual Income Tax Forms and Instructions (Form 511 packet), income tax table and tax computation worksheets',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Oklahoma prints a table rather than a rate schedule, so these bands were
+     * read back out of it: the published tax at $14,775 of taxable income is
+     * $513 single and $325 filing jointly, and at $100,000 it is $4,562 and
+     * $4,373. All four reproduce exactly, which is what pins the six bands.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [1_000, 0.0025], [2_500, 0.0075], [3_750, 0.0175], [4_900, 0.0275], [7_200, 0.0375], [null, 0.0475],
+      ]),
+      marriedFilingSeparately: brackets([
+        [1_000, 0.0025], [2_500, 0.0075], [3_750, 0.0175], [4_900, 0.0275], [7_200, 0.0375], [null, 0.0475],
+      ]),
+      marriedFilingJointly: brackets([
+        [2_000, 0.0025], [5_000, 0.0075], [7_500, 0.0175], [9_800, 0.0275], [14_400, 0.0375], [null, 0.0475],
+      ]),
+      headOfHousehold: brackets([
+        [2_000, 0.0025], [5_000, 0.0075], [7_500, 0.0175], [9_800, 0.0275], [14_400, 0.0375], [null, 0.0475],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(6_350, 12_700, 6_350, 9_350),
+    // $1,000 an exemption: one filing single, two on a joint return.
+    personalExemptionByFilingStatus: filingAmounts(1_000, 2_000, 1_000, 1_000),
+    perDependentExemption: 1_000,
+    notes: [
+      'Oklahoma taxes Oklahoma taxable income in six bands from 0.25% to 4.75% (2025 Form 511 packet, Oklahoma income tax table and tax computation worksheets; 68 O.S. 2355).',
+      'Standard deduction for 2025: $6,350 single and married filing separately, $12,700 married filing jointly, $9,350 head of household. Each exemption is worth $1,000 as a deduction from income.',
+      'Married filing jointly and head of household use the same doubled bands, which is how Oklahoma\u2019s own table is laid out.',
+      'The Tax Commission had published 2025 forms and not 2026 at verification, so this row declares the 2025 schedule.',
+      'Oklahoma additions, subtractions, the capital gain deduction and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['IA', {
+    ...meta('IA', {
+      sourceName: 'Iowa IA 1040 Expanded Instructions (instruction year 2025), lines 2, 5, 8 and 19, and the exemption credit instructions',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    // IA 1040 line 2 is federal taxable income from Form 1040 line 15.
+    taxableIncomeBasis: 'federal-taxable-income',
+    rate: 0.038,
+    exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    exemptionCredit: {
+      // One $40 personal credit, or two filing jointly or as head of household.
+      perFilerByFilingStatus: filingAmounts(40, 80, 40, 80),
+      perDependent: 40,
+    },
+    localAddOn: {
+      label: 'Iowa school district surtax',
+      basis: 'school-district',
+      appliesTo: 'state-tax-liability',
+      // The department's own 2025 table (41-027) runs from 0% to 20%, and a
+      // few counties add an emergency medical services surtax on top.
+      typicalRateRange: { low: 0, high: 0.20 },
+    },
+    notes: [
+      'Iowa taxes income at a flat 3.8% (Iowa DOR, IA 1040 Expanded Instructions, line 5).',
+      'IA 1040 line 2 starts from federal taxable income, so the federal standard deduction is already out of the base and Iowa adds none of its own.',
+      'The exemption credit is $40 per personal credit \u2014 one filing single or separately, two filing jointly or as head of household \u2014 plus $40 per dependent. It is a credit against tax, not a deduction, and cannot take the bill below zero.',
+      'Iowa school districts levy a surtax as a percentage of state tax after credits, from 0% to 20% in the department\u2019s 2025 table, and six counties add an emergency medical services surtax. It depends on where you live and is not included here.',
+      'The Iowa alternate tax computation, available to filers other than single, is not modeled. The additional $20 credits for age and blindness are not modeled either.',
     ],
   }],
   ['MT', {
