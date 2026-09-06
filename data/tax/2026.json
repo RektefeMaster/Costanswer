@@ -2067,14 +2067,290 @@
     {
       "stateCode": "MD",
       "provider": "Comptroller of Maryland",
-      "sourceName": "Comptroller of Maryland",
-      "sourceUrl": "https://www.marylandtaxes.gov/",
+      "sourceName": "Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets, with the 2025 Resident Income Tax Return instruction booklet",
+      "sourceUrl": "https://www.marylandtaxes.gov/individual/income/tax-info/tax-rates.php",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Maryland. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 1000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 2000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 125000,
+            "rate": 0.05
+          },
+          {
+            "notOver": 150000,
+            "rate": 0.0525
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0575
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0625
+          },
+          {
+            "notOver": null,
+            "rate": 0.065
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 1000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 2000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 125000,
+            "rate": 0.05
+          },
+          {
+            "notOver": 150000,
+            "rate": 0.0525
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0575
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0625
+          },
+          {
+            "notOver": null,
+            "rate": 0.065
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 1000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 2000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 150000,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 175000,
+            "rate": 0.05
+          },
+          {
+            "notOver": 225000,
+            "rate": 0.0525
+          },
+          {
+            "notOver": 300000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 600000,
+            "rate": 0.0575
+          },
+          {
+            "notOver": 1200000,
+            "rate": 0.0625
+          },
+          {
+            "notOver": null,
+            "rate": 0.065
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 1000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 2000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 150000,
+            "rate": 0.0475
+          },
+          {
+            "notOver": 175000,
+            "rate": 0.05
+          },
+          {
+            "notOver": 225000,
+            "rate": 0.0525
+          },
+          {
+            "notOver": 300000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 600000,
+            "rate": 0.0575
+          },
+          {
+            "notOver": 1200000,
+            "rate": 0.0625
+          },
+          {
+            "notOver": null,
+            "rate": 0.065
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 3350,
+        "marriedFilingJointly": 6700,
+        "marriedFilingSeparately": 3350,
+        "headOfHousehold": 6700
+      },
+      "steppedPersonalExemption": {
+        "amountStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 100000,
+              "amount": 3200
+            },
+            {
+              "notOver": 125000,
+              "amount": 1600
+            },
+            {
+              "notOver": 150000,
+              "amount": 800
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 100000,
+              "amount": 3200
+            },
+            {
+              "notOver": 125000,
+              "amount": 1600
+            },
+            {
+              "notOver": 150000,
+              "amount": 800
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 150000,
+              "amount": 3200
+            },
+            {
+              "notOver": 175000,
+              "amount": 1600
+            },
+            {
+              "notOver": 200000,
+              "amount": 800
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 150000,
+              "amount": 3200
+            },
+            {
+              "notOver": 175000,
+              "amount": 1600
+            },
+            {
+              "notOver": 200000,
+              "amount": 800
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ]
+        },
+        "countByFilingStatus": {
+          "single": 1,
+          "marriedFilingJointly": 2,
+          "marriedFilingSeparately": 1,
+          "headOfHousehold": 1
+        }
+      },
+      "localAddOn": {
+        "label": "Maryland county or Baltimore City income tax",
+        "basis": "county",
+        "appliesTo": "taxable-income",
+        "typicalRateRange": {
+          "low": 0.0225,
+          "high": 0.033
+        }
+      },
+      "notes": [
+        "Maryland taxes taxable net income in ten bands from 2% to 6.5% (Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets; Md. Code, Tax-Gen. 10-105).",
+        "Joint filers and heads of household get wider bands from $3,000 upward; below that the schedule is the same for everyone.",
+        "Standard deduction for 2025 is a flat $3,350 single, married filing separately or dependent, and $6,700 filing jointly, head of household or qualifying surviving spouse.",
+        "The personal exemption is $3,200, halved above $100,000 of federal adjusted gross income and halved again above $125,000, reaching zero above $150,000. Those thresholds are $150,000, $175,000 and $200,000 on a joint return.",
+        "Maryland’s 23 counties and Baltimore City levy a local income tax between 2.25% and 3.30% of taxable income, collected on the same return. It depends on where you live and is not included here, and for many Marylanders it is comparable to the state tax itself.",
+        "The 2% additional tax on net capital gain income, the poverty level credit, itemized deductions and the two-income subtraction are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "ME",
@@ -2896,24 +3172,80 @@
         "headOfHousehold": 0
       },
       "steppedPersonalExemption": {
-        "amountSteps": [
-          {
-            "notOver": 40000,
-            "amount": 2400
-          },
-          {
-            "notOver": 80000,
-            "amount": 2150
-          },
-          {
-            "notOver": 749999,
-            "amount": 1900
-          },
-          {
-            "notOver": null,
-            "amount": 0
-          }
-        ],
+        "amountStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 40000,
+              "amount": 2400
+            },
+            {
+              "notOver": 80000,
+              "amount": 2150
+            },
+            {
+              "notOver": 749999,
+              "amount": 1900
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 40000,
+              "amount": 2400
+            },
+            {
+              "notOver": 80000,
+              "amount": 2150
+            },
+            {
+              "notOver": 749999,
+              "amount": 1900
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 40000,
+              "amount": 2400
+            },
+            {
+              "notOver": 80000,
+              "amount": 2150
+            },
+            {
+              "notOver": 749999,
+              "amount": 1900
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 40000,
+              "amount": 2400
+            },
+            {
+              "notOver": 80000,
+              "amount": 2150
+            },
+            {
+              "notOver": 749999,
+              "amount": 1900
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ]
+        },
         "countByFilingStatus": {
           "single": 1,
           "marriedFilingJointly": 2,
@@ -3388,5 +3720,5 @@
       ]
     }
   ],
-  "normalizedSha256": "7ae5d12bab2c3a6b43ca56880cc7437b3b13bd2caad1da65044a3e25ba9e30f6"
+  "normalizedSha256": "f0b27045845a0f54b95a85359bead8a725d0d1efba627a4fb5c8c5d33a5368b0"
 }

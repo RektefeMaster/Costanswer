@@ -51,6 +51,11 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const MD_SOURCE = {
+  sourceName: 'Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets',
+  sourceUrl: 'https://www.marylandtaxes.gov/individual/income/tax-info/tax-rates.php',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const AR_SOURCE = {
   sourceName: '2025 Arkansas Tax Tables (low income and regular) and 2025 Indexed Tax Brackets',
   sourceUrl: 'https://www.dfa.arkansas.gov/wp-content/uploads/2025_TaxTables.pdf',
@@ -263,6 +268,19 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * adjustment is being taken back, which is the part that would be missing if
    * only the headline bands had been transcribed.
    */
+  /*
+   * Maryland prints the cumulative tax at each band edge, and each gross figure
+   * below is that edge plus the deduction and exemption that apply at it. The
+   * last two sit above $150,000 of adjusted gross income, where the exemption
+   * staircase has already run out — which is what makes them a check on the
+   * staircase and not only on the brackets.
+   */
+  vector('MD', 'single', 9_550, 90, 'published-table', MD_SOURCE),
+  vector('MD', 'single', 96_550, 4_222.50, 'published-table', MD_SOURCE),
+  vector('MD', 'marriedFilingJointly', 113_100, 4_697.50, 'published-table', MD_SOURCE),
+  vector('MD', 'single', 153_350, 7_260, 'published-table', MD_SOURCE),
+  vector('MD', 'single', 253_350, 12_760, 'published-table', MD_SOURCE),
+
   vector('AR', 'single', 14_643, 0, 'published-table', AR_SOURCE),
   vector('AR', 'single', 17_450, 222, 'published-table', AR_SOURCE),
   vector('AR', 'marriedFilingJointly', 28_950, 524, 'published-table', AR_SOURCE),

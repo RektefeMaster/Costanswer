@@ -27,6 +27,18 @@ function brackets3(rows: Array<readonly [number | null, number, number | undefin
   return rows.map(([notOver, rate, baseTax]) => (baseTax === undefined ? { notOver, rate } : { notOver, rate, baseTax }));
 }
 
+type ExemptionStep = { notOver: number | null; amount: number };
+
+/** For states whose exemption staircase does not vary with filing status. */
+function sameStepsForEveryStatus(steps: ExemptionStep[]): Record<FilingStatus, ExemptionStep[]> {
+  return {
+    single: steps,
+    marriedFilingJointly: steps,
+    marriedFilingSeparately: steps,
+    headOfHousehold: steps,
+  };
+}
+
 function filingAmounts(single: number, joint: number, separate: number, head: number): Record<FilingStatus, number> {
   return {
     single,
@@ -43,6 +55,20 @@ function filingAmounts(single: number, joint: number, separate: number, head: nu
  * department's "minus adjustment" figures into this engine's shape without
  * changing what they compute. Each one is `rate * floor - adjustment`.
  */
+/** Maryland's exemption staircase, from the Exemption Amount Chart (10A). */
+const MD_EXEMPTION_STEPS_SINGLE: ExemptionStep[] = [
+  { notOver: 100_000, amount: 3_200 },
+  { notOver: 125_000, amount: 1_600 },
+  { notOver: 150_000, amount: 800 },
+  { notOver: null, amount: 0 },
+];
+const MD_EXEMPTION_STEPS_JOINT: ExemptionStep[] = [
+  { notOver: 150_000, amount: 3_200 },
+  { notOver: 175_000, amount: 1_600 },
+  { notOver: 200_000, amount: 800 },
+  { notOver: null, amount: 0 },
+];
+
 const AR_RATE_TOP = 0.039;
 
 /**
@@ -104,7 +130,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   KY: { provider: 'Kentucky Department of Revenue', sourceUrl: 'https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf' },
   LA: { provider: 'Louisiana Department of Revenue', sourceUrl: 'https://revenue.louisiana.gov/' },
   ME: { provider: 'Maine Revenue Services', sourceUrl: 'https://www.maine.gov/revenue/sites/maine.gov.revenue/files/2026-05/ind_tax_rate_sched_2026_rev.pdf' },
-  MD: { provider: 'Comptroller of Maryland', sourceUrl: 'https://www.marylandtaxes.gov/' },
+  MD: { provider: 'Comptroller of Maryland', sourceUrl: 'https://www.marylandtaxes.gov/individual/income/tax-info/tax-rates.php' },
   MA: { provider: 'Massachusetts Department of Revenue', sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates' },
   MI: { provider: 'Michigan Department of Treasury', sourceUrl: 'https://www.michigan.gov/taxes' },
   MN: { provider: 'Minnesota Department of Revenue', sourceUrl: 'https://www.revenue.state.mn.us/' },
@@ -313,6 +339,71 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
     ],
   }],
+  ['MD', {
+    ...meta('MD', {
+      sourceName: 'Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets, with the 2025 Resident Income Tax Return instruction booklet',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Maryland publishes each band as "$X plus Y% of the excess", and unlike
+     * Ohio's and Arkansas's, every one of its constants reconciles with the
+     * band beneath it to the cent, so plain marginal brackets say the same
+     * thing with fewer numbers to get wrong.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [1_000, 0.02], [2_000, 0.03], [3_000, 0.04], [100_000, 0.0475], [125_000, 0.05],
+        [150_000, 0.0525], [250_000, 0.055], [500_000, 0.0575], [1_000_000, 0.0625], [null, 0.065],
+      ]),
+      marriedFilingSeparately: brackets([
+        [1_000, 0.02], [2_000, 0.03], [3_000, 0.04], [100_000, 0.0475], [125_000, 0.05],
+        [150_000, 0.0525], [250_000, 0.055], [500_000, 0.0575], [1_000_000, 0.0625], [null, 0.065],
+      ]),
+      marriedFilingJointly: brackets([
+        [1_000, 0.02], [2_000, 0.03], [3_000, 0.04], [150_000, 0.0475], [175_000, 0.05],
+        [225_000, 0.0525], [300_000, 0.055], [600_000, 0.0575], [1_200_000, 0.0625], [null, 0.065],
+      ]),
+      headOfHousehold: brackets([
+        [1_000, 0.02], [2_000, 0.03], [3_000, 0.04], [150_000, 0.0475], [175_000, 0.05],
+        [225_000, 0.0525], [300_000, 0.055], [600_000, 0.0575], [1_200_000, 0.0625], [null, 0.065],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(3_350, 6_700, 3_350, 6_700),
+    steppedPersonalExemption: {
+      /*
+       * The staircase is the same shape for everyone but starts $50,000 higher
+       * on a joint return, which is why these are per status rather than one
+       * shared list.
+       */
+      amountStepsByFilingStatus: {
+        single: MD_EXEMPTION_STEPS_SINGLE,
+        marriedFilingSeparately: MD_EXEMPTION_STEPS_SINGLE,
+        marriedFilingJointly: MD_EXEMPTION_STEPS_JOINT,
+        headOfHousehold: MD_EXEMPTION_STEPS_JOINT,
+      },
+      // Each spouse claims their own personal exemption on a joint return.
+      countByFilingStatus: filingAmounts(1, 2, 1, 1),
+    },
+    localAddOn: {
+      label: 'Maryland county or Baltimore City income tax',
+      basis: 'county',
+      appliesTo: 'taxable-income',
+      // The Comptroller states the current range outright.
+      typicalRateRange: { low: 0.0225, high: 0.033 },
+    },
+    notes: [
+      'Maryland taxes taxable net income in ten bands from 2% to 6.5% (Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets; Md. Code, Tax-Gen. 10-105).',
+      'Joint filers and heads of household get wider bands from $3,000 upward; below that the schedule is the same for everyone.',
+      'Standard deduction for 2025 is a flat $3,350 single, married filing separately or dependent, and $6,700 filing jointly, head of household or qualifying surviving spouse.',
+      'The personal exemption is $3,200, halved above $100,000 of federal adjusted gross income and halved again above $125,000, reaching zero above $150,000. Those thresholds are $150,000, $175,000 and $200,000 on a joint return.',
+      'Maryland\u2019s 23 counties and Baltimore City levy a local income tax between 2.25% and 3.30% of taxable income, collected on the same return. It depends on where you live and is not included here, and for many Marylanders it is comparable to the state tax itself.',
+      'The 2% additional tax on net capital gain income, the poverty level credit, itemized deductions and the two-income subtraction are not modeled. The starting point is gross wages.',
+    ],
+  }],
   ['AR', {
     ...meta('AR', {
       sourceName: '2025 Arkansas Indexed Tax Brackets, with the 2025 Tax Tables and the AR1000F instructions',
@@ -446,12 +537,13 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     // Ohio has no standard deduction. The exemption does all of the work.
     standardDeductionByFilingStatus: filingAmounts(0, 0, 0, 0),
     steppedPersonalExemption: {
-      amountSteps: [
+      // Ohio uses one staircase for every filing status.
+      amountStepsByFilingStatus: sameStepsForEveryStatus([
         { notOver: 40_000, amount: 2_400 },
         { notOver: 80_000, amount: 2_150 },
         { notOver: 749_999, amount: 1_900 },
         { notOver: null, amount: 0 },
-      ],
+      ]),
       countByFilingStatus: filingAmounts(1, 2, 1, 1),
     },
     localAddOn: {

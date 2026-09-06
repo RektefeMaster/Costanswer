@@ -170,13 +170,26 @@ const alternativeLowIncomeScheduleSchema = z.object({
  * the proportional phase-out shape would give the wrong figure everywhere
  * except at the step edges.
  */
+const exemptionStepsSchema = z.array(z.object({
+  /** Highest income this step covers; null for the open top step. */
+  notOver: z.number().finite().positive().nullable(),
+  amount: z.number().finite().min(0),
+}).strict()).min(1);
+
 const steppedExemptionSchema = z.object({
-  /** Amount per exemption, by the income it applies at. */
-  amountSteps: z.array(z.object({
-    /** Highest income this step covers; null for the open top step. */
-    notOver: z.number().finite().positive().nullable(),
-    amount: z.number().finite().min(0),
-  }).strict()).min(1),
+  /**
+   * Amount per exemption, by the income it applies at, per filing status.
+   *
+   * Per status because Maryland's staircase starts $50,000 higher for joint
+   * filers than for single ones while Ohio's is the same for everybody. One
+   * shared array would have quietly applied the single thresholds to couples.
+   */
+  amountStepsByFilingStatus: z.object({
+    single: exemptionStepsSchema,
+    marriedFilingJointly: exemptionStepsSchema,
+    marriedFilingSeparately: exemptionStepsSchema,
+    headOfHousehold: exemptionStepsSchema,
+  }).strict(),
   /** Exemptions a filer claims before dependents: one, or two filing jointly. */
   countByFilingStatus: filingStatusNumberSchema,
 }).strict();

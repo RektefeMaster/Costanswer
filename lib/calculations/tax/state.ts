@@ -176,14 +176,15 @@ function afterPhaseOut(
  */
 function steppedExemptionAt(
   spec: {
-    amountSteps: ReadonlyArray<{ notOver: number | null; amount: number }>;
+    amountStepsByFilingStatus: Record<FilingStatus, ReadonlyArray<{ notOver: number | null; amount: number }>>;
     countByFilingStatus: Record<FilingStatus, number>;
   },
   income: number,
   filingStatus: FilingStatus,
   dependents: number,
 ): number {
-  const step = spec.amountSteps.find((candidate) => candidate.notOver === null || income <= candidate.notOver);
+  const step = spec.amountStepsByFilingStatus[filingStatus]
+    .find((candidate) => candidate.notOver === null || income <= candidate.notOver);
   if (!step) throw new Error('Stepped exemption has no open top step, so high incomes fall through it.');
   return step.amount * (spec.countByFilingStatus[filingStatus] + dependents);
 }
