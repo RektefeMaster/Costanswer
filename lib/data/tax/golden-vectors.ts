@@ -51,6 +51,11 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const DC_SOURCE = {
+  sourceName: 'DC Individual and Fiduciary Income Tax Rates (tax years after 12/31/2021)',
+  sourceUrl: 'https://otr.cfo.dc.gov/page/dc-individual-and-fiduciary-income-tax-rates',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const HI_SOURCE = {
   sourceName: 'Instructions for Form N-11 (Rev. 2025), 2025 Tax Rate Schedules I-III',
   sourceUrl: 'https://files.hawaii.gov/tax/forms/current/n11ins.pdf',
@@ -215,6 +220,16 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * so these check the thresholds at four points across three schedules. Each
    * gross figure is the edge plus that status's deduction and exemption.
    */
+  /*
+   * The District publishes the cumulative tax at all six of its bracket edges
+   * and every one reproduces to the cent, so these check thresholds rather
+   * than repeating the arithmetic that produced them.
+   */
+  vector('DC', 'headOfHousehold', 32_500, 400, 'published-table', DC_SOURCE),
+  vector('DC', 'marriedFilingJointly', 70_000, 2_200, 'published-table', DC_SOURCE),
+  vector('DC', 'single', 75_000, 3_500, 'published-table', DC_SOURCE),
+  vector('DC', 'single', 265_000, 19_650, 'published-table', DC_SOURCE),
+
   vector('HI', 'single', 29_544, 859, 'published-table', HI_SOURCE),
   vector('HI', 'single', 130_544, 8_391, 'published-table', HI_SOURCE),
   vector('HI', 'marriedFilingJointly', 107_088, 5_078, 'published-table', HI_SOURCE),

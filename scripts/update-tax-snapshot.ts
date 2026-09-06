@@ -34,7 +34,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   CO: { provider: 'Colorado Department of Revenue', sourceUrl: 'https://tax.colorado.gov/sites/tax/files/documents/Book104_2025.pdf' },
   CT: { provider: 'Connecticut Department of Revenue Services', sourceUrl: 'https://portal.ct.gov/drs' },
   DE: { provider: 'Delaware Division of Revenue', sourceUrl: 'https://revenue.delaware.gov/' },
-  DC: { provider: 'D.C. Office of Tax and Revenue', sourceUrl: 'https://otr.cfo.dc.gov/' },
+  DC: { provider: 'D.C. Office of Tax and Revenue', sourceUrl: 'https://otr.cfo.dc.gov/page/dc-individual-and-fiduciary-income-tax-rates' },
   FL: { provider: 'Florida Department of Revenue', sourceUrl: 'https://floridarevenue.com/' },
   GA: { provider: 'Georgia Department of Revenue', sourceUrl: 'https://dor.georgia.gov/' },
   HI: { provider: 'Hawaii Department of Taxation', sourceUrl: 'https://files.hawaii.gov/tax/forms/current/n11ins.pdf' },
@@ -253,6 +253,45 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['DC', {
+    ...meta('DC', {
+      sourceName: 'DC Individual and Fiduciary Income Tax Rates (tax years after 12/31/2021), with the 2025 D-40 booklet for the District\u2019s own standard deduction',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    // The rate schedule is open-ended from 2022; the deduction is stamped 2025,
+    // and the row declares the older of the two.
+    scheduleTaxYear: 2025,
+    /*
+     * One schedule for every filing status — the District does not widen its
+     * brackets for joint filers, which is unusual enough to be worth stating
+     * rather than looking like four copies of a mistake.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [10_000, 0.04], [40_000, 0.06], [60_000, 0.065], [250_000, 0.085], [500_000, 0.0925], [1_000_000, 0.0975], [null, 0.1075],
+      ]),
+      marriedFilingSeparately: brackets([
+        [10_000, 0.04], [40_000, 0.06], [60_000, 0.065], [250_000, 0.085], [500_000, 0.0925], [1_000_000, 0.0975], [null, 0.1075],
+      ]),
+      marriedFilingJointly: brackets([
+        [10_000, 0.04], [40_000, 0.06], [60_000, 0.065], [250_000, 0.085], [500_000, 0.0925], [1_000_000, 0.0975], [null, 0.1075],
+      ]),
+      headOfHousehold: brackets([
+        [10_000, 0.04], [40_000, 0.06], [60_000, 0.065], [250_000, 0.085], [500_000, 0.0925], [1_000_000, 0.0975], [null, 0.1075],
+      ]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(15_000, 30_000, 15_000, 22_500),
+    notes: [
+      'The District taxes taxable income in seven brackets from 4% to 10.75% for tax years beginning after December 31, 2021 (DC Office of Tax and Revenue, DC Individual and Fiduciary Income Tax Rates; D.C. Code 47-1806.03).',
+      'The same brackets apply to every filing status. Only the standard deduction differs.',
+      'Starting with tax year 2025 the District set its own basic standard deduction rather than following the federal one: $15,000 single, dependent filers and married filing separately, $22,500 head of household, $30,000 married filing jointly (2025 D-40 booklet).',
+      'The District repealed its personal exemption, so the standard deduction is the whole of what comes off income here.',
+      'The additional standard deduction for age or blindness, the DC EITC, itemized deductions and the Health Care Shared Responsibility payment are not modeled. The starting point is gross wages.',
     ],
   }],
   ['HI', {

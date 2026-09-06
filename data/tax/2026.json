@@ -472,14 +472,150 @@
     {
       "stateCode": "DC",
       "provider": "D.C. Office of Tax and Revenue",
-      "sourceName": "D.C. Office of Tax and Revenue",
-      "sourceUrl": "https://otr.cfo.dc.gov/",
+      "sourceName": "DC Individual and Fiduciary Income Tax Rates (tax years after 12/31/2021), with the 2025 D-40 booklet for the District’s own standard deduction",
+      "sourceUrl": "https://otr.cfo.dc.gov/page/dc-individual-and-fiduciary-income-tax-rates",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for District of Columbia. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 10000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.085
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0925
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0975
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 10000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.085
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0925
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0975
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 10000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.085
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0925
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0975
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 10000,
+            "rate": 0.04
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.085
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.0925
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.0975
+          },
+          {
+            "notOver": null,
+            "rate": 0.1075
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 15000,
+        "marriedFilingJointly": 30000,
+        "marriedFilingSeparately": 15000,
+        "headOfHousehold": 22500
+      },
+      "notes": [
+        "The District taxes taxable income in seven brackets from 4% to 10.75% for tax years beginning after December 31, 2021 (DC Office of Tax and Revenue, DC Individual and Fiduciary Income Tax Rates; D.C. Code 47-1806.03).",
+        "The same brackets apply to every filing status. Only the standard deduction differs.",
+        "Starting with tax year 2025 the District set its own basic standard deduction rather than following the federal one: $15,000 single, dependent filers and married filing separately, $22,500 head of household, $30,000 married filing jointly (2025 D-40 booklet).",
+        "The District repealed its personal exemption, so the standard deduction is the whole of what comes off income here.",
+        "The additional standard deduction for age or blindness, the DC EITC, itemized deductions and the Health Care Shared Responsibility payment are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "DE",
@@ -2140,5 +2276,5 @@
       ]
     }
   ],
-  "normalizedSha256": "0722561611870b227073fc8963d1e407f6311cef7712ddb3f5376d3fb9d8aebe"
+  "normalizedSha256": "0918487dbb75152f32052e1ff32b95a83ec851ada80f921641e6f82bebbb0fb5"
 }
