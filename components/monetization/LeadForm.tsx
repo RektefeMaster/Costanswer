@@ -195,11 +195,49 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
     }
   }
 
+  /*
+   * Enter is submit, on every step.
+   *
+   * Routing every Enter press to the final submit handler meant pressing it on
+   * the project step ran the consent check and showed "tick the box" for a box
+   * that is two steps away. Each step handles its own Enter.
+   */
+  function onFormSubmit(event: React.FormEvent) {
+    if (step === 'coverage') return onCheckCoverage(event);
+    if (step === 'consent') return onSubmit(event);
+    event.preventDefault();
+    advance();
+    return undefined;
+  }
+
+  function advance() {
+    setError(null);
+    if (step === 'project') {
+      setStep('contact');
+      return;
+    }
+    if (step === 'contact') {
+      setStep('consent');
+      emitMonetizationEvent('lead_consent_view', {
+        pageId: context.pageId, calculatorId: context.calculatorId,
+        locale, vertical: context.vertical,
+        consentVersion: consent?.version.version ?? 'unknown',
+      });
+      emitMonetizationEvent('lead_form_step_complete', {
+        pageId: context.pageId, calculatorId: context.calculatorId,
+        locale, vertical: context.vertical, step: 2,
+      });
+    }
+  }
+
   if (step === 'no-coverage') {
     return (
       <div className="lead-form" role="status">
         <p>{message ?? t('noCoverage')}</p>
-        <a className="lead-back" href={context.calculatorId ? `#${formId}` : '#main-content'}>{t('backToTool')}</a>
+        {/* #main-content is the skip-link target the layout already renders,
+            so this is a real destination. The previous href pointed at the
+            form's generated id, which is on no element. */}
+        <a className="lead-back" href="#main-content">{t('backToTool')}</a>
       </div>
     );
   }
@@ -217,9 +255,9 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
   }
 
   return (
-    <form className="lead-form" onSubmit={step === 'coverage' ? onCheckCoverage : onSubmit} noValidate>
+    <form className="lead-form" onSubmit={onFormSubmit} noValidate>
       <p ref={liveRegion} className="sr-only" role="status" aria-live="polite">
-        {busy ? t('checking') : ''}
+        {busy ? (step === 'consent' ? t('submitting') : t('checking')) : ''}
       </p>
 
       {step === 'coverage' && (
@@ -274,7 +312,7 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
         </fieldset>
       )}
 
-      {(step === 'contact' || step === 'consent') && (
+      {step === 'contact' && (
         <fieldset>
           <legend>{t('stepContact')}</legend>
           <p className="lead-hint">{t('contactHint')}</p>
@@ -298,6 +336,24 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
               value={honeypot} onChange={(event) => setHoneypot(event.target.value)} />
           </div>
         </fieldset>
+      )}
+
+      {step === 'consent' && (
+        <div className="lead-review">
+          {/* What is about to be sent, in front of the person agreeing to send
+              it. Asking for consent without showing the details is asking them
+              to agree to something they can no longer see. */}
+          <p className="lead-review-title">{t('stepContact')}</p>
+          <ul>
+            {firstName && <li>{firstName}</li>}
+            {phone && <li>{phone}</li>}
+            {email && <li>{email}</li>}
+            <li>{zip}</li>
+          </ul>
+          <button type="button" className="lead-back-button" onClick={() => setStep('contact')}>
+            {t('backLabel')}
+          </button>
+        </div>
       )}
 
       {step === 'consent' && consent && (
@@ -333,18 +389,8 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
         {step === 'coverage' && (
           <button type="submit" disabled={busy}>{busy ? t('checking') : t('checkCoverage')}</button>
         )}
-        {step === 'project' && (
-          <button type="button" onClick={() => setStep('contact')}>{t('continueLabel')}</button>
-        )}
-        {step === 'contact' && (
-          <button type="button" onClick={() => {
-            setStep('consent');
-            emitMonetizationEvent('lead_consent_view', {
-              pageId: context.pageId, calculatorId: context.calculatorId,
-              locale, vertical: context.vertical,
-              consentVersion: consent?.version.version ?? 'unknown',
-            });
-          }}>{t('continueLabel')}</button>
+        {(step === 'project' || step === 'contact') && (
+          <button type="button" onClick={advance}>{t('continueLabel')}</button>
         )}
         {step === 'consent' && (
           <button type="submit" disabled={busy}>{busy ? t('submitting') : t('submitLabel')}</button>

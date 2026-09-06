@@ -1,4 +1,21 @@
 import type { NextConfig } from 'next';
+import { adCspSources } from './lib/monetization/ads/provider';
+
+/*
+ * The policy widens only for the ad network that is actually configured.
+ *
+ * With none configured this is byte-for-byte the policy the site has always
+ * shipped. With one configured it gains that network's own origins and nothing
+ * else — no wildcard, no blanket https:. Deriving it from the provider record
+ * is what stops the two from drifting: `script-src 'self'` silently blocks
+ * every ad script, and the failure looks like a broken integration rather than
+ * a refused one.
+ */
+const ads = adCspSources();
+
+function directive(name: string, base: string, extra: readonly string[]): string {
+  return extra.length > 0 ? `${name} ${base} ${extra.join(' ')}` : `${name} ${base}`;
+}
 
 const contentSecurityPolicy = [
   "default-src 'self'",
@@ -6,11 +23,13 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "img-src 'self' data:",
+  directive('img-src', "'self' data:", ads.img),
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  "script-src 'self' 'unsafe-inline'",
-  "connect-src 'self' ws: wss:",
+  directive('script-src', "'self' 'unsafe-inline'", ads.script),
+  directive('connect-src', "'self' ws: wss:", ads.connect),
+  // No ad network configured means no third-party frames at all.
+  ads.frame.length > 0 ? `frame-src ${ads.frame.join(' ')}` : "frame-src 'none'",
   "worker-src 'self' blob:",
   "manifest-src 'self'",
   'upgrade-insecure-requests',

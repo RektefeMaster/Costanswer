@@ -1,7 +1,10 @@
 /** The revenue ledger, and the counters a dashboard divides by. */
 import { generateId } from '../../ids';
 import { money } from '../../money';
-import { assertRevenueTransition, type RevenueLedgerEntry, type RevenueSource, type RevenueStatus } from '../../revenue/ledger';
+import {
+  assertRevenueTransition, isReversible, reversalOf,
+  type RevenueLedgerEntry, type RevenueSource, type RevenueStatus,
+} from '../../revenue/ledger';
 import { dayBucket, nowIso, type D1DatabaseLike } from '../d1';
 
 export type NewRevenueEntry = Omit<RevenueLedgerEntry, 'entryId'>;
@@ -59,6 +62,94 @@ export async function advanceRevenueStatus(
   await database.prepare(
     `UPDATE revenue_ledger SET status = ?, ${column} = ?, updated_at = ? WHERE entry_id = ?`,
   ).bind(next, timestamp, timestamp, entryId).run();
+}
+
+/**
+ * The ledger row an accepted delivery created, if there is one.
+ *
+ * A provider confirming a lead is the same money as the estimate we booked when
+ * they accepted it, not a second payment. Inserting a confirmed row and leaving
+ * the estimated one behind shows the operator $65 estimated *and* $65 confirmed
+ * for one lead, which is the "never mix estimated and paid" rule broken from
+ * the inside.
+ */
+export async function findRevenueForDelivery(
+  database: D1DatabaseLike,
+  deliveryId: string,
+): Promise<{ entryId: string; status: RevenueStatus } | null> {
+  const row = await database.prepare(
+    'SELECT entry_id, status FROM revenue_ledger WHERE event_id = ? ORDER BY created_at DESC LIMIT 1',
+  ).bind(deliveryId).first<{ entry_id: string; status: string }>();
+  return row ? { entryId: String(row.entry_id), status: String(row.status) as RevenueStatus } : null;
+}
+
+/** Set the amount when a provider reports a payout different from our estimate. */
+export async function setRevenueAmount(
+  database: D1DatabaseLike,
+  entryId: string,
+  amountMinor: number,
+  at: number = Date.now(),
+): Promise<void> {
+  await database.prepare('UPDATE revenue_ledger SET amount_minor = ?, updated_at = ? WHERE entry_id = ?')
+    .bind(amountMinor, nowIso(at), entryId).run();
+}
+
+/**
+ * Reverse an entry by writing the opposite of it.
+ *
+ * The original row is not edited. A provider statement shows the payment and
+ * the clawback as two events, and a ledger that shows one has lost the ability
+ * to be reconciled against it.
+ */
+export async function recordReversal(
+  database: D1DatabaseLike,
+  entryId: string,
+  at: number = Date.now(),
+): Promise<RevenueLedgerEntry | null> {
+  const rows = await database.prepare('SELECT * FROM revenue_ledger WHERE entry_id = ?').bind(entryId).all();
+  const row = rows.results[0];
+  if (!row) throw new Error(`No revenue entry ${entryId}.`);
+
+  const status = String(row.status) as RevenueStatus;
+  if (!isReversible(status)) return null;
+
+  const original: RevenueLedgerEntry = {
+    entryId,
+    sourceType: String(row.source_type) as RevenueSource,
+    providerId: String(row.provider_id),
+    campaignId: optional(row.campaign_id),
+    pageId: optional(row.page_id),
+    calculatorId: optional(row.calculator_id),
+    vertical: optional(row.vertical),
+    locale: optional(row.locale),
+    eventId: optional(row.event_id),
+    providerReference: optional(row.provider_reference),
+    amount: money(Number(row.amount_minor), 'USD'),
+    status,
+    isTest: row.is_test === 1,
+    occurredAt: String(row.occurred_at),
+  };
+
+  // recordRevenue mints its own id, so the placeholder reversalOf requires is
+  // dropped rather than carried through as a second identity for one row.
+  const reversal = reversalOf(original, entryId, nowIso(at));
+  const withoutId: NewRevenueEntry = {
+    sourceType: reversal.sourceType,
+    providerId: reversal.providerId,
+    campaignId: reversal.campaignId,
+    pageId: reversal.pageId,
+    calculatorId: reversal.calculatorId,
+    vertical: reversal.vertical,
+    locale: reversal.locale,
+    eventId: reversal.eventId,
+    providerReference: reversal.providerReference,
+    amount: reversal.amount,
+    status: reversal.status,
+    isTest: reversal.isTest,
+    occurredAt: reversal.occurredAt,
+    reversedAt: reversal.reversedAt,
+  };
+  return recordRevenue(database, withoutId, at);
 }
 
 export async function revenueBetween(

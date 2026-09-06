@@ -332,8 +332,38 @@ function matchesWhere(row: Row, clause: string, values: D1Value[]): boolean {
   return true;
 }
 
+function stripWrappingParens(value: string): string {
+  if (!value.startsWith('(') || !value.endsWith(')')) return value;
+  let depth = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    if (value[index] === '(') depth += 1;
+    if (value[index] === ')') {
+      depth -= 1;
+      // The opening paren closed before the end, so the outer pair is not a wrap.
+      if (depth === 0 && index !== value.length - 1) return value;
+    }
+  }
+  return stripWrappingParens(value.slice(1, -1).trim());
+}
+
 function matchesCondition(row: Row, condition: string, args: D1Value[]): boolean {
-  const cleaned = condition.replace(/^\(|\)$/g, '').trim();
+  // Strip a wrapping pair only when it really is one. Blindly removing a
+  // leading "(" and a trailing ")" mangles `status IN ('a','b')` into an
+  // unparseable fragment.
+  const cleaned = stripWrappingParens(condition.trim());
+
+  // OR groups: "either identifier matches", "never attempted or due now".
+  if (/\sOR\s/i.test(cleaned)) {
+    let cursor = 0;
+    let matched = false;
+    for (const branch of cleaned.split(/\sOR\s/i).map((part) => part.trim())) {
+      const used = (branch.match(/\?/g) ?? []).length;
+      const branchArgs = args.slice(cursor, cursor + used);
+      cursor += used;
+      if (matchesCondition(row, branch, branchArgs)) matched = true;
+    }
+    return matched;
+  }
 
   if (/IS NULL$/i.test(cleaned)) {
     const column = cleaned.replace(/\s+IS NULL$/i, '').trim();
@@ -345,9 +375,18 @@ function matchesCondition(row: Row, condition: string, args: D1Value[]): boolean
   }
   const inMatch = /^(\w+) IN \(([^)]+)\)$/i.exec(cleaned);
   if (inMatch) {
-    const allowed = inMatch[2].split(',').map((value) => value.trim().replace(/^'|'$/g, ''));
+    const slots = inMatch[2].split(',').map((value) => value.trim());
+    // A bound IN list (`IN (?,?,?)`) is how a variable-length filter is built;
+    // a literal list is how a fixed status set is written. Both appear.
+    const allowed = slots.every((slot) => slot === '?')
+      ? args.map((value) => String(value))
+      : slots.map((slot) => slot.replace(/^'|'$/g, ''));
     return allowed.includes(String(row[inMatch[1]]));
   }
+
+  // A bound flag compared against a literal: `(is_test = 0 OR ? = 1)`.
+  const boundLiteral = /^\? = (\d+)$/.exec(cleaned);
+  if (boundLiteral) return Number(args[0]) === Number(boundLiteral[1]);
   const comparison = /^(\w+) (>=|<=|=|<|>) \?$/.exec(cleaned);
   if (comparison) {
     const [, column, operator] = comparison;

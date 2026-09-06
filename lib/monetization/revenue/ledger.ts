@@ -43,11 +43,25 @@ export type RevenueLedgerEntry = {
   readonly reversedAt?: string;
 };
 
+/**
+ * Money maturing, not money moving.
+ *
+ * `estimated → reported → confirmed → paid` is one payment becoming more
+ * certain, so it is a status change on one row. Reversal is *not* on this list,
+ * and that is the point: a reversal is money going the other way and it gets
+ * its own signed row, so the ledger still shows both events the way a provider
+ * statement does.
+ *
+ * Having both — an in-place flip to `reversed` and a separate negative row —
+ * was a real defect: a single confirmed-then-flipped entry summed to minus the
+ * amount instead of zero, because the aggregate subtracted a reversal that had
+ * never been added.
+ */
 const TRANSITIONS: Readonly<Record<RevenueStatus, readonly RevenueStatus[]>> = {
-  estimated: ['reported', 'confirmed', 'reversed'],
-  reported: ['confirmed', 'reversed'],
-  confirmed: ['paid', 'reversed'],
-  paid: ['reversed'],
+  estimated: ['reported', 'confirmed'],
+  reported: ['confirmed'],
+  confirmed: ['paid'],
+  paid: [],
   reversed: [],
 };
 
@@ -88,15 +102,18 @@ export function totalRevenue(entries: readonly RevenueLedgerEntry[]): RevenueTot
 
   const confirmed = byStatus('confirmed');
   const paid = byStatus('paid');
-  const reversed = byStatus('reversed');
+  // Reversal rows carry a negative amount, so realized is a plain signed sum.
+  // The reported figure is shown as a magnitude, because "Reversed: -$65" reads
+  // as a double negative on a screen.
+  const signedReversed = byStatus('reversed');
 
   return {
     estimated: byStatus('estimated'),
     reported: byStatus('reported'),
     confirmed,
     paid,
-    reversed,
-    realized: money(confirmed.minorUnits + paid.minorUnits - Math.abs(reversed.minorUnits)),
+    reversed: money(Math.abs(signedReversed.minorUnits), signedReversed.currency),
+    realized: money(confirmed.minorUnits + paid.minorUnits + signedReversed.minorUnits),
   };
 }
 
@@ -123,8 +140,14 @@ export function groupRevenueBy<K extends keyof RevenueLedgerEntry>(
  * against a provider statement impossible: the statement shows both events and
  * the ledger has to as well.
  */
+export function isReversible(status: RevenueStatus): boolean {
+  return status === 'confirmed' || status === 'paid' || status === 'reported' || status === 'estimated';
+}
+
 export function reversalOf(entry: RevenueLedgerEntry, entryId: string, reversedAt: string): RevenueLedgerEntry {
-  assertRevenueTransition(entry.status, 'reversed');
+  if (!isReversible(entry.status)) {
+    throw new Error(`A ${entry.status} entry cannot be reversed.`);
+  }
   return {
     ...entry,
     entryId,

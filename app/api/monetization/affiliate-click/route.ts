@@ -13,7 +13,7 @@ import { generateId } from '@/lib/monetization/ids';
 import { dayBucket, nowIso } from '@/lib/monetization/store/d1';
 import { incrementEventCounter } from '@/lib/monetization/store/repositories/revenue';
 import {
-  assertSameOrigin, clientKey, enforceRateLimit, errorResponse,
+  assertSameOrigin, clientKey, enforceRateLimit,
   monetizationStoreOrNull, readJson, requirePepper, type RouteEnvironment,
 } from '@/lib/monetization/http/request';
 

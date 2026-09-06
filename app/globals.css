@@ -2278,3 +2278,19 @@ input, select { font-variant-numeric: tabular-nums; }
 @media (prefers-reduced-motion: reduce) {
   .lead-cta-button, .intent-option, .affiliate-offer-link { transition: none; }
 }
+
+/* Review-before-consent block: what is about to be sent, in front of the
+   person agreeing to send it. */
+.lead-review {
+  border-left: 3px solid color-mix(in srgb, currentColor 20%, transparent);
+  padding: 0.5rem 0 0.5rem 0.9rem;
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+}
+.lead-review-title { font-weight: 600; margin: 0; font-size: 0.9rem; }
+.lead-review ul { list-style: none; margin: 0; padding: 0; font-size: 0.9rem; display: grid; gap: 0.15rem; }
+.lead-review .lead-back-button { min-height: 36px; padding: 0.3rem 0.7rem; font-size: 0.85rem; }
+
+/* Zero-size anchor for the impression observer. */
+.impression-anchor { display: block; height: 1px; width: 1px; }

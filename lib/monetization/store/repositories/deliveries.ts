@@ -39,6 +39,29 @@ export async function createDelivery(
   return delivery;
 }
 
+/**
+ * The open delivery for this lead and campaign, if there is one.
+ *
+ * A retry must reuse the row it is retrying. Creating a second row derives the
+ * same provider idempotency key and the unique index rejects it, which is
+ * correct as a duplicate-billing guard and fatal as a retry path: without this
+ * lookup the outbox can never drain and every timed-out lead is stuck forever.
+ */
+export async function openDeliveryFor(
+  database: D1DatabaseLike,
+  leadId: string,
+  campaignId: string,
+): Promise<LeadDelivery | null> {
+  const row = await database.prepare(`
+    SELECT * FROM lead_deliveries
+     WHERE lead_id = ? AND campaign_id = ?
+       AND status IN ('pending','processing','retryable_failure')
+     ORDER BY created_at DESC
+     LIMIT 1
+  `).bind(leadId, campaignId).first();
+  return row ? deliveryFromRow(row) : null;
+}
+
 export async function getDelivery(database: D1DatabaseLike, deliveryId: string): Promise<LeadDelivery | null> {
   const row = await database.prepare('SELECT * FROM lead_deliveries WHERE delivery_id = ?').bind(deliveryId).first();
   return row ? deliveryFromRow(row) : null;
@@ -112,6 +135,18 @@ export async function dueDeliveries(
      LIMIT ?
   `).bind(nowIso(at), limit).all();
   return rows.results.map(deliveryFromRow);
+}
+
+/** The delivery a provider's own lead id refers to, so a callback can be tied back. */
+export async function deliveryForProviderLead(
+  database: D1DatabaseLike,
+  providerId: string,
+  providerLeadId: string,
+): Promise<LeadDelivery | null> {
+  const row = await database.prepare(
+    'SELECT * FROM lead_deliveries WHERE provider_id = ? AND provider_lead_id = ? LIMIT 1',
+  ).bind(providerId, providerLeadId).first();
+  return row ? deliveryFromRow(row) : null;
 }
 
 export async function deliveriesForLead(database: D1DatabaseLike, leadId: string): Promise<LeadDelivery[]> {

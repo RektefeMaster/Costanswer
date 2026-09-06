@@ -1,50 +1,48 @@
 'use client';
 
-import { buildAffiliateLink, priceDisplayMode } from '@/lib/monetization/affiliate/links';
-import type { AffiliateMerchant, AffiliateOffer } from '@/lib/monetization/affiliate/types';
 import type { MonetizationContext } from '@/lib/monetization/context';
-import { UI_STRINGS } from '@/lib/monetization/ui/strings';
 
 /**
  * One outbound link.
  *
- * A real anchor to the merchant's own URL. No internal redirect stands between
- * the reader and the destination: the status bar tells them where they are
- * going, which is both required by these programmes and the honest thing to do.
+ * The href is built on the server and handed down. It used to be built here,
+ * which meant the server decided a merchant was linkable using its own
+ * credential while the browser tried to rebuild the URL from a `NEXT_PUBLIC_`
+ * copy of it. Set only the server-side one — the ordinary case — and the offer
+ * card rendered with a headline, a body and no link at all.
  *
- * The click is reported with `sendBeacon`, which the browser fires without the
- * page waiting for it. If the beacon fails the link still works. Navigation is
- * never allowed to depend on analytics succeeding.
+ * What is left here is the one thing that genuinely needs the browser: the
+ * click beacon. It is `sendBeacon`, which the browser sends without the page
+ * waiting for it, so a failed beacon can never delay or block someone leaving.
  */
 export function AffiliateOfferLink({
-  offer,
-  merchant,
+  href,
+  rel,
+  label,
+  merchantName,
+  offerId,
+  merchantId,
+  category,
   context,
 }: {
-  offer: AffiliateOffer;
-  merchant: AffiliateMerchant;
+  href: string;
+  rel: string;
+  label: string;
+  merchantName: string;
+  offerId: string;
+  merchantId: string;
+  category: string;
   context: MonetizationContext;
 }) {
-  // Only NEXT_PUBLIC_ values are readable here; a server-only tracking id is
-  // absent in the browser, so an unapproved merchant renders no link at all.
-  const link = buildAffiliateLink(offer, merchant, {
-    AFFILIATE_AMAZON_TRACKING_ID: process.env.NEXT_PUBLIC_AFFILIATE_AMAZON_TRACKING_ID,
-  });
-  if (!link) return null;
-
-  const label = priceDisplayMode(merchant) === 'check-on-site'
-    ? `${UI_STRINGS.checkPrice[context.locale]} · ${merchant.displayName}`
-    : offer.cta;
-
   const reportClick = () => {
     if (typeof navigator === 'undefined' || !navigator.sendBeacon) return;
     try {
       navigator.sendBeacon(
         '/api/monetization/affiliate-click',
         new Blob([JSON.stringify({
-          offerId: offer.offerId,
-          merchantId: offer.merchantId,
-          category: offer.category,
+          offerId,
+          merchantId,
+          category,
           pageId: context.pageId,
           calculatorId: context.calculatorId,
           locale: context.locale,
@@ -60,14 +58,14 @@ export function AffiliateOfferLink({
   return (
     <a
       className="affiliate-offer-link"
-      href={link.href}
-      rel={link.rel}
-      target={link.target}
+      href={href}
+      rel={rel}
+      target="_blank"
       onClick={reportClick}
       onAuxClick={reportClick}
     >
       {label}
-      <span className="sr-only"> (opens {merchant.displayName} in a new tab)</span>
+      <span className="sr-only"> (opens {merchantName} in a new tab)</span>
     </a>
   );
 }

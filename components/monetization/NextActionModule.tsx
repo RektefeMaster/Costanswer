@@ -1,6 +1,8 @@
 import { AffiliateModule } from './AffiliateModule';
 import { CallCta } from './CallCta';
 import { LeadCta } from './LeadCta';
+import { MonetizationImpressions } from './MonetizationImpressions';
+import { NextActionChoice } from './NextActionChoice';
 import type { AffiliateOffer } from '@/lib/monetization/affiliate/types';
 import { affiliateForbidden, relevantCategories } from '@/lib/monetization/affiliate/relevance';
 import { callCtaModel, liveCallCampaign } from '@/lib/monetization/calls/types';
@@ -25,11 +27,13 @@ export function NextActionModule({
   context,
   offers = [],
   overrides = {},
+  showIntentSwitch = false,
   now = new Date(),
 }: {
   context: MonetizationContext;
   offers?: readonly AffiliateOffer[];
   overrides?: FlagOverrides;
+  showIntentSwitch?: boolean;
   now?: Date;
 }) {
   const policy = getMonetizationPolicy(context.pageId);
@@ -56,25 +60,54 @@ export function NextActionModule({
 
   if (!leadAllowed && !affiliateAllowed) return null;
 
+  /*
+   * Both branches are built here, on the server, because the affiliate links
+   * need a programme credential that must not reach the browser. The intent
+   * choice only decides which of them is on screen.
+   */
+  const hire = leadAllowed && policy.lead.vertical
+    ? (
+      <>
+        <LeadCta
+          context={context}
+          vertical={policy.lead.vertical}
+          known={{
+            zip: context.location?.zip,
+            size: context.project?.size,
+            unit: context.project?.unit,
+            qualityTier: context.project?.qualityTier,
+          }}
+        />
+        {callCampaign && <CallCta model={callCtaModel(callCampaign, context.locale)} context={context} />}
+      </>
+    )
+    : null;
+
+  const diy = affiliateAllowed ? <AffiliateModule context={context} offers={offers} /> : null;
+
   return (
     <div className="next-action" data-next-action>
-      {leadAllowed && policy.lead.vertical && (
-        <>
-          <LeadCta
-            context={context}
-            vertical={policy.lead.vertical}
-            known={{
-              zip: context.location?.zip,
-              size: context.project?.size,
-              unit: context.project?.unit,
-              qualityTier: context.project?.qualityTier,
-            }}
-          />
-          {callCampaign && <CallCta model={callCtaModel(callCampaign, context.locale)} context={context} />}
-        </>
-      )}
+      {/*
+        Impressions are the denominators. Without them the funnel has a
+        numerator and no base, and a click-through rate computed against a
+        missing impression count is worse than no rate at all.
+      */}
+      <MonetizationImpressions
+        context={context}
+        lead={leadAllowed}
+        affiliate={affiliateAllowed}
+        offerCount={affiliateAllowed ? offers.length : 0}
+      />
 
-      {affiliateAllowed && <AffiliateModule context={context} offers={offers} />}
+      {showIntentSwitch
+        ? <NextActionChoice
+            locale={context.locale}
+            pageId={context.pageId}
+            vertical={context.vertical}
+            hire={hire}
+            diy={diy}
+          />
+        : <>{hire}{diy}</>}
     </div>
   );
 }

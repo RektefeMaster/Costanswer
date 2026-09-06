@@ -202,17 +202,36 @@ function summarizeRejections(evaluations: readonly CampaignEvaluation[]): string
  * told whether asking for contact details is worth the reader's time, and
  * nothing about the commercial arrangement behind that answer.
  */
-export function hasCoverage(input: Omit<RoutingInput, 'qualification' | 'qualityScore'> & { qualityScore?: number }): boolean {
+/**
+ * Campaigns that could take this request, best first.
+ *
+ * Shared by the coverage step and the router so the two cannot disagree. They
+ * used to: coverage picked by priority alone and ignored geography, so a caller
+ * could be shown a partner who does not serve them, consent to that partner,
+ * and only find out at the end. The partner named on the form has to be the
+ * partner routing would pick.
+ */
+export function selectableCampaigns(
+  input: Omit<RoutingInput, 'qualification' | 'qualityScore'> & { qualityScore?: number },
+): LeadCampaign[] {
   const probe: RoutingInput = {
     ...input,
     qualification: {},
     qualityScore: input.qualityScore ?? 1,
   };
   // Required fields are not yet known at coverage time, so a campaign is judged
-  // on everything except them. A campaign that will later reject for a missing
-  // field is still coverage: the form can ask for that field.
+  // on everything except them. A campaign that will later ask for one more
+  // field is still coverage: the form can ask for it.
   const permissive = new Set<string>(ROUTABLE_REQUIRED_FIELDS);
-  return probe.campaigns.some((campaign) => evaluate(campaign, probe, permissive).eligible);
+  return probe.campaigns
+    .map((campaign) => evaluate(campaign, probe, permissive))
+    .filter((entry) => entry.eligible)
+    .sort((left, right) => right.score - left.score)
+    .map((entry) => entry.campaign);
+}
+
+export function hasCoverage(input: Omit<RoutingInput, 'qualification' | 'qualityScore'> & { qualityScore?: number }): boolean {
+  return selectableCampaigns(input).length > 0;
 }
 
 /**

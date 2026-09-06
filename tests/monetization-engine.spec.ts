@@ -20,13 +20,15 @@ import { checkDuplicate, hashContact } from '@/lib/monetization/leads/dedupe';
 import { once, providerIdempotencyKey } from '@/lib/monetization/leads/idempotency';
 import { silentRejectionFor, leadSubmissionSchema } from '@/lib/monetization/leads/schema';
 import { assertRevenueTransition, reversalOf, totalRevenue } from '@/lib/monetization/revenue/ledger';
+import { stateForZip } from '@/lib/monetization/leads/location';
+import { AdSlot } from '@/components/monetization/AdSlot';
 import { parseMonetizationEvent, FORBIDDEN_ANALYTICS_FIELDS } from '@/lib/monetization/events';
 import { affiliateForbidden, relevantCategories } from '@/lib/monetization/affiliate/relevance';
 import { selectOffers } from '@/lib/monetization/affiliate/commercial';
 import { AFFILIATE_MERCHANTS, assertCatalogCoversPolicies, isMerchantLinkable } from '@/lib/monetization/affiliate/catalog';
 import { buildAffiliateLink, AFFILIATE_REL, priceDisplayMode } from '@/lib/monetization/affiliate/links';
 import { AMAZON_REQUIRED_STATEMENT, disclosureText, getDisclosure } from '@/lib/monetization/affiliate/disclosure';
-import { activeAdProvider } from '@/lib/monetization/ads/provider';
+import { activeAdProvider, adCspSources } from '@/lib/monetization/ads/provider';
 import { assertPlacementOrder, TOOL_PAGE_ORDER } from '@/lib/monetization/ads/slots';
 import { isCallCampaignLive, isWithinCallHours, liveCallCampaign } from '@/lib/monetization/calls/types';
 import { monetizationStore, setMonetizationDatabase } from '@/lib/monetization/store/d1';
@@ -973,5 +975,86 @@ describe('storage, fail closed', () => {
     expect(await recordRevenue(database, entry)).not.toBeNull();
     expect(await recordRevenue(database, entry)).toBeNull();
     expect(database.select('revenue_ledger')).toHaveLength(1);
+  });
+});
+
+describe('regressions found in review', () => {
+  it('nets a confirmed payment and its reversal to zero', () => {
+    /*
+     * The ledger carried two incompatible reversal models: an in-place status
+     * flip and a separate signed row. The aggregate subtracted the magnitude of
+     * anything marked reversed, so a single confirmed-then-flipped entry summed
+     * to minus the amount instead of zero — it subtracted a reversal it had
+     * never added. Reversal is now always a signed row and never a transition.
+     */
+    const base = {
+      entryId: 'rv_1', sourceType: 'lead' as const, providerId: 'p',
+      amount: money(6_500), status: 'confirmed' as const, isTest: false,
+      occurredAt: '2026-09-06T00:00:00Z',
+    };
+    const reversal = reversalOf(base, 'rv_2', '2026-09-20T00:00:00Z');
+    const totals = totalRevenue([base, reversal]);
+
+    expect(totals.confirmed.minorUnits).toBe(6_500);
+    // Shown as a magnitude; "Reversed: -$65" reads as a double negative.
+    expect(totals.reversed.minorUnits).toBe(6_500);
+    expect(totals.realized.minorUnits).toBe(0);
+  });
+
+  it('refuses to treat reversal as a status transition', () => {
+    expect(() => assertRevenueTransition('confirmed', 'reversed' as never)).toThrow();
+    expect(() => assertRevenueTransition('paid', 'reversed' as never)).toThrow();
+    expect(() => assertRevenueTransition('confirmed', 'paid')).not.toThrow();
+  });
+
+  it('will not reverse something already reversed', () => {
+    const reversed = {
+      entryId: 'rv_1', sourceType: 'lead' as const, providerId: 'p',
+      amount: money(-6_500), status: 'reversed' as const, isTest: false,
+      occurredAt: '2026-09-06T00:00:00Z',
+    };
+    expect(() => reversalOf(reversed, 'rv_2', '2026-09-20T00:00:00Z')).toThrow(/cannot be reversed/);
+  });
+
+  it('an empty ad slot is a silent spacer, not a named landmark', () => {
+    // Three regions per page called "Reserved leaderboard advertising space" is
+    // three pieces of furniture a screen-reader user walks past to reach a
+    // calculator that has no advertising in it.
+    const empty = AdSlot({ placement: 'in-content' }) as { props: Record<string, unknown> };
+    expect(empty.props.role).toBe('presentation');
+    expect(empty.props['aria-label']).toBeUndefined();
+    expect(empty.props['data-ad-status']).toBe('empty');
+  });
+
+  it('resolves a state from a ZIP so state-scoped campaigns are reachable', () => {
+    expect(stateForZip('75201')).toBe('TX');
+    expect(stateForZip('10001')).toBe('NY');
+    expect(stateForZip('00000')).toBeUndefined();
+    expect(stateForZip('not-a-zip')).toBeUndefined();
+  });
+});
+
+describe('content security policy follows the ad configuration', () => {
+  it('adds nothing when no network is configured', () => {
+    const sources = adCspSources({});
+    expect(sources.script).toEqual([]);
+    expect(sources.frame).toEqual([]);
+  });
+
+  it('opens exactly the configured network origins and no wildcard', () => {
+    const sources = adCspSources({ AD_PROVIDER: 'adsense', ADSENSE_CLIENT_ID: 'ca-pub-x' });
+    expect(sources.script.length).toBeGreaterThan(0);
+    for (const list of Object.values(sources)) {
+      for (const origin of list) {
+        expect(origin.startsWith('https://')).toBe(true);
+        expect(origin).not.toContain('*');
+      }
+    }
+  });
+
+  it('adds nothing for a network whose credentials are missing', () => {
+    // A half-configured network must not widen the policy: the script would be
+    // allowed and would still have nothing to load.
+    expect(adCspSources({ AD_PROVIDER: 'adsense' }).script).toEqual([]);
   });
 });

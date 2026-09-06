@@ -5,6 +5,7 @@ import { AdSlot } from '@/components/monetization/AdSlot';
 import { AffiliateOffers } from '@/components/monetization/AffiliateOffers';
 import { NextActionModule } from '@/components/monetization/NextActionModule';
 import { toolMonetizationContext } from '@/lib/monetization/tool-context';
+import { resolveMonetizationSurface } from '@/lib/monetization/surface';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
@@ -64,7 +65,7 @@ const RESULT_NOTES: Record<ResultNature, { heading: string; body: string }> = {
   },
 };
 
-export function ToolPage({ tool, children, methodology, sources = [], caution }: ToolPageProps) {
+export async function ToolPage({ tool, children, methodology, sources = [], caution }: ToolPageProps) {
   const category = categories[tool.category];
   const related = getRelatedTools(tool);
   // Naming the journey the reader is on gives the related block a reason to
@@ -77,6 +78,12 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
    * policy row permits, which is all the commercial layer is entitled to.
    */
   const monetization = toolMonetizationContext(tool);
+  /*
+   * Resolved on the server so no offer query, flag lookup or database handle
+   * reaches the browser. It never throws: a page must not fail to render
+   * because the monetization database is absent, which is the default state.
+   */
+  const surface = await resolveMonetizationSurface(monetization);
   const breadcrumbs = [
     { name: siteConfig.name, path: '/' },
     { name: category.name, path: `/topics/${tool.category}` },
@@ -121,7 +128,12 @@ export function ToolPage({ tool, children, methodology, sources = [], caution }:
               advertisement. Nothing commercial sits between an input and its
               result.
             */}
-            <NextActionModule context={monetization} />
+            <NextActionModule
+              context={monetization}
+              offers={surface.offers}
+              overrides={surface.overrides}
+              showIntentSwitch={surface.showIntentSwitch}
+            />
             <AffiliateOffers toolId={tool.id} />
             <AdSlot placement="in-content" pageId={tool.id} />
             <CalculatorEditorial toolPath={tool.path} content={editorialContent} />

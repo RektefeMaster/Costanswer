@@ -10,7 +10,10 @@
  */
 import { createLeadProvider } from '@/lib/monetization/leads/providers/registry';
 import { recordProviderEvent } from '@/lib/monetization/store/repositories/deliveries';
-import { advanceRevenueStatus, recordRevenue } from '@/lib/monetization/store/repositories/revenue';
+import {
+  advanceRevenueStatus, findRevenueForDelivery, recordReversal, recordRevenue, setRevenueAmount,
+} from '@/lib/monetization/store/repositories/revenue';
+import { deliveryForProviderLead } from '@/lib/monetization/store/repositories/deliveries';
 import { money } from '@/lib/monetization/money';
 import { sha256 } from '@/lib/data/sha256';
 import { errorResponse, jsonResponse, PublicError, requireStore, type RouteEnvironment } from '@/lib/monetization/http/request';
@@ -40,9 +43,20 @@ export async function POST(
 
     const event = await provider.handleWebhook(payload, request.headers);
 
+    /*
+     * Tie the callback back to the delivery it is about. Without this the
+     * ledger cannot tell which lead was confirmed, and a later reversal has
+     * nothing to reverse.
+     */
+    const delivery = event.providerLeadId
+      ? await deliveryForProviderLead(database, providerId, event.providerLeadId)
+      : null;
+
     const isNew = await recordProviderEvent(database, {
       providerId,
       providerEventId: event.providerEventId,
+      deliveryId: delivery?.deliveryId,
+      leadId: delivery?.leadId,
       normalizedEvent: event.normalizedEvent,
       rawStatus: event.rawStatus,
       amountMinor: event.amountMinor,
@@ -61,23 +75,35 @@ export async function POST(
       return jsonResponse({ ok: true, acted: false, reason: 'signature_unverified' }, 202);
     }
 
+    const existing = delivery ? await findRevenueForDelivery(database, delivery.deliveryId) : null;
+
     if (event.normalizedEvent === 'lead_billable' || event.normalizedEvent === 'lead_paid') {
-      await recordRevenue(database, {
-        sourceType: 'lead',
-        providerId,
-        providerReference: event.providerEventId,
-        amount: money(event.amountMinor ?? 0, 'USD'),
-        status: event.normalizedEvent === 'lead_paid' ? 'paid' : 'confirmed',
-        isTest: providerId === 'mock',
-        occurredAt: new Date().toISOString(),
-      });
+      const next = event.normalizedEvent === 'lead_paid' ? 'paid' : 'confirmed';
+      if (existing) {
+        // Same money, further along — not a second payment. The estimate booked
+        // when the buyer accepted becomes the confirmed figure.
+        if (event.amountMinor !== undefined) {
+          await setRevenueAmount(database, existing.entryId, event.amountMinor);
+        }
+        if (existing.status !== next) await advanceRevenueStatus(database, existing.entryId, next);
+      } else {
+        // No delivery matched, so there is nothing to advance. Book it against
+        // the provider event id, which the unique index makes replay-safe.
+        await recordRevenue(database, {
+          sourceType: 'lead',
+          providerId,
+          providerReference: event.providerEventId,
+          amount: money(event.amountMinor ?? 0, 'USD'),
+          status: next,
+          isTest: providerId === 'mock',
+          occurredAt: new Date().toISOString(),
+        });
+      }
     }
 
-    if (event.normalizedEvent === 'lead_reversed') {
-      const row = await database.prepare(
-        'SELECT entry_id, status FROM revenue_ledger WHERE provider_id = ? AND provider_reference = ?',
-      ).bind(providerId, event.providerLeadId ?? event.providerEventId).first<{ entry_id: string; status: string }>();
-      if (row) await advanceRevenueStatus(database, row.entry_id, 'reversed');
+    if (event.normalizedEvent === 'lead_reversed' && existing) {
+      // A signed opposite row, not an edit: the statement shows both events.
+      await recordReversal(database, existing.entryId);
     }
 
     return jsonResponse({ ok: true, acted: true });

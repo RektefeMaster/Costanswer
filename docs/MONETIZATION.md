@@ -439,7 +439,36 @@ start sending consumer data to a network nobody approved.
 
 ---
 
-## 12. What is deliberately not built
+## 12. Defects found in review, and what they changed
+
+The first implementation passed 626 tests and still carried these. Each is
+pinned by a regression test now; they are recorded because the shape of the
+mistake is more useful than the fix.
+
+| # | Defect | Consequence |
+| --- | --- | --- |
+| 1 | `deliver()` created a new delivery row on every call, so a retry derived the same provider idempotency key and hit the unique index | **The outbox could never drain.** Every timed-out lead stuck forever, with the reader told "we are still confirming" and nobody ever confirming |
+| 2 | Coverage picked the highest-priority campaign without applying geography | A caller in Texas was shown a California partner, consented to them by name, and was told there was no route *after* filling in the whole form |
+| 3 | The coverage route never derived a state from the ZIP | Every state-scoped campaign was invisible; coverage answered "no" forever while appearing to work |
+| 4 | A confirmation webhook inserted a second ledger row and left the estimate behind | One lead showed as $65 estimated *and* $65 confirmed — the "never mix estimated and paid" rule broken from the inside |
+| 5 | Reversal lookups keyed on a reference the billable row never carried | Clawbacks almost never matched anything |
+| 6 | Two incompatible reversal models — an in-place status flip and a signed row — with an aggregate that only suited one | A single confirmed-then-reversed entry summed to **minus** the amount instead of zero |
+| 7 | Nothing ever read `affiliate_offers`; the module always received an empty list | The entire affiliate channel could not render whatever was configured |
+| 8 | Links were built in the browser from a `NEXT_PUBLIC_` mirror of a server credential | With only the server credential set — the ordinary case — an offer rendered as a card with no link |
+| 9 | The intent switch changed nothing | Someone answered "do it myself" and the page stayed exactly as it was |
+| 10 | No impression events were emitted | Every funnel had a numerator and no denominator |
+| 11 | `script-src 'self'` with no ad origins | **Enabling any ad network would have silently failed.** The script never loads and nothing is logged where an operator looks |
+| 12 | Empty ad slots exposed three named landmarks per page | Three pieces of furniture for a screen-reader user to walk past on a page with no advertising in it |
+| 13 | Enter on an intermediate form step ran the final submit | "Tick the box" shown for a box two steps away |
+| 14 | "Back to the calculator" pointed at the form's generated id | Dead anchor |
+| 15 | The live region said "Checking…" while submitting | Wrong status announced to a screen reader at the one moment it matters |
+| 16 | Contact fields vanished at the consent step | Being asked to agree to sending details no longer on screen — now a review block |
+| 17 | The rate-limit map never evicted | Unbounded growth for the life of an isolate |
+
+The two that would have cost money silently are 1 and 6. The two that would
+have looked like someone else's fault are 11 and 3.
+
+## 13. What is deliberately not built
 
 Per the frozen scope: no public API, no white-label, no chatbot, no contractor
 marketplace, dashboard, bidding engine or CRM, no premium subscription, no

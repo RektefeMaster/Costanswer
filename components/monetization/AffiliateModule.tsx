@@ -1,6 +1,8 @@
 import { Disclosure } from './Disclosure';
 import { AffiliateOfferLink } from './AffiliateOfferLink';
+import { AffiliateOfferImpression } from './AffiliateOfferImpression';
 import { categoryLabel, getMerchant, getProductCategory } from '@/lib/monetization/affiliate/catalog';
+import { buildAffiliateLink, priceDisplayMode } from '@/lib/monetization/affiliate/links';
 import { selectOffers } from '@/lib/monetization/affiliate/commercial';
 import { affiliateForbidden, relevantCategories } from '@/lib/monetization/affiliate/relevance';
 import type { AffiliateOffer } from '@/lib/monetization/affiliate/types';
@@ -44,12 +46,35 @@ export function AffiliateModule({
         {selection.offers.map(({ offer }) => {
           const merchant = getMerchant(offer.merchantId);
           if (!merchant) return null;
+
+          /*
+           * Built here, on the server, where the programme credential actually
+           * lives. An offer whose link cannot be built renders nothing at all
+           * rather than a card with no way out of it.
+           */
+          const link = buildAffiliateLink(offer, merchant);
+          if (!link) return null;
+
+          const label = priceDisplayMode(merchant) === 'check-on-site'
+            ? `${UI_STRINGS.checkPrice[locale]} · ${merchant.displayName}`
+            : offer.cta;
+
           return (
             <li key={offer.offerId}>
               <p className="affiliate-category">{categoryLabel(offer.category, locale)}</p>
               <strong>{offer.headline}</strong>
               <p>{offer.body}</p>
-              <AffiliateOfferLink offer={offer} merchant={merchant} context={context} />
+              <AffiliateOfferImpression offer={offer} context={context} />
+              <AffiliateOfferLink
+                href={link.href}
+                rel={link.rel}
+                label={label}
+                merchantName={link.merchantName}
+                offerId={offer.offerId}
+                merchantId={offer.merchantId}
+                category={offer.category}
+                context={context}
+              />
             </li>
           );
         })}

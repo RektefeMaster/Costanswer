@@ -108,6 +108,34 @@ export function requirePepper(env: RouteEnvironment | undefined): string {
 type Bucket = { count: number; resetAt: number };
 const buckets = new Map<string, Bucket>();
 
+/**
+ * Expired buckets are swept, not left to accumulate.
+ *
+ * A key was only ever overwritten if the same caller came back, so every
+ * one-off visitor left an entry behind for the life of the isolate. Sweeping on
+ * a size threshold keeps it bounded without a timer, which a Worker does not
+ * reliably get to run anyway.
+ */
+const MAX_TRACKED_CALLERS = 5_000;
+
+function sweepExpired(now: number): void {
+  if (buckets.size < MAX_TRACKED_CALLERS) return;
+  for (const [key, bucket] of buckets) {
+    if (bucket.resetAt <= now) buckets.delete(key);
+  }
+  // Still full of live buckets: this is either real traffic or an attack, and
+  // dropping the oldest is better than growing without bound.
+  if (buckets.size >= MAX_TRACKED_CALLERS) {
+    const excess = buckets.size - Math.floor(MAX_TRACKED_CALLERS / 2);
+    let removed = 0;
+    for (const key of buckets.keys()) {
+      if (removed >= excess) break;
+      buckets.delete(key);
+      removed += 1;
+    }
+  }
+}
+
 export const RATE_LIMITS = {
   coverage: { limit: 30, windowMs: 60_000 },
   submit: { limit: 5, windowMs: 60_000 },
@@ -115,6 +143,7 @@ export const RATE_LIMITS = {
 } as const;
 
 export function enforceRateLimit(scope: keyof typeof RATE_LIMITS, key: string, now = Date.now()): void {
+  sweepExpired(now);
   const { limit, windowMs } = RATE_LIMITS[scope];
   const bucketKey = `${scope}:${key}`;
   const bucket = buckets.get(bucketKey);

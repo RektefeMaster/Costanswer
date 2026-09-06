@@ -46,24 +46,30 @@ export function AdSlot({
   const spec = PLACEMENT_SPECS[placement];
   const enabled = resolveFlag('ads.enabled', process.env, overrides);
   const provider = enabled ? activeAdProvider() : null;
+  const status = provider ? 'live' : enabled ? 'reserved' : 'empty';
+
+  /*
+   * Only a slot that will carry something is announced.
+   *
+   * `aria-label` on a bare div is prohibited outright — a role-less element has
+   * no accessible name to label. But the fix is not to give every slot a
+   * landmark either: with advertising off, three named regions per page called
+   * "Reserved leaderboard advertising space" is three pieces of furniture a
+   * screen-reader user has to walk past to reach a calculator that has no ads
+   * in it. An empty slot is a spacer, so it is presentational and silent.
+   */
+  const announced = status !== 'empty';
 
   return (
     <div
       className={`ad-slot ad-slot-${placement}`}
       data-ad-placement={placement}
-      data-ad-status={provider ? 'live' : enabled ? 'reserved' : 'empty'}
+      data-ad-status={status}
       data-ad-network={provider?.networkId}
       data-ad-lazy={spec.lazy ? 'true' : 'false'}
       style={{ minHeight: spec.reservedHeight, maxWidth: spec.reservedWidth }}
-      /*
-       * `aria-label` on a bare div is prohibited — a role-less element has no
-       * accessible name to label, and axe flags it as a serious violation. The
-       * region role gives the label something to attach to and tells a screen
-       * reader this is a landmark it may skip, which is exactly what an ad slot
-       * is to someone reading with one.
-       */
-      role="region"
-      aria-label={adSlotLabel(placement)}
+      role={announced ? 'region' : 'presentation'}
+      aria-label={announced ? adSlotLabel(placement) : undefined}
     />
   );
 }

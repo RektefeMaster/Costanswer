@@ -28,7 +28,7 @@ import {
   activeCampaignsForVertical, campaignUsageMap, getCampaign,
   providerHealthMap, recordProviderAttempt,
 } from '../store/repositories/campaigns';
-import { createDelivery, markDeliveryProcessing, settleDelivery } from '../store/repositories/deliveries';
+import { createDelivery, markDeliveryProcessing, openDeliveryFor, settleDelivery } from '../store/repositories/deliveries';
 import { addSuppression, isSuppressed } from '../store/repositories/governance';
 import {
   findDuplicateLead, loadLeadContactForDelivery, saveLeadContact,
@@ -40,7 +40,10 @@ import { checkDuplicate, hashContact, DEFAULT_DUPLICATE_POLICY, type DuplicatePo
 import { attemptDelivery, dispositionFor, mayAttemptFallback, type SubmissionDisposition } from './delivery';
 import { providerIdempotencyKey } from './idempotency';
 import { createLeadProvider, enabledLeadProviderIds } from './providers/registry';
-import { hasCoverage, routeLead, scoreLeadQuality, ROUTABLE_REQUIRED_FIELDS } from './routing';
+import { stateForZip } from './location';
+import {
+  hasCoverage, routeLead, scoreLeadQuality, selectableCampaigns, ROUTABLE_REQUIRED_FIELDS,
+} from './routing';
 import type { LeadSubmissionInput } from './schema';
 import { silentRejectionFor } from './schema';
 import type { LeadVerticalId } from '../policy';
@@ -83,41 +86,44 @@ export async function checkCoverage(
   const campaigns = await activeCampaignsForVertical(database, input.vertical);
   if (campaigns.length === 0) return { covered: false, requiredFields: [] };
 
+  // A caller gives a ZIP; campaigns are usually scoped by state. Without this
+  // translation every state-scoped campaign is invisible and coverage answers
+  // "no" forever while appearing to work.
+  const location = { zip: input.zip, state: input.state ?? stateForZip(input.zip) };
+
   const health = await providerHealthMap(database);
   const usage = await campaignUsageMap(database, campaigns.map((entry) => entry.campaignId));
   const enabledProviderIds = enabledLeadProviderIds(environment);
 
-  const covered = hasCoverage({
+  const base = {
     vertical: input.vertical,
-    location: { zip: input.zip, state: input.state },
+    location,
     campaigns,
     health,
     usage,
     enabledProviderIds,
-    // At coverage time no consent exists yet, so every campaign's own partner
-    // name counts as disclosable — the consent step will name whichever one is
-    // selected here.
+    // No consent exists yet, so every campaign's own partner name counts as
+    // disclosable — the consent step names whichever one is selected here.
     disclosedPartnerNames: new Set(campaigns.map((entry) => entry.disclosedPartnerName)),
-  });
+  };
 
-  if (!covered) return { covered: false, requiredFields: [] };
+  if (!hasCoverage(base)) return { covered: false, requiredFields: [] };
 
-  const selected = selectCoverageCampaign(campaigns, enabledProviderIds);
+  /*
+   * The partner named here is the partner the consent text will name, and
+   * routing later refuses any campaign that name does not match. So it has to
+   * be chosen the way routing chooses — same eligibility, same order. Picking
+   * the highest-priority campaign without applying coverage let a caller in
+   * Texas be shown a California partner, agree to them, and then be told there
+   * was no route after filling in the whole form.
+   */
+  const selected = selectableCampaigns(base)[0];
   return {
-    covered: true,
+    covered: selected !== undefined,
     partnerName: selected?.disclosedPartnerName,
-    requiredFields: [...new Set(campaigns.flatMap((entry) => entry.requiredFields))]
+    requiredFields: [...new Set((selected ? [selected] : campaigns).flatMap((entry) => entry.requiredFields))]
       .filter((field) => (ROUTABLE_REQUIRED_FIELDS as readonly string[]).includes(field)),
   };
-}
-
-function selectCoverageCampaign(
-  campaigns: readonly { campaignId: string; providerId: string; priority: number; disclosedPartnerName: string }[],
-  enabledProviderIds: ReadonlySet<string>,
-) {
-  return [...campaigns]
-    .filter((entry) => enabledProviderIds.has(entry.providerId))
-    .sort((left, right) => right.priority - left.priority)[0];
 }
 
 export type SubmitOutcome = {
@@ -178,7 +184,7 @@ export async function submitLead(
   });
 
   const qualityScore = scoreLeadQuality({ qualification: input.qualification, project: input.project, zip: input.zip });
-  await updateLeadStatus(database, leadId, 'validated', { duplicateState: duplicate.state === 'none' ? 'none' : duplicate.state, qualityScore });
+  await updateLeadStatus(database, leadId, 'validated', { duplicateState: duplicate.state, qualityScore });
 
   if (duplicate.state === 'suppressed') {
     await countEvent(database, 'lead_submit', input, now);
@@ -283,7 +289,24 @@ export async function deliver(
     { leadId: input.leadId, campaignId: campaign.campaignId },
     input.config.hashPepper,
   );
-  const delivery = await createDelivery(database, {
+
+  /*
+   * Reuse the open row when there is one. The provider key is derived from the
+   * lead and campaign precisely so a retry carries the same key the first
+   * attempt did — which is what stops a provider billing twice when the first
+   * attempt actually landed before the socket died. That same property means a
+   * second row can never be inserted, so a retry has to continue the first one.
+   */
+  const existing = await openDeliveryFor(database, input.leadId, campaign.campaignId);
+  if (existing && existing.attemptCount >= existing.maxAttempts) {
+    await settleDelivery(database, existing.deliveryId, {
+      status: 'permanent_failure',
+      failureReason: 'Attempt budget exhausted.',
+    }, input.now);
+    return { disposition: 'failed', status: 'permanent_failure' };
+  }
+
+  const delivery = existing ?? await createDelivery(database, {
     leadId: input.leadId,
     campaignId: campaign.campaignId,
     providerId: campaign.providerId,
@@ -326,8 +349,13 @@ export async function deliver(
   );
 
   if (outcome.status === 'accepted') {
-    await updateLeadStatus(database, input.leadId, 'submitted');
-    await updateLeadStatus(database, input.leadId, 'accepted');
+    // A retry that finally succeeds walks the lead forward from wherever it
+    // was; a lead already marked accepted stays accepted rather than throwing
+    // on an impossible transition.
+    if (leadRow.status !== 'accepted') {
+      if (leadRow.status !== 'submitted') await updateLeadStatus(database, input.leadId, 'submitted');
+      await updateLeadStatus(database, input.leadId, 'accepted');
+    }
     // Estimated, never confirmed. A buyer accepting a lead is not the same as
     // a buyer paying for it, and the ledger keeps those apart until a statement
     // or a postback says otherwise.
@@ -346,8 +374,10 @@ export async function deliver(
       occurredAt: new Date(input.now).toISOString(),
     }, input.now);
   } else if (outcome.status === 'rejected') {
-    await updateLeadStatus(database, input.leadId, 'submitted');
-    await updateLeadStatus(database, input.leadId, 'rejected');
+    if (leadRow.status !== 'rejected') {
+      if (leadRow.status !== 'submitted') await updateLeadStatus(database, input.leadId, 'submitted');
+      await updateLeadStatus(database, input.leadId, 'rejected');
+    }
   }
 
   return { disposition: dispositionFor(outcome.status), status: outcome.status };

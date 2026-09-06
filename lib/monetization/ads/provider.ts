@@ -19,6 +19,22 @@ export type AdProviderDescriptor = {
   readonly displayName: string;
   readonly status: 'configuration_required' | 'configured' | 'enabled' | 'disabled';
   readonly requiredEnv: readonly string[];
+  /**
+   * Exactly the origins this network needs, per directive.
+   *
+   * The site's Content-Security-Policy is `script-src 'self'`, which silently
+   * blocks every ad network: the script never loads, nothing is logged where an
+   * operator would look, and the obvious conclusion is that the integration is
+   * broken rather than that the policy refused it. Enabling a network has to
+   * open its origins — and only its origins, which is why this is a list per
+   * network rather than a wildcard on the policy.
+   */
+  readonly cspOrigins?: {
+    readonly script?: readonly string[];
+    readonly connect?: readonly string[];
+    readonly img?: readonly string[];
+    readonly frame?: readonly string[];
+  };
   /** Script origin, so it can be added to the CSP deliberately rather than by wildcard. */
   readonly scriptOrigin?: string;
   /** Consent signal the network requires before its script may run. */
@@ -36,6 +52,12 @@ export const AD_PROVIDERS: readonly AdProviderDescriptor[] = Object.freeze([
     status: 'configuration_required',
     requiredEnv: ['AD_PROVIDER', 'ADSENSE_CLIENT_ID'],
     scriptOrigin: 'https://pagead2.googlesyndication.com',
+    cspOrigins: {
+      script: ['https://pagead2.googlesyndication.com', 'https://tpc.googlesyndication.com'],
+      connect: ['https://pagead2.googlesyndication.com', 'https://googleads.g.doubleclick.net'],
+      img: ['https://pagead2.googlesyndication.com', 'https://tpc.googlesyndication.com', 'https://www.google.com'],
+      frame: ['https://googleads.g.doubleclick.net', 'https://tpc.googlesyndication.com'],
+    },
     consentRequirement: 'tcf_v2',
     outstandingDependency:
       'AdSense account approval and a publisher client id. Google requires a certified consent management platform for EEA/UK/Swiss traffic, so a CMP must be selected and wired before this is enabled.',
@@ -67,6 +89,26 @@ const byId = new Map(AD_PROVIDERS.map((entry) => [entry.networkId, entry]));
 
 export function isAdNetworkId(value: unknown): value is AdNetworkId {
   return typeof value === 'string' && byId.has(value as AdNetworkId);
+}
+
+/**
+ * CSP additions for whichever network is live, or nothing.
+ *
+ * Returns an empty record when no network is configured, so the policy a
+ * calculator page ships with is unchanged by the existence of this file. That
+ * matters: the default posture must stay as tight as it is today.
+ */
+export function adCspSources(
+  environment: Record<string, string | undefined> = process.env,
+): Readonly<Record<'script' | 'connect' | 'img' | 'frame', readonly string[]>> {
+  const provider = activeAdProvider(environment);
+  const origins = provider?.cspOrigins;
+  return {
+    script: origins?.script ?? [],
+    connect: origins?.connect ?? [],
+    img: origins?.img ?? [],
+    frame: origins?.frame ?? [],
+  };
 }
 
 export function activeAdProvider(
