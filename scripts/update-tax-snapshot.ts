@@ -31,7 +31,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   AZ: { provider: 'Arizona Department of Revenue', sourceUrl: 'https://azdor.gov/' },
   AR: { provider: 'Arkansas Department of Finance and Administration', sourceUrl: 'https://www.dfa.arkansas.gov/' },
   CA: { provider: 'California Franchise Tax Board', sourceUrl: 'https://www.ftb.ca.gov/about-ftb/newsroom/tax-news/2025/10.html' },
-  CO: { provider: 'Colorado Department of Revenue', sourceUrl: 'https://tax.colorado.gov/' },
+  CO: { provider: 'Colorado Department of Revenue', sourceUrl: 'https://tax.colorado.gov/sites/tax/files/documents/Book104_2025.pdf' },
   CT: { provider: 'Connecticut Department of Revenue Services', sourceUrl: 'https://portal.ct.gov/drs' },
   DE: { provider: 'Delaware Division of Revenue', sourceUrl: 'https://revenue.delaware.gov/' },
   DC: { provider: 'D.C. Office of Tax and Revenue', sourceUrl: 'https://otr.cfo.dc.gov/' },
@@ -43,14 +43,14 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   IN: { provider: 'Indiana Department of Revenue', sourceUrl: 'https://www.in.gov/dor/' },
   IA: { provider: 'Iowa Department of Revenue', sourceUrl: 'https://tax.iowa.gov/' },
   KS: { provider: 'Kansas Department of Revenue', sourceUrl: 'https://www.ksrevenue.gov/' },
-  KY: { provider: 'Kentucky Department of Revenue', sourceUrl: 'https://revenue.ky.gov/' },
+  KY: { provider: 'Kentucky Department of Revenue', sourceUrl: 'https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf' },
   LA: { provider: 'Louisiana Department of Revenue', sourceUrl: 'https://revenue.louisiana.gov/' },
   ME: { provider: 'Maine Revenue Services', sourceUrl: 'https://www.maine.gov/revenue/' },
   MD: { provider: 'Comptroller of Maryland', sourceUrl: 'https://www.marylandtaxes.gov/' },
   MA: { provider: 'Massachusetts Department of Revenue', sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates' },
   MI: { provider: 'Michigan Department of Treasury', sourceUrl: 'https://www.michigan.gov/taxes' },
   MN: { provider: 'Minnesota Department of Revenue', sourceUrl: 'https://www.revenue.state.mn.us/' },
-  MS: { provider: 'Mississippi Department of Revenue', sourceUrl: 'https://www.dor.ms.gov/' },
+  MS: { provider: 'Mississippi Department of Revenue', sourceUrl: 'https://www.dor.ms.gov/individual/tax-rates' },
   MO: { provider: 'Missouri Department of Revenue', sourceUrl: 'https://dor.mo.gov/' },
   MT: { provider: 'Montana Department of Revenue', sourceUrl: 'https://mtrevenue.gov/' },
   NE: { provider: 'Nebraska Department of Revenue', sourceUrl: 'https://revenue.nebraska.gov/' },
@@ -70,7 +70,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   SD: { provider: 'South Dakota Department of Revenue', sourceUrl: 'https://dor.sd.gov/' },
   TN: { provider: 'Tennessee Department of Revenue', sourceUrl: 'https://www.tn.gov/revenue/taxes/hall-income-tax.html' },
   TX: { provider: 'Texas Comptroller of Public Accounts', sourceUrl: 'https://comptroller.texas.gov/economy/fiscal-notes/archive/2016/february/starting.php' },
-  UT: { provider: 'Utah State Tax Commission', sourceUrl: 'https://tax.utah.gov/' },
+  UT: { provider: 'Utah State Tax Commission', sourceUrl: 'https://incometax.utah.gov/paying/tax-rates' },
   VT: { provider: 'Vermont Department of Taxes', sourceUrl: 'https://tax.vermont.gov/' },
   VA: { provider: 'Virginia Department of Taxation', sourceUrl: 'https://www.tax.virginia.gov/' },
   WA: { provider: 'Washington Department of Revenue', sourceUrl: 'https://dor.wa.gov/taxes-rates/income-tax' },
@@ -79,15 +79,27 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   WY: { provider: 'Wyoming Department of Revenue', sourceUrl: 'https://revenue.wyo.gov/' },
 };
 
-function meta(stateCode: StateCode) {
+/**
+ * Who published this row's figures, and when they were read.
+ *
+ * `sourceName` defaults to the agency because a row with nothing better should
+ * at least say which agency it came from. A state whose numbers were read out
+ * of one identifiable document names that document instead, so a reader
+ * checking the figure knows what to open rather than which website to search.
+ *
+ * `verifiedAt` is per-state on purpose. The transcription work runs over weeks,
+ * and stamping every row with one date would claim that states read in
+ * September were re-checked whenever the last one was.
+ */
+function meta(stateCode: StateCode, source?: { sourceName?: string; verifiedAt?: string }) {
   const agency = AGENCY[stateCode];
   return {
     stateCode,
     provider: agency.provider,
-    sourceName: agency.provider,
+    sourceName: source?.sourceName ?? agency.provider,
     sourceUrl: agency.sourceUrl,
     publishedAt: VERIFIED_AT,
-    verifiedAt: VERIFIED_AT,
+    verifiedAt: source?.verifiedAt ?? VERIFIED_AT,
     version: VERSION,
   };
 }
@@ -241,6 +253,133 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['KY', {
+    ...meta('KY', {
+      sourceName: '2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025)',
+      verifiedAt: '2026-09-06T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
+    rate: 0.035,
+    // Kentucky's standard deduction sits in `exemption` because the flat shape
+    // subtracts both and Kentucky has only one figure to subtract.
+    exemptionByFilingStatus: filingAmounts(3_360, 3_360, 3_360, 3_360),
+    localAddOn: {
+      label: 'Kentucky local occupational license tax',
+      basis: 'county',
+      appliesTo: 'taxable-income',
+      // Deliberately unsized. Hundreds of Kentucky cities and counties set
+      // their own occupational rates and no state agency publishes a statewide
+      // band, so the page names the omission without inventing its size.
+    },
+    notes: [
+      'Kentucky taxes individual income at a flat 3.5% for 2026, on wages less a $3,360 standard deduction (Kentucky DOR, 2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025); KRS 141.020 as amended by H.B. 1 of 2025; KRS 141.081(2)(a)).',
+      'That document computes gross annual Kentucky tax, not a withholding approximation: its own example takes $39,240 of annual wages to $35,880 of Kentucky taxable wages and $1,255.80 of tax.',
+      'The standard deduction is one figure for every filing status. On a Kentucky combined return each spouse claims it separately; this model has one income and claims it once.',
+      'Kentucky cities and counties levy occupational license taxes on wages, which are not included and are not estimated because no state agency publishes a statewide rate.',
+      'Kentucky itemized deductions, the family size tax credit and the pension income exclusion are not modeled.',
+    ],
+  }],
+  ['UT', {
+    ...meta('UT', {
+      sourceName: 'Utah Income Tax: Tax Rates, and the TC-40 line-by-line instructions for lines 9\u201322 (taxpayer tax credit)',
+      verifiedAt: '2026-09-06T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    /*
+     * The Tax Commission's rate table reads "January 1, 2025 \u2014 current: 4.5%",
+     * and its whole instruction site is still headed 2025. A 2026 reduction
+     * appears in third-party parameter sets, but le.utah.gov was unreachable
+     * from here and the Commission has not republished, so the rate this row
+     * ships is the one the state currently prints.
+     */
+    scheduleTaxYear: 2025,
+    rate: 0.045,
+    // Utah starts from federal AGI, which for a wage-only filer is gross pay.
+    // It gives no deduction of its own; the credit below does that work.
+    exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    exemptionCredit: {
+      // Utah's personal exemption is per dependent only, and dependents are
+      // not an input here, so the per-filer part is genuinely zero.
+      perFilerByFilingStatus: filingAmounts(0, 0, 0, 0),
+      perDependent: 0.06 * 2_111,
+      // TC-40 line 16: six percent of exemptions plus the federal deduction.
+      rateOfFederalStandardDeduction: 0.06,
+      phaseOut: {
+        startIncomeByFilingStatus: filingAmounts(18_213, 36_426, 18_213, 27_320),
+        ratePerDollar: 0.013,
+      },
+    },
+    notes: [
+      'Utah taxes income at a flat 4.5% from January 1, 2025 (Utah State Tax Commission, Tax Rates; Utah Code 59-10-104).',
+      'Utah gives no deduction. Instead TC-40 line 16 grants a credit of 6% of the federal standard deduction plus Utah personal exemptions, reduced by 1.3% of income above a base of $18,213 single, $36,426 filing jointly, $18,213 filing separately and $27,320 head of household, and never below zero.',
+      'That credit is read from the federal standard deduction in this same snapshot rather than copied as a dollar figure, so it moves when the IRS indexes the deduction instead of going stale.',
+      'The Utah personal exemption is $2,111 per dependent for 2025. Dependents are not an input to this calculation, so only the federal share of the credit applies here.',
+      'Utah had not published 2026 amounts at verification, so this row declares the 2025 schedule. Utah\u2019s other credits and its additions and subtractions are not modeled.',
+    ],
+  }],
+  ['MS', {
+    ...meta('MS', {
+      sourceName: 'Individual Income Tax \u2014 General Information: Tax Rates, Exemptions and Deductions; and the 2025 Resident Individual Income Tax Instructions (Form 80-100)',
+      verifiedAt: '2026-09-06T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
+    // Mississippi's zero band is a bracket, not a deduction: the first $10,000
+    // of taxable income is taxed at 0% and everything above it at one rate.
+    // Modelling it as a flat tax with a $10,000 deduction gives the same answer
+    // only by accident, and stops doing so the moment the state adds a band.
+    bracketsByFilingStatus: {
+      single: brackets([[10_000, 0], [null, 0.04]]),
+      marriedFilingJointly: brackets([[10_000, 0], [null, 0.04]]),
+      marriedFilingSeparately: brackets([[10_000, 0], [null, 0.04]]),
+      headOfHousehold: brackets([[10_000, 0], [null, 0.04]]),
+    },
+    standardDeductionByFilingStatus: filingAmounts(2_300, 4_600, 2_300, 3_400),
+    personalExemptionByFilingStatus: filingAmounts(6_000, 12_000, 6_000, 8_000),
+    perDependentExemption: 1_500,
+    notes: [
+      'Mississippi taxes the first $10,000 of taxable income at 0% and the excess at 4.00% for tax year 2026 (MS DOR, Individual Income Tax \u2014 Tax Rates; H.B. 1 of 2025).',
+      'Exemption for 2026: $6,000 single and married filing separately, $12,000 married filing jointly or combined, $8,000 head of family. Standard deduction: $2,300, $4,600, $2,300 and $3,400 respectively (MS DOR).',
+      'The department\u2019s own filing thresholds confirm those pairs: a single resident files above $8,300 of gross income and a married resident above $16,600, which are exactly exemption plus standard deduction.',
+      'On a Mississippi combined return each spouse computes tax on their own income, so a two-earner couple gets the $10,000 zero band twice. This model has one income and applies it once, which is correct for a single-earner household and overstates tax for a two-earner one.',
+      'Mississippi credits and the aged, blind and dependent exemptions are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['CO', {
+    ...meta('CO', {
+      sourceName: '2025 Colorado Individual Income Tax Filing Guide (DR 0104 Book), lines 12\u201313 and the 2025 income tax table',
+      verifiedAt: '2026-09-06T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'flat',
+    sourceStatus: 'verified',
+    /*
+     * Colorado's rate is not fixed in statute: TABOR refund mechanisms move it
+     * year to year, so it cannot be carried forward on the assumption that a
+     * flat rate stays flat. 4.4% is the rate the department printed on the 2025
+     * filing guide, and that is the year this row declares.
+     */
+    scheduleTaxYear: 2025,
+    // Colorado starts from federal taxable income, line 1 of the DR 0104. It
+    // has no deduction or exemption of its own.
+    taxableIncomeBasis: 'federal-taxable-income',
+    rate: 0.044,
+    exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    notes: [
+      'Colorado taxes federal taxable income at a flat 4.40% (2025 Colorado Individual Income Tax Filing Guide, DR 0104 Book, line 13).',
+      'Colorado has no standard deduction or personal exemption of its own. The federal standard deduction is already inside its starting figure, which is why this row reads it from the federal snapshot rather than restating it.',
+      'The rate moves with TABOR refund mechanisms rather than staying fixed, so this row is declared as the 2025 schedule. It had not been republished for 2026 at verification.',
+      'Above $300,000 of federal adjusted gross income Colorado adds back the part of the federal standard or itemized deduction over $12,000 ($16,000 filing jointly). That addback is not modeled, so this understates tax for those filers by at most about $180 single and $713 filing jointly.',
+      'Colorado additions, subtractions, the alternative minimum tax and credits are not modeled.',
     ],
   }],
   ['MA', {

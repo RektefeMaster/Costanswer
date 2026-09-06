@@ -427,14 +427,30 @@
     {
       "stateCode": "CO",
       "provider": "Colorado Department of Revenue",
-      "sourceName": "Colorado Department of Revenue",
-      "sourceUrl": "https://tax.colorado.gov/",
+      "sourceName": "2025 Colorado Individual Income Tax Filing Guide (DR 0104 Book), lines 12–13 and the 2025 income tax table",
+      "sourceUrl": "https://tax.colorado.gov/sites/tax/files/documents/Book104_2025.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-06T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Colorado. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "taxableIncomeBasis": "federal-taxable-income",
+      "rate": 0.044,
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "notes": [
+        "Colorado taxes federal taxable income at a flat 4.40% (2025 Colorado Individual Income Tax Filing Guide, DR 0104 Book, line 13).",
+        "Colorado has no standard deduction or personal exemption of its own. The federal standard deduction is already inside its starting figure, which is why this row reads it from the federal snapshot rather than restating it.",
+        "The rate moves with TABOR refund mechanisms rather than staying fixed, so this row is declared as the 2025 schedule. It had not been republished for 2026 at verification.",
+        "Above $300,000 of federal adjusted gross income Colorado adds back the part of the federal standard or itemized deduction over $12,000 ($16,000 filing jointly). That addback is not modeled, so this understates tax for those filers by at most about $180 single and $713 filing jointly.",
+        "Colorado additions, subtractions, the alternative minimum tax and credits are not modeled."
+      ]
     },
     {
       "stateCode": "CT",
@@ -587,14 +603,34 @@
     {
       "stateCode": "KY",
       "provider": "Kentucky Department of Revenue",
-      "sourceName": "Kentucky Department of Revenue",
-      "sourceUrl": "https://revenue.ky.gov/",
+      "sourceName": "2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025)",
+      "sourceUrl": "https://revenue.ky.gov/Forms/2026%20Withholding%20Formula.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-06T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Kentucky. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "rate": 0.035,
+      "exemptionByFilingStatus": {
+        "single": 3360,
+        "marriedFilingJointly": 3360,
+        "marriedFilingSeparately": 3360,
+        "headOfHousehold": 3360
+      },
+      "localAddOn": {
+        "label": "Kentucky local occupational license tax",
+        "basis": "county",
+        "appliesTo": "taxable-income"
+      },
+      "notes": [
+        "Kentucky taxes individual income at a flat 3.5% for 2026, on wages less a $3,360 standard deduction (Kentucky DOR, 2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025); KRS 141.020 as amended by H.B. 1 of 2025; KRS 141.081(2)(a)).",
+        "That document computes gross annual Kentucky tax, not a withholding approximation: its own example takes $39,240 of annual wages to $35,880 of Kentucky taxable wages and $1,255.80 of tax.",
+        "The standard deduction is one figure for every filing status. On a Kentucky combined return each spouse claims it separately; this model has one income and claims it once.",
+        "Kentucky cities and counties levy occupational license taxes on wages, which are not included and are not estimated because no state agency publishes a statewide rate.",
+        "Kentucky itemized deductions, the family size tax credit and the pension income exclusion are not modeled."
+      ]
     },
     {
       "stateCode": "LA",
@@ -781,14 +817,77 @@
     {
       "stateCode": "MS",
       "provider": "Mississippi Department of Revenue",
-      "sourceName": "Mississippi Department of Revenue",
-      "sourceUrl": "https://www.dor.ms.gov/",
+      "sourceName": "Individual Income Tax — General Information: Tax Rates, Exemptions and Deductions; and the 2025 Resident Individual Income Tax Instructions (Form 80-100)",
+      "sourceUrl": "https://www.dor.ms.gov/individual/tax-rates",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-06T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Mississippi. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 10000,
+            "rate": 0
+          },
+          {
+            "notOver": null,
+            "rate": 0.04
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 10000,
+            "rate": 0
+          },
+          {
+            "notOver": null,
+            "rate": 0.04
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 10000,
+            "rate": 0
+          },
+          {
+            "notOver": null,
+            "rate": 0.04
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 10000,
+            "rate": 0
+          },
+          {
+            "notOver": null,
+            "rate": 0.04
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 2300,
+        "marriedFilingJointly": 4600,
+        "marriedFilingSeparately": 2300,
+        "headOfHousehold": 3400
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 6000,
+        "marriedFilingJointly": 12000,
+        "marriedFilingSeparately": 6000,
+        "headOfHousehold": 8000
+      },
+      "perDependentExemption": 1500,
+      "notes": [
+        "Mississippi taxes the first $10,000 of taxable income at 0% and the excess at 4.00% for tax year 2026 (MS DOR, Individual Income Tax — Tax Rates; H.B. 1 of 2025).",
+        "Exemption for 2026: $6,000 single and married filing separately, $12,000 married filing jointly or combined, $8,000 head of family. Standard deduction: $2,300, $4,600, $2,300 and $3,400 respectively (MS DOR).",
+        "The department’s own filing thresholds confirm those pairs: a single resident files above $8,300 of gross income and a married resident above $16,600, which are exactly exemption plus standard deduction.",
+        "On a Mississippi combined return each spouse computes tax on their own income, so a two-earner couple gets the $10,000 zero band twice. This model has one income and applies it once, which is correct for a single-earner household and overstates tax for a two-earner one.",
+        "Mississippi credits and the aged, blind and dependent exemptions are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "MT",
@@ -1210,14 +1309,48 @@
     {
       "stateCode": "UT",
       "provider": "Utah State Tax Commission",
-      "sourceName": "Utah State Tax Commission",
-      "sourceUrl": "https://tax.utah.gov/",
+      "sourceName": "Utah Income Tax: Tax Rates, and the TC-40 line-by-line instructions for lines 9–22 (taxpayer tax credit)",
+      "sourceUrl": "https://incometax.utah.gov/paying/tax-rates",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-06T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Utah. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "rate": 0.045,
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 0,
+          "marriedFilingJointly": 0,
+          "marriedFilingSeparately": 0,
+          "headOfHousehold": 0
+        },
+        "perDependent": 126.66,
+        "rateOfFederalStandardDeduction": 0.06,
+        "phaseOut": {
+          "startIncomeByFilingStatus": {
+            "single": 18213,
+            "marriedFilingJointly": 36426,
+            "marriedFilingSeparately": 18213,
+            "headOfHousehold": 27320
+          },
+          "ratePerDollar": 0.013
+        }
+      },
+      "notes": [
+        "Utah taxes income at a flat 4.5% from January 1, 2025 (Utah State Tax Commission, Tax Rates; Utah Code 59-10-104).",
+        "Utah gives no deduction. Instead TC-40 line 16 grants a credit of 6% of the federal standard deduction plus Utah personal exemptions, reduced by 1.3% of income above a base of $18,213 single, $36,426 filing jointly, $18,213 filing separately and $27,320 head of household, and never below zero.",
+        "That credit is read from the federal standard deduction in this same snapshot rather than copied as a dollar figure, so it moves when the IRS indexes the deduction instead of going stale.",
+        "The Utah personal exemption is $2,111 per dependent for 2025. Dependents are not an input to this calculation, so only the federal share of the credit applies here.",
+        "Utah had not published 2026 amounts at verification, so this row declares the 2025 schedule. Utah’s other credits and its additions and subtractions are not modeled."
+      ]
     },
     {
       "stateCode": "VA",
@@ -1300,5 +1433,5 @@
       ]
     }
   ],
-  "normalizedSha256": "049639ce2b9459e970b15709f83becc5b06e21473e2b4d67db664f2cf7eca940"
+  "normalizedSha256": "bbd34a75380dfe03fec9f90cfdae5ce49f40ffd4679e3fda4b2e4a831baa4a92"
 }

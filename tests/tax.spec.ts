@@ -12,6 +12,7 @@ import { calculateBonusTax } from '@/lib/calculations/tax/bonus';
 import { validateTaxYearSnapshot } from '@/lib/data/verify';
 import { taxYearSnapshotSchema } from '@/lib/data/tax/schema';
 import type { TaxBracket } from '@/lib/calculations/tax/types';
+import type { StateCode } from '@/lib/location/states';
 import { describe, expect, it } from 'vitest';
 
 /** IRS Rev. Proc. 2025-32, tax year 2026, single taxable-income schedule. */
@@ -185,9 +186,58 @@ describe('state income tax', () => {
     expect(ny.status).toBe('unsupported');
     expect(ny.tax).toBe(0);
     expect(ny.reason).toMatch(/IT-201/i);
-    const co = calculateStateIncomeTax({ taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 90_000 });
-    expect(co.status).toBe('unsupported');
-    expect(co.tax).toBe(0);
+
+    /*
+     * Read the example out of the snapshot rather than naming a state.
+     * Transcription work keeps promoting states to supported, and a hard-coded
+     * name turns that progress into a test failure that says nothing useful.
+     */
+    const stillMissing = getTaxYearSnapshot(2026).states.find((row) => row.status === 'unsupported' && row.stateCode !== 'NY');
+    expect(stillMissing).toBeDefined();
+    const omitted = calculateStateIncomeTax({
+      taxYear: 2026,
+      state: stillMissing!.stateCode as StateCode,
+      filingStatus: 'single',
+      taxableIncome: 90_000,
+    });
+    expect(omitted.status).toBe('unsupported');
+    expect(omitted.tax).toBe(0);
+    expect(omitted.reason).toBeTruthy();
+  });
+
+  it('taxes Colorado on federal taxable income, not on gross wages', () => {
+    // The 2025 DR 0104 table gives $1,014 for Colorado taxable income in the
+    // $23,000-$23,100 band; $39,150 of wages less the $16,100 federal standard
+    // deduction lands at $23,050.
+    const co = calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 39_150, federalStandardDeduction: 16_100,
+    });
+    expect(co.status).toBe('supported');
+    expect(co.tax).toBeCloseTo(1_014.20, 2);
+
+    // Without the federal figure the answer would silently tax the standard
+    // deduction a second time, so the engine refuses instead.
+    expect(() => calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 39_150,
+    })).toThrow(/federalStandardDeduction/);
+  });
+
+  it('gives Mississippi its zero band and charges nothing at the state filing threshold', () => {
+    // MS DOR publishes the filing threshold as $8,300 single, which is exactly
+    // the $2,300 standard deduction plus the $6,000 exemption.
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MS', filingStatus: 'single', taxableIncome: 8_300 }).tax).toBe(0);
+    // $60,000 less $8,300 is $51,700; the first $10,000 is free and the rest is at 4%.
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MS', filingStatus: 'single', taxableIncome: 60_000 }).tax)
+      .toBeCloseTo(41_700 * 0.04, 2);
+  });
+
+  it('phases out the Utah taxpayer credit and never turns it into a refund', () => {
+    const base = { taxYear: 2026, state: 'UT' as const, filingStatus: 'single' as const, federalStandardDeduction: 16_100 };
+    // 6% of the federal standard deduction, less 1.3% of income over $18,213.
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 90_000 }).tax).toBeCloseTo(4_017.23, 2);
+    // Below the phase-out base the credit is larger than the tax, and Utah's
+    // TC-40 line 22 says enter zero rather than pay the difference out.
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 20_000 }).tax).toBe(0);
   });
 });
 

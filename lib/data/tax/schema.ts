@@ -84,6 +84,16 @@ const noneStateSchema = stateMetadataSchema.extend({
 const exemptionCreditSchema = z.object({
   perFilerByFilingStatus: filingStatusNumberSchema,
   perDependent: z.number().finite().min(0),
+  /**
+   * Part of the credit stated as a share of the federal standard deduction.
+   *
+   * Utah is the case this exists for: its taxpayer tax credit is six percent of
+   * the federal standard deduction plus state exemptions, so the credit moves
+   * every time the IRS indexes that deduction. Writing today's product into
+   * `perFilerByFilingStatus` would work for one filing season and then be
+   * quietly wrong, in the direction of overcharging, for every one after.
+   */
+  rateOfFederalStandardDeduction: z.number().finite().min(0).max(1).optional(),
   /** Some states phase the credit out. Absent means it does not. */
   phaseOut: z.object({
     startIncomeByFilingStatus: filingStatusNumberSchema,
@@ -134,11 +144,19 @@ const localAddOnSchema = z.object({
   label: z.string().min(1),
   /** What the reader would have to know to fill this in. */
   basis: z.enum(['municipality', 'county', 'school-district']),
-  /** Range actually levied, for the page to describe the omission honestly. */
+  /**
+   * Range actually levied, where an official source states one.
+   *
+   * Optional on purpose. Kentucky's occupational license taxes are set by
+   * hundreds of cities and counties and no state agency publishes a statewide
+   * band, so a range here would be a number this project made up — which is
+   * worse than saying the size is unknown. A state with no verified band names
+   * the omission without pretending to size it.
+   */
   typicalRateRange: z.object({
     low: z.number().finite().min(0).max(1),
     high: z.number().finite().min(0).max(1),
-  }).strict(),
+  }).strict().optional(),
   appliesTo: z.enum(['taxable-income', 'state-tax-liability']),
 }).strict();
 

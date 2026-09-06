@@ -163,8 +163,19 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
   const spec = 'exemptionCredit' in policy ? policy.exemptionCredit : undefined;
   if (!spec) return 0;
 
+  let federalShare = 0;
+  if (spec.rateOfFederalStandardDeduction !== undefined) {
+    if (input.federalStandardDeduction === undefined) {
+      throw new Error(
+        `${input.state} bases its credit on the federal standard deduction, so federalStandardDeduction is required.`,
+      );
+    }
+    federalShare = spec.rateOfFederalStandardDeduction * input.federalStandardDeduction;
+  }
+
   const full = spec.perFilerByFilingStatus[input.filingStatus]
-    + spec.perDependent * (input.dependents ?? 0);
+    + spec.perDependent * (input.dependents ?? 0)
+    + federalShare;
 
   if (!spec.phaseOut) return Math.min(full, taxBeforeCredits);
 

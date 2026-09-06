@@ -116,11 +116,20 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
   const local = liability.stateTax.omittedLocalTax;
   if (local) {
     const asPercent = (rate: number) => formatNumber(rate * 100, { maximumFractionDigits: 2 });
-    assumptions.push(
-      `${local.label} is not included. It is set by your ${local.basis.replace('-', ' ')} and typically runs `
-      + `${asPercent(local.typicalRateRange.low)}% to ${asPercent(local.typicalRateRange.high)}% of `
-      + `${local.appliesTo === 'taxable-income' ? 'taxable income' : 'state tax'}, so your real take-home is lower than this.`,
-    );
+    const base = local.appliesTo === 'taxable-income' ? 'taxable income' : 'state tax';
+    const where = local.basis.replace('-', ' ');
+    /*
+     * Where no official source sizes the local tax, the sentence says the
+     * direction and stops. Quoting a made-up band would read as knowledge and
+     * be wrong for most readers; saying nothing at all would let the page imply
+     * the state figure is the whole bill.
+     */
+    assumptions.push(local.typicalRateRange
+      ? `${local.label} is not included. It is set by your ${where} and typically runs `
+        + `${asPercent(local.typicalRateRange.low)}% to ${asPercent(local.typicalRateRange.high)}% of ${base}, `
+        + 'so your real take-home is lower than this.'
+      : `${local.label} is not included. It is set by your ${where} and applies to ${base}. `
+        + 'No state agency publishes a single rate for it, so its size is not estimated here — but your real take-home is lower than this.');
   } else if (liability.stateTax.status === 'supported') {
     assumptions.push('This state levies no local income tax on wages, so nothing is omitted on that account.');
   }

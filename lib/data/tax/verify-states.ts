@@ -20,13 +20,34 @@ export type StateVerificationIssue = {
   readonly message: string;
 };
 
+/**
+ * How strong the evidence behind a vector is.
+ *
+ * The first three come from the state; the last comes from this project's own
+ * reading of the state's schedule. Both are useful and they prove different
+ * things, so a vector says which it is rather than letting the distinction
+ * quietly disappear into a passing test.
+ */
+export type GoldenVectorBasis =
+  | 'published-table'
+  | 'published-example'
+  | 'published-threshold'
+  | 'worked-from-schedule';
+
 /** A figure the state itself publishes, that the engine must reproduce. */
 export type StateGoldenVector = {
   readonly stateCode: StateCode;
   readonly filingStatus: FilingStatus;
+  /** What the engine is given. Gross wages, except where the state says otherwise. */
   readonly taxableIncome: number;
   /** Tax the state's own table or calculator gives for this income. */
   readonly expectedTax: number;
+  readonly basis: GoldenVectorBasis;
+  /** Needed by states that tax federal taxable income or credit a share of the federal deduction. */
+  readonly federalStandardDeduction?: number;
+  /** Needed by states that let federal income tax be deducted. */
+  readonly federalIncomeTax?: number;
+  readonly dependents?: number;
   /** Where that figure was read from. A vector without one proves nothing. */
   readonly sourceUrl: string;
   readonly sourceName: string;
@@ -43,6 +64,18 @@ export type StateGoldenVector = {
 const DEFAULT_TOLERANCE = 1;
 
 /**
+ * State revenue agencies that publish on a domain the .gov test would reject.
+ *
+ * Not a convenience escape hatch: each entry is a department's own site, named
+ * one at a time so that adding one is a decision somebody makes rather than a
+ * rule quietly going slack. An aggregator never belongs here.
+ */
+const OFFICIAL_NON_GOV_HOSTS: ReadonlySet<string> = new Set([
+  // The Florida Department of Revenue's own site. Florida has no .gov equivalent.
+  'floridarevenue.com',
+]);
+
+/**
  * A source URL that actually points at the state, not at a summary site.
  *
  * Transcribing from an aggregator is how a stale bracket enters a dataset that
@@ -51,7 +84,7 @@ const DEFAULT_TOLERANCE = 1;
 function looksOfficial(url: string): boolean {
   try {
     const host = new URL(url).hostname.toLowerCase();
-    return host.endsWith('.gov') || host.endsWith('.us') || host.endsWith('.state.pa.us');
+    return host.endsWith('.gov') || host.endsWith('.us') || OFFICIAL_NON_GOV_HOSTS.has(host);
   } catch {
     return false;
   }
@@ -109,8 +142,8 @@ export function verifyStatePolicy(policy: StateTaxPolicy, taxYear: number): Stat
   }
 
   if ('localAddOn' in policy && policy.localAddOn) {
-    const { low, high } = policy.localAddOn.typicalRateRange;
-    if (low > high) error('localAddOn typical range is inverted.');
+    const range = policy.localAddOn.typicalRateRange;
+    if (range && range.low > range.high) error('localAddOn typical range is inverted.');
   }
 
   if ('federalDeduction' in policy && policy.federalDeduction) {
@@ -127,14 +160,26 @@ export type GoldenVectorResult = {
   readonly differenceDollars: number;
 };
 
+export type GoldenVectorInput = {
+  readonly state: StateCode;
+  readonly filingStatus: FilingStatus;
+  readonly taxableIncome: number;
+  readonly federalStandardDeduction?: number;
+  readonly federalIncomeTax?: number;
+  readonly dependents?: number;
+};
+
 export function checkGoldenVector(
   vector: StateGoldenVector,
-  computeTax: (input: { state: StateCode; filingStatus: FilingStatus; taxableIncome: number }) => number,
+  computeTax: (input: GoldenVectorInput) => number,
 ): GoldenVectorResult {
   const actualTax = computeTax({
     state: vector.stateCode,
     filingStatus: vector.filingStatus,
     taxableIncome: vector.taxableIncome,
+    federalStandardDeduction: vector.federalStandardDeduction,
+    federalIncomeTax: vector.federalIncomeTax,
+    dependents: vector.dependents,
   });
   const differenceDollars = Math.abs(actualTax - vector.expectedTax);
   return {
@@ -157,15 +202,41 @@ export const REQUIRED_VECTORS_PER_STATE = 3;
 export function assertVectorCoverage(
   supportedStates: readonly StateCode[],
   vectors: readonly StateGoldenVector[],
+  /** Which supported states carry a bracket table, and so can hide a bad threshold. */
+  progressiveStates: readonly StateCode[] = [],
 ): StateVerificationIssue[] {
-  const byState = new Map<StateCode, number>();
-  for (const vector of vectors) byState.set(vector.stateCode, (byState.get(vector.stateCode) ?? 0) + 1);
+  const byState = new Map<StateCode, StateGoldenVector[]>();
+  for (const vector of vectors) {
+    const existing = byState.get(vector.stateCode);
+    if (existing) existing.push(vector);
+    else byState.set(vector.stateCode, [vector]);
+  }
 
-  return supportedStates
-    .filter((stateCode) => (byState.get(stateCode) ?? 0) < REQUIRED_VECTORS_PER_STATE)
-    .map((stateCode) => ({
-      stateCode,
-      severity: 'error' as const,
-      message: `${stateCode} is marked supported with ${byState.get(stateCode) ?? 0} golden vectors; ${REQUIRED_VECTORS_PER_STATE} are required.`,
-    }));
+  const issues: StateVerificationIssue[] = [];
+  for (const stateCode of supportedStates) {
+    const own = byState.get(stateCode) ?? [];
+    if (own.length < REQUIRED_VECTORS_PER_STATE) {
+      issues.push({
+        stateCode,
+        severity: 'error',
+        message: `${stateCode} is marked supported with ${own.length} golden vectors; ${REQUIRED_VECTORS_PER_STATE} are required.`,
+      });
+      continue;
+    }
+    /*
+     * A flat rate has nothing to misread but the rate itself, so arithmetic
+     * against it is proof enough. A bracket table is where a threshold off by
+     * a digit hides, and arithmetic against the same table cannot see it — the
+     * state's own published figure can. That is a warning rather than an error
+     * because several states publish no table at all.
+     */
+    if (progressiveStates.includes(stateCode) && own.every((v) => v.basis === 'worked-from-schedule')) {
+      issues.push({
+        stateCode,
+        severity: 'warning',
+        message: `${stateCode} has brackets but every vector is worked from the schedule this row was transcribed from. Add one figure the state itself published.`,
+      });
+    }
+  }
+  return issues;
 }

@@ -67,7 +67,8 @@ export type StateIncomeTaxStatus = 'supported' | 'unsupported';
 export type OmittedLocalTax = {
   label: string;
   basis: 'municipality' | 'county' | 'school-district';
-  typicalRateRange: { low: number; high: number };
+  /** Absent where no official source states a statewide band. */
+  typicalRateRange?: { low: number; high: number };
   appliesTo: 'taxable-income' | 'state-tax-liability';
 };
 
