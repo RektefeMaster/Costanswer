@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from '@/lib/calculations/contracts';
 import { getStateName, isStateCode, type StateCode } from '@/lib/location/states';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
+import { calculateFederalIncomeTax } from './federal';
 import { calculateFica } from './fica';
 import { calculateStateIncomeTax } from './state';
 import { FILING_STATUSES } from './types';
@@ -94,12 +95,30 @@ export function calculateBonusTax(rawInput: unknown): CalculationResult<BonusTax
   // State supplemental rules vary and are not published as one table, so the
   // state figure is the marginal effect of the bonus under the state's annual
   // schedule rather than a claimed state supplemental rate.
-  const stateBefore = calculateStateIncomeTax({ taxYear, state, filingStatus: input.filingStatus, taxableIncome: wagesBefore });
+  //
+  // A few states deduct federal income tax from state taxable income, which
+  // makes their marginal figure depend on the federal liability at both wage
+  // points. The flat supplemental rate above is a *withholding* rate and is not
+  // that number, so the annual federal tax is computed here rather than reused.
+  const federalBefore = calculateFederalIncomeTax({
+    taxYear, filingStatus: input.filingStatus, grossIncome: wagesBefore, federal: snapshot.federal,
+  });
+  const federalAfter = calculateFederalIncomeTax({
+    taxYear,
+    filingStatus: input.filingStatus,
+    grossIncome: wagesBefore + input.bonusAmount,
+    federal: snapshot.federal,
+  });
+  const stateBefore = calculateStateIncomeTax({
+    taxYear, state, filingStatus: input.filingStatus,
+    taxableIncome: wagesBefore, federalIncomeTax: federalBefore.tax,
+  });
   const stateAfter = calculateStateIncomeTax({
     taxYear,
     state,
     filingStatus: input.filingStatus,
     taxableIncome: wagesBefore + input.bonusAmount,
+    federalIncomeTax: federalAfter.tax,
   });
   const stateSupported = stateAfter.status === 'supported';
   const stateWithholding = stateSupported ? Math.max(0, stateAfter.tax - stateBefore.tax) : 0;

@@ -58,6 +58,10 @@ export function estimateAnnualTaxLiability(rawInput: unknown): AnnualTaxLiabilit
     state: input.state,
     filingStatus: input.filingStatus,
     taxableIncome: input.annualGrossSalary,
+    // A few states let federal income tax be deducted from state taxable
+    // income, so their answer genuinely depends on this figure. Federal is
+    // computed first for exactly that reason.
+    federalIncomeTax: federal.tax,
   });
   const totalTax = federal.tax + fica.total + stateTax.tax;
   const takeHome = input.annualGrossSalary - totalTax;
@@ -84,7 +88,6 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
     `Federal income tax uses the IRS standard deduction of ${formatMoney(liability.federal.standardDeduction)}. Itemized deductions are not used.`,
     'Tax credits, dependents, capital gains, self-employment tax, and AMT are not included.',
     'Employer benefits and pre-tax payroll deductions are not included.',
-    'Local or city income taxes are not included.',
     'This is an estimate, not a tax return or employer withholding notice.',
     `Federal source: IRS Revenue Procedure for tax year ${liability.taxYear}.`,
   ];
@@ -98,6 +101,37 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
   } else {
     assumptions.push(
       `${stateName} tax uses ${liability.stateTax.provider} rules. Schedule year ${liability.stateTax.scheduleTaxYear}. State-specific credits and most subtractions are not modeled.`,
+    );
+  }
+
+  /*
+   * Name the local tax where one exists rather than a blanket "local taxes are
+   * not included" on every state. Most states have none, so the blanket line
+   * was noise on forty pages and an understatement on the ten where it mattered
+   * — and it never said by how much.
+   */
+  const local = liability.stateTax.omittedLocalTax;
+  if (local) {
+    const asPercent = (rate: number) => formatNumber(rate * 100, { maximumFractionDigits: 2 });
+    assumptions.push(
+      `${local.label} is not included. It is set by your ${local.basis.replace('-', ' ')} and typically runs `
+      + `${asPercent(local.typicalRateRange.low)}% to ${asPercent(local.typicalRateRange.high)}% of `
+      + `${local.appliesTo === 'taxable-income' ? 'taxable income' : 'state tax'}, so your real take-home is lower than this.`,
+    );
+  } else if (liability.stateTax.status === 'supported') {
+    assumptions.push('This state levies no local income tax on wages, so nothing is omitted on that account.');
+  }
+
+  if (liability.stateTax.federalTaxDeducted !== undefined) {
+    assumptions.push(
+      `${stateName} allows federal income tax to be deducted from state taxable income; `
+      + `${formatMoney(liability.stateTax.federalTaxDeducted)} was deducted here.`,
+    );
+  }
+  if (liability.stateTax.exemptionCredit !== undefined) {
+    assumptions.push(
+      `${stateName} gives an exemption as a credit against tax rather than a deduction from income; `
+      + `${formatMoney(liability.stateTax.exemptionCredit)} was applied.`,
     );
   }
   return assumptions;

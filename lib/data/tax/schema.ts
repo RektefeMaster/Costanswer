@@ -72,12 +72,87 @@ const noneStateSchema = stateMetadataSchema.extend({
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
 
+/**
+ * A per-person credit subtracted after tax is computed.
+ *
+ * Many states give an exemption as a credit against tax rather than a deduction
+ * from income, and the two are not interchangeable: a $100 deduction is worth
+ * the marginal rate, a $100 credit is worth $100. Modelling one as the other
+ * moves the answer by more than a rounding difference at low incomes, which is
+ * exactly where a take-home figure matters most.
+ */
+const exemptionCreditSchema = z.object({
+  perFilerByFilingStatus: filingStatusNumberSchema,
+  perDependent: z.number().finite().min(0),
+  /** Some states phase the credit out. Absent means it does not. */
+  phaseOut: z.object({
+    startIncomeByFilingStatus: filingStatusNumberSchema,
+    /** Credit reduced by this fraction of income above the start, to zero. */
+    ratePerDollar: z.number().finite().min(0).max(1),
+  }).strict().optional(),
+}).strict();
+
+/**
+ * A standard deduction stated as a share of income, within bounds.
+ *
+ * A handful of states compute it as a percentage with a floor and a ceiling
+ * rather than a flat amount. Storing only the ceiling — the obvious shortcut —
+ * overstates the deduction for every income below the cap.
+ */
+const percentageDeductionSchema = z.object({
+  rate: z.number().finite().min(0).max(1),
+  minimumByFilingStatus: filingStatusNumberSchema,
+  maximumByFilingStatus: filingStatusNumberSchema,
+}).strict();
+
+/**
+ * Federal income tax deducted from state taxable income.
+ *
+ * A few states allow it, some with a cap. It makes state tax depend on federal
+ * tax, which is why the engine computes federal first and passes the result
+ * down rather than each layer standing alone.
+ */
+const federalDeductionSchema = z.object({
+  /** Cap on the deduction, or null where the state allows it in full. */
+  capByFilingStatus: filingStatusNumberSchema.nullable(),
+}).strict();
+
+/**
+ * A local income tax on top of the state's own.
+ *
+ * Ohio municipalities, Maryland counties, Pennsylvania's local EIT, New York
+ * City, several Michigan cities, Indiana and Kentucky counties all levy one,
+ * and for many people it is a larger line than the state tax.
+ *
+ * It is modelled as an explicit, defaulted-off add-on rather than applied
+ * silently, because the site knows a state and does not know a municipality.
+ * Applying a typical rate would be inventing a number; omitting it without
+ * saying so would understate the answer. So the page names the omission, and a
+ * reader who knows their own rate can supply it.
+ */
+const localAddOnSchema = z.object({
+  label: z.string().min(1),
+  /** What the reader would have to know to fill this in. */
+  basis: z.enum(['municipality', 'county', 'school-district']),
+  /** Range actually levied, for the page to describe the omission honestly. */
+  typicalRateRange: z.object({
+    low: z.number().finite().min(0).max(1),
+    high: z.number().finite().min(0).max(1),
+  }).strict(),
+  appliesTo: z.enum(['taxable-income', 'state-tax-liability']),
+}).strict();
+
 const flatStateSchema = stateMetadataSchema.extend({
   status: z.literal('supported'),
   kind: z.literal('flat'),
   sourceStatus: z.literal('verified'),
+  scheduleTaxYear: z.number().int().min(2000).max(2100),
   rate: z.number().finite().min(0).max(1),
   exemptionByFilingStatus: filingStatusNumberSchema,
+  standardDeductionByFilingStatus: filingStatusNumberSchema.optional(),
+  exemptionCredit: exemptionCreditSchema.optional(),
+  federalDeduction: federalDeductionSchema.optional(),
+  localAddOn: localAddOnSchema.optional(),
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
 
@@ -85,6 +160,9 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   status: z.literal('supported'),
   kind: z.literal('flatWithSurtax'),
   sourceStatus: z.literal('verified'),
+  scheduleTaxYear: z.number().int().min(2000).max(2100),
+  exemptionCredit: exemptionCreditSchema.optional(),
+  localAddOn: localAddOnSchema.optional(),
   rate: z.number().finite().min(0).max(1),
   surtaxRate: z.number().finite().min(0).max(1),
   surtaxThreshold: z.number().finite().positive(),
@@ -97,12 +175,19 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   sourceStatus: z.literal('verified'),
   scheduleTaxYear: z.number().int().min(2000).max(2100),
   standardDeductionByFilingStatus: filingStatusNumberSchema,
+  /** Where the deduction is a share of income rather than a flat amount. */
+  percentageStandardDeduction: percentageDeductionSchema.optional(),
   bracketsByFilingStatus: filingStatusBracketsSchema,
   additionalTax: z.object({
     name: z.string().min(1),
     threshold: z.number().finite().positive(),
     rate: z.number().finite().min(0).max(1),
   }).strict().optional(),
+  personalExemptionByFilingStatus: filingStatusNumberSchema.optional(),
+  perDependentExemption: z.number().finite().min(0).optional(),
+  exemptionCredit: exemptionCreditSchema.optional(),
+  federalDeduction: federalDeductionSchema.optional(),
+  localAddOn: localAddOnSchema.optional(),
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
 
@@ -234,12 +319,42 @@ export const taxYearSnapshotSchema = z.object({
   }
 });
 
-export type TaxYearSnapshot = z.infer<typeof taxYearSnapshotSchema>;
-export type StateTaxPolicy = z.infer<typeof stateTaxPolicySchema>;
 export type FederalTaxYear = z.infer<typeof federalTaxYearSchema>;
 export type SupplementalWithholding = z.infer<typeof supplementalWithholdingSchema>;
 export type FicaTaxYear = z.infer<typeof ficaTaxYearSchema>;
-export type SupportedStatePolicy = Extract<StateTaxPolicy, { status: 'supported' }>;
+
+/*
+ * The state policy union is written out rather than inferred through
+ * `z.union`.
+ *
+ * Inferring a five-variant union of strict objects — several now carrying
+ * nested optional records keyed by filing status — is exponential work for the
+ * compiler. Adding the credit, federal-deduction and local-add-on shapes took
+ * the whole-project typecheck from 8 seconds to past 20 minutes, which is the
+ * kind of cost that gets a release gate switched off.
+ *
+ * Inferring each variant separately is cheap; it is combining them inside the
+ * schema type that is not. The runtime union is unchanged, so validation
+ * behaves exactly as before.
+ */
+export type UnsupportedStatePolicy = z.infer<typeof unsupportedStateSchema>;
+export type NoneStatePolicy = z.infer<typeof noneStateSchema>;
+export type FlatStatePolicy = z.infer<typeof flatStateSchema>;
+export type FlatWithSurtaxStatePolicy = z.infer<typeof flatWithSurtaxStateSchema>;
+export type ProgressiveStatePolicy = z.infer<typeof progressiveStateSchema>;
+
+export type SupportedStatePolicy =
+  | NoneStatePolicy
+  | FlatStatePolicy
+  | FlatWithSurtaxStatePolicy
+  | ProgressiveStatePolicy;
+
+export type StateTaxPolicy = UnsupportedStatePolicy | SupportedStatePolicy;
+
+/** Same reason: the snapshot embeds an array of that union. */
+export type TaxYearSnapshot = Omit<z.infer<typeof taxYearSnapshotSchema>, 'states'> & {
+  states: StateTaxPolicy[];
+};
 
 export function filingStatusValues<T>(value: T): Record<FilingStatus, T> {
   return {

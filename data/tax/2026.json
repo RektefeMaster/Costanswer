@@ -546,6 +546,7 @@
       "status": "supported",
       "kind": "flat",
       "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
       "rate": 0.0495,
       "exemptionByFilingStatus": {
         "single": 2925,
@@ -618,6 +619,7 @@
       "status": "supported",
       "kind": "flatWithSurtax",
       "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
       "rate": 0.05,
       "surtaxRate": 0.04,
       "surtaxThreshold": 1107750,
@@ -1002,6 +1004,7 @@
       "status": "supported",
       "kind": "flat",
       "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
       "rate": 0.0307,
       "exemptionByFilingStatus": {
         "single": 0,
@@ -1009,9 +1012,19 @@
         "marriedFilingSeparately": 0,
         "headOfHousehold": 0
       },
+      "localAddOn": {
+        "label": "Pennsylvania local earned income tax",
+        "basis": "municipality",
+        "typicalRateRange": {
+          "low": 0.01,
+          "high": 0.0275
+        },
+        "appliesTo": "taxable-income"
+      },
       "notes": [
         "Pennsylvania personal income tax is 3.07% (Tax Reform Code of 1971, Section 302, as amended by Act 46 of 2003).",
-        "No standard deduction is applied. Local earned income taxes are not included."
+        "No standard deduction is applied.",
+        "Local earned income tax is levied separately by municipality and school district and is named as an omission rather than estimated."
       ]
     },
     {
@@ -1178,5 +1191,5 @@
       ]
     }
   ],
-  "normalizedSha256": "5d9585ad87997719e9634ccd5a113afc9252aad74692fd68b614d701184b44ea"
+  "normalizedSha256": "71658817417be776670861cb8bb1e080cc85e361656a327e1f60fffa141704a7"
 }

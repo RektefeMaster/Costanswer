@@ -111,7 +111,16 @@ function unsupportedState(stateCode: StateCode, reason: string): StateTaxPolicy 
   };
 }
 
-const supported = new Map<StateCode, StateTaxPolicy>([
+/*
+ * The entries are typed as a plain array before the Map is built.
+ *
+ * Inline, TypeScript narrows each tuple's first element to its own literal —
+ * `["AK", …] | ["FL", …] | …` — and then cannot match that against the Map's
+ * `readonly [StateCode, StateTaxPolicy]` parameter. Naming the element type
+ * once is clearer than fifty `as const` casts, and it is the annotation that
+ * actually documents what this table is.
+ */
+const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
   ['AK', noneState('AK', ['Alaska does not levy a personal income tax on wages.'])],
   ['FL', noneState('FL', ['Florida does not levy a personal income tax on wages.'])],
   ['NV', noneState('NV', ['Nevada does not levy a personal income tax on wages.'])],
@@ -139,6 +148,10 @@ const supported = new Map<StateCode, StateTaxPolicy>([
     status: 'supported',
     kind: 'flat',
     sourceStatus: 'verified',
+    // Stated rather than assumed. A flat state used to inherit the snapshot's
+    // year silently, which is a claim about which schedule was read that nobody
+    // had actually checked.
+    scheduleTaxYear: TAX_YEAR,
     rate: 0.0495,
     exemptionByFilingStatus: filingAmounts(2_925, 5_850, 2_925, 2_925),
     notes: [
@@ -152,11 +165,21 @@ const supported = new Map<StateCode, StateTaxPolicy>([
     status: 'supported',
     kind: 'flat',
     sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
     rate: 0.0307,
     exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    localAddOn: {
+      label: 'Pennsylvania local earned income tax',
+      basis: 'municipality',
+      // Act 32 EIT rates, levied by municipality and school district together.
+      // Philadelphia's wage tax sits well above this band and is separate.
+      typicalRateRange: { low: 0.01, high: 0.0275 },
+      appliesTo: 'taxable-income',
+    },
     notes: [
       'Pennsylvania personal income tax is 3.07% (Tax Reform Code of 1971, Section 302, as amended by Act 46 of 2003).',
-      'No standard deduction is applied. Local earned income taxes are not included.',
+      'No standard deduction is applied.',
+      'Local earned income tax is levied separately by municipality and school district and is named as an omission rather than estimated.',
     ],
   }],
   ['MA', {
@@ -164,6 +187,7 @@ const supported = new Map<StateCode, StateTaxPolicy>([
     status: 'supported',
     kind: 'flatWithSurtax',
     sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
     rate: 0.05,
     surtaxRate: 0.04,
     surtaxThreshold: 1_107_750,
@@ -239,7 +263,9 @@ const supported = new Map<StateCode, StateTaxPolicy>([
       'New Jersey personal exemptions, retirement exclusions, and credits are not modeled. The starting point is gross wages.',
     ],
   }],
-]);
+];
+
+const supported = new Map<StateCode, StateTaxPolicy>(supportedEntries);
 
 const nyReason = 'New York 2026 Form IT-201 resident tax rate schedules were not published at verification. 2026 withholding tables are not used as annual tax liability. Federal income tax and FICA are still estimated.';
 

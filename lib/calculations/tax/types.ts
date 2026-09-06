@@ -55,6 +55,22 @@ export type FicaBreakdown = {
 
 export type StateIncomeTaxStatus = 'supported' | 'unsupported';
 
+/**
+ * A local income tax this figure does not include.
+ *
+ * Ohio municipalities, Maryland counties, Pennsylvania's local EIT, New York
+ * City, several Michigan cities and Indiana and Kentucky counties all levy one,
+ * and for many people it is a bigger line than the state tax. The site knows a
+ * state and does not know a municipality, so the honest options are to name the
+ * omission or to invent a rate. This names it.
+ */
+export type OmittedLocalTax = {
+  label: string;
+  basis: 'municipality' | 'county' | 'school-district';
+  typicalRateRange: { low: number; high: number };
+  appliesTo: 'taxable-income' | 'state-tax-liability';
+};
+
 export type StateIncomeTaxBreakdown = {
   taxYear: number;
   state: StateCode;
@@ -65,6 +81,14 @@ export type StateIncomeTaxBreakdown = {
   sourceUrl: string;
   scheduleTaxYear: number;
   tax: number;
+  /** Tax before credits, so a page can show what the credit was worth. */
+  taxBeforeCredits?: number;
+  /** Exemption credits applied. Never larger than the tax itself. */
+  exemptionCredit?: number;
+  /** Federal income tax deducted from state taxable income, where allowed. */
+  federalTaxDeducted?: number;
+  /** Present when this state levies a local tax the figure leaves out. */
+  omittedLocalTax?: OmittedLocalTax;
   reason?: string;
 };
 

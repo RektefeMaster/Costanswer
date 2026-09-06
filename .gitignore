@@ -56,3 +56,8 @@ data/bls-oews/snapshots/
 # whenever they are present and checks its own hashes when they are not.
 # Re-download from https://www.cms.gov/marketplace/resources/data/public-use-files
 data/cms-marketplace/raw/*.zip
+
+# Tells Spotlight not to index this tree. A build rewrites thousands of files
+# under node_modules and dist, and re-indexing them saturated the machine badly
+# enough that file reads began timing out mid-build.
+.metadata_never_index
