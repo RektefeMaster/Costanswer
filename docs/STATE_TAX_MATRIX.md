@@ -1,14 +1,13 @@
 # State tax transcription matrix
 
-Working document for P2. Status as of 2026-09-06.
+Working document for P2. Status as of 2026-09-07.
 
-**Supported: 16 / 51** — seven with a real schedule, nine that levy no wage tax.
-Remaining: 35.
+**Supported: 29 / 51** — twenty with a real schedule, nine that levy no wage tax.
+Remaining: 22.
 
-Landed since this document was written: **Minnesota** (2026 brackets, standard
-deduction and dependent exemption, from the statutory inflation-adjustment
-table cross-checked against the department's rates page) and **North Carolina**
-(2026 rate confirmed from NC-30, the agency's own 2026 withholding publication).
+Every supported state carries at least three golden vectors and passes
+`npm run verify:tax`, which is now a gate that can fail rather than a module
+nobody called.
 
 ## How sources are obtained
 
@@ -25,20 +24,29 @@ one of these, never from a search summary:
    has not yet republished it.
 6. **Several official sources combined**, where no single document is complete.
 
-### The access route that works
+Search engines and third-party summaries are used only to *locate* an official
+document. No figure is ever taken from a snippet: Georgia's own 2026 guide was
+described in search results as both 5.19% and 4.99%, which is the whole argument
+for opening the source.
 
-Most state revenue sites refuse programmatic HTML requests: of eleven probed,
-four returned HTTP 403, two failed DNS, one 404'd on its own published path and
-one sat behind bot detection.
+### Access routes, and what blocks them
 
-**PDFs are the way through.** A fetched PDF is saved locally even when its text
-layer will not extract, and can then be read directly. North Carolina's 2026
-rate was confirmed this way from NC-30 (Web 11-25) — the agency's own 2026
-withholding publication — after the HTML rate page had declined to state it.
+Three distinct failures, which need three different answers:
 
-So the working order per state is: instruction booklet PDF → withholding guide
-PDF → HTML rate page → statute. Third-party sites are used only to *locate* an
-official document, never as the source of a figure.
+| What happens | What it means | What works |
+| --- | --- | --- |
+| HTTP 403 with a Cloudflare "Just a moment" page | The site challenges automated clients | A real browser usually passes silently — Utah did |
+| An interactive human-verification widget | The site demands a person click it | **Nothing.** Completing it is off-limits, so the state stays unsupported |
+| Connection timeout, no response at all | Unreachable from this machine | Nothing available here |
+
+Measured on this machine: `dor.georgia.gov`, `azdor.gov` and `tax.utah.gov`
+serve an interactive challenge. `in.gov`, `tax.idaho.gov`, `le.utah.gov`,
+`tax.virginia.gov`, `revenue.wi.gov`, `ksrevenue.gov`, `revenue.nebraska.gov`,
+`tax.wv.gov` and `portal.ct.gov` time out entirely. `revenue.louisiana.gov`,
+`michigan.gov`, `tax.vermont.gov`, `dor.mo.gov` and `tax.ri.gov` return 403.
+
+PDFs remain the most reliable route where a host answers at all: a PDF is saved
+even when its text layer will not extract, and can then be read directly.
 
 ## What each tax model needs
 
@@ -48,108 +56,138 @@ official document, never as the source of a figure.
 | Flat + credit | rate · credit amount · phase-out start and rate · schedule year |
 | Progressive | brackets × 4 filing statuses · standard deduction × 4 · personal/dependent exemption or credit · schedule year |
 | + federal deduction | all of the above · the cap, or that there is none |
-| + local tax | the band actually levied and its basis, to name the omission |
+| + local tax | the band actually levied, or an honest statement that no state agency publishes one |
 
 Every state also needs a source URL, a source document name, and **three golden
 vectors** reproducing the state's own published figure at three incomes.
 
-## The 36 remaining
+## Done — twenty with a schedule
 
-Model column is a hypothesis to verify against the source, not data. Access is
-measured where probed and estimated otherwise.
+Schedule year is the year the figures were published for, not the snapshot year.
+"Evidence" is the strongest vector behind the row.
 
-### In flight
+| State | Model | Schedule | Evidence | Source |
+| --- | --- | --- | --- | --- |
+| CA | Progressive + MHST | 2025 | worked from schedule | FTB indexed rate schedules |
+| CO | Flat on federal taxable income | 2025 | **published table** | DR 0104 Book tax table |
+| DC | Progressive, one schedule for all statuses | 2025 | **published table** | OTR rates page + 2025 D-40 booklet |
+| HI | Progressive, 12 brackets | 2025 | **published table** | Form N-11 instructions, Schedules I–III |
+| IA | Flat on federal taxable income + credit | 2025 | worked from schedule | IA 1040 Expanded Instructions |
+| IL | Flat | 2026 | worked from schedule | IDOR rate page + FY 2026-15 |
+| KY | Flat | 2026 | **published example** | 42A003 (TCF)(10-2025) |
+| MA | Flat + millionaire surtax | 2026 | worked from schedule | DOR tax rates page |
+| ME | Progressive + phase-outs + surcharge | 2026 | **published table** | 2026 Individual Income Tax Rates |
+| MN | Progressive | 2026 | worked from schedule | Rates page + Minn. Stat. 290.0123 |
+| MS | Progressive with a 0% band | 2026 | **published threshold** | DOR tax rates page + Form 80-100 |
+| MT | Progressive on federal taxable income | 2025 | **published example** | Tax Tables + Form 2 instructions |
+| NC | Flat | 2025 | worked from schedule | NCDOR rate schedules + NC-30 |
+| ND | Progressive on federal taxable income | 2025 | worked from schedule | Commissioner's rate tables + ND-1 |
+| NJ | Progressive | 2025 | worked from schedule | NJ-1040 rate schedules |
+| OH | Progressive, discontinuous | 2025 | **published example** | Annual rates page + IT 1040 booklet |
+| OK | Progressive, six bands | 2025 | **published table** | Form 511 packet tax table |
+| PA | Flat + local EIT named | 2026 | worked from schedule | Act 46 of 2003 |
+| SC | Progressive + SCIAD | 2026 | **published example** | Information Letter #26-20 |
+| UT | Flat + taxpayer credit | 2025 | worked from schedule | Tax Rates + TC-40 instructions |
 
-| State | Verified so far | Still needed | Blocker |
-| --- | --- | --- | --- |
-| IA | Flat **3.8% for 2026** (IDR press release, 2025-10-21) | IA 1040 standard deduction ×4 | Withholding formula gives a *withholding* deduction and says so explicitly — not the annual figure |
-| KY | 2026 standard deduction **$3,360** (DOR announcement, KRS 141.081) | the 2026 rate | DOR page states "four (4) percent" without naming a year; the rate statute was not reachable |
-| GA | — | rate, deductions | Document downloads 403 |
-| CO | — | rate | Every agency URL 403, including via curl |
+Nine levy no wage tax and need no schedule: AK, FL, NH, NV, SD, TN, TX, WA, WY.
 
-Both IA and KY are one verified figure short. Neither is entered: a rate without
-its deduction, or a deduction without its rate, is not a tax calculation.
+## Shapes the real schedules forced
 
-### Flat rate — 11 states
+None of these were speculative. Each was added because a state publishes a rule
+the model could not express, and pretending otherwise would have shipped a
+number that was wrong in a specific, checkable way.
 
-| State | Tax model | Required pieces | Official sources to use | Missing | Access |
-| --- | --- | --- | --- | --- | --- |
-| AZ | Flat | rate, std deduction ×4 | AZ Form 140 instructions; withholding pub | all | HTML **403** — use PDF |
-| CO | Flat on federal taxable income | rate; confirm no state std deduction | DR 0104 booklet; Income Tax Topics | all | HTML **403** — use PDF |
-| GA | Flat, rate stepping down | rate, std deduction ×4, dependent exemption | IT-511 booklet; employer withholding guide | all | untested |
-| IA | Flat since 2025 | rate, std deduction ×4 | IA 1040 instructions; withholding tables | all | untested |
-| ID | Flat | rate, std deduction (federal-conformed?) | Form 40 instructions; withholding guide | all | untested |
-| IN | Flat + **county** rate | state rate, exemptions; county band | IT-40 booklet; Departmental Notice #1 | all | untested |
-| KY | Flat | rate, std deduction | 740 instructions; withholding tables | all | untested |
-| LA | Flat since 2025 | rate, std deduction / exemption | IT-540 instructions; withholding tables | all | untested |
-| MI | Flat + **city** tax | rate, personal exemption; city band | MI-1040 book; Treasury rate page | all | HTML **403** — use PDF |
-| MS | Flat, stepping down | rate, exemption, std deduction | 80-100 instructions; withholding | all | untested |
-| UT | Flat + **taxpayer credit** | rate, credit, phase-out start and rate | TC-40 instructions; Pub 14 | all | HTML **403** — use PDF |
+| Shape | Forced by | What it prevents |
+| --- | --- | --- |
+| `taxableIncomeBasis: 'federal-taxable-income'` | CO, IA, MT, ND | Taxing the federal standard deduction a second time |
+| `exemptionCredit.rateOfFederalStandardDeduction` | UT | A credit frozen at today's federal deduction going stale each January |
+| `standardDeductionPhaseOut` / `personalExemptionPhaseOut` | ME, SC | Giving a full deduction to filers whose state takes it away from $102,250 |
+| `roundReductionDownToMultipleOf` | SC | About fifty cents, stated rather than dropped |
+| `additionalTax.thresholdByFilingStatus` | ME | A surcharge starting at the wrong income for three filers in four |
+| `TaxBracket.baseTax` | OH | Undercharging $18.69 for every filer over $100,000 |
+| `steppedPersonalExemption` | OH | An exemption that steps rather than tapers |
+| `localAddOn.typicalRateRange` optional | KY, OH | Inventing a band for taxes set by hundreds of separate jurisdictions |
 
-### Progressive — 25 states
+## The 22 remaining
 
-| State | Tax model | Required pieces | Official sources to use | Missing | Access |
-| --- | --- | --- | --- | --- | --- |
-| AL | Progressive + **federal deduction** + local occupational | brackets ×4, std deduction ×4 (income-phased), exemptions, federal deduction rule | Form 40 booklet; Reg. 810-3-15 | all | untested |
-| AR | Progressive, low-income tables | brackets ×4, std deduction, credits | AR1000F instructions; withholding formula | all | untested |
-| CT | Progressive + phase-out recapture | brackets ×4, personal exemption phase-out, credits | CT-1040 instructions; IP withholding | all | untested |
-| DC | Progressive | brackets ×4, std deduction ×4 | D-40 booklet; OTR withholding | all | untested |
-| DE | Progressive + **credit** exemptions | brackets ×4, std deduction, personal credits | 200-01 instructions; withholding guide | all | untested |
-| HI | Progressive, 12 brackets | brackets ×4, std deduction ×4, exemptions | N-11 instructions; Booklet A | all | untested |
-| KS | Progressive, 2 brackets | brackets ×4, std deduction ×4, exemptions | K-40 instructions; withholding KW-100 | all | untested |
-| MD | Progressive + **county** tax | brackets ×4, std deduction (percentage w/ floor and cap), exemptions; county band | Resident booklet; Withholding Guide | all | untested |
-| ME | Progressive, indexed | brackets ×4, std deduction ×4, personal exemption | 1040ME instructions; withholding tables | all | untested |
-| ~~MN~~ | ~~Progressive~~ | — | **DONE** — statutory inflation-adjustment PDF + rates page | — | solved via PDF |
-| MO | Progressive + **federal deduction** (capped) | brackets, std deduction (federal-conformed), federal deduction cap | MO-1040 instructions; withholding | all | untested |
-| MT | Progressive + **federal deduction** (capped) | brackets ×4, std deduction, federal deduction cap | Form 2 instructions; withholding | all | untested |
-| ND | Progressive, low rates | brackets ×4, uses federal taxable income | ND-1 instructions; withholding | all | untested |
-| NE | Progressive, stepping down | brackets ×4, std deduction ×4, personal exemption credit | 1040N booklet; Circular EN | all | untested |
-| NM | Progressive | brackets ×4, std deduction (federal-conformed), exemptions | PIT-1 instructions; FYI-104 | all | untested |
-| NY | Progressive + **NYC/Yonkers** | brackets ×4, std deduction ×4, supplemental tax recapture | IT-201 instructions; Pub NYS-50-T-NYS | **2026 not published** — index stops at 2025 | HTML OK but year missing |
-| OH | Progressive + **municipal** tax | brackets, exemption credit, joint filer credit | IT 1040 instructions; annual rates page | all | HTML **404** on published path — use PDF |
-| OK | Progressive | brackets ×4, std deduction ×4, exemptions | 511 packet; withholding tables | all | untested |
-| OR | Progressive + **federal subtraction** (capped, phased) | brackets ×4, std deduction ×4, federal subtraction cap and phase-out | OR-40 instructions; withholding formulas | all | untested |
-| RI | Progressive, indexed | brackets ×4, std deduction ×4 (phased out), exemption | RI-1040 instructions; withholding booklet | all | untested |
-| SC | Progressive with large 0% band | brackets, std deduction (federal-conformed) | SC1040 instructions; withholding WH-1603 | all | untested |
-| VA | Progressive, 4 brackets | brackets, std deduction ×4, personal exemption | 760 instructions; Pub 15-A withholding | all | **DNS failure** — use PDF via direct link |
-| VT | Progressive | brackets ×4, std deduction ×4, personal exemption | IN-111 instructions; withholding booklet | all | untested |
-| WI | Progressive, 4 brackets | brackets ×4, std deduction (income-phased) ×4, exemption | Form 1 instructions; withholding Pub W-166 | all | **DNS failure** — use PDF via direct link |
-| WV | Progressive, rate stepping down | brackets ×4, personal exemption | IT-140 instructions; withholding | all | untested |
+Model is a hypothesis to verify against the source, not data.
+
+### Blocked by bot protection — the site demands a human
+
+| State | Host | Note |
+| --- | --- | --- |
+| GA | dor.georgia.gov | Flat, rate stepping down; 2026 guide exists but is behind a human-verification widget |
+| AZ | azdor.gov | Flat 2.5%; Form 140 instructions behind the same widget |
+
+### Unreachable from this machine
+
+| State | Host | Model hypothesis |
+| --- | --- | --- |
+| ID | tax.idaho.gov | Flat |
+| IN | in.gov | Flat + county |
+| VA | tax.virginia.gov | Progressive, 4 brackets |
+| WI | revenue.wi.gov | Progressive, income-phased deduction |
+| KS | ksrevenue.gov | Progressive, 2 brackets |
+| NE | revenue.nebraska.gov | Progressive, stepping down |
+| WV | tax.wv.gov | Progressive, stepping down |
+| CT | portal.ct.gov | Progressive + phase-out recapture |
+
+### Reachable, not yet transcribed
+
+| State | Model hypothesis | Blocker |
+| --- | --- | --- |
+| NM | Progressive | Rate tables live in a separate "Tax Look Up Table" document not yet located |
+| MD | Progressive + **county** tax | Booklet URL not yet found; county band needed for the omission |
+| AR | Progressive, low-income tables | Instruction URL not yet found |
+| DE | Progressive + personal credits | PIT-RES instructions located, not yet read |
+| OR | Progressive + **federal subtraction** (capped, phased) | Rate charts are a linked PDF not yet located |
+| LA | Flat since 2025 | 403; PDF route untried |
+| MI | Flat + **city** tax | 403; PDF route untried |
+| MO | Progressive + **federal deduction** (capped) | 403; PDF route untried |
+| RI | Progressive, indexed | 403; PDF route untried |
+| VT | Progressive | 403; PDF route untried |
+| AL | Progressive + **federal deduction** + local occupational | Untested |
+
+### Blocked on publication
+
+| State | Note |
+| --- | --- |
+| NY | 2026 IT-201 resident rate schedules not published. 2026 withholding tables exist but are not annual liability and are not used as such. |
 
 ## Local income taxes
 
 Nine of these levy a local tax the site cannot compute without knowing a
 municipality or county. **No rate is invented.** The state figure is computed
-correctly and the local tax is named as an omission with the band actually
-levied, so the reader knows the direction and rough size of what is missing.
+correctly and the local tax is named as an omission — with the band where an
+official source publishes one, and without a band where none does.
 
-| State | Basis | Notes |
+| State | Basis | Status |
 | --- | --- | --- |
-| MD | county | Large — often comparable to the state tax itself |
-| OH | municipality + school district | Two separate levies |
-| PA | municipality + school district | **Already modelled as an omission** |
-| NY | NYC and Yonkers only | Not statewide |
-| MI | city | A minority of cities |
-| IN | county | Statewide, county-set |
-| KY | county / city occupational | Statewide |
-| AL | municipality occupational | A minority of municipalities |
-| MO | Kansas City and St. Louis only | Earnings tax |
+| PA | municipality + school district | Named, 1%–2.75% (Act 32) |
+| IA | school district + county EMS | Named, 0%–20% of state tax (DOR table 41-027) |
+| KY | county / city occupational | Named, **size not stated** — no statewide figure published |
+| OH | municipality + school district | Named, **size not stated** — two separate local levies |
+| MD | county | Not yet reached. Often comparable to the state tax itself |
+| NY | NYC and Yonkers only | Not yet reached |
+| MI | city | Not yet reached |
+| IN | county | Not yet reached |
+| AL | municipality occupational | Not yet reached |
+| MO | Kansas City and St. Louis only | Not yet reached |
 
 ZIP or city level support is a later phase. It changes nothing about the state
 figure being right.
 
-## Order of work
+## Order of remaining work
 
-Simplest complete data first, so each state lands verified rather than half-done:
+1. **Reachable and unread** — DE, AR, NM, MD, OR: the documents exist and the
+   hosts answer.
+2. **403 but PDF untried** — LA, MI, MO, RI, VT, AL: the PDF route beat the HTML
+   route for North Carolina and Kentucky and is worth trying before giving up.
+3. **Unreachable hosts** — ID, IN, VA, WI, KS, NE, WV, CT: nothing to try from
+   here. These need a different network path, not a different approach.
+4. **Human-verification widgets** — GA, AZ: out of reach on principle, not on
+   capability.
+5. **NY** — when its 2026 schedules are published.
 
-1. **Flat, no local, no credit** — CO, ID, KY, LA, MS, GA, IA, AZ
-2. **Flat with a wrinkle** — UT (credit), IN (county), MI (city)
-3. **Progressive, plain** — MN (deduction only), KS, ND, SC, NM, VT, ME, OK, DC, HI, RI, NE, WV, AR, CT, DE, VA, WI
-4. **Progressive with a federal deduction** — MO, MT, OR, AL
-5. **Progressive with a large local layer** — MD, OH
-6. **Blocked on publication** — NY, until its 2026 schedules exist
-
-A state is only entered when every required piece is in hand. Minnesota has its
-2026 brackets and not its deduction; a bracket table without the deduction it
-applies to is not a tax calculation, so it waits for the M1 booklet rather than
-shipping half-right.
+A state is only entered when every required piece is in hand. A rate without its
+deduction, or a deduction without its rate, is not a tax calculation.

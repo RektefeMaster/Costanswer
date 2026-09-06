@@ -9,6 +9,8 @@ const sourceUrl = z.string().url();
 export const taxBracketSchema = z.object({
   notOver: z.number().finite().positive().nullable(),
   rate: z.number().finite().min(0).max(1),
+  /** Tax at this bracket's floor, where the state publishes it outright. */
+  baseTax: z.number().finite().min(0).optional(),
 }).strict();
 
 const filingStatusNumberSchema = z.object({
@@ -141,6 +143,25 @@ const proportionalPhaseOutSchema = z.object({
 }).strict();
 
 /**
+ * A per-person exemption that steps down as income rises.
+ *
+ * Ohio's is $2,400 up to $40,000 of modified adjusted gross income, $2,150 to
+ * $80,000, $1,900 to $749,999 and nothing above — a staircase, not a taper, so
+ * the proportional phase-out shape would give the wrong figure everywhere
+ * except at the step edges.
+ */
+const steppedExemptionSchema = z.object({
+  /** Amount per exemption, by the income it applies at. */
+  amountSteps: z.array(z.object({
+    /** Highest income this step covers; null for the open top step. */
+    notOver: z.number().finite().positive().nullable(),
+    amount: z.number().finite().min(0),
+  }).strict()).min(1),
+  /** Exemptions a filer claims before dependents: one, or two filing jointly. */
+  countByFilingStatus: filingStatusNumberSchema,
+}).strict();
+
+/**
  * Federal income tax deducted from state taxable income.
  *
  * A few states allow it, some with a cap. It makes state tax depend on federal
@@ -252,6 +273,8 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   }).strict().optional(),
   personalExemptionByFilingStatus: filingStatusNumberSchema.optional(),
   personalExemptionPhaseOut: proportionalPhaseOutSchema.optional(),
+  /** Where the exemption steps down with income instead of being flat. */
+  steppedPersonalExemption: steppedExemptionSchema.optional(),
   perDependentExemption: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),

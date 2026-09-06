@@ -85,13 +85,15 @@ function computeSupportedStateTax(
         ? boundedPercentageDeduction(policy.percentageStandardDeduction, income, filingStatus)
         : policy.standardDeductionByFilingStatus[filingStatus];
       const deduction = afterPhaseOut(fullDeduction, policy.standardDeductionPhaseOut, income, filingStatus);
-      const personalExemption = afterPhaseOut(
-        policy.personalExemptionByFilingStatus?.[filingStatus] ?? 0,
-        policy.personalExemptionPhaseOut,
-        income,
-        filingStatus,
-      );
-      const exemptions = personalExemption + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
+      const stepped = policy.steppedPersonalExemption;
+      const exemptions = stepped
+        ? steppedExemptionAt(stepped, income, filingStatus, input.dependents ?? 0)
+        : afterPhaseOut(
+          policy.personalExemptionByFilingStatus?.[filingStatus] ?? 0,
+          policy.personalExemptionPhaseOut,
+          income,
+          filingStatus,
+        ) + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
       const taxableIncome = Math.max(0, income - deduction - exemptions);
       taxBeforeCredits = calculateProgressiveTax(taxableIncome, policy.bracketsByFilingStatus[filingStatus])
         + (policy.additionalTax
@@ -146,6 +148,26 @@ function afterPhaseOut(
   const step = spec.roundReductionDownToMultipleOf;
   if (step !== undefined) reduction = Math.floor(reduction / step) * step;
   return Math.max(0, amount - reduction);
+}
+
+/**
+ * A stepped exemption: look the per-person amount up by income, then count heads.
+ *
+ * The step boundaries are inclusive at the top, matching how the states write
+ * them — Ohio's "$40,000 or less" band really does include $40,000 exactly.
+ */
+function steppedExemptionAt(
+  spec: {
+    amountSteps: ReadonlyArray<{ notOver: number | null; amount: number }>;
+    countByFilingStatus: Record<FilingStatus, number>;
+  },
+  income: number,
+  filingStatus: FilingStatus,
+  dependents: number,
+): number {
+  const step = spec.amountSteps.find((candidate) => candidate.notOver === null || income <= candidate.notOver);
+  if (!step) throw new Error('Stepped exemption has no open top step, so high incomes fall through it.');
+  return step.amount * (spec.countByFilingStatus[filingStatus] + dependents);
 }
 
 function boundedPercentageDeduction(

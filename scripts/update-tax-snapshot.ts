@@ -16,6 +16,17 @@ function brackets(rows: Array<readonly [number | null, number]>): TaxBracket[] {
   return rows.map(([notOver, rate]) => ({ notOver, rate }));
 }
 
+/**
+ * Brackets that also carry the tax the state publishes at each band's floor.
+ *
+ * Only for schedules whose published constants do not reconcile with summing
+ * the bands beneath them; everywhere else `brackets` says the same thing with
+ * one fewer number to get wrong.
+ */
+function brackets3(rows: Array<readonly [number | null, number, number | undefined]>): TaxBracket[] {
+  return rows.map(([notOver, rate, baseTax]) => (baseTax === undefined ? { notOver, rate } : { notOver, rate, baseTax }));
+}
+
 function filingAmounts(single: number, joint: number, separate: number, head: number): Record<FilingStatus, number> {
   return {
     single,
@@ -61,7 +72,7 @@ const AGENCY: Record<StateCode, { provider: string; sourceUrl: string }> = {
   NY: { provider: 'New York State Department of Taxation and Finance', sourceUrl: 'https://www.tax.ny.gov/pit/file/tax_tables.htm' },
   NC: { provider: 'North Carolina Department of Revenue', sourceUrl: 'https://www.ncdor.gov/' },
   ND: { provider: 'North Dakota Office of State Tax Commissioner', sourceUrl: 'https://www.tax.nd.gov/individual-income-tax' },
-  OH: { provider: 'Ohio Department of Taxation', sourceUrl: 'https://tax.ohio.gov/' },
+  OH: { provider: 'Ohio Department of Taxation', sourceUrl: 'https://tax.ohio.gov/individual/resources/annual-tax-rates' },
   OK: { provider: 'Oklahoma Tax Commission', sourceUrl: 'https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf' },
   OR: { provider: 'Oregon Department of Revenue', sourceUrl: 'https://www.oregon.gov/dor' },
   PA: { provider: 'Pennsylvania Department of Revenue', sourceUrl: 'https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM' },
@@ -253,6 +264,64 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
       'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+    ],
+  }],
+  ['OH', {
+    ...meta('OH', {
+      sourceName: 'Ohio Individual Income Tax Rates (taxable years beginning in 2025), confirmed against the 2025 Ohio IT 1040 instruction booklet',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    }),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: 2025,
+    /*
+     * Ohio's schedule is not continuous, and this is the state's own arithmetic
+     * rather than a transcription slip: the department prints "$342.00 plus
+     * 2.750%" from $26,050 and "$2,394.32 plus 3.125%" from $100,000, on its
+     * rate page and again in the IT 1040 booklet, where summing the band below
+     * gives $2,375.63. Both published constants are carried as `baseTax` so the
+     * engine charges what Ohio charges rather than what a smooth curve would.
+     */
+    bracketsByFilingStatus: {
+      single: brackets3([
+        [26_050, 0, undefined], [100_000, 0.0275, 342], [null, 0.03125, 2_394.32],
+      ]),
+      marriedFilingSeparately: brackets3([
+        [26_050, 0, undefined], [100_000, 0.0275, 342], [null, 0.03125, 2_394.32],
+      ]),
+      marriedFilingJointly: brackets3([
+        [26_050, 0, undefined], [100_000, 0.0275, 342], [null, 0.03125, 2_394.32],
+      ]),
+      headOfHousehold: brackets3([
+        [26_050, 0, undefined], [100_000, 0.0275, 342], [null, 0.03125, 2_394.32],
+      ]),
+    },
+    // Ohio has no standard deduction. The exemption does all of the work.
+    standardDeductionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    steppedPersonalExemption: {
+      amountSteps: [
+        { notOver: 40_000, amount: 2_400 },
+        { notOver: 80_000, amount: 2_150 },
+        { notOver: 749_999, amount: 1_900 },
+        { notOver: null, amount: 0 },
+      ],
+      countByFilingStatus: filingAmounts(1, 2, 1, 1),
+    },
+    localAddOn: {
+      label: 'Ohio municipal and school district income tax',
+      basis: 'municipality',
+      appliesTo: 'taxable-income',
+      // Two separate levies set by hundreds of municipalities and school
+      // districts, with no statewide figure published, so the size is left
+      // unstated rather than invented.
+    },
+    notes: [
+      'Ohio taxes nonbusiness income at 0% below $26,050, then $342 plus 2.750% of the excess, and $2,394.32 plus 3.125% above $100,000 (Ohio Department of Taxation, Ohio Individual Income Tax Rates for taxable years beginning in 2025; 2025 Ohio IT 1040 instructions; R.C. 5747.02).',
+      'Those two constants are what Ohio publishes and are used as published. They do not reconcile with each other \u2014 the band below $100,000 sums to $2,375.63 \u2014 and the state\u2019s figure wins.',
+      'The same schedule applies to every filing status. Ohio gives no standard deduction; instead each exemption is worth $2,400 up to $40,000 of modified adjusted gross income, $2,150 to $80,000, $1,900 to $749,999 and nothing above.',
+      'Ohio municipalities and school districts levy their own income taxes on top of this, set locally and not included here.',
+      'The exemption credit, joint filing credit, retirement and senior credits, and the separate 3% rate on business income are not modeled. The starting point is gross wages.',
     ],
   }],
   ['DC', {

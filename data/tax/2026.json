@@ -1813,14 +1813,125 @@
     {
       "stateCode": "OH",
       "provider": "Ohio Department of Taxation",
-      "sourceName": "Ohio Department of Taxation",
-      "sourceUrl": "https://tax.ohio.gov/",
+      "sourceName": "Ohio Individual Income Tax Rates (taxable years beginning in 2025), confirmed against the 2025 Ohio IT 1040 instruction booklet",
+      "sourceUrl": "https://tax.ohio.gov/individual/resources/annual-tax-rates",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Ohio. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 26050,
+            "rate": 0
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.0275,
+            "baseTax": 342
+          },
+          {
+            "notOver": null,
+            "rate": 0.03125,
+            "baseTax": 2394.32
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 26050,
+            "rate": 0
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.0275,
+            "baseTax": 342
+          },
+          {
+            "notOver": null,
+            "rate": 0.03125,
+            "baseTax": 2394.32
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 26050,
+            "rate": 0
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.0275,
+            "baseTax": 342
+          },
+          {
+            "notOver": null,
+            "rate": 0.03125,
+            "baseTax": 2394.32
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 26050,
+            "rate": 0
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.0275,
+            "baseTax": 342
+          },
+          {
+            "notOver": null,
+            "rate": 0.03125,
+            "baseTax": 2394.32
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "steppedPersonalExemption": {
+        "amountSteps": [
+          {
+            "notOver": 40000,
+            "amount": 2400
+          },
+          {
+            "notOver": 80000,
+            "amount": 2150
+          },
+          {
+            "notOver": 749999,
+            "amount": 1900
+          },
+          {
+            "notOver": null,
+            "amount": 0
+          }
+        ],
+        "countByFilingStatus": {
+          "single": 1,
+          "marriedFilingJointly": 2,
+          "marriedFilingSeparately": 1,
+          "headOfHousehold": 1
+        }
+      },
+      "localAddOn": {
+        "label": "Ohio municipal and school district income tax",
+        "basis": "municipality",
+        "appliesTo": "taxable-income"
+      },
+      "notes": [
+        "Ohio taxes nonbusiness income at 0% below $26,050, then $342 plus 2.750% of the excess, and $2,394.32 plus 3.125% above $100,000 (Ohio Department of Taxation, Ohio Individual Income Tax Rates for taxable years beginning in 2025; 2025 Ohio IT 1040 instructions; R.C. 5747.02).",
+        "Those two constants are what Ohio publishes and are used as published. They do not reconcile with each other — the band below $100,000 sums to $2,375.63 — and the state’s figure wins.",
+        "The same schedule applies to every filing status. Ohio gives no standard deduction; instead each exemption is worth $2,400 up to $40,000 of modified adjusted gross income, $2,150 to $80,000, $1,900 to $749,999 and nothing above.",
+        "Ohio municipalities and school districts levy their own income taxes on top of this, set locally and not included here.",
+        "The exemption credit, joint filing credit, retirement and senior credits, and the separate 3% rate on business income are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "OK",
@@ -2276,5 +2387,5 @@
       ]
     }
   ],
-  "normalizedSha256": "0918487dbb75152f32052e1ff32b95a83ec851ada80f921641e6f82bebbb0fb5"
+  "normalizedSha256": "3aa4a692f7d1292d021b79738116a41b2c6344a23562372e84e22fcebdd0b5d0"
 }

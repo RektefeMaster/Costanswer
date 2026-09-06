@@ -31,6 +31,22 @@ export type TaxBracket = {
   /** Inclusive IRS-style “not over” bound. `null` is the top open bracket. */
   notOver: number | null;
   rate: number;
+  /**
+   * Tax already owed at the bottom of this bracket, where the state publishes
+   * it instead of leaving it to be summed.
+   *
+   * Most schedules are continuous, so the running total and the published
+   * "$X plus Y% of the excess" agree and this is left out. Ohio's does not:
+   * its 2025 table charges $342 the moment taxable income passes $26,050, and
+   * $2,394.32 past $100,000 where summing the bands below gives $2,375.63. The
+   * department prints those constants on its rate page and again in the IT 1040
+   * booklet, so they are what Ohio actually charges, and a model that smooths
+   * them out would undercharge by nineteen dollars for everyone over $100,000.
+   *
+   * Where present, this replaces the sum of the brackets below rather than
+   * adding to it.
+   */
+  baseTax?: number;
 };
 
 export type FederalIncomeTaxBreakdown = {

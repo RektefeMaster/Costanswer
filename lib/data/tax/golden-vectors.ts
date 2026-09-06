@@ -51,6 +51,11 @@ const UT_SOURCE = {
   sourceUrl: 'https://incometax.utah.gov/paying/tax-rates',
   verifiedAt: '2026-09-06T00:00:00.000Z',
 };
+const OH_SOURCE = {
+  sourceName: '2025 Ohio IT 1040 instruction booklet, nonbusiness income tax bracket table and worked example',
+  sourceUrl: 'https://tax.ohio.gov/individual/resources/annual-tax-rates',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const DC_SOURCE = {
   sourceName: 'DC Individual and Fiduciary Income Tax Rates (tax years after 12/31/2021)',
   sourceUrl: 'https://otr.cfo.dc.gov/page/dc-individual-and-fiduciary-income-tax-rates',
@@ -225,6 +230,18 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * and every one reproduces to the cent, so these check thresholds rather
    * than repeating the arithmetic that produced them.
    */
+  /*
+   * The booklet works Mitchell's return to $1,497 on $68,050 of taxable
+   * nonbusiness income. At $70,200 of wages the exemption is $2,150, which
+   * lands exactly there, so this checks the exemption step and the $342 base
+   * together. The $102,150 vector is the one that would fail if the published
+   * $2,394.32 were smoothed into a running total.
+   */
+  vector('OH', 'single', 70_200, 1_497, 'published-example', OH_SOURCE),
+  vector('OH', 'single', 40_000, 659.63, 'worked-from-schedule', OH_SOURCE),
+  vector('OH', 'single', 102_150, 2_402.13, 'worked-from-schedule', OH_SOURCE),
+  vector('OH', 'single', 26_050, 0, 'worked-from-schedule', OH_SOURCE),
+
   vector('DC', 'headOfHousehold', 32_500, 400, 'published-table', DC_SOURCE),
   vector('DC', 'marriedFilingJointly', 70_000, 2_200, 'published-table', DC_SOURCE),
   vector('DC', 'single', 75_000, 3_500, 'published-table', DC_SOURCE),
