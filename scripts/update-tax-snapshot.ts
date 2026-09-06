@@ -182,6 +182,44 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'Local earned income tax is levied separately by municipality and school district and is named as an omission rather than estimated.',
     ],
   }],
+  ['MN', {
+    ...meta('MN'),
+    status: 'supported',
+    kind: 'progressive',
+    sourceStatus: 'verified',
+    scheduleTaxYear: TAX_YEAR,
+    // Minnesota Statutes 290.0123, Subd. 1, as indexed for 2026.
+    standardDeductionByFilingStatus: filingAmounts(15_300, 30_600, 15_300, 23_000),
+    /*
+     * Rates from the department's rate-and-bracket page; thresholds from the
+     * statutory inflation-adjustment table, which gives the 2nd, 3rd and 4th
+     * bracket thresholds directly. The two agree exactly, which is the check
+     * that matters — one document alone would have been a transcription with
+     * nothing to test it against.
+     */
+    bracketsByFilingStatus: {
+      single: brackets([
+        [33_310, 0.0535], [109_430, 0.0680], [203_150, 0.0785], [null, 0.0985],
+      ]),
+      marriedFilingJointly: brackets([
+        [48_700, 0.0535], [193_480, 0.0680], [337_930, 0.0785], [null, 0.0985],
+      ]),
+      marriedFilingSeparately: brackets([
+        [24_350, 0.0535], [96_740, 0.0680], [168_965, 0.0785], [null, 0.0985],
+      ]),
+      headOfHousehold: brackets([
+        [41_010, 0.0535], [164_800, 0.0680], [270_060, 0.0785], [null, 0.0985],
+      ]),
+    },
+    perDependentExemption: 5_300,
+    notes: [
+      'Minnesota income tax brackets and rates for tax year 2026 (Minn. Stat. 290.06, Subd. 2c; Minnesota Department of Revenue rates and brackets page).',
+      'Standard deduction for 2026 is $15,300 single and married filing separately, $30,600 married filing jointly, $23,000 head of household (Minn. Stat. 290.0123, Subd. 1, as inflation-adjusted for tax year 2026).',
+      'Dependent exemption is $5,300 per dependent for 2026 (Minn. Stat. 290.0121, Subd. 1).',
+      'The standard deduction phases out above $244,400 of income ($122,200 married filing separately) and is not modeled; this understates tax at high incomes.',
+      'Minnesota subtractions, credits and the alternative minimum tax are not modeled. The starting point is gross wages.',
+    ],
+  }],
   ['NC', {
     ...meta('NC'),
     status: 'supported',

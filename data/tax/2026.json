@@ -673,9 +673,98 @@
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-03T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Minnesota. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "standardDeductionByFilingStatus": {
+        "single": 15300,
+        "marriedFilingJointly": 30600,
+        "marriedFilingSeparately": 15300,
+        "headOfHousehold": 23000
+      },
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 33310,
+            "rate": 0.0535
+          },
+          {
+            "notOver": 109430,
+            "rate": 0.068
+          },
+          {
+            "notOver": 203150,
+            "rate": 0.0785
+          },
+          {
+            "notOver": null,
+            "rate": 0.0985
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 48700,
+            "rate": 0.0535
+          },
+          {
+            "notOver": 193480,
+            "rate": 0.068
+          },
+          {
+            "notOver": 337930,
+            "rate": 0.0785
+          },
+          {
+            "notOver": null,
+            "rate": 0.0985
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 24350,
+            "rate": 0.0535
+          },
+          {
+            "notOver": 96740,
+            "rate": 0.068
+          },
+          {
+            "notOver": 168965,
+            "rate": 0.0785
+          },
+          {
+            "notOver": null,
+            "rate": 0.0985
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 41010,
+            "rate": 0.0535
+          },
+          {
+            "notOver": 164800,
+            "rate": 0.068
+          },
+          {
+            "notOver": 270060,
+            "rate": 0.0785
+          },
+          {
+            "notOver": null,
+            "rate": 0.0985
+          }
+        ]
+      },
+      "perDependentExemption": 5300,
+      "notes": [
+        "Minnesota income tax brackets and rates for tax year 2026 (Minn. Stat. 290.06, Subd. 2c; Minnesota Department of Revenue rates and brackets page).",
+        "Standard deduction for 2026 is $15,300 single and married filing separately, $30,600 married filing jointly, $23,000 head of household (Minn. Stat. 290.0123, Subd. 1, as inflation-adjusted for tax year 2026).",
+        "Dependent exemption is $5,300 per dependent for 2026 (Minn. Stat. 290.0121, Subd. 1).",
+        "The standard deduction phases out above $244,400 of income ($122,200 married filing separately) and is not modeled; this understates tax at high incomes.",
+        "Minnesota subtractions, credits and the alternative minimum tax are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "MO",
@@ -1211,5 +1300,5 @@
       ]
     }
   ],
-  "normalizedSha256": "22bd0e7affcec0697068e435490bf391d668d0e8cb8dc907036fa16731466e6a"
+  "normalizedSha256": "049639ce2b9459e970b15709f83becc5b06e21473e2b4d67db664f2cf7eca940"
 }

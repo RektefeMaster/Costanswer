@@ -142,9 +142,25 @@ const localAddOnSchema = z.object({
   appliesTo: z.enum(['taxable-income', 'state-tax-liability']),
 }).strict();
 
+/**
+ * Where a state's taxable income starts.
+ *
+ * Several states do not compute their own deduction at all: they take federal
+ * taxable income — income *after* the federal standard deduction — and apply a
+ * rate to it. Treating that as gross wages taxes the standard deduction twice
+ * over and overstates the bill by the rate times about sixteen thousand
+ * dollars, every time.
+ *
+ * Copying the federal figure into the state row instead would work until the
+ * year it changes, and then be silently wrong. So the row says which base it
+ * uses and the engine reads the federal number from the same snapshot.
+ */
+const taxableIncomeBasisSchema = z.enum(['gross-wages', 'federal-taxable-income']);
+
 const flatStateSchema = stateMetadataSchema.extend({
   status: z.literal('supported'),
   kind: z.literal('flat'),
+  taxableIncomeBasis: taxableIncomeBasisSchema.optional(),
   sourceStatus: z.literal('verified'),
   scheduleTaxYear: z.number().int().min(2000).max(2100),
   rate: z.number().finite().min(0).max(1),
@@ -174,6 +190,7 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   kind: z.literal('progressive'),
   sourceStatus: z.literal('verified'),
   scheduleTaxYear: z.number().int().min(2000).max(2100),
+  taxableIncomeBasis: taxableIncomeBasisSchema.optional(),
   standardDeductionByFilingStatus: filingStatusNumberSchema,
   /** Where the deduction is a share of income rather than a flat amount. */
   percentageStandardDeduction: percentageDeductionSchema.optional(),

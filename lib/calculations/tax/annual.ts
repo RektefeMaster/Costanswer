@@ -62,6 +62,9 @@ export function estimateAnnualTaxLiability(rawInput: unknown): AnnualTaxLiabilit
     // income, so their answer genuinely depends on this figure. Federal is
     // computed first for exactly that reason.
     federalIncomeTax: federal.tax,
+    // Some states tax federal taxable income rather than gross wages, so they
+    // need the deduction that has already come out of that base.
+    federalStandardDeduction: federal.standardDeduction,
   });
   const totalTax = federal.tax + fica.total + stateTax.tax;
   const takeHome = input.annualGrossSalary - totalTax;

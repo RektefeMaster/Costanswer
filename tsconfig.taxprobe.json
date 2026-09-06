@@ -1,0 +1,2 @@
+{ "extends": "./tsconfig.json",
+  "include": ["types/**/*.d.ts", "lib/**/*.ts", "scripts/update-tax-snapshot.ts", "scripts/validate-tax-data.ts", "tests/tax.spec.ts"] }

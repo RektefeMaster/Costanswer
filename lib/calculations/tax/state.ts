@@ -27,6 +27,14 @@ export type StateTaxInput = {
   federalIncomeTax?: number;
   /** Dependents claimed, for states whose exemption is a per-dependent credit. */
   dependents?: number;
+  /**
+   * The federal standard deduction for this year and filing status.
+   *
+   * Required by states that tax federal taxable income rather than gross
+   * wages. Passing the live figure rather than copying it into each state row
+   * is what stops those rows going stale the year it changes.
+   */
+  federalStandardDeduction?: number;
 };
 
 type SupportedPolicy = Extract<StateTaxPolicy, { status: 'supported' }>;
@@ -54,7 +62,10 @@ function computeSupportedStateTax(
   if (policy.kind === 'none') return none;
 
   const federalTaxDeducted = federalDeductionFor(policy, input);
-  const income = Math.max(0, input.taxableIncome - federalTaxDeducted);
+  const income = Math.max(
+    0,
+    startingIncomeFor(policy, input) - federalTaxDeducted,
+  );
 
   let taxBeforeCredits: number;
   switch (policy.kind) {
@@ -109,6 +120,27 @@ function boundedPercentageDeduction(
     Math.max(raw, spec.minimumByFilingStatus[filingStatus]),
     spec.maximumByFilingStatus[filingStatus],
   );
+}
+
+/**
+ * Where this state starts counting.
+ *
+ * A state that taxes federal taxable income has already had the federal
+ * standard deduction taken out of its base. Handing it gross wages instead
+ * taxes that deduction a second time and overstates the bill by the rate times
+ * roughly sixteen thousand dollars — a figure large enough to be obvious on a
+ * paycheck and small enough to look plausible on a page.
+ */
+function startingIncomeFor(policy: SupportedPolicy, input: StateTaxInput): number {
+  const basis = 'taxableIncomeBasis' in policy ? policy.taxableIncomeBasis : undefined;
+  if (basis !== 'federal-taxable-income') return input.taxableIncome;
+
+  if (input.federalStandardDeduction === undefined) {
+    throw new Error(
+      `${input.state} taxes federal taxable income, so federalStandardDeduction is required.`,
+    );
+  }
+  return Math.max(0, input.taxableIncome - input.federalStandardDeduction);
 }
 
 function federalDeductionFor(policy: SupportedPolicy, input: StateTaxInput): number {
