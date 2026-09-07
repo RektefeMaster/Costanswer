@@ -45,6 +45,15 @@ export type SnapshotManifest = {
   observationPeriod: string;
   normalizedSha256: string;
   validationStatus: 'passed';
+  /**
+   * When someone last checked the provider and found nothing newer published.
+   *
+   * It lives in the manifest rather than the snapshot because it is a fact
+   * about our checking, not about the data: the snapshot's bytes and its hash
+   * must not change because a human looked at a web page. See
+   * `FreshnessInput.confirmedLatestAt` for what it suppresses.
+   */
+  confirmedLatestAt?: string;
 };
 
 export type SnapshotEnvelope<Snapshot> = { manifest: SnapshotManifest; snapshot: Snapshot };

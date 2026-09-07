@@ -71,6 +71,13 @@ function manifestSchema(period: z.ZodType<string> = z.string()) {
     observationPeriod: period,
     normalizedSha256: z.string().regex(/^[a-f0-9]{64}$/),
     validationStatus: z.literal('passed'),
+    /*
+     * Optional, and deliberately outside the hashed snapshot: it records when
+     * someone last checked the provider and found nothing newer, which is a
+     * fact about our checking rather than about the data. Keeping it here means
+     * recording a check never changes a snapshot's bytes or its hash.
+     */
+    confirmedLatestAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
   }).strict();
 }
 

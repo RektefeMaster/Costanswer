@@ -348,3 +348,47 @@ describe('official CPI historical file', () => {
     expect(() => observationsFromBlsTimeSeries(text)).toThrow(/Duplicate CPI month/);
   });
 });
+
+describe('a confirmed check against the provider', () => {
+  const usda = DATASET_POLICIES['usda-food-plans'];
+  // July 2026 data: due 2026-08-31, stale from 2026-09-30.
+  const july = { observationPeriod: '2026-07' };
+
+  it('still reports update-due when nobody has checked', () => {
+    expect(evaluateFreshness(usda, july, '2026-09-07')).toBe('update-due');
+  });
+
+  it('reports current once the provider has been checked and had nothing newer', () => {
+    // The lateness is USDA's. Telling the reader "this copy has not caught up
+    // yet" would blame us for a report the agency has not published.
+    expect(evaluateFreshness(usda, { ...july, confirmedLatestAt: '2026-09-07' }, '2026-09-07')).toBe('current');
+  });
+
+  it('goes quiet for exactly one release interval, not indefinitely', () => {
+    /*
+     * A long stale window, so that what ends the quiet is the release interval
+     * expiring rather than the data going stale. Against the real USDA policy
+     * both land in the same week and the assertion would pass without the
+     * confirmation logic being what produced it.
+     */
+    const patient = { ...usda, staleAfterMissedDays: 365 };
+    const checked = { ...july, confirmedLatestAt: '2026-09-07' };
+    expect(evaluateFreshness(patient, checked, '2026-09-29')).toBe('current');
+    expect(evaluateFreshness(patient, checked, '2026-10-06')).toBe('current');
+    // 30 days on, the provider is due again on its own cadence and we say so.
+    expect(evaluateFreshness(patient, checked, '2026-10-07')).toBe('update-due');
+  });
+
+  it('never lets a check make stale data look current', () => {
+    // The whole point of stale is that the figure should not be presented as
+    // current. Knowing why it is old does not make it safe to show.
+    const checked = { ...july, confirmedLatestAt: '2026-11-01' };
+    expect(evaluateFreshness(usda, checked, '2026-11-01')).toBe('stale');
+    expect(evaluateFreshness(usda, checked, '2026-11-20')).toBe('stale');
+  });
+
+  it('leaves a dataset the provider has genuinely updated alone', () => {
+    const august = { observationPeriod: '2026-08', confirmedLatestAt: '2026-09-07' };
+    expect(evaluateFreshness(usda, august, '2026-09-07')).toBe('current');
+  });
+});

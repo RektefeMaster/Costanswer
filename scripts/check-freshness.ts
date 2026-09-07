@@ -20,7 +20,7 @@ import { geographySnapshot } from '../lib/data/geography-snapshot';
 import { acsSnapshot } from '../lib/data/acs-snapshot';
 import { hudLatestPublishedSnapshot } from '../lib/data/hud-fmr-snapshot';
 import { beaRppSnapshot } from '../lib/data/bea-rpp-snapshot';
-import { usdaFoodSnapshot } from '../lib/data/usda-food-snapshot';
+import { usdaFoodManifest, usdaFoodSnapshot } from '../lib/data/usda-food-snapshot';
 import { irsRetirementSnapshot } from '../lib/data/irs-retirement-snapshot';
 import { latestPublishedGsaPerDiemSnapshot } from '../lib/data/gsa-perdiem-snapshot';
 import { insuranceSnapshot } from '../lib/data/insurance-snapshot';
@@ -62,7 +62,12 @@ export function liveFreshnessInputs(): Record<DatasetId, FreshnessInput> {
       fetchedAt: hudLatestPublishedSnapshot.fetchedAt,
     }),
     'bea-rpp': inputFrom(beaRppSnapshot),
-    'usda-food-plans': inputFrom(usdaFoodSnapshot),
+    'usda-food-plans': {
+      ...inputFrom(usdaFoodSnapshot),
+      // Checked 2026-09-07 against the FNS report index: July 2026 is still the
+      // newest report USDA has published, so the lateness is theirs, not ours.
+      confirmedLatestAt: usdaFoodManifest.confirmedLatestAt,
+    },
     'irs-retirement-limits': inputFrom(irsRetirementSnapshot),
     'gsa-perdiem': inputFrom(latestPublishedGsaPerDiemSnapshot()),
     'naic-insurance': {

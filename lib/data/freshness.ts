@@ -26,6 +26,22 @@ export type FreshnessInput = {
   publishedAt?: string;
   verifiedAt?: string;
   fetchedAt?: string;
+  /**
+   * The date someone checked the provider's own index and found nothing newer
+   * than this snapshot.
+   *
+   * Without this the calendar is the only evidence there is, and the calendar
+   * cannot tell "we are behind" from "the agency has not published". Those two
+   * read identically as `update-due` and the reader is told "this copy has not
+   * caught up yet", which is a false statement about us whenever the provider
+   * is the one running late — USDA's July 2026 food plan report being the case
+   * this was written for.
+   *
+   * It suppresses `update-due` for one release interval and never suppresses
+   * `stale`. A confirmed check explains why old data is old; it does not make
+   * old data safe to present as current.
+   */
+  confirmedLatestAt?: string;
 };
 
 const UTC_DAY_MS = 24 * 60 * 60 * 1000;
@@ -115,7 +131,16 @@ export function evaluateFreshness(
 ): FreshnessStatus {
   const expectedRelease = nextExpectedReleaseDate(policy, input);
   if (expectedRelease === null || asOf < expectedRelease) return 'current';
-  return asOf < addUtcDays(expectedRelease, policy.staleAfterMissedDays) ? 'update-due' : 'stale';
+  if (asOf >= addUtcDays(expectedRelease, policy.staleAfterMissedDays)) return 'stale';
+  /*
+   * Checked against the provider and they had published nothing newer. That is
+   * worth one release interval of quiet, counted from the check rather than
+   * from the missed release, so a provider that stays late is re-flagged on
+   * its own cadence instead of never again.
+   */
+  if (input.confirmedLatestAt !== undefined && policy.releaseIntervalDays !== null
+    && asOf < addUtcDays(input.confirmedLatestAt.slice(0, 10), policy.releaseIntervalDays)) return 'current';
+  return 'update-due';
 }
 
 export function evaluateDatasetFreshness(

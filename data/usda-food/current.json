@@ -3,7 +3,8 @@
     "currentSnapshotId": "usda-food-plans-2026-07-v1",
     "observationPeriod": "2026-07",
     "normalizedSha256": "c45c8d0086db3131c059efc36db33dc74d0a46de735a56e3d3383ab40e8e22e6",
-    "validationStatus": "passed"
+    "validationStatus": "passed",
+    "confirmedLatestAt": "2026-09-07"
   },
   "snapshot": {
     "schemaVersion": "1.0.0",
@@ -24,7 +25,7 @@
     "rawSha256": "c548c916395cad64a68b597b3b4009161bf4e1f162adb7c313fe6cf2a6437ad6",
     "validationStatus": "passed",
     "validationReport": [
-      "Official household-size multipliers are encoded (1 person +20% through 7+ −10%).",
+      "Official household-size multipliers are encoded (1 person +20% through 7+ \u221210%).",
       "Alaska/Hawaii official extras are Thrifty reference-family only.",
       "Costs are monthly USD for people in four-person households before the size adjustment."
     ],
