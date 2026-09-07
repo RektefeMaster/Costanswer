@@ -12,7 +12,6 @@ import { calculateBonusTax } from '@/lib/calculations/tax/bonus';
 import { validateTaxYearSnapshot } from '@/lib/data/verify';
 import { taxYearSnapshotSchema } from '@/lib/data/tax/schema';
 import type { TaxBracket } from '@/lib/calculations/tax/types';
-import type { StateCode } from '@/lib/location/states';
 import { describe, expect, it } from 'vitest';
 
 /** IRS Rev. Proc. 2025-32, tax year 2026, single taxable-income schedule. */

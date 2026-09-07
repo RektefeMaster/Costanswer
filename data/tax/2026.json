@@ -187,7 +187,148 @@
       "marriedFilingJointly": 250000,
       "marriedFilingSeparately": 125000,
       "headOfHousehold": 200000
-    }
+    },
+    "selfEmploymentNetEarningsFactor": 0.9235,
+    "selfEmploymentMinimumNetEarnings": 400,
+    "selfEmploymentSourceName": "2026 Schedule SE (Form 1040) draft and 2026 Instructions for Schedule SE (Form 1040)",
+    "selfEmploymentSourceUrl": "https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf",
+    "selfEmploymentInstructionsUrl": "https://www.irs.gov/pub/irs-dft/i1040sse--dft.pdf",
+    "selfEmploymentPublishedAt": "2026-08-05T00:00:00.000Z"
+  },
+  "federalCredits": {
+    "taxYear": 2026,
+    "provider": "Internal Revenue Service",
+    "sourceName": "Revenue Procedure 2025-32",
+    "sourceUrl": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
+    "publishedAt": "2025-10-09T00:00:00.000Z",
+    "verifiedAt": "2026-09-07T00:00:00.000Z",
+    "sourceStatus": "verified",
+    "version": "1.0.0",
+    "childTaxCredit": {
+      "maxPerQualifyingChild": 2200,
+      "otherDependentCredit": 500,
+      "refundablePerQualifyingChild": 1700,
+      "phaseOutThresholdMarriedFilingJointly": 400000,
+      "phaseOutThresholdOtherStatuses": 200000,
+      "phaseOutRate": 0.05,
+      "phaseOutRoundUpTo": 1000,
+      "additionalChildTaxCreditEarnedIncomeFloor": 2500,
+      "additionalChildTaxCreditEarnedIncomeRate": 0.15,
+      "schedule8812SourceUrl": "https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf"
+    },
+    "earnedIncomeCredit": {
+      "investmentIncomeLimit": 12200,
+      "byQualifyingChildren": {
+        "one": {
+          "earnedIncomeAmount": 13020,
+          "maximumCredit": 4427,
+          "thresholdPhaseoutMarriedFilingJointly": 31160,
+          "completedPhaseoutMarriedFilingJointly": 58863,
+          "thresholdPhaseoutOtherStatuses": 23890,
+          "completedPhaseoutOtherStatuses": 51593
+        },
+        "two": {
+          "earnedIncomeAmount": 18290,
+          "maximumCredit": 7316,
+          "thresholdPhaseoutMarriedFilingJointly": 31160,
+          "completedPhaseoutMarriedFilingJointly": 65899,
+          "thresholdPhaseoutOtherStatuses": 23890,
+          "completedPhaseoutOtherStatuses": 58629
+        },
+        "threeOrMore": {
+          "earnedIncomeAmount": 18290,
+          "maximumCredit": 8231,
+          "thresholdPhaseoutMarriedFilingJointly": 31160,
+          "completedPhaseoutMarriedFilingJointly": 70244,
+          "thresholdPhaseoutOtherStatuses": 23890,
+          "completedPhaseoutOtherStatuses": 62974
+        },
+        "none": {
+          "earnedIncomeAmount": 8680,
+          "maximumCredit": 664,
+          "thresholdPhaseoutMarriedFilingJointly": 18140,
+          "completedPhaseoutMarriedFilingJointly": 26820,
+          "thresholdPhaseoutOtherStatuses": 10860,
+          "completedPhaseoutOtherStatuses": 19540
+        }
+      }
+    },
+    "longTermCapitalGains": {
+      "zeroRate": 0,
+      "fifteenRate": 0.15,
+      "twentyRate": 0.2,
+      "zeroRateMaxByFilingStatus": {
+        "single": 49450,
+        "marriedFilingJointly": 98900,
+        "marriedFilingSeparately": 49450,
+        "headOfHousehold": 66200
+      },
+      "fifteenRateMaxByFilingStatus": {
+        "single": 545500,
+        "marriedFilingJointly": 613700,
+        "marriedFilingSeparately": 306850,
+        "headOfHousehold": 579600
+      }
+    },
+    "netInvestmentIncomeTax": {
+      "rate": 0.038,
+      "thresholdByFilingStatus": {
+        "single": 200000,
+        "marriedFilingJointly": 250000,
+        "marriedFilingSeparately": 125000,
+        "headOfHousehold": 200000
+      },
+      "sourceName": "IRS Questions and Answers on the Net Investment Income Tax",
+      "sourceUrl": "https://www.irs.gov/newsroom/questions-and-answers-on-the-net-investment-income-tax"
+    },
+    "notes": [
+      "Rev. Proc. 2025-32 §4.05: 2026 child tax credit maximum $2,200; refundable portion used in §24(d)(1)(A) is $1,700.",
+      "Rev. Proc. 2025-32 §4.06: 2026 EITC earned-income amounts, maximum credits, phase-out thresholds and completed amounts, and the $12,200 investment-income limit under §32(i).",
+      "Rev. Proc. 2025-32 §4.03: 2026 maximum zero rate and maximum 15% rate amounts under §1(j)(5)(B). Amounts above the 15% ceiling are taxed at 20%. Estates and trusts are not modelled.",
+      "2026 Schedule 8812 (Form 1040) draft: other dependent credit $500; MAGI phase-out $400,000 married filing jointly / $200,000 other statuses, rounded up to the next $1,000, times 5%; additional child tax credit earned-income floor $2,500 times 15%. Created 4/24/26. Marked DRAFT—NOT FOR FILING.",
+      "NIIT is 3.8% of the lesser of net investment income or MAGI over $200,000 single / $250,000 joint / $125,000 married filing separately / $200,000 head of household. Thresholds are statutory under IRC 1411 and are not inflation-indexed."
+    ]
+  },
+  "estimatedTax": {
+    "taxYear": 2026,
+    "provider": "Internal Revenue Service",
+    "sourceName": "2026 Form 1040-ES, Estimated Tax for Individuals",
+    "sourceUrl": "https://www.irs.gov/pub/irs-pdf/f1040es.pdf",
+    "publishedAt": "2026-02-12T00:00:00.000Z",
+    "verifiedAt": "2026-09-07T00:00:00.000Z",
+    "sourceStatus": "verified",
+    "version": "1.0.0",
+    "minimumTaxToOwe": 1000,
+    "currentYearSafeHarborRate": 0.9,
+    "priorYearSafeHarborRate": 1,
+    "highIncomePriorYearSafeHarborRate": 1.1,
+    "highIncomePriorYearAgi": 150000,
+    "highIncomePriorYearAgiMarriedFilingSeparately": 75000,
+    "installmentCount": 4,
+    "dueDates": [
+      {
+        "installment": 1,
+        "dueOn": "2026-04-15"
+      },
+      {
+        "installment": 2,
+        "dueOn": "2026-06-15"
+      },
+      {
+        "installment": 3,
+        "dueOn": "2026-09-15"
+      },
+      {
+        "installment": 4,
+        "dueOn": "2027-01-15"
+      }
+    ],
+    "notes": [
+      "Form 1040-ES (2026) Catalog Number 11340T, February 12, 2026. Calendar-year due dates: April 15, June 15, September 15, 2026, and January 15, 2027.",
+      "You must pay estimated tax if you expect to owe at least $1,000 after withholding and refundable credits, and withholding plus refundable credits will be less than the smaller of 90% of 2026 tax or 100% of 2025 tax (110% if 2025 AGI was more than $150,000, or $75,000 if married filing separately for 2026).",
+      "The January 15, 2027 payment is not required if the 2026 return is filed by February 1, 2027 and the entire balance is paid with the return.",
+      "Farming and fishing (substitute 66⅔% for 90%), household employment taxes, the annualized income installment method, and the Form 2210 underpayment penalty amount are not modelled."
+    ]
   },
   "states": [
     {
@@ -8533,5 +8674,5 @@
       ]
     }
   ],
-  "normalizedSha256": "dab66635dbc932e8aee87749864188efd1d10b5b70457eca96a51fa72804707e"
+  "normalizedSha256": "4c87c8ee9cb61f8dcc25997da88912317b2d1fe533d19d803056c64a85a316ba"
 }

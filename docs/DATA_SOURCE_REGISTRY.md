@@ -40,6 +40,8 @@ we do not re-research from scratch what good open infrastructure already indexes
 | BLS ECEC | Labour burden | National · region | Quarterly | Public domain | Yes | primary | Job Cost (labour) |
 | BEA RPP | Geographic price adjustment | State · metro | 2024, annual | Public domain | Yes | primary | Salary, Cost of living |
 | IRS Rev. Proc. / Pub 15 | Federal tax | National | TY2026 | Public domain | Yes | primary | Tax |
+| IRS Schedule SE / 1040-ES / 8812 | SE tax, estimated tax, CTC worksheet | National | TY2026 | Public domain | Yes | primary | Tax |
+| IRS NIIT Q&A | Net investment income tax | National | IRC 1411 | Public domain | Yes | primary | Tax |
 | State DOR publications | State tax | 51 jurisdictions | TY2026 where published | State works | Yes | primary | Tax, Salary |
 | **PolicyEngine-US** | **Finding the official state-tax document** | 51 jurisdictions | Continuous | **AGPL-3.0** | **Index only** | **discovery** | Tax (as an index) |
 | **CWICR** | — | **No US data** | 2026-08 | **CC BY-NC 4.0 (data)** | **No** | **rejected** | — |

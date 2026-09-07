@@ -25,7 +25,7 @@ export default function K401Page() {
         { title: 'Salary growth', body: 'If you enter a salary-growth percent, next year’s salary is last year’s times (1 + growth). The return is still an assumption, not a market path.' },
         {
           title: 'IRS limits and catch-up caps',
-          body: `Tax year ${year} elective deferral limit is ${deferral}. For employees age 50 and older, the catch-up limit increases allowable deferrals by ${catchUp50} (or ${catchUp60} for ages 60 through 63 under SECURE 2.0). The combined defined-contribution limit is ${overall}. The calculation engine applies these limits to cap annual deferrals based on your age. High-wage mandatory Roth catch-up rules and plan-specific vesting are not modeled.`,
+          body: `Tax year ${year} elective deferral limit is ${deferral}. For employees age 50 and older, the catch-up limit increases allowable deferrals by ${catchUp50} (or ${catchUp60} for ages 60 through 63 under SECURE 2.0). The combined defined-contribution limit is ${overall}. The calculation engine applies these limits to cap annual deferrals based on your age. High-wage mandatory Roth catch-up (prior-year FICA wages above ${rothWage}) and plan-specific vesting are not modeled.`,
         },
       ]}
       sources={[

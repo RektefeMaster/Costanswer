@@ -152,7 +152,6 @@ export function compoundInterestGrowth(input: {
   }
 
   const compoundPerYear = PERIODS_PER_YEAR[compounding];
-  const contribPerYear = PERIODS_PER_YEAR[contributionFrequency];
   if (years === 0) {
     return {
       endingBalance: principal,

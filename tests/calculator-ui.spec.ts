@@ -169,11 +169,11 @@ describe('calculation receipt', () => {
 
 describe('advanced section', () => {
   it('starts collapsed, and keeps its contents in the document', () => {
-    const markup = renderToStaticMarkup(createElement(AdvancedSection, {
-      id: 'trade-in',
-      title: 'Trade-in and fees',
-      children: createElement('p', null, 'Registration, title, doc fee'),
-    }));
+    const markup = renderToStaticMarkup(createElement(
+      AdvancedSection,
+      { id: 'trade-in', title: 'Trade-in and fees' },
+      createElement('p', null, 'Registration, title, doc fee'),
+    ));
     // `details` without the attribute is closed. The content is still present,
     // which is the reason for a details element over a conditional render.
     expect(markup).not.toContain('<details class="advanced-section" open');

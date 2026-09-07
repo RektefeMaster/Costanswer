@@ -33,5 +33,6 @@ export const tool: ToolDefinition = {
     { toolId: 'effective-tax-rate', type: 'sibling' },
     { toolId: 'salary-after-tax', type: 'next-decision' },
     { toolId: 'bonus-tax', type: 'next-decision' },
+    { toolId: 'capital-gains', type: 'sibling' },
   ],
 };

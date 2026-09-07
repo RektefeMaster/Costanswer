@@ -33,20 +33,19 @@ export function useCmsQuote(zip: string, ages: string, countyFips?: string): Cms
   const requestId = useRef(0);
 
   const trimmedZip = zip.trim();
+  const validZip = ZIP.test(trimmedZip);
 
   useEffect(() => {
     if (!ZIP.test(trimmedZip)) {
-      setData(null);
-      setError(null);
       return;
     }
 
     const id = requestId.current + 1;
     requestId.current = id;
     const controller = new AbortController();
-    setLoading(true);
 
     const timer = setTimeout(() => {
+      setLoading(true);
       void fetchCmsQuote({ zip: trimmedZip, ages, countyFips }, controller.signal).then((state) => {
         // A response for a ZIP the reader has already moved on from is discarded.
         if (requestId.current !== id) return;
@@ -66,5 +65,8 @@ export function useCmsQuote(zip: string, ages: string, countyFips?: string): Cms
     };
   }, [trimmedZip, ages, countyFips]);
 
+  if (!validZip) {
+    return { data: null, loading: false, error: null };
+  }
   return { data, loading, error };
 }

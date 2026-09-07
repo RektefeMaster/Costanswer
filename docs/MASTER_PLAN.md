@@ -27,9 +27,9 @@ extends it; it does not replace it.
 
 ## 0. Three corrections to the brief, up front
 
-**0.1 There are 60 calculators, not ~53.** The last inventory in this file
-said 58; two P4 tax tools (`effective-tax-rate`, `federal-tax-bracket`) have
-landed. Confirm `tools.length` at execution time. §C still lists 43 candidate
+**0.1 There are 66 calculators, not ~53.** Confirm `tools.length` at
+execution time. Eight P4 tax tools have landed; `w4-withholding` waits on
+Pub 15-T. §C still lists 43 candidate
 ids that would land on 101 without duplicate intent. **101 is a catalog target,
 not a sacred product number.** A smaller set of high-value tools plus Job Cost
 Engine V1 outranks filling the list.
@@ -1115,7 +1115,7 @@ P2” as current work.
 | **1** | **Production deploy + measurement.** `npm run deploy` publishes the `costanswer` Worker. Register `costanswer.com` on this Cloudflare account, bind apex + `www`, TLS. The day that hostname is live: analytics, **Google Search Console**, Bing Webmaster Tools. Lighthouse/smoke on the live origin | GSC gates later expansion. Worker can be live on `workers.dev` before the apex exists. D1 is an **activation** blocker, not a public-launch blocker while providers stay off |
 | **2** | ~~P3 Freshness SLA~~ **closed** | Runtime clock and per-cadence refresh shipped |
 | **3** | ~~P5 shared primitives~~ **closed** | Done. P4 is now unblocked |
-| **4** | **P4 tax / high-value finance tools** — two landed (`effective-tax-rate`, `federal-tax-bracket`); remaining W-4, refund, self-employment, EITC, CTC, quarterly, capital gains | Unblocked by P2 and P5. One agent per tool |
+| **4** | **P4 tax / high-value finance tools** — eight of nine landed (`effective-tax-rate`, `federal-tax-bracket`, `self-employment-tax`, `tax-refund`, `quarterly-estimated-tax`, `capital-gains`, `eitc`, `child-tax-credit`). `w4-withholding` **waits** on a transcribed Pub 15-T snapshot | Unblocked by P2 and P5. Pub 15-T is the remaining data dependency |
 | **4b** | **P1c tier-2 storage** (`lib/data/store/`) | Hard dependency of P7. Job/medical files cannot enter the JS bundle |
 | **5** | **P7 Job Cost Engine V1** | The product moat. Do not wait for 43 generic calculators. Field-level `SourcedValue`, `profitMarkupRate`, critical materials, no RPP-on-materials — §D |
 | **6** | **Remaining P4 catalogue** including IRS mileage (expansion wave 2, still unbuilt) | Fill toward 101 only after Job V1 exists |
@@ -1163,6 +1163,7 @@ and a **step**. Do not invent data to pull them forward.
 | `costanswer.com` apex + GSC/Bing/analytics | **1** (remaining) | Domain registered and NS at Cloudflare | Do not point canonicals at `workers.dev` |
 | P1c `lib/data/store/` | **4b** | Before P7 recipes | Do not put job/medical files in the JS bundle |
 | IRS mileage reimbursement | **6** | After Job V1; IRS rate snapshot | Do not hardcode an undated rate in a component |
+| `w4-withholding` | **4** remainder / **6** if still waiting | Pub 15-T percentage-method tables transcribed into a dated snapshot | Do not invent W-4 withholding from brackets or a blog rate |
 | Local / payroll tax | **8** | After P7 ZIP/ZCTA + official city datasets | Do not invent a typicalRate; do not fold into P2 |
 | Medical Cost pilot | wave 2 | GSC has weeks of data | Do not scrape messy MRF files for launch |
 | Full ES-US parity | waves 2–4 | P6 dual-root PoC + authored slice | Do not machine-translate to hit a page count |

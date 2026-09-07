@@ -19,7 +19,9 @@ export function SalaryArt({
   kind: SalaryArtKind;
   priority?: boolean;
 }) {
+  // Decorative local static files; the Worker deploy has no image optimizer.
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       className={`category-art salary-art salary-art-${kind}`}
       src={`/salary/${kind}.svg`}

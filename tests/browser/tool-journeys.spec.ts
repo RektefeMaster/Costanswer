@@ -39,6 +39,12 @@ const toolPaths = [
   '/money/credit-card-payoff',
   '/money/effective-tax-rate',
   '/money/federal-tax-bracket',
+  '/money/self-employment-tax',
+  '/money/eitc',
+  '/money/child-tax-credit',
+  '/money/capital-gains',
+  '/money/quarterly-estimated-tax',
+  '/money/tax-refund',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
@@ -125,6 +131,42 @@ test('federal bracket and effective rate calculate, and zero taxable income is n
   await expect(page.locator('.primary-result strong')).toHaveText('0.00%');
   await expect(page.locator('.result-stat-grid')).toContainText('None');
   await expect(page.locator('.result-stat-grid')).toContainText('No taxable income');
+});
+
+test('self-employment, credits, capital gains, estimated tax and refund calculate from official 2026 amounts', async ({ page }) => {
+  await page.goto('/money/self-employment-tax');
+  await expect(page.getByRole('heading', { name: 'Self-Employment Tax Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('$7,064.78');
+  await page.locator('#se-profit').fill('300');
+  await expect(page.locator('.primary-result strong')).toHaveText('$0.00');
+
+  await page.goto('/money/eitc');
+  await expect(page.getByRole('heading', { name: 'Earned Income Credit Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('$4,427');
+
+  await page.goto('/money/child-tax-credit');
+  await expect(page.getByRole('heading', { name: 'Child Tax Credit Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('$2,200');
+  await page.locator('#ctc-tax').fill('0');
+  await expect(page.locator('.primary-result strong')).toHaveText('$1,700');
+
+  await page.goto('/money/capital-gains');
+  await expect(page.getByRole('heading', { name: 'Capital Gains Tax Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('$3,000.00');
+
+  await page.goto('/money/quarterly-estimated-tax');
+  await expect(page.getByRole('heading', { name: 'Quarterly Estimated Tax Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('$2,000.00');
+
+  await page.goto('/money/tax-refund');
+  await expect(page.getByRole('heading', { name: 'Tax Refund Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('$1,830.00');
 });
 
 test('manual electricity input removes the EIA snapshot claim', async ({ page }) => {

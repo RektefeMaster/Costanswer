@@ -786,6 +786,18 @@ export const ficaTaxYearSchema = z.object({
   medicareRate: z.number().finite().min(0).max(1),
   additionalMedicareRate: z.number().finite().min(0).max(1),
   additionalMedicareThresholdByFilingStatus: filingStatusNumberSchema,
+  /**
+   * Schedule SE line 4a multiplies net profit by this factor when profit is
+   * positive — the employer-equivalent half of FICA is deductible, so only
+   * 92.35% of net profit is treated as net earnings from self-employment.
+   */
+  selfEmploymentNetEarningsFactor: z.number().finite().min(0).max(1),
+  /** Schedule SE line 4c: below this, do not file Schedule SE and SE tax is $0. */
+  selfEmploymentMinimumNetEarnings: z.number().finite().positive(),
+  selfEmploymentSourceName: z.string().min(1),
+  selfEmploymentSourceUrl: sourceUrl,
+  selfEmploymentInstructionsUrl: sourceUrl,
+  selfEmploymentPublishedAt: isoDateTime,
 }).strict();
 
 /**
@@ -813,6 +825,130 @@ export const supplementalWithholdingSchema = z.object({
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
 
+const calendarDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use a YYYY-MM-DD calendar date.');
+
+/**
+ * EITC row for one qualifying-child count, from Rev. Proc. 2025-32 §4.06.
+ *
+ * The phase-in runs from $0 to `earnedIncomeAmount`; the phase-out runs from
+ * the filing-status threshold to the completed amount. IRS Form 1040 tables
+ * further round in $50 bands — engines that use these amounts must say so.
+ */
+export const earnedIncomeCreditBandSchema = z.object({
+  earnedIncomeAmount: z.number().finite().positive(),
+  maximumCredit: z.number().finite().min(0),
+  thresholdPhaseoutMarriedFilingJointly: z.number().finite().positive(),
+  completedPhaseoutMarriedFilingJointly: z.number().finite().positive(),
+  thresholdPhaseoutOtherStatuses: z.number().finite().positive(),
+  completedPhaseoutOtherStatuses: z.number().finite().positive(),
+}).strict().superRefine((band, context) => {
+  if (!(band.completedPhaseoutMarriedFilingJointly > band.thresholdPhaseoutMarriedFilingJointly)) {
+    context.addIssue({
+      code: 'custom',
+      path: ['completedPhaseoutMarriedFilingJointly'],
+      message: 'EITC completed phase-out must be above the joint threshold.',
+    });
+  }
+  if (!(band.completedPhaseoutOtherStatuses > band.thresholdPhaseoutOtherStatuses)) {
+    context.addIssue({
+      code: 'custom',
+      path: ['completedPhaseoutOtherStatuses'],
+      message: 'EITC completed phase-out must be above the other-status threshold.',
+    });
+  }
+});
+
+/**
+ * Federal credits and preferential rates transcribed from Rev. Proc. 2025-32,
+ * Schedule 8812, and the IRS NIIT Q&A — not estimated.
+ */
+export const federalCreditsSchema = z.object({
+  taxYear: z.number().int().min(2000).max(2100),
+  provider: z.literal('Internal Revenue Service'),
+  sourceName: z.string().min(1),
+  sourceUrl,
+  publishedAt: isoDateTime,
+  verifiedAt: isoDateTime,
+  sourceStatus: z.literal('verified'),
+  version: z.string().min(1),
+  childTaxCredit: z.object({
+    maxPerQualifyingChild: z.number().finite().positive(),
+    otherDependentCredit: z.number().finite().min(0),
+    refundablePerQualifyingChild: z.number().finite().positive(),
+    phaseOutThresholdMarriedFilingJointly: z.number().finite().positive(),
+    phaseOutThresholdOtherStatuses: z.number().finite().positive(),
+    phaseOutRate: z.number().finite().min(0).max(1),
+    phaseOutRoundUpTo: z.number().finite().positive(),
+    additionalChildTaxCreditEarnedIncomeFloor: z.number().finite().min(0),
+    additionalChildTaxCreditEarnedIncomeRate: z.number().finite().min(0).max(1),
+    schedule8812SourceUrl: sourceUrl,
+  }).strict(),
+  earnedIncomeCredit: z.object({
+    investmentIncomeLimit: z.number().finite().positive(),
+    byQualifyingChildren: z.object({
+      none: earnedIncomeCreditBandSchema,
+      one: earnedIncomeCreditBandSchema,
+      two: earnedIncomeCreditBandSchema,
+      threeOrMore: earnedIncomeCreditBandSchema,
+    }).strict(),
+  }).strict(),
+  longTermCapitalGains: z.object({
+    zeroRate: z.number().finite().min(0).max(1),
+    fifteenRate: z.number().finite().min(0).max(1),
+    twentyRate: z.number().finite().min(0).max(1),
+    zeroRateMaxByFilingStatus: filingStatusNumberSchema,
+    fifteenRateMaxByFilingStatus: filingStatusNumberSchema,
+  }).strict(),
+  netInvestmentIncomeTax: z.object({
+    rate: z.number().finite().min(0).max(1),
+    thresholdByFilingStatus: filingStatusNumberSchema,
+    sourceName: z.string().min(1),
+    sourceUrl,
+  }).strict(),
+  notes: z.array(z.string().min(1)).min(1),
+}).strict().superRefine((credits, context) => {
+  for (const status of FILING_STATUSES) {
+    const zeroMax = credits.longTermCapitalGains.zeroRateMaxByFilingStatus[status];
+    const fifteenMax = credits.longTermCapitalGains.fifteenRateMaxByFilingStatus[status];
+    if (!(fifteenMax > zeroMax)) {
+      context.addIssue({
+        code: 'custom',
+        path: ['longTermCapitalGains', 'fifteenRateMaxByFilingStatus', status],
+        message: 'The 15% long-term capital gains ceiling must sit above the 0% ceiling.',
+      });
+    }
+  }
+});
+
+/**
+ * Form 1040-ES safe-harbor and calendar-year due dates.
+ *
+ * This is not a Form 2210 penalty engine. Farming/fishing 66⅔% and the
+ * annualized-income installment method are named omissions.
+ */
+export const estimatedTaxSchema = z.object({
+  taxYear: z.number().int().min(2000).max(2100),
+  provider: z.literal('Internal Revenue Service'),
+  sourceName: z.string().min(1),
+  sourceUrl,
+  publishedAt: isoDateTime,
+  verifiedAt: isoDateTime,
+  sourceStatus: z.literal('verified'),
+  version: z.string().min(1),
+  minimumTaxToOwe: z.number().finite().positive(),
+  currentYearSafeHarborRate: z.number().finite().min(0).max(1),
+  priorYearSafeHarborRate: z.number().finite().positive(),
+  highIncomePriorYearSafeHarborRate: z.number().finite().positive(),
+  highIncomePriorYearAgi: z.number().finite().positive(),
+  highIncomePriorYearAgiMarriedFilingSeparately: z.number().finite().positive(),
+  installmentCount: z.number().int().min(1).max(4),
+  dueDates: z.array(z.object({
+    installment: z.number().int().min(1).max(4),
+    dueOn: calendarDate,
+  }).strict()).min(4).max(4),
+  notes: z.array(z.string().min(1)).min(1),
+}).strict();
+
 export const taxYearSnapshotSchema = z.object({
   schemaVersion: z.literal('1.0.0'),
   adapterVersion: z.literal('us-tax-v1.0.0'),
@@ -826,6 +962,8 @@ export const taxYearSnapshotSchema = z.object({
   federal: federalTaxYearSchema,
   fica: ficaTaxYearSchema,
   supplemental: supplementalWithholdingSchema,
+  federalCredits: federalCreditsSchema,
+  estimatedTax: estimatedTaxSchema,
   states: z.array(stateTaxPolicySchema).length(51),
   normalizedSha256: sha256Hex,
 }).strict().superRefine((snapshot, context) => {
@@ -841,6 +979,23 @@ export const taxYearSnapshotSchema = z.object({
   }
   if (snapshot.supplemental.taxYear !== snapshot.taxYear) {
     context.addIssue({ code: 'custom', path: ['supplemental', 'taxYear'], message: 'Supplemental withholding tax year must match the snapshot tax year.' });
+  }
+  if (snapshot.federalCredits.taxYear !== snapshot.taxYear) {
+    context.addIssue({ code: 'custom', path: ['federalCredits', 'taxYear'], message: 'Federal credits tax year must match the snapshot tax year.' });
+  }
+  if (snapshot.estimatedTax.taxYear !== snapshot.taxYear) {
+    context.addIssue({ code: 'custom', path: ['estimatedTax', 'taxYear'], message: 'Estimated-tax tax year must match the snapshot tax year.' });
+  }
+  const dueInstallments = snapshot.estimatedTax.dueDates.map((row) => row.installment);
+  if (new Set(dueInstallments).size !== snapshot.estimatedTax.dueDates.length) {
+    context.addIssue({ code: 'custom', path: ['estimatedTax', 'dueDates'], message: 'Estimated-tax due dates must cover each installment once.' });
+  }
+  if (snapshot.estimatedTax.highIncomePriorYearSafeHarborRate < snapshot.estimatedTax.priorYearSafeHarborRate) {
+    context.addIssue({
+      code: 'custom',
+      path: ['estimatedTax', 'highIncomePriorYearSafeHarborRate'],
+      message: 'The high-income prior-year safe harbor cannot be lower than the regular prior-year safe harbor.',
+    });
   }
   if (snapshot.supplemental.mandatoryFlatRate < snapshot.supplemental.optionalFlatRate) {
     context.addIssue({
@@ -877,6 +1032,9 @@ export const taxYearSnapshotSchema = z.object({
 export type FederalTaxYear = z.infer<typeof federalTaxYearSchema>;
 export type SupplementalWithholding = z.infer<typeof supplementalWithholdingSchema>;
 export type FicaTaxYear = z.infer<typeof ficaTaxYearSchema>;
+export type FederalCredits = z.infer<typeof federalCreditsSchema>;
+export type EstimatedTax = z.infer<typeof estimatedTaxSchema>;
+export type EarnedIncomeCreditBand = z.infer<typeof earnedIncomeCreditBandSchema>;
 
 /*
  * The state policy union is written out rather than inferred through

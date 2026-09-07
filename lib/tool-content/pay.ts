@@ -416,4 +416,397 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       'This is not tax advice and not a filed return.',
     ],
   },
+  {
+    toolId: 'self-employment-tax',
+    guide: {
+      heading: 'Why self-employment tax is 15.3% of something smaller than profit',
+      lede: 'Schedule SE does not take 15.3% of whatever Schedule C printed. It first knocks the profit down by 7.65%, then splits what is left between Social Security that shares a wage base with any W-2 job and Medicare that does not.',
+      sections: [
+        {
+          heading: 'The 92.35% factor is the deductible half coming out first',
+          paragraphs: [
+            'An employee and employer each pay 7.65% of FICA. A self-employed person pays both sides, then deducts one-half of the Schedule SE tax on Form 1040. The form approximates that deduction up front by taxing only 92.35% of net profit when profit is positive.',
+            'If that figure is under $400, Schedule SE is not filed and the tax is zero. The optional methods that can create Social Security credits on a loss or a tiny profit are not on this page.',
+          ],
+        },
+        {
+          heading: 'W-2 wages use the Social Security wage base first',
+          paragraphs: [
+            'Social Security on self-employment is 12.4%, but only on net earnings that fit in the remaining wage base after Form W-2 box 3. Someone already at the cap from a job pays Medicare on the profit and no more Social Security.',
+            'Additional Medicare Tax is a different 0.9% on Form 8959 once combined Medicare wages and net SE earnings pass a filing-status threshold. It is not deductible.',
+          ],
+        },
+        {
+          heading: 'This is not income tax on the profit',
+          paragraphs: [
+            'Schedule SE is a payroll tax. Ordinary income tax on the same profit is a separate line, and so is any state tax. Using this number as “what I owe on my gig work” understates the return.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Why is self-employment tax not 15.3% of my profit?',
+        answer: [
+          'Because Schedule SE first multiplies a positive profit by 92.35%, then charges 12.4% Social Security only up to the remaining wage base and 2.9% Medicare on all net earnings.',
+          'The 15.3% figure is the sum of those two rates before the factor and the wage base do any work.',
+        ],
+      },
+      {
+        question: 'Can I deduct self-employment tax?',
+        answer: [
+          'One-half of Schedule SE tax is deductible in figuring adjusted gross income. Additional Medicare Tax on Form 8959 is not part of that half.',
+        ],
+      },
+      {
+        question: 'Do W-2 wages change my Schedule SE tax?',
+        answer: [
+          'They reduce the Social Security wage base left for the profit. They do not reduce Medicare on net earnings, and they can start Additional Medicare Tax sooner when combined with those earnings.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Net earnings from self-employment', definition: 'Positive net profit multiplied by 92.35%, which is the base Schedule SE taxes.' },
+      { term: 'Schedule SE', definition: 'The Form 1040 schedule that figures Social Security and Medicare tax on self-employment income.' },
+      { term: 'Deductible one-half', definition: '50% of Schedule SE tax, allowed as an adjustment to income. Additional Medicare Tax is excluded.' },
+      { term: 'Wage base', definition: 'The annual cap on earnings subject to Social Security tax, shared between W-2 box 3 and Schedule SE.' },
+    ],
+    tips: [
+      'If you also have a job, enter W-2 Social Security wages or the page will charge Social Security on profit that may already sit against a used-up wage base.',
+      'The deductible half lowers AGI, which can change other credits; this page does not rerun those credits.',
+      'Quarterly estimated tax is how this bill is usually paid during the year.',
+    ],
+    caveats: [
+      'Church employee income, optional methods, ministers and Form 4361 are not modelled.',
+      'A filed Schedule SE rounds to whole dollars.',
+      'This is not income tax on the profit and not tax advice.',
+    ],
+  },
+  {
+    toolId: 'eitc',
+    guide: {
+      heading: 'The earned income credit is a curve, then a cliff',
+      lede: 'The federal EITC is not a flat amount per child. It rises with earned income, sits at a published maximum, then phases out against the larger of AGI and earned income — unless investment income is high enough to disallow it entirely.',
+      sections: [
+        {
+          heading: 'Three numbers decide the credit',
+          paragraphs: [
+            'Revenue Procedure 2025-32 publishes an earned-income amount, a maximum credit, and phase-out thresholds that differ for joint filers. This page uses those amounts rather than the IRS $50 lookup tables, so a table cell can differ by a few dollars.',
+            'A joint return starts phasing out later. Married filing separately is treated like every other non-joint status; the narrow separated-spouse rule is not tested.',
+          ],
+        },
+        {
+          heading: 'Investment income is a cliff',
+          paragraphs: [
+            'If certain investment income is over the year’s limit, the credit is zero. That is not a phase-out. Interest, dividends, capital gain distributions and rental income in the statutory mix all count.',
+          ],
+        },
+        {
+          heading: 'Eligibility is more than the math',
+          paragraphs: [
+            'A credit with no qualifying children also requires the filer to be at least 25 and under 65. Qualifying children have relationship, age, residency and joint-return tests. This page takes the child count as given and does not apply those tests.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'How many qualifying children does the EITC count?',
+        answer: [
+          'Zero, one, two, or three or more. The credit does not keep rising after three.',
+          'A qualifying child for EITC is not always a qualifying child for the child tax credit. The two tests differ on age.',
+        ],
+      },
+      {
+        question: 'Why is a joint return’s EITC larger at the same income?',
+        answer: [
+          'The maximum credit is the same. The phase-out starts later on a joint return, so income that is already phasing out if you file single can still sit at the maximum if you file jointly.',
+        ],
+      },
+      {
+        question: 'Does the EITC reduce the tax I owe, or can it be refunded?',
+        answer: [
+          'It is refundable. If it is larger than the tax, the extra can come back as a refund.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Earned income amount', definition: 'The earned income at which the EITC reaches its maximum for a given child count.' },
+      { term: 'Completed phase-out', definition: 'The AGI or earned income at or above which the EITC is zero.' },
+      { term: 'Investment-income limit', definition: 'A cliff above which no earned income credit is allowed for the year.' },
+      { term: 'Schedule EIC', definition: 'The schedule used to claim the earned income credit with qualifying children on Form 1040.' },
+    ],
+    tips: [
+      'Enter both earned income and AGI. The phase-out uses the larger of the two.',
+      'If you have capital gains or rental income, check the investment-income box before trusting a non-zero credit.',
+      'State earned-income credits are separate and are not on this page.',
+    ],
+    caveats: [
+      'Age, residency and separated-spouse tests are not applied.',
+      'IRS tables round in $50 bands; this page uses the Revenue Procedure amounts.',
+      'This is not a filed return and not tax advice.',
+    ],
+  },
+  {
+    toolId: 'child-tax-credit',
+    guide: {
+      heading: 'The child tax credit is $2,200 until MAGI and tax say otherwise',
+      lede: 'For 2026 the maximum child tax credit is $2,200 per qualifying child under 17, with up to $1,700 of that able to come back as the additional child tax credit. MAGI and the tax already on the return decide how much of either figure you actually keep.',
+      sections: [
+        {
+          heading: 'Phase-out is a 5% haircut on rounded-up thousands',
+          paragraphs: [
+            'Schedule 8812 subtracts $400,000 of MAGI on a joint return, or $200,000 otherwise, rounds any remainder up to the next $1,000, and multiplies by 5%. A $425 excess is treated as $1,000 and costs $50.',
+            'That reduction hits the combined child tax credit and credit for other dependents. Other dependents are $500 each and that piece is never refundable.',
+          ],
+        },
+        {
+          heading: 'The additional credit has its own cap',
+          paragraphs: [
+            'Whatever is left after tax takes the nonrefundable amount can become the additional child tax credit, but only up to $1,700 per qualifying child and only up to 15% of earned income over $2,500.',
+            'Filers with three or more children sometimes get a higher additional credit from withheld Social Security and Medicare on Part II-B. That worksheet is not here, so those refunds can be understated.',
+          ],
+        },
+        {
+          heading: 'A qualifying child is under 17 with an SSN',
+          paragraphs: [
+            'The count you enter is taken as given. Children 17 and older, and children without the required Social Security number, belong on the other-dependent line if they qualify at all.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Is the 2026 child tax credit fully refundable?',
+        answer: [
+          'No. Up to $1,700 per qualifying child can be refunded as the additional child tax credit, and that amount is also limited by earned income.',
+          'The $500 credit for other dependents cannot be refunded.',
+        ],
+      },
+      {
+        question: 'When does the child tax credit start to phase out?',
+        answer: [
+          'When modified AGI is over $400,000 on a joint return, or $200,000 for every other filing status. Those thresholds are not inflation-adjusted the way the $2,200 maximum is.',
+        ],
+      },
+      {
+        question: 'Why do I have to enter tax before this credit?',
+        answer: [
+          'The nonrefundable piece cannot exceed the tax on the return. Entering a salary instead of that tax figure would pretend the credit always offsets income tax it may not reach.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Additional child tax credit', definition: 'The refundable remainder of the child tax credit, capped per child and by an earned-income worksheet.' },
+      { term: 'Credit for other dependents', definition: 'A $500 nonrefundable credit for dependents who are not qualifying children under 17 with the required SSN.' },
+      { term: 'Modified AGI for Schedule 8812', definition: 'AGI plus certain excluded income. This page treats the figure you enter as already modified.' },
+      { term: 'Credit Limit Worksheet A', definition: 'The worksheet that caps the nonrefundable child tax credit at the tax on the return.' },
+    ],
+    tips: [
+      'If tax before this credit is zero, look at the additional child tax credit line rather than the $2,200 maximum.',
+      'Joint filers can have twice the MAGI of a single filer before any phase-out starts.',
+      'Form 2555 filers cannot take the additional child tax credit; that bar is not applied here.',
+    ],
+    caveats: [
+      'The 2026 Schedule 8812 used for the phase-out worksheet is a draft marked not for filing.',
+      'Part II-B for three or more children is not modelled, so the refundable amount can be too low.',
+      'This is not a filed return and not tax advice.',
+    ],
+  },
+  {
+    toolId: 'capital-gains',
+    guide: {
+      heading: 'Long-term gains are not taxed at your ordinary bracket',
+      lede: 'A long-term capital gain sits in 0%, 15% or 20% bands that are stacked on top of your other taxable income. Crossing into 15% does not re-tax the wages underneath, and a separate 3.8% Net Investment Income Tax can still apply once MAGI is high enough.',
+      sections: [
+        {
+          heading: 'The gain uses the room left in each preferential band',
+          paragraphs: [
+            'Other taxable income fills the 0% and 15% ceilings first. Only the leftover room is available to the gain. That is why two people with the same $20,000 gain can owe different tax on it: one still had 0% room, the other did not.',
+            'The 2026 ceilings come from Revenue Procedure 2025-32. Amounts above the 15% ceiling are taxed at 20%.',
+          ],
+        },
+        {
+          heading: 'NIIT looks at MAGI and net investment income',
+          paragraphs: [
+            'The tax is 3.8% of the smaller of net investment income or MAGI over $200,000 single / $250,000 joint / $125,000 married filing separately. Those thresholds are not inflation-indexed.',
+            'Wages are not net investment income. They still raise MAGI, which is how a high salary can cause NIIT on a gain that would otherwise sit below the threshold.',
+          ],
+        },
+        {
+          heading: 'Short-term is a different tax',
+          paragraphs: [
+            'A holding period of one year or less is ordinary income. Enter it with other taxable income, not as a long-term gain, or this page will understate the tax.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Do capital gains push my wages into a higher bracket?',
+        answer: [
+          'Ordinary brackets apply to ordinary taxable income. Long-term gains use a separate 0%/15%/20% schedule stacked on top of that income.',
+          'The gains can still fill preferential bands that your wages already reached, which is why the same gain is taxed differently at different ordinary-income levels.',
+        ],
+      },
+      {
+        question: 'Is the Net Investment Income Tax the same as Additional Medicare Tax?',
+        answer: [
+          'No. Additional Medicare Tax is 0.9% on wages and self-employment income over a threshold. NIIT is 3.8% on net investment income over a MAGI threshold. They do not apply to the same kind of income.',
+        ],
+      },
+      {
+        question: 'Does selling my main home count here?',
+        answer: [
+          'Only the gain that is not excluded under section 121. This page does not apply that exclusion, so entering a home-sale figure as a long-term gain can overstate the tax.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Long-term capital gain', definition: 'Gain on an asset held more than one year, generally taxed at 0%, 15% or 20% rather than ordinary rates.' },
+      { term: 'Preferential rate ceiling', definition: 'The taxable-income level at which the 0% long-term rate ends and the 15% rate begins, or the 15% rate ends and 20% begins.' },
+      { term: 'Net Investment Income Tax', definition: 'A 3.8% tax on the lesser of net investment income or MAGI over a statutory threshold.' },
+      { term: 'Qualified dividend', definition: 'A dividend eligible for the same 0%/15%/20% schedule as long-term gains, if it meets holding-period rules this page does not test.' },
+    ],
+    tips: [
+      'Enter other taxable income, not gross wages, or the 0% room will look larger than it is.',
+      'If you have interest and rental income as well as a gain, put the combined net investment income in the advanced field so NIIT is not understated.',
+      'Losses you already netted should be reflected in the gain figure you type; this page does not apply the $3,000 ordinary-income loss limit.',
+    ],
+    caveats: [
+      'Collectibles (28%) and unrecaptured section 1250 gain (25%) are not modelled.',
+      'The section 121 home-sale exclusion is not applied.',
+      'This is not a filed Form 8949 or Form 8960, and not tax advice.',
+    ],
+  },
+  {
+    toolId: 'quarterly-estimated-tax',
+    guide: {
+      heading: 'Estimated tax is a safe harbor, not a guess at the final bill',
+      lede: 'Form 1040-ES asks whether withholding will cover the smaller of 90% of this year’s tax or 100% of last year’s (110% if last year’s AGI was high). If it will not, and you still expect to owe at least $1,000, the shortfall is split into four dated installments.',
+      sections: [
+        {
+          heading: 'Two percentages, one required payment',
+          paragraphs: [
+            'The required annual payment is the smaller of those two safe harbors. Paying that amount on time, together with withholding, is how most people avoid an underpayment penalty — not by matching the final tax to the dollar.',
+            'If last year’s AGI was more than $150,000 ($75,000 if you will file married separately), last year’s tax is multiplied by 110% instead of 100%.',
+          ],
+        },
+        {
+          heading: 'Equal installments assume even income',
+          paragraphs: [
+            'This page splits whatever is still required into four equal payments on the Form 1040-ES dates. Income that arrives early in the year can still leave a penalty under the annualized income method even when the annual total is enough. That method is not modelled.',
+          ],
+        },
+        {
+          heading: 'The $1,000 rule is after withholding',
+          paragraphs: [
+            'You generally do not have to make estimated payments if you expect to owe less than $1,000 after withholding and refundable credits, or if those payments already cover the required annual payment. Having no tax last year can also remove the requirement; that exception is named and not tested here.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'When are 2026 estimated tax payments due?',
+        answer: [
+          'For calendar-year filers: April 15, June 15, September 15, 2026, and January 15, 2027.',
+          'The January 15 payment is not required if you file by February 1 and pay the balance with the return.',
+        ],
+      },
+      {
+        question: 'What is the 110% estimated tax rule?',
+        answer: [
+          'If last year’s AGI was more than $150,000, or $75,000 if you will file married separately, the prior-year safe harbor is 110% of last year’s tax instead of 100%.',
+        ],
+      },
+      {
+        question: 'Does this page tell me the underpayment penalty?',
+        answer: [
+          'No. Form 2210 figures that penalty, including relief for annualized income and certain disasters. This page only shows the required annual payment and equal installments.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Required annual payment', definition: 'The smaller of 90% of current-year tax or 100% (or 110%) of prior-year tax, used to test estimated-tax payments.' },
+      { term: 'Safe harbor', definition: 'A published percentage of tax that, if paid on time through withholding and estimates, generally avoids an underpayment penalty.' },
+      { term: 'Form 1040-ES', definition: 'The IRS package used to figure and pay estimated tax for individuals.' },
+      { term: 'Annualized income installment', definition: 'An optional method that matches payments to when income was earned during the year. Not used on this page.' },
+    ],
+    tips: [
+      'If most of your tax is withheld from wages, raise withholding before writing four checks.',
+      'Enter last year’s AGI even when you think you are under $150,000. Crossing that line changes the math.',
+      'Self-employment tax belongs in the expected-tax figure; this page does not add it for you.',
+    ],
+    caveats: [
+      'Farming and fishing may use 66⅔% instead of 90%. That substitution is not applied.',
+      'This is not Form 2210 and not a penalty calculation.',
+      'This is not tax advice.',
+    ],
+  },
+  {
+    toolId: 'tax-refund',
+    guide: {
+      heading: 'A refund is withholding minus tax, not a W-4 promise',
+      lede: 'The number on a refund is the difference between what was already paid and what the return actually owes. This page estimates that gap from 2026 published income tax, the child tax credit and the EITC, using the withholding you type rather than Publication 15-T tables that are not in the snapshot.',
+      sections: [
+        {
+          heading: 'Why this is not a W-4 calculator',
+          paragraphs: [
+            'Employers withhold from Form W-4 and IRS percentage-method tables in Publication 15-T. Those tables have not been transcribed here, so inventing a withholding figure from filing status and a paycheck would be a guess dressed as a schedule.',
+            'Enter what was actually withheld — Form W-2 box 2 — and the page compares it with tax from the ordinary brackets, Schedule SE if you enter a profit, and the same credit engines as the dedicated pages.',
+          ],
+        },
+        {
+          heading: 'Credits can turn tax due into a refund',
+          paragraphs: [
+            'Nonrefundable child tax credit reduces tax. The additional child tax credit and the earned income credit can be paid even when tax is already zero. Wages plus self-employment profit, minus the deductible half of Schedule SE tax, stand in for AGI and MAGI, which can still mis-time a phase-out if you have other adjustments the page does not ask for.',
+          ],
+        },
+        {
+          heading: 'What usually makes a real refund different',
+          paragraphs: [
+            'Itemised deductions, retirement contributions, education credits, state refunds, NIIT, and Additional Medicare Tax on W-2 wages all move the answer. Most of those omissions overstate tax; omitting W-2 Additional Medicare can understate it.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Why can’t this page start from my W-4 instead of box 2?',
+        answer: [
+          'Publication 15-T percentage-method tables are not in the tax snapshot. Without those tables, a W-4 withholding estimate would not be an official-data figure.',
+          'Box 2 is what was actually withheld. That is the number a refund compares against.',
+        ],
+      },
+      {
+        question: 'Does a larger withholding always mean a larger refund?',
+        answer: [
+          'Yes for a fixed tax. It also means less money in each paycheck. The return settles the difference; it does not change the year’s tax.',
+        ],
+      },
+      {
+        question: 'Are state refunds included?',
+        answer: [
+          'No. This page is federal income tax, federal withholding, Schedule SE, the child tax credit and the EITC only.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Federal withholding', definition: 'Income tax already taken from pay, typically Form W-2 box 2, credited against the year’s federal tax.' },
+      { term: 'Refundable credit', definition: 'A credit that can be paid even when it exceeds the tax on the return, such as EITC and the additional child tax credit.' },
+      { term: 'Amount owed', definition: 'Tax after nonrefundable credits minus withholding, estimated payments and refundable credits, when that difference is negative.' },
+      { term: 'Publication 15-T', definition: 'The IRS percentage-method withholding tables. They are not in this snapshot, so this page does not estimate W-4 withholding.' },
+    ],
+    tips: [
+      'If you had more than one job, add box 2 from every W-2.',
+      'Open the advanced section if you had self-employment profit or qualifying children; both change the refund.',
+      'Use the quarterly estimated tax page if the result is an amount owed and the income is not all from wages.',
+    ],
+    caveats: [
+      'Publication 15-T W-4 tables are not modelled. Withholding is the amount you enter.',
+      'AGI is wages plus SE profit minus the deductible half of Schedule SE tax. Other adjustments are omitted, so credit phase-outs can be off.',
+      'This is not a filed return and not tax advice.',
+    ],
+  },
 ];

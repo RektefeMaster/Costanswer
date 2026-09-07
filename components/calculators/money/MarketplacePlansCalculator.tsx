@@ -37,7 +37,10 @@ export function MarketplacePlansCalculator({ release }: { release: CmsReleaseSum
   const matches = covered?.lookup.counties ?? [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
   const parsedAges = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
-  const ages = parsedAges.invalidTokens.length === 0 ? parsedAges.ages : [];
+  const ages = useMemo(
+    () => (parsedAges.invalidTokens.length === 0 ? parsedAges.ages : []),
+    [parsedAges],
+  );
 
   const priced = useMemo(() => {
     if (!covered || !county || ages.length === 0) return null;

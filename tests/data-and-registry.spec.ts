@@ -211,7 +211,7 @@ describe('bundled snapshot integrity', () => {
  * The number of tools already shipped. Raise it as tools land; never lower it.
  * It exists so an accidental removal fails without a count blocking additions.
  */
-const SHIPPED_TOOL_BASELINE = 60;
+const SHIPPED_TOOL_BASELINE = 66;
 
 /** §M P4's acceptance figure. The catalogue is done when it reaches this. */
 const P4_TARGET_TOOL_COUNT = 101;
@@ -252,6 +252,12 @@ describe('registry and intent search', () => {
     expect(new Set(tools.map((tool) => tool.id)).size).toBe(tools.length);
     expect(new Set(tools.map((tool) => tool.path)).size).toBe(tools.length);
     expect(tools.some((tool) => /kg-to-|lbs-to-|days-from-today\/|percent-of-/.test(tool.path))).toBe(false);
+  });
+
+  it('gives every calculator a unique primary search phrase', () => {
+    const phrases = tools.map((tool) => tool.searchTerms[0]?.trim().toLowerCase() ?? '');
+    expect(phrases.every((phrase) => phrase.length > 0)).toBe(true);
+    expect(new Set(phrases).size, 'duplicate searchTerms[0]').toBe(tools.length);
   });
 
   it('fails closed for invalid scores, stale reviews, and dangling link evidence', () => {
@@ -353,6 +359,12 @@ describe('registry and intent search', () => {
     expect(searchTools('living expenses')[0].tool.id).toBe('cost-of-living');
     expect(searchTools('city cost of living')[0].tool.id).toBe('cost-of-living');
     expect(searchTools('state cost of living')[0].tool.id).toBe('cost-of-living');
+    expect(searchTools('self employment tax')[0].tool.id).toBe('self-employment-tax');
+    expect(searchTools('eitc calculator')[0].tool.id).toBe('eitc');
+    expect(searchTools('child tax credit')[0].tool.id).toBe('child-tax-credit');
+    expect(searchTools('capital gains tax')[0].tool.id).toBe('capital-gains');
+    expect(searchTools('quarterly estimated tax')[0].tool.id).toBe('quarterly-estimated-tax');
+    expect(searchTools('tax refund calculator')[0].tool.id).toBe('tax-refund');
   });
 
   it('returns no false-positive tool for unsupported or stop-word-only intent', () => {

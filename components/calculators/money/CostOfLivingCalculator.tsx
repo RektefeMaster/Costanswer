@@ -70,10 +70,10 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
   const [annualMiles, setAnnualMiles] = useState('12000');
   const [mpg, setMpg] = useState('28');
   const [kwhPer100Miles, setKwhPer100Miles] = useState('30');
-  const [chargingLossPercent, setChargingLossPercent] = useState('10');
-  const [monthlyInsurance, setMonthlyInsurance] = useState('0');
-  const [monthlyMaintenance, setMonthlyMaintenance] = useState('0');
-  const [annualRegistration, setAnnualRegistration] = useState('0');
+  const chargingLossPercent = '10';
+  const monthlyInsurance = '0';
+  const monthlyMaintenance = '0';
+  const annualRegistration = '0';
   const [otherEssentials, setOtherEssentials] = useState('');
   const [incomeMode, setIncomeMode] = useState<'none' | 'take-home' | 'gross-salary'>('take-home');
   const [monthlyTakeHome, setMonthlyTakeHome] = useState('5000');

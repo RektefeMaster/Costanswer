@@ -6,7 +6,7 @@ import { COST_OF_LIVING_ENGINE_ID } from './col/version';
 import { COL_SOURCE_MATRIX, type ColSourceType } from './col/source-matrix';
 import { defaultFoodMembers, usdaFoodPlanMonthlyCost } from './col/food';
 import { assertNoRppOnLocalRate, composeColTransport } from './col/transport';
-import { USDA_FOOD_PLANS, type UsdaFoodPlan } from '@/lib/data/usda-food';
+import { USDA_FOOD_PLANS } from '@/lib/data/usda-food';
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
 import { getGasolinePriceForState } from '@/lib/data/gasoline-snapshot';
 import { getElectricityRate } from '@/lib/data/electricity-snapshot';
@@ -14,7 +14,6 @@ import { gasolineSnapshot } from '@/lib/data/gasoline-snapshot';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import type { LocationCoverage } from '@/lib/location/resolve';
 import { isStateCode } from '@/lib/location/states';
-import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { DEFAULT_TAX_YEAR } from '@/lib/calculations/tax/version';
 

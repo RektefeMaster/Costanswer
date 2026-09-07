@@ -51,7 +51,10 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
   const matches = covered?.lookup.counties ?? [];
   const county = matches.find((entry) => entry.countyFips === chosenFips) ?? matches[0];
   const parsedAges = useMemo(() => parseEnrollingAges(enrollingAges), [enrollingAges]);
-  const ages = parsedAges.invalidTokens.length === 0 ? parsedAges.ages : [];
+  const ages = useMemo(
+    () => (parsedAges.invalidTokens.length === 0 ? parsedAges.ages : []),
+    [parsedAges],
+  );
   /*
    * The poverty guideline depends on the state, and Alaska and Hawaii have their
    * own. Defaulting to a contiguous state when the ZIP names none would move the
@@ -106,7 +109,7 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [resolvedStateCode, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark, quotes]);
+  }, [resolvedStateCode, householdSize, annualHouseholdMagi, usedBenchmark, usedPlan, eligibility, coverageMonths, overrideBenchmark, quotes, release.snapshotId]);
 
   const result = calculation.result;
   const value = result?.value;

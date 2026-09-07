@@ -180,8 +180,15 @@ export function searchLocations(query: string, limit = 8): LocationSearchHit[] {
 }
 
 function publicHit(hit: IndexedLocation): LocationSearchHit {
-  const { tokens, compact: _compact, ...rest } = hit;
-  return rest;
+  return {
+    id: hit.id,
+    kind: hit.kind,
+    name: hit.name,
+    displayName: hit.displayName,
+    state: hit.state,
+    stateName: hit.stateName,
+    subtitle: hit.subtitle,
+  };
 }
 
 export function getLocationSearchHit(id: string): LocationSearchHit | undefined {

@@ -19,7 +19,9 @@ export function CategoryArt({
   category: CategoryId;
   priority?: boolean;
 }) {
+  // Decorative local static files; the Worker deploy has no image optimizer.
   return (
+    // eslint-disable-next-line @next/next/no-img-element
     <img
       className={`category-art category-art-${category}`}
       src={categoryArtSrc[category]}

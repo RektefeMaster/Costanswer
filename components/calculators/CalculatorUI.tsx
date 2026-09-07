@@ -467,7 +467,7 @@ export function AdvancedSection({
   id: string;
   title: string;
   hint?: string;
-  children: ReactNode;
+  children?: ReactNode;
 }) {
   const analytics = useContext(ToolAnalyticsContext);
   const key = `costanswer:advanced:${analytics?.toolId ?? 'tool'}:${id}`;

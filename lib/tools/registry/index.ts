@@ -65,6 +65,12 @@ import { tool as mortgagePayoff } from './mortgage-payoff';
 import { tool as creditCardPayoff } from './credit-card-payoff';
 import { tool as effectiveTaxRate } from './effective-tax-rate';
 import { tool as federalTaxBracket } from './federal-tax-bracket';
+import { tool as capitalGains } from './capital-gains';
+import { tool as childTaxCredit } from './child-tax-credit';
+import { tool as eitc } from './eitc';
+import { tool as quarterlyEstimatedTax } from './quarterly-estimated-tax';
+import { tool as selfEmploymentTax } from './self-employment-tax';
+import { tool as taxRefund } from './tax-refund';
 
 export const registryTools: ToolDefinition[] = [
   hourlyToSalary,
@@ -127,4 +133,10 @@ export const registryTools: ToolDefinition[] = [
   creditCardPayoff,
   effectiveTaxRate,
   federalTaxBracket,
+  capitalGains,
+  childTaxCredit,
+  eitc,
+  quarterlyEstimatedTax,
+  selfEmploymentTax,
+  taxRefund,
 ];

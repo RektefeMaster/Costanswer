@@ -36,5 +36,6 @@ export const tool: ToolDefinition = {
     { toolId: 'federal-tax-bracket', type: 'sibling' },
     { toolId: 'home-affordability', type: 'next-decision' },
     { toolId: 'cost-of-living', type: 'next-decision' },
+    { toolId: 'tax-refund', type: 'next-decision' },
   ],
 };

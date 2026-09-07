@@ -13,9 +13,9 @@ Do not trust a historical HEAD SHA. Reconcile branch, commit, dirty files,
 | Phases 0–3 (shell, engines, first tools, SEO plumbing) | **Shipped** |
 | Platform (MASTER_PLAN P1) | CI/lint/typecheck **shipped**. Client bundle gate is **150 KiB gzip**. Worker `costanswer` deploys with `npm run deploy`. Custom domain `costanswer.com` **open — public-launch blocker** (name was unregistered 2026-09-07). D1/secrets are a **monetization activation** blocker, not a public-launch blocker while providers stay off |
 | State wage tax (MASTER_PLAN P2) | **Closed — do not execute.** 51/51 supported, 0 unsupported. Authority: `docs/P2_STATE_TAX_FINAL.md`. Dependents leftover (PA/CO/DC/KY) closed. Mixed-year rows are listed on every `npm run verify:tax` run |
-| Registry | **60** calculators — confirm `registryTools.length` |
+| Registry | **66** calculators — confirm `registryTools.length` |
 | Salary corpus | 761 occupations, 51 state hubs, 30,807 leaves **staged** (`occupationInState: 'staged'`). Staging reason is **crawl/indexation**, not missing state tax |
-| Next work (MASTER_PLAN §L) | **1** finish public launch (`costanswer.com` zone + TLS + `www` + GSC + Bing + analytics) → **4** remaining P4 tax/high-value finance → **4b** P1c tier-2 storage → **5** P7 Job Cost V1 → **6** remaining P4 (including IRS mileage) → **7** P6/P8 after GSC → **8** local/payroll tax engine. P3 and P5 are **closed**. |
+| Next work (MASTER_PLAN §L) | **1** finish public launch (`costanswer.com` zone + TLS + `www` + GSC + Bing + analytics) → **4b** P1c tier-2 storage → **5** P7 Job Cost V1 → **6** remaining P4 (including IRS mileage) → **7** P6/P8 after GSC → **8** local/payroll tax engine. P3 and P5 are **closed**. P4 step-4 tax tools shipped except `w4-withholding`, which waits on Pub 15-T tables. |
 
 Nothing in §L.4 is abandoned. Medical, full ES-US, and permit calibration stay in later waves because they have a trigger (GSC + Job V1), not because they are optional. Mixed-year 2026 forms are a **re-check on each tax refresh**, not a phase. Local tax is **step 8**, its own engine, official sources only.
 
