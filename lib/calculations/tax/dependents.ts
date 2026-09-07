@@ -13,6 +13,11 @@
  * S.C. Code 12-6-1140 among them — do have a provision we have not modelled,
  * and claiming the state gives nothing would be a false statement about the
  * state rather than an honest one about us.
+ *
+ * Where a state has actually been checked and gives nothing, it says so
+ * instead, from `verifiedNoDependentAllowance`. Idaho is the first of those:
+ * its child tax credit sunset rather than going unread, and telling an Idaho
+ * reader that our snapshot is missing a figure would invent a gap on our side.
  */
 import { getStateName } from '@/lib/location/states';
 import { stateUsesDependents } from './state';
@@ -26,5 +31,9 @@ export function dependentsNote(policy: StateTaxPolicy | undefined): string | nul
     return `${state} has no state income tax, and federal credits for dependents are not modelled here, so this does not change the result.`;
   }
   if (stateUsesDependents(policy)) return null;
+  const checked = 'verifiedNoDependentAllowance' in policy ? policy.verifiedNoDependentAllowance : undefined;
+  if (checked) {
+    return `${checked.reason} Federal credits for dependents are not modelled here either.`;
+  }
   return `This snapshot carries no per-dependent amount for ${state}, so this does not change the result. Federal credits for dependents are not modelled here either.`;
 }

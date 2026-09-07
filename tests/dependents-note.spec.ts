@@ -40,9 +40,15 @@ describe('the dependents note', () => {
   });
 
   it('explains the silence everywhere the number does nothing', () => {
+    /*
+     * Either explanation will do — our gap or the state's own absence — but
+     * there must be one. A silent box is the thing this exists to prevent, and
+     * the two wordings are checked separately below.
+     */
     for (const policy of wageTaxing) {
       if (stateUsesDependents(policy)) continue;
-      expect(dependentsNote(policy), policy.stateCode).toMatch(/no per-dependent amount/i);
+      expect(dependentsNote(policy), policy.stateCode)
+        .toMatch(/no per-dependent amount|does not give a per-dependent allowance/i);
     }
   });
 
@@ -70,6 +76,21 @@ describe('the dependents note', () => {
       expect(stateUsesDependents(policy!), code).toBe(true);
       expect(dependentsNote(policy), code).toBeNull();
     }
+  });
+
+  it('says the state gives nothing where that has been checked, not that we are missing it', () => {
+    // Idaho's child tax credit sunset rather than going unread. Telling an
+    // Idaho reader that this snapshot lacks a figure would invent a gap on our
+    // side, and would go on being wrong every year the credit stays expired.
+    const idaho = snapshot.states.find((policy) => policy.stateCode === 'ID');
+    const note = dependentsNote(idaho);
+    expect(note).toMatch(/sunset|does not give a per-dependent allowance/i);
+    expect(note).not.toMatch(/this snapshot carries no per-dependent amount/i);
+  });
+
+  it('falls back to describing our own gap when nobody has checked the state', () => {
+    const carolina = snapshot.states.find((policy) => policy.stateCode === 'SC');
+    expect(dependentsNote(carolina)).toMatch(/this snapshot carries no per-dependent amount/i);
   });
 
   it('stays quiet when there is no policy to describe', () => {

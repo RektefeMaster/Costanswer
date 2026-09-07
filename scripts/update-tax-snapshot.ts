@@ -1920,7 +1920,12 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     rate: 0.053,
     standardDeductionByFilingStatus: filingAmounts(15_750, 31_500, 15_750, 23_625),
     exemptionByFilingStatus: filingAmounts(4_811, 9_622, 4_811, 9_622),
+    verifiedNoDependentAllowance: {
+      reason: 'Idaho does not give a per-dependent allowance for 2026: its $205 child tax credit applied only to tax years beginning before 1 January 2026 and sunset by its own terms (Idaho Code 63-3029L).',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
+      'The $205 child tax credit in Idaho Code 63-3029L applied to tax years beginning on or after 1 January 2018 and before 1 January 2026, so it does not apply to this tax year. The 2025 Parental Choice Tax Credit that followed it is for qualifying education expenses, not a per-dependent allowance, and is not modeled.',
       'Idaho taxes Idaho taxable income at 5.3% of the amount over an indexed zero band (2025 Form 40 packet tax worksheet; I.C. 63-3024). Single and married filing separately: 5.3% of taxable income over $4,811. Married filing jointly, head of household and qualifying surviving spouse: 5.3% over $9,622. Those 2025 worksheet amounts are the inflation-adjusted thresholds for 2025. 2026 Form 40 was not published at verification, so this row is the 2025 schedule — the 2025 threshold is not forwarded as if it were 2026.',
       'The standard deduction on the 2025 Form 40 worksheet is the 2025 federal amount: $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household. Those printed 2025 figures are stored here rather than reading the 2026 federal snapshot, which would mix years.',
       'Idaho credits, the grocery credit, itemized-deduction addbacks and other Form 39R adjustments are not modeled. The starting point is gross wages.',

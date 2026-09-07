@@ -488,6 +488,20 @@ const flatStateSchema = stateMetadataSchema.extend({
   /** A dependent deduction, where the state states one separately from the filer's. */
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
+  /**
+   * Why this state gives nothing for a dependent, where that has been checked.
+   *
+   * "We have not transcribed it" and "the state does not give one" are
+   * different facts and the reader deserves the one that is true. Idaho's
+   * $205 child tax credit sunset on 1 January 2026 by its own terms, so a
+   * note saying this snapshot has no figure for Idaho would imply a gap on our
+   * side that does not exist. Absent means nobody has checked yet, which is
+   * the honest default.
+   */
+  verifiedNoDependentAllowance: z.object({
+    reason: z.string().min(1),
+    verifiedAt: z.string().datetime(),
+  }).strict().optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
   federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),
@@ -503,6 +517,20 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   exemptionByFilingStatus: filingStatusNumberSchema,
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
+  /**
+   * Why this state gives nothing for a dependent, where that has been checked.
+   *
+   * "We have not transcribed it" and "the state does not give one" are
+   * different facts and the reader deserves the one that is true. Idaho's
+   * $205 child tax credit sunset on 1 January 2026 by its own terms, so a
+   * note saying this snapshot has no figure for Idaho would imply a gap on our
+   * side that does not exist. Absent means nobody has checked yet, which is
+   * the honest default.
+   */
+  verifiedNoDependentAllowance: z.object({
+    reason: z.string().min(1),
+    verifiedAt: z.string().datetime(),
+  }).strict().optional(),
   /**
    * Cap on Social Security + Medicare withheld, deducted from income.
    *
@@ -621,6 +649,20 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   alternativeLowIncomeSchedule: alternativeLowIncomeScheduleSchema.optional(),
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
+  /**
+   * Why this state gives nothing for a dependent, where that has been checked.
+   *
+   * "We have not transcribed it" and "the state does not give one" are
+   * different facts and the reader deserves the one that is true. Idaho's
+   * $205 child tax credit sunset on 1 January 2026 by its own terms, so a
+   * note saying this snapshot has no figure for Idaho would imply a gap on our
+   * side that does not exist. Absent means nobody has checked yet, which is
+   * the honest default.
+   */
+  verifiedNoDependentAllowance: z.object({
+    reason: z.string().min(1),
+    verifiedAt: z.string().datetime(),
+  }).strict().optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
   federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),

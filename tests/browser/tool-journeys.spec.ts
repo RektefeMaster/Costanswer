@@ -1,5 +1,14 @@
 import { expect, test, type Page } from '@playwright/test';
 import axe from 'axe-core';
+import { readFileSync } from 'node:fs';
+
+/*
+ * Read straight off disk rather than through lib/data/mortgage-rate-snapshot,
+ * whose JSON import needs an attribute Playwright's loader does not add.
+ */
+const mortgageRates = JSON.parse(
+  readFileSync(new URL('../../data/freddie-mac/current.json', import.meta.url), 'utf8'),
+).snapshot as { thirtyYearFixedPercent: number; fifteenYearFixedPercent: number };
 
 const axeSource = axe.source;
 
@@ -427,7 +436,15 @@ test('the remaining calculator classes recalculate and explain their results', a
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await expect(page.locator('.result-audit')).toContainText('freddie-mac-pmms');
   await page.getByRole('button', { name: '15-year fixed' }).click();
-  await expect(page.locator('#mortgage-rate')).toHaveValue('5.98');
+  /*
+   * Read from the snapshot rather than written in. The published rate moves
+   * every Thursday, and a figure typed here turns a routine data refresh into
+   * a failing suite — which is exactly what it did the week the survey moved
+   * from 5.98 to 6.04. What is being tested is that the control picks up the
+   * 15-year rate, not what this week's 15-year rate happens to be.
+   */
+  await expect(page.locator('#mortgage-rate'))
+    .toHaveValue(String(mortgageRates.fifteenYearFixedPercent));
   await page.getByRole('button', { name: '30-year fixed' }).click();
   await page.locator('#mortgage-price').fill('200000');
   await page.locator('#mortgage-down').fill('0');
