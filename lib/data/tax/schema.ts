@@ -124,6 +124,30 @@ const exemptionCreditSchema = z.object({
     ratePerDollar: z.number().finite().min(0).max(1),
   }).strict().optional(),
   /**
+   * A phase-out that counts whole increments and bites each exemption.
+   *
+   * California's AGI Limitation Worksheet, and the reason the linear
+   * `phaseOut` above cannot express it. Three things differ. The increment is
+   * counted whole and rounded up, so a dollar over the threshold costs the
+   * same as $2,499. The reduction is per exemption, so a couple with three
+   * children loses five times what the worksheet computes once. And the filer
+   * credits and the dependent credits are floored at zero separately, so a
+   * filer whose personal credit has already been wiped out still loses the
+   * full reduction from each dependent credit.
+   *
+   * Treating it as a linear taper on the combined figure would understate the
+   * tax of every high-income California filer with children.
+   */
+  steppedPhaseOut: z.object({
+    startIncomeByFilingStatus: filingStatusNumberSchema,
+    /** Income step that counts as one increment; California halves it for separate filers. */
+    incrementByFilingStatus: filingStatusNumberSchema,
+    /** Dollars each whole increment takes off each exemption credit. */
+    reductionPerIncrement: z.number().finite().min(0),
+    /** Exemptions the filer claims before dependents: two filing jointly, otherwise one. */
+    filerExemptionCountByFilingStatus: filingStatusNumberSchema,
+  }).strict().optional(),
+  /**
    * A credit that is a percentage of the tax itself, looked up on AGI.
    *
    * Connecticut Table E is the case: 75% of the tax at low AGI, stepping down

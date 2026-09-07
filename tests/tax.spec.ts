@@ -195,7 +195,12 @@ describe('state income tax', () => {
 
   it('uses official 2025 FTB Schedule X amounts for California', () => {
     const atFirstBound = calculateStateIncomeTax({ taxYear: 2026, state: 'CA', filingStatus: 'single', taxableIncome: 11_079 + 5_706 });
-    expect(atFirstBound.tax).toBeCloseTo(110.79, 10);
+    // Schedule X charges 1% to $11,079, which is Form 540 line 31.
+    expect(atFirstBound.taxBeforeCredits).toBeCloseTo(110.79, 10);
+    // The $153 exemption credit is more than that, and it is not refundable,
+    // so line 33 is zero rather than a refund of the difference.
+    expect(atFirstBound.exemptionCredit).toBeCloseTo(110.79, 10);
+    expect(atFirstBound.tax).toBe(0);
     const high = calculateStateIncomeTax({ taxYear: 2026, state: 'CA', filingStatus: 'single', taxableIncome: 0 });
     expect(high.tax).toBe(0);
   });

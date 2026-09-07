@@ -53,19 +53,19 @@ describe('the dependents note', () => {
   });
 
   it('never blames the state for a gap that is ours', () => {
-    // California's dependent exemption credit and South Carolina's exemption
-    // under S.C. Code 12-6-1140 both exist in law and are not modelled here.
-    // The note must describe what this snapshot carries, not assert that the
-    // state gives nothing. Alabama was on this list until its chart was
-    // transcribed, which is the point: a state leaves it by being modelled.
-    for (const code of ['CA', 'SC']) {
+    // South Carolina's dependent exemption under S.C. Code 12-6-1140 exists in
+    // law and is not modelled here. The note must describe what this snapshot
+    // carries, not assert that the state gives nothing. Alabama and California
+    // were on this list until their figures were transcribed, which is the
+    // point: a state leaves it by being modelled, not by being re-described.
+    for (const code of ['SC']) {
       const note = dependentsNote(snapshot.states.find((policy) => policy.stateCode === code));
       expect(note, code).toMatch(/this snapshot carries no per-dependent amount/i);
     }
   });
 
-  it('says nothing for the two states whose dependent charts are transcribed', () => {
-    for (const code of ['AL', 'NC']) {
+  it('says nothing for the states whose dependent figures are transcribed', () => {
+    for (const code of ['AL', 'NC', 'CA']) {
       const policy = snapshot.states.find((row) => row.stateCode === code);
       expect(stateUsesDependents(policy!), code).toBe(true);
       expect(dependentsNote(policy), code).toBeNull();

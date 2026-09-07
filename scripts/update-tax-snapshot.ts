@@ -1593,10 +1593,24 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       thresholdByFilingStatus: filingAmounts(1_000_000, 1_000_000, 1_000_000, 1_000_000),
       rate: 0.01,
     },
+    exemptionCredit: {
+      // Form 540 line 7: $153 an exemption, two of them on a joint return.
+      perFilerByFilingStatus: filingAmounts(153, 306, 153, 153),
+      // Line 10.
+      perDependent: 475,
+      steppedPhaseOut: {
+        startIncomeByFilingStatus: filingAmounts(252_203, 504_411, 252_203, 378_310),
+        incrementByFilingStatus: filingAmounts(2_500, 2_500, 1_250, 2_500),
+        reductionPerIncrement: 6,
+        filerExemptionCountByFilingStatus: filingAmounts(1, 2, 1, 1),
+      },
+    },
     notes: [
       'California 2026 Form 540 rate schedules were not published at verification. This snapshot uses the official 2025 FTB indexed tax rate schedules and 2025 standard deduction.',
       'Mental Health Services Tax is 1% of taxable income over $1,000,000 (Cal. Rev. & Tax. Code § 17043).',
-      'California credits and itemized deductions are not modeled. California levies no local wage income tax.',
+      'The exemption credits are the 2025 Form 540 amounts: $153 for each personal exemption (line 7, two on a joint return) and $475 for each dependent (line 10). They are credits against tax, not deductions from income.',
+      'Above $252,203 of AGI single, $504,411 joint or $378,310 head of household, the AGI Limitation Worksheet cuts $6 from every exemption credit for each whole $2,500 over the threshold ($1,250 filing separately), rounded up. The filer credits and the dependent credits are floored at zero separately, as worksheet lines i and m do it.',
+      'Senior and blind exemption credits, the renter credit, other California credits and itemized deductions are not modeled. California levies no local wage income tax.',
     ],
   }],
   ['NJ', {

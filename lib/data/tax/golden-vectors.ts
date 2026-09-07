@@ -226,6 +226,11 @@ const MA_SOURCE = {
   sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates',
   verifiedAt: '2026-09-03T00:00:00.000Z',
 };
+const CA_CREDIT_SOURCE = {
+  sourceName: '2025 Form 540 booklet: California Tax Table, exemption credits on lines 7 and 10, and the AGI Limitation Worksheet',
+  sourceUrl: 'https://www.ftb.ca.gov/forms/2025/2025-540-booklet.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const AL_DEPENDENT_SOURCE = {
   sourceName: '2025 Form 40 booklet, page 8 dependent exemption chart, with the tax tables on pages 25–33',
   sourceUrl: 'https://www.revenue.alabama.gov/wp-content/uploads/2026/01/25f40bk.pdf',
@@ -552,9 +557,48 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   // AGI above $1,107,750 forces the 80% cut; the deduction is not zeroed.
   vector('MN', 'single', 1_200_000, 112_203.58, 'worked-from-schedule', MN_SOURCE),
 
-  vector('CA', 'single', 60_000, 1_792.53, 'worked-from-schedule', CA_SOURCE),
-  vector('CA', 'single', 200_000, 14_507.98, 'worked-from-schedule', CA_SOURCE),
-  vector('CA', 'marriedFilingJointly', 250_000, 15_065.96, 'worked-from-schedule', CA_SOURCE),
+  /*
+   * These three used to be the tax straight off the rate schedule, which is
+   * Form 540 line 31 — before the exemption credit on line 32. California's
+   * tax is line 33, so every one of them overstated it by one credit.
+   */
+  vector('CA', 'single', 60_000, 1_639.53, 'worked-from-schedule', CA_SOURCE),
+  vector('CA', 'single', 200_000, 14_354.98, 'worked-from-schedule', CA_SOURCE),
+  vector('CA', 'marriedFilingJointly', 250_000, 14_759.96, 'worked-from-schedule', CA_SOURCE),
+
+  /*
+   * The California Tax Table row $40,551–$40,650 prints 988 single, 590 joint
+   * and 590 head of household. Gross wages here put taxable income on that row
+   * once the standard deduction comes off, and the expected figure is the
+   * printed tax less the printed credit — both halves are California's own
+   * numbers, which is what the schedule alone could not give.
+   */
+  vector('CA', 'single', 46_306, 835, 'published-table', CA_CREDIT_SOURCE),
+  vector('CA', 'marriedFilingJointly', 52_012, 284, 'published-table', CA_CREDIT_SOURCE),
+  vector('CA', 'headOfHousehold', 52_012, 437, 'published-table', CA_CREDIT_SOURCE),
+  /*
+   * Same row, two dependents: $153 + 2 × $475 is more credit than there is
+   * tax. The credit is not refundable, so the answer is zero and not −115.
+   */
+  vector('CA', 'single', 46_306, 0, 'published-table', CA_CREDIT_SOURCE, { dependents: 2 }),
+
+  /*
+   * The AGI Limitation Worksheet, which is a staircase and not a taper.
+   *
+   * $1 over the threshold rounds up to a whole $2,500 increment and costs $6
+   * from every exemption: 153 − 6 plus 475 − 6, so $616 of credit survives.
+   */
+  vector('CA', 'single', 252_204, 18_746.95, 'worked-from-schedule', CA_CREDIT_SOURCE, { dependents: 1 }),
+  // $7,797 over is four increments, not 3.12: $24 off each of three exemptions.
+  vector('CA', 'single', 260_000, 19_056.98, 'worked-from-schedule', CA_CREDIT_SOURCE, { dependents: 2 }),
+  /*
+   * The row a linear taper on the combined credit would get wrong. At $320,000
+   * the reduction is $168 an exemption, which wipes out the $153 personal
+   * credit — but the worksheet floors that at zero on its own line, so both
+   * dependent credits still lose the full $168 rather than the leftover $15
+   * being carried across. $614 survives, not $629.
+   */
+  vector('CA', 'single', 320_000, 25_053.98, 'worked-from-schedule', CA_CREDIT_SOURCE, { dependents: 2 }),
 
   vector('NJ', 'single', 10_000, 0, 'published-threshold', NJ_SOURCE),
   vector('NJ', 'marriedFilingJointly', 20_000, 0, 'published-threshold', NJ_SOURCE),

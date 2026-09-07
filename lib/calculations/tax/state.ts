@@ -501,6 +501,24 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
     + spec.perDependent * (input.dependents ?? 0)
     + federalShare;
 
+  if (spec.steppedPhaseOut) {
+    const stepped = spec.steppedPhaseOut;
+    const over = Math.max(0, input.taxableIncome - stepped.startIncomeByFilingStatus[input.filingStatus]);
+    // Whole increments, rounded up: a dollar over the threshold costs a full $6.
+    const increments = Math.ceil(over / stepped.incrementByFilingStatus[input.filingStatus]);
+    const perExemption = increments * stepped.reductionPerIncrement;
+    /*
+     * Floored separately, which is the whole point. Worksheet lines i and m
+     * each stop at zero before line n adds them, so a filer whose own credits
+     * are gone still loses the reduction from every dependent credit.
+     */
+    const filerPart = Math.max(0, spec.perFilerByFilingStatus[input.filingStatus] + federalShare
+      - perExemption * stepped.filerExemptionCountByFilingStatus[input.filingStatus]);
+    const dependents = input.dependents ?? 0;
+    const dependentPart = Math.max(0, spec.perDependent * dependents - perExemption * dependents);
+    return Math.min(filerPart + dependentPart, taxBeforeCredits);
+  }
+
   if (!spec.phaseOut) return Math.min(full, taxBeforeCredits);
 
   const over = Math.max(0, input.taxableIncome - spec.phaseOut.startIncomeByFilingStatus[input.filingStatus]);
@@ -523,11 +541,11 @@ function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefine
 /**
  * Whether a dependent count changes this state's answer at all.
  *
- * Fourteen of the forty-two wage-taxing states carry no per-dependent amount in
+ * Thirteen of the forty-two wage-taxing states carry no per-dependent amount in
  * this snapshot, so the dependents field is inert for them. That is a real gap
  * in the data for several of those states rather than a fact about their law —
- * California's dependent exemption credit and South Carolina's dependent
- * exemption both exist and are simply not modelled yet. Either way the reader
+ * South Carolina's dependent exemption under S.C. Code 12-6-1140 exists and is
+ * simply not transcribed yet. Either way the reader
  * must not type a number into a box and watch nothing happen with no
  * explanation, which is exactly what happened before this existed.
  *
