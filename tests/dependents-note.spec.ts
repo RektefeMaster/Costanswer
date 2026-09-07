@@ -40,16 +40,40 @@ describe('the dependents note', () => {
   });
 
   it('explains the silence everywhere the number does nothing', () => {
+    for (const policy of wageTaxing) {
+      if (stateUsesDependents(policy)) continue;
+      expect(dependentsNote(policy), policy.stateCode).toBeTruthy();
+    }
+  });
+
+  it('has a checked reason for every silent state, not the generic fallback', () => {
     /*
-     * Either explanation will do — our gap or the state's own absence — but
-     * there must be one. A silent box is the thing this exists to prevent, and
-     * the two wordings are checked separately below.
+     * Every one of the ten has been looked at, so none should be reaching the
+     * "this snapshot carries no per-dependent amount" wording any more. That
+     * sentence is still there and still correct for a state nobody has checked
+     * — it is just that there are none left. A new state arriving without a
+     * determination fails here rather than shipping a shrug.
      */
     for (const policy of wageTaxing) {
       if (stateUsesDependents(policy)) continue;
       expect(dependentsNote(policy), policy.stateCode)
-        .toMatch(/no per-dependent amount|does not give a per-dependent allowance/i);
+        .not.toMatch(/this snapshot carries no per-dependent amount/i);
+      expect('dependentAllowanceStatus' in policy && policy.dependentAllowanceStatus, policy.stateCode).toBeTruthy();
     }
+  });
+
+  it('keeps "the state gives nothing" apart from "we have not modelled it"', () => {
+    const kindOf = (code: string) => {
+      const policy = snapshot.states.find((row) => row.stateCode === code);
+      return policy && 'dependentAllowanceStatus' in policy ? policy.dependentAllowanceStatus?.kind : undefined;
+    };
+    // Idaho's credit sunset; Montana repealed its exemptions.
+    expect(kindOf('ID')).toBe('none');
+    expect(kindOf('MT')).toBe('none');
+    // Pennsylvania and Colorado do give something, through a mechanism this
+    // engine has no input for. Calling that "none" would be false.
+    expect(kindOf('PA')).toBe('not-modelled');
+    expect(kindOf('CO')).toBe('not-modelled');
   });
 
   it('gives a state with no wage tax its own reason rather than the snapshot one', () => {
@@ -58,20 +82,20 @@ describe('the dependents note', () => {
     expect(dependentsNote(texas)).not.toMatch(/no per-dependent amount/i);
   });
 
-  it('never blames the state for a gap that is ours', () => {
-    // South Carolina's dependent exemption under S.C. Code 12-6-1140 exists in
-    // law and is not modelled here. The note must describe what this snapshot
-    // carries, not assert that the state gives nothing. Alabama and California
-    // were on this list until their figures were transcribed, which is the
-    // point: a state leaves it by being modelled, not by being re-described.
-    for (const code of ['SC']) {
-      const note = dependentsNote(snapshot.states.find((policy) => policy.stateCode === code));
-      expect(note, code).toMatch(/this snapshot carries no per-dependent amount/i);
-    }
+  it('never claims a state gives nothing when it gives something', () => {
+    /*
+     * Pennsylvania's Tax Forgiveness really does move with dependents — each
+     * one raises the eligibility income by $9,500 — so its note has to say the
+     * limit is ours. Saying Pennsylvania gives nothing would be a false
+     * statement about Pennsylvania.
+     */
+    const note = dependentsNote(snapshot.states.find((policy) => policy.stateCode === 'PA'));
+    expect(note).toMatch(/does depend on dependents|not model/i);
+    expect(note).not.toMatch(/does not give a per-dependent allowance/i);
   });
 
   it('says nothing for the states whose dependent figures are transcribed', () => {
-    for (const code of ['AL', 'NC', 'CA']) {
+    for (const code of ['AL', 'NC', 'CA', 'SC', 'ME', 'AZ']) {
       const policy = snapshot.states.find((row) => row.stateCode === code);
       expect(stateUsesDependents(policy!), code).toBe(true);
       expect(dependentsNote(policy), code).toBeNull();
@@ -88,9 +112,15 @@ describe('the dependents note', () => {
     expect(note).not.toMatch(/this snapshot carries no per-dependent amount/i);
   });
 
-  it('falls back to describing our own gap when nobody has checked the state', () => {
-    const carolina = snapshot.states.find((policy) => policy.stateCode === 'SC');
-    expect(dependentsNote(carolina)).toMatch(/this snapshot carries no per-dependent amount/i);
+  it('still has the generic fallback for a state nobody has checked', () => {
+    // No state reaches it today. It has to keep working, because the next
+    // state added will reach it before anyone has looked at its dependents.
+    const carolina = snapshot.states.find((policy) => policy.stateCode === 'SC')!;
+    const { perDependentExemption, dependentAllowanceStatus, ...unchecked } =
+      carolina as typeof carolina & { perDependentExemption?: number; dependentAllowanceStatus?: unknown };
+    expect(perDependentExemption).toBeDefined();
+    expect(dependentsNote(unchecked as typeof carolina))
+      .toMatch(/this snapshot carries no per-dependent amount/i);
   });
 
   it('stays quiet when there is no policy to describe', () => {

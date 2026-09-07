@@ -566,6 +566,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       appliesTo: 'taxable-income',
       omissionNote: 'Act 32 EIT is commonly 1%–2.75% of wages. Philadelphia\'s wage tax is 3.735% for residents and 3.425% for non-residents as of 1 July 2026 (City of Philadelphia Department of Revenue). Pittsburgh, Reading and Scranton also sit above the Act 32 band. Your real take-home is lower than the state figure.',
     },
+    dependentAllowanceStatus: {
+      kind: 'not-modelled',
+      reason: 'Pennsylvania gives nothing per dependent against the tax itself. Its Tax Forgiveness credit does depend on dependents \u2014 each one raises the eligibility income by $9,500 \u2014 but that is an income-tested schedule this estimate does not model.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
       'Pennsylvania personal income tax is 3.07% (Tax Reform Code of 1971, Section 302, as amended by Act 46 of 2003).',
       'No standard deduction is applied.',
@@ -820,6 +825,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     // IT-540 line 7 is federal AGI, which for a wage-only filer is gross pay,
     // and line 8 is one combined deduction figure.
     exemptionByFilingStatus: filingAmounts(12_875, 25_750, 12_875, 25_750),
+    dependentAllowanceStatus: {
+      kind: 'none',
+      reason: 'Louisiana does not give a per-dependent allowance for 2026: the flat tax enacted by Act 11 of the 2024 Third Extraordinary Session replaced the personal and dependent exemptions with a single combined deduction.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
       'Louisiana taxes income at a flat 3% from tax year 2025 onward (Act 11 of the 2024 Third Extraordinary Session; RIB 25-012; 2025 IT-540 line 11). The 2026 withholding tables use 3.09%; that is a withholding formula, not the tax rate, so this row keeps 3%.',
       'The 2026 standard deduction used in Form R-1306 and RIB 26-005 is $12,875 filing single or separately and $25,750 filing jointly, as a surviving spouse or as head of household. Those are the CPI-U-indexed withholding figures. RIB 26-005 says the official return amounts may differ slightly based on January 2026 CPI-U; no different return figure had been published at verification.',
@@ -1142,6 +1152,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       ]),
     },
     standardDeductionByFilingStatus: filingAmounts(15_000, 30_000, 15_000, 22_500),
+    dependentAllowanceStatus: {
+      kind: 'not-modelled',
+      reason: 'The District of Columbia gives nothing per dependent against the tax itself. Its child tax credit is limited to children under six and to lower incomes, which this estimate has no input for.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
       'The District taxes taxable income in seven brackets from 4% to 10.75% for tax years beginning after December 31, 2021 (DC Office of Tax and Revenue, DC Individual and Fiduciary Income Tax Rates; D.C. Code 47-1806.03).',
       'The same brackets apply to every filing status. Only the standard deduction differs.',
@@ -1294,6 +1309,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       headOfHousehold: brackets([[71_250, 0.047], [null, 0.0565]]),
     },
     standardDeductionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    dependentAllowanceStatus: {
+      kind: 'none',
+      reason: 'Montana does not give a per-dependent allowance: the personal and dependent exemptions were repealed with the 2024 rewrite of its income tax, which starts from federal taxable income.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
       'Montana taxes ordinary income at 4.7% on the first $47,500 single or married filing separately, $95,000 married filing jointly and $71,250 head of household, and 5.65% above that (2026 Montana Publication 1 tax tables; HB 337 of 2025).',
       'Montana Form 2 starts from federal taxable income, so the federal standard deduction is already out of the base and Montana adds no deduction of its own.',
@@ -1325,6 +1345,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     // North Dakota gives no deduction of its own; the federal one is inside
     // the starting figure.
     standardDeductionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    dependentAllowanceStatus: {
+      kind: 'none',
+      reason: 'North Dakota does not give a per-dependent allowance: it starts from federal taxable income, which already carries the federal treatment of dependents, and adds no exemption of its own.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
       'North Dakota taxes North Dakota taxable income at 0%, 1.95% and 2.50% (Office of State Tax Commissioner, Individual Income Tax rate tables for tax year 2025; N.D.C.C. 57-38-30.3).',
       'The zero bracket runs to $48,475 single, $80,975 married filing jointly, $40,475 married filing separately and $64,950 head of household, so many North Dakota wage earners owe no state income tax at all.',
@@ -1362,6 +1387,7 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       rangeByFilingStatus: filingAmounts(55_000, 110_000, 55_000, 82_500),
       roundReductionDownToMultipleOf: 10,
     },
+    perDependentExemption: 4_930,
     notes: [
       'South Carolina has two brackets for tax year 2026: 1.99% below $30,000 of taxable income and 5.21% above it, which the state writes as 5.21% minus $966 (SCDOR Information Letter #26-20; S.C. Code 12-6-510).',
       'For 2026 South Carolina decoupled from the federal deductions in IRC 63(b)-(g), so its starting point is federal adjusted gross income rather than federal taxable income. For a wage-only filer that is gross pay.',
@@ -1402,6 +1428,18 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       thresholdByFilingStatus: filingAmounts(1_000_000, 1_500_000, 750_000, 1_500_000),
       rate: 0.02,
     },
+    exemptionCredit: {
+      // Maine's personal exemption is a deduction and is modelled separately;
+      // nothing here is per filer.
+      perFilerByFilingStatus: filingAmounts(0, 0, 0, 0),
+      perDependent: 305,
+      steppedPhaseOut: {
+        startIncomeByFilingStatus: filingAmounts(100_000, 150_000, 75_000, 125_000),
+        incrementByFilingStatus: filingAmounts(500, 500, 500, 500),
+        reductionPerIncrement: 20,
+        appliesTo: 'total',
+      },
+    },
     notes: [
       'Maine income tax rates for tax year 2026 are 5.8%, 6.75% and 7.15% (36 M.R.S. 5111 as inflation-adjusted under 36 M.R.S. 5403; Maine Revenue Services, 2026 Individual Income Tax Rates, revised May 20, 2026).',
       'Standard deduction for 2026: $15,700 single and married filing separately, $31,400 married filing jointly, $23,550 head of household. Personal exemption is $5,300 for the taxpayer, doubled on a joint return.',
@@ -1431,6 +1469,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       // Deliberately unsized. Hundreds of Kentucky cities and counties set
       // their own occupational rates and no state agency publishes a statewide
       // band, so the page names the omission without inventing its size.
+    },
+    dependentAllowanceStatus: {
+      kind: 'not-modelled',
+      reason: 'Kentucky gives nothing per dependent against the tax itself. Its family size tax credit and dependent care credit depend on circumstances this estimate has no input for.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
       'Kentucky taxes individual income at a flat 3.5% for 2026, on wages less a $3,360 standard deduction (Kentucky DOR, 2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025); KRS 141.020 as amended by H.B. 1 of 2025; KRS 141.081(2)(a)).',
@@ -1534,6 +1577,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       appliesAboveIncomeByFilingStatus: filingAmounts(300_000, 300_000, 300_000, 300_000),
       keepAmountByFilingStatus: filingAmounts(12_000, 16_000, 12_000, 12_000),
     },
+    dependentAllowanceStatus: {
+      kind: 'not-modelled',
+      reason: 'Colorado gives nothing per dependent against the tax itself. Its child tax credit is a share of the federal credit, limited by the age of the child and by income, which this estimate has no input for.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
+    },
     notes: [
       'Colorado taxes federal taxable income at a flat 4.40% (2025 Colorado Individual Income Tax Filing Guide, DR 0104 Book, line 13).',
       'Colorado has no standard deduction or personal exemption of its own. The federal standard deduction is already inside its starting figure, which is why this row reads it from the federal snapshot rather than restating it.',
@@ -1602,6 +1650,7 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
         startIncomeByFilingStatus: filingAmounts(252_203, 504_411, 252_203, 378_310),
         incrementByFilingStatus: filingAmounts(2_500, 2_500, 1_250, 2_500),
         reductionPerIncrement: 6,
+        appliesTo: 'each-exemption',
         filerExemptionCountByFilingStatus: filingAmounts(1, 2, 1, 1),
       },
     },
@@ -1707,6 +1756,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       label: 'Kansas City and St. Louis earnings tax',
       basis: 'municipality',
       appliesTo: 'taxable-income',
+    },
+    dependentAllowanceStatus: {
+      kind: 'none',
+      reason: 'Missouri does not give a per-dependent allowance: its dependent exemption ended when the federal personal exemption it was tied to went to zero.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
       'Missouri taxes Missouri taxable income on the 2025 MO-1040 tax rate chart, the same schedule for every filing status: $0 through $1,313, then 2.0% to 4.7% of the excess over each $1,313 band, with published lumps at each threshold (2025 Form MO-1040 instructions). 2026 MO-1040 was not published at verification.',
@@ -1920,7 +1974,8 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     rate: 0.053,
     standardDeductionByFilingStatus: filingAmounts(15_750, 31_500, 15_750, 23_625),
     exemptionByFilingStatus: filingAmounts(4_811, 9_622, 4_811, 9_622),
-    verifiedNoDependentAllowance: {
+    dependentAllowanceStatus: {
+      kind: 'none',
       reason: 'Idaho does not give a per-dependent allowance for 2026: its $205 child tax credit applied only to tax years beginning before 1 January 2026 and sunset by its own terms (Idaho Code 63-3029L).',
       verifiedAt: '2026-09-07T00:00:00.000Z',
     },
@@ -1989,6 +2044,15 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     rate: 0.025,
     standardDeductionByFilingStatus: filingAmounts(15_750, 31_500, 15_750, 23_625),
     exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
+    exemptionCredit: {
+      perFilerByFilingStatus: filingAmounts(0, 0, 0, 0),
+      perDependent: 125,
+      proportionalPhaseOut: {
+        startIncomeByFilingStatus: filingAmounts(200_000, 400_000, 200_000, 200_000),
+        incrementByFilingStatus: filingAmounts(1_000, 1_000, 1_000, 1_000),
+        rateOfCreditPerIncrement: 0.05,
+      },
+    },
     notes: [
       'Arizona taxes Arizona taxable income at a flat 2.5% (A.R.S. 43-1011(A)(9); Arizona DOR 2025 Individual Income Tax Highlights). 2026 Form 140 was not published at verification.',
       'The 2025 standard deduction is $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household (DOR 2025 Highlights; A.R.S. 43-1041 inflation-adjusted). The extra standard-deduction increase for charitable contributions (34% for 2025) is not modeled.',
@@ -2069,6 +2133,11 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
         marriedFilingSeparately: CT_CREDIT_SEPARATE,
         headOfHousehold: CT_CREDIT_HEAD,
       },
+    },
+    dependentAllowanceStatus: {
+      kind: 'none',
+      reason: 'Connecticut does not give a per-dependent allowance: its personal exemption is one return-level amount looked up on adjusted gross income, with no addition for dependents.',
+      verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
       'Connecticut computes 2025 income tax from Connecticut AGI on Form CT-1040 TCS: a personal exemption (Table A), initial tax on taxable income (Table B), a 2% rate phase-out add-back (Table C), tax recapture (Table D), then a personal tax credit that is a percentage of that tax (Table E). 2026 CT-1040 was not published at verification. Table A is one amount for the return, looked up on filing status and Connecticut AGI; dependents do not multiply it.',

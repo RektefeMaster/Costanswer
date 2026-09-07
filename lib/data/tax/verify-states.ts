@@ -32,7 +32,8 @@ export type GoldenVectorBasis =
   | 'published-table'
   | 'published-example'
   | 'published-threshold'
-  | 'worked-from-schedule';
+  | 'worked-from-schedule'
+  | 'secondary-source';
 
 /** A figure the state itself publishes, that the engine must reproduce. */
 export type StateGoldenVector = {

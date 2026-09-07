@@ -19,6 +19,13 @@
  *    transcribed from. It cannot catch a misreading of that schedule; it
  *    catches a later edit that breaks a row nobody meant to touch. That is
  *    worth having and is not the same thing, which is why it is labelled.
+ *  - `secondary-source` is a figure taken from somewhere other than the state:
+ *    an open dataset, a published summary. It is the weakest of these and it
+ *    exists so that such a figure can be shipped without being dressed up as
+ *    one of the others. It is not free of risk — PolicyEngine had Maine's
+ *    phase-out at $20 for each $1,000 when the state's own instructions say
+ *    $20 for each $500, which is a factor of two on every affected filer — so
+ *    a row carrying this label is a row still worth confirming.
  */
 import type { FilingStatus } from '@/lib/calculations/tax/types';
 import type { StateCode } from '@/lib/location/states';
@@ -225,6 +232,21 @@ const MA_SOURCE = {
   sourceName: 'Massachusetts DOR, Massachusetts Tax Rates (updated December 30, 2025)',
   sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates',
   verifiedAt: '2026-09-03T00:00:00.000Z',
+};
+const SC_DEPENDENT_SOURCE = {
+  sourceName: '2025 SC1040 instructions, Worksheet for South Carolina dependent exemption (line w)',
+  sourceUrl: 'https://dor.sc.gov/sites/dor/files/forms/SC1040Instr_2025.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const ME_DEPENDENT_SOURCE = {
+  sourceName: '2025 Form 1040ME general instructions: dependent exemption tax credit, and its phase-out under 36 M.R.S. 5219-SS',
+  sourceUrl: 'https://www.maine.gov/revenue/sites/maine.gov.revenue/files/inline-files/25_1040me_gen_instr_w_cover_pg.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const AZ_DEPENDENT_SOURCE = {
+  sourceName: 'Arizona dependent tax credit, A.R.S. 43-1073.01(B) as amended by HB 4168 (2026); figures read from the PolicyEngine-US parameter set, not from the Department of Revenue',
+  sourceUrl: 'https://www.azleg.gov/viewdocument/?docName=https://www.azleg.gov/ars/43/01073-01.htm',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
 };
 const CA_CREDIT_SOURCE = {
   sourceName: '2025 Form 540 booklet: California Tax Table, exemption credits on lines 7 and 10, and the AGI Limitation Worksheet',
@@ -503,12 +525,32 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   // Inside the SCIAD phase-out, including its round-down-to-$10 rule.
   vector('SC', 'single', 60_000, 1_662.44, 'worked-from-schedule', SC_SOURCE),
   vector('SC', 'marriedFilingJointly', 150_000, 6_280.59, 'worked-from-schedule', SC_SOURCE),
+  /*
+   * South Carolina's dependent exemption is a flat $4,930 a dependent off
+   * taxable income, with no phase-out at all — the worksheet on line w is two
+   * lines and a multiplication. The second row is far above where any other
+   * state's staircase would have run out, which is the point of it.
+   */
+  vector('SC', 'single', 60_000, 1_148.74, 'worked-from-schedule', SC_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('SC', 'single', 150_000, 6_078.44, 'worked-from-schedule', SC_DEPENDENT_SOURCE, { dependents: 3 }),
 
   vector('ME', 'single', 48_400, 1_589, 'published-table', ME_SOURCE),
   vector('ME', 'single', 85_850, 4_117, 'published-table', ME_SOURCE),
   vector('ME', 'marriedFilingJointly', 96_850, 3_181, 'published-table', ME_SOURCE),
   // Inside the deduction phase-out band, which the bracket edges never reach.
   vector('ME', 'single', 120_000, 6_824.47, 'worked-from-schedule', ME_SOURCE),
+  /*
+   * Maine's credit is $305 a dependent, cut by $20 for each $500 "or fraction
+   * thereof" of Maine AGI over $100,000 single. At $104,000 that is $4,000
+   * over, eight whole increments, $160 off a $610 credit — the fraction-
+   * thereof rounding is why eight and not 7.9.
+   *
+   * The $1,000 increment that an open dataset had here would have left $530.
+   */
+  vector('ME', 'single', 60_000, 1_762.20, 'worked-from-schedule', ME_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('ME', 'single', 104_000, 4_990.99, 'worked-from-schedule', ME_DEPENDENT_SOURCE, { dependents: 2 }),
+  // Far enough past the threshold that the whole credit is gone, not negative.
+  vector('ME', 'single', 120_000, 6_824.47, 'worked-from-schedule', ME_DEPENDENT_SOURCE, { dependents: 2 }),
 
   vector('IL', 'single', 60_000, 2_825.21, 'worked-from-schedule', IL_SOURCE),
   vector('IL', 'single', 60_000, 2_680.425, 'worked-from-schedule', IL_SOURCE, { dependents: 1 }),
@@ -735,6 +777,21 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('AZ', 'single', 40_000, 606.25, 'worked-from-schedule', AZ_SOURCE),
   vector('AZ', 'marriedFilingJointly', 50_000, 462.50, 'worked-from-schedule', AZ_SOURCE),
   vector('AZ', 'headOfHousehold', 40_000, 409.375, 'worked-from-schedule', AZ_SOURCE),
+  /*
+   * Arizona's credit is a share, not a sum: 5% of it goes for each $1,000 of
+   * AGI over $200,000, so it reaches zero at $220,000 whether it was worth
+   * $125 or $375. The last two rows are that claim — two dependents and three
+   * both come out at nothing above the ceiling.
+   *
+   * Labelled secondary-source: the $125 for 2026 comes from the PolicyEngine
+   * parameter set citing HB 4168, not from a Department of Revenue form this
+   * project has read. It also assumes the dependents are under 17; Arizona
+   * gives $25 rather than $125 for older ones, and there is no age input here.
+   */
+  vector('AZ', 'single', 60_000, 856.25, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('AZ', 'single', 205_000, 4_543.75, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('AZ', 'single', 220_000, 5_106.25, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('AZ', 'single', 230_000, 5_356.25, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 3 }),
 
   /*
    * Connecticut TCS Table B example: $13,000 of taxable income is $335. At

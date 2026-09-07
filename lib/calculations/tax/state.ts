@@ -504,19 +504,33 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
   if (spec.steppedPhaseOut) {
     const stepped = spec.steppedPhaseOut;
     const over = Math.max(0, input.taxableIncome - stepped.startIncomeByFilingStatus[input.filingStatus]);
-    // Whole increments, rounded up: a dollar over the threshold costs a full $6.
+    // Whole increments, rounded up: a dollar over the threshold costs a full step.
     const increments = Math.ceil(over / stepped.incrementByFilingStatus[input.filingStatus]);
-    const perExemption = increments * stepped.reductionPerIncrement;
+    const reduction = increments * stepped.reductionPerIncrement;
+    const dependents = input.dependents ?? 0;
+    if (stepped.appliesTo === 'total') {
+      // Maine: one reduction off the whole credit, floored once.
+      return Math.min(Math.max(0, full - reduction), taxBeforeCredits);
+    }
     /*
-     * Floored separately, which is the whole point. Worksheet lines i and m
-     * each stop at zero before line n adds them, so a filer whose own credits
-     * are gone still loses the reduction from every dependent credit.
+     * California, floored separately, which is the whole point. Worksheet lines
+     * i and m each stop at zero before line n adds them, so a filer whose own
+     * credits are gone still loses the reduction from every dependent credit.
      */
     const filerPart = Math.max(0, spec.perFilerByFilingStatus[input.filingStatus] + federalShare
-      - perExemption * stepped.filerExemptionCountByFilingStatus[input.filingStatus]);
-    const dependents = input.dependents ?? 0;
-    const dependentPart = Math.max(0, spec.perDependent * dependents - perExemption * dependents);
+      - reduction * (stepped.filerExemptionCountByFilingStatus?.[input.filingStatus] ?? 1));
+    const dependentPart = Math.max(0, spec.perDependent * dependents - reduction * dependents);
     return Math.min(filerPart + dependentPart, taxBeforeCredits);
+  }
+
+  if (spec.proportionalPhaseOut) {
+    const taper = spec.proportionalPhaseOut;
+    const over = Math.max(0, input.taxableIncome - taper.startIncomeByFilingStatus[input.filingStatus]);
+    const increments = Math.ceil(over / taper.incrementByFilingStatus[input.filingStatus]);
+    // A share of whatever the credit was worth, so one dependent and three of
+    // them reach zero at the same income.
+    const surviving = Math.max(0, 1 - increments * taper.rateOfCreditPerIncrement);
+    return Math.min(full * surviving, taxBeforeCredits);
   }
 
   if (!spec.phaseOut) return Math.min(full, taxBeforeCredits);
@@ -541,11 +555,11 @@ function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefine
 /**
  * Whether a dependent count changes this state's answer at all.
  *
- * Thirteen of the forty-two wage-taxing states carry no per-dependent amount in
- * this snapshot, so the dependents field is inert for them. That is a real gap
- * in the data for several of those states rather than a fact about their law —
- * South Carolina's dependent exemption under S.C. Code 12-6-1140 exists and is
- * simply not transcribed yet. Either way the reader
+ * Ten of the forty-two wage-taxing states carry no per-dependent amount in this
+ * snapshot, so the dependents field is inert for them. Six of those give
+ * nothing per dependent at all; the other four give something this engine has
+ * no input for, such as a credit gated on a child's age. Which is which is
+ * recorded per state, not inferred here. Either way the reader
  * must not type a number into a box and watch nothing happen with no
  * explanation, which is exactly what happened before this existed.
  *

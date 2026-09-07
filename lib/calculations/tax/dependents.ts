@@ -2,22 +2,23 @@
  * What to tell a reader who has typed a dependent count.
  *
  * The three take-home tools all offer a dependents field, and for nine states
- * with no wage tax plus thirteen more whose snapshot carries no per-dependent
- * amount, that field changes nothing. Leaving it silent asks the reader to
- * conclude either that they entered it wrong or that their children are worth
- * nothing to their state, when the truth is narrower and is ours to say: this
- * snapshot has no per-dependent figure for that state yet.
+ * with no wage tax plus ten more, that field changes nothing. Leaving it
+ * silent asks the reader to conclude either that they entered it wrong or that
+ * their children are worth nothing to their state, when neither is true.
  *
- * The note is deliberately about the snapshot rather than about the law. Some
- * of those thirteen states — South Carolina's dependent exemption under
- * S.C. Code 12-6-1140 among them — do have a provision we have not modelled,
- * and claiming the state gives nothing would be a false statement about the
- * state rather than an honest one about us.
+ * Each of those ten has been looked at, and they do not all mean the same
+ * thing. Idaho, Montana, Connecticut, Louisiana, Missouri and North Dakota
+ * give nothing per dependent — a credit that sunset, exemptions that were
+ * repealed, a structure that never had one. Pennsylvania, Colorado, the
+ * District of Columbia and Kentucky do give something, through a mechanism
+ * this engine has no input for: an income-tested forgiveness schedule, a
+ * credit gated on a child's age. Telling a Pennsylvanian their state gives
+ * nothing would be false about Pennsylvania; telling an Idahoan our snapshot
+ * is missing a figure would invent a gap on our side. So the reason comes from
+ * `dependentAllowanceStatus` and the note repeats it.
  *
- * Where a state has actually been checked and gives nothing, it says so
- * instead, from `verifiedNoDependentAllowance`. Idaho is the first of those:
- * its child tax credit sunset rather than going unread, and telling an Idaho
- * reader that our snapshot is missing a figure would invent a gap on our side.
+ * The generic wording below is what a state gets before anyone has checked it.
+ * No state reaches it today, and the next one added will.
  */
 import { getStateName } from '@/lib/location/states';
 import { stateUsesDependents } from './state';
@@ -31,9 +32,9 @@ export function dependentsNote(policy: StateTaxPolicy | undefined): string | nul
     return `${state} has no state income tax, and federal credits for dependents are not modelled here, so this does not change the result.`;
   }
   if (stateUsesDependents(policy)) return null;
-  const checked = 'verifiedNoDependentAllowance' in policy ? policy.verifiedNoDependentAllowance : undefined;
-  if (checked) {
-    return `${checked.reason} Federal credits for dependents are not modelled here either.`;
+  const status = 'dependentAllowanceStatus' in policy ? policy.dependentAllowanceStatus : undefined;
+  if (status) {
+    return `${status.reason} Federal credits for dependents are not modelled here either.`;
   }
   return `This snapshot carries no per-dependent amount for ${state}, so this does not change the result. Federal credits for dependents are not modelled here either.`;
 }

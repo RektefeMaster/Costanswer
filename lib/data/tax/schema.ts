@@ -142,10 +142,34 @@ const exemptionCreditSchema = z.object({
     startIncomeByFilingStatus: filingStatusNumberSchema,
     /** Income step that counts as one increment; California halves it for separate filers. */
     incrementByFilingStatus: filingStatusNumberSchema,
-    /** Dollars each whole increment takes off each exemption credit. */
+    /** Dollars each whole increment takes off. */
     reductionPerIncrement: z.number().finite().min(0),
-    /** Exemptions the filer claims before dependents: two filing jointly, otherwise one. */
-    filerExemptionCountByFilingStatus: filingStatusNumberSchema,
+    /**
+     * Whether the reduction bites once or once per exemption.
+     *
+     * Maine takes $20 for each $500 "or fraction thereof" off the credit as a
+     * whole. California takes $6 for each $2,500 off every exemption
+     * separately. Same staircase, and a factor of five apart for a couple with
+     * three children, so it cannot be left implicit.
+     */
+    appliesTo: z.enum(['total', 'each-exemption']),
+    /** Exemptions the filer claims before dependents. Only read for 'each-exemption'. */
+    filerExemptionCountByFilingStatus: filingStatusNumberSchema.optional(),
+  }).strict().optional(),
+  /**
+   * A phase-out that removes a share of the credit rather than a sum of money.
+   *
+   * Arizona cuts 5% of the dependent credit for each $1,000 of federal AGI
+   * over $200,000, so the credit is gone at $220,000 whatever it was worth.
+   * A fixed dollar taper cannot express that: one dependent and three
+   * dependents have to reach zero at the same income, and only a proportion
+   * does that.
+   */
+  proportionalPhaseOut: z.object({
+    startIncomeByFilingStatus: filingStatusNumberSchema,
+    incrementByFilingStatus: filingStatusNumberSchema,
+    /** Share of the credit removed per whole increment, capped at all of it. */
+    rateOfCreditPerIncrement: z.number().finite().min(0).max(1),
   }).strict().optional(),
   /**
    * A credit that is a percentage of the tax itself, looked up on AGI.
@@ -489,16 +513,21 @@ const flatStateSchema = stateMetadataSchema.extend({
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
   /**
-   * Why this state gives nothing for a dependent, where that has been checked.
+   * What this state does about dependents, where the dependents input still
+   * changes nothing.
    *
-   * "We have not transcribed it" and "the state does not give one" are
-   * different facts and the reader deserves the one that is true. Idaho's
-   * $205 child tax credit sunset on 1 January 2026 by its own terms, so a
-   * note saying this snapshot has no figure for Idaho would imply a gap on our
-   * side that does not exist. Absent means nobody has checked yet, which is
-   * the honest default.
+   * There are three of these and they are not the same fact. `none` is Idaho,
+   * whose $205 child tax credit sunset by its own terms — no figure exists to
+   * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
+   * which do give something but through a mechanism this engine has no input
+   * for: an income-tested forgiveness schedule, a credit gated on a child's
+   * age. Absent is the third, and means nobody has checked yet.
+   *
+   * Saying "this snapshot has no figure" about Idaho invents a gap on our
+   * side; saying it about Pennsylvania hides one. Hence the discriminator.
    */
-  verifiedNoDependentAllowance: z.object({
+  dependentAllowanceStatus: z.object({
+    kind: z.enum(['none', 'not-modelled']),
     reason: z.string().min(1),
     verifiedAt: z.string().datetime(),
   }).strict().optional(),
@@ -518,16 +547,21 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
   /**
-   * Why this state gives nothing for a dependent, where that has been checked.
+   * What this state does about dependents, where the dependents input still
+   * changes nothing.
    *
-   * "We have not transcribed it" and "the state does not give one" are
-   * different facts and the reader deserves the one that is true. Idaho's
-   * $205 child tax credit sunset on 1 January 2026 by its own terms, so a
-   * note saying this snapshot has no figure for Idaho would imply a gap on our
-   * side that does not exist. Absent means nobody has checked yet, which is
-   * the honest default.
+   * There are three of these and they are not the same fact. `none` is Idaho,
+   * whose $205 child tax credit sunset by its own terms — no figure exists to
+   * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
+   * which do give something but through a mechanism this engine has no input
+   * for: an income-tested forgiveness schedule, a credit gated on a child's
+   * age. Absent is the third, and means nobody has checked yet.
+   *
+   * Saying "this snapshot has no figure" about Idaho invents a gap on our
+   * side; saying it about Pennsylvania hides one. Hence the discriminator.
    */
-  verifiedNoDependentAllowance: z.object({
+  dependentAllowanceStatus: z.object({
+    kind: z.enum(['none', 'not-modelled']),
     reason: z.string().min(1),
     verifiedAt: z.string().datetime(),
   }).strict().optional(),
@@ -650,16 +684,21 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
   /**
-   * Why this state gives nothing for a dependent, where that has been checked.
+   * What this state does about dependents, where the dependents input still
+   * changes nothing.
    *
-   * "We have not transcribed it" and "the state does not give one" are
-   * different facts and the reader deserves the one that is true. Idaho's
-   * $205 child tax credit sunset on 1 January 2026 by its own terms, so a
-   * note saying this snapshot has no figure for Idaho would imply a gap on our
-   * side that does not exist. Absent means nobody has checked yet, which is
-   * the honest default.
+   * There are three of these and they are not the same fact. `none` is Idaho,
+   * whose $205 child tax credit sunset by its own terms — no figure exists to
+   * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
+   * which do give something but through a mechanism this engine has no input
+   * for: an income-tested forgiveness schedule, a credit gated on a child's
+   * age. Absent is the third, and means nobody has checked yet.
+   *
+   * Saying "this snapshot has no figure" about Idaho invents a gap on our
+   * side; saying it about Pennsylvania hides one. Hence the discriminator.
    */
-  verifiedNoDependentAllowance: z.object({
+  dependentAllowanceStatus: z.object({
+    kind: z.enum(['none', 'not-modelled']),
     reason: z.string().min(1),
     verifiedAt: z.string().datetime(),
   }).strict().optional(),
