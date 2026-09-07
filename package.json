@@ -35,6 +35,7 @@
     "verify:insurance": "tsx scripts/ingest-naic-insurance.ts --verify",
     "verify:cms": "tsx scripts/ingest-cms-marketplace.ts --verify",
     "data:refresh": "tsx scripts/refresh-snapshots.ts",
+    "verify:freshness": "tsx scripts/check-freshness.ts",
     "data:location": "tsx scripts/promote-phase7-snapshots.ts",
     "data:tax": "tsx scripts/update-tax-snapshot.ts",
     "data:perdiem": "tsx scripts/ingest-gsa-perdiem.ts",

@@ -3,7 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { DATASET_POLICIES, scheduledDatasetIds } from '@/lib/data/dataset-policy';
-import { addUtcDays, evaluateDatasetFreshness, evaluateFreshness, nextExpectedReleaseDate, observationPeriodEndDate } from '@/lib/data/freshness';
+import { addUtcDays, evaluateDatasetFreshness, evaluateFreshness, nextExpectedReleaseDate, observationPeriodEndDate, utcCalendarDate } from '@/lib/data/freshness';
 import { datasetSourceDisplay, formatObservationPeriod } from '@/lib/data/source-display';
 import {
   EIA_GASOLINE_SERIES_BY_CODE,
@@ -89,6 +89,21 @@ describe('dataset freshness policy', () => {
     expect(listPublishedTaxYears()).toEqual([2026]);
   });
 
+  it('covers every scheduled dataset in a refresh script', async () => {
+    const { scheduledDatasetsCoveredByRefresh, refreshJobsFor } = await import('../scripts/refresh-jobs');
+    const covered = new Set(scheduledDatasetsCoveredByRefresh());
+    const missing = scheduledDatasetIds().filter((datasetId) => !covered.has(datasetId));
+    expect(missing).toEqual([]);
+    expect(refreshJobsFor('weekly').map((job) => job.datasetIds).flat()).toEqual(['eia-gasoline', 'freddie-mac-pmms']);
+    expect(refreshJobsFor('monthly').map((job) => job.datasetIds).flat()).toEqual([
+      'bls-grocery',
+      'bls-cpi',
+      'eia-electricity',
+      'usda-food-plans',
+    ]);
+    expect(refreshJobsFor('all').some((job) => job.datasetIds.includes('gsa-perdiem'))).toBe(true);
+  });
+
   it('does not treat a 2024 annual reference year as stale in 2026, and allows official same-period revisions', () => {
     expect(evaluateDatasetFreshness('bea-rpp', {
       observationPeriod: '2024',
@@ -146,6 +161,23 @@ describe('source display helper', () => {
       sourceStatus: 'verified',
       asOf: '2026-09-02',
     }).line).toBe('IRS · Tax year 2026');
+  });
+
+  it('defaults display asOf to the runtime calendar date, not the publishing snapshot', () => {
+    const asOf = utcCalendarDate();
+    const withDefault = datasetSourceDisplay({
+      datasetId: 'eia-electricity',
+      observationPeriod: '2026-06',
+      sourceStatus: 'preliminary',
+    });
+    const explicit = datasetSourceDisplay({
+      datasetId: 'eia-electricity',
+      observationPeriod: '2026-06',
+      sourceStatus: 'preliminary',
+      asOf,
+    });
+    expect(withDefault.freshness).toBe(explicit.freshness);
+    expect(utcCalendarDate(new Date('2026-10-15T12:00:00.000Z'))).toBe('2026-10-15');
   });
 });
 

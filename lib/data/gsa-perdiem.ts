@@ -119,6 +119,72 @@ export type PerDiemDestination = z.infer<typeof perDiemDestinationSchema>;
 export type MieBreakdown = z.infer<typeof mieBreakdownSchema>;
 
 /**
+ * A fiscal-year per diem package, parallel to HUD FMR releases.
+ *
+ * `datasetPublishedAt` is when the rates file existed. `effectiveFrom` is
+ * when federal travelers must use it (1 October). Those can name different
+ * fiscal years at once: FY2027 can be on file in August without applying yet.
+ */
+export type PerDiemRelease = {
+  snapshotId: string;
+  fiscalYear: number;
+  announcementPublishedAt: string;
+  datasetPublishedAt: string;
+  effectiveFrom: string;
+  effectiveTo: string;
+  latestPublished: boolean;
+};
+
+/** Federal fiscal year in force on a UTC instant (1 October starts FY year+1). */
+export function currentFederalFiscalYear(now: Date = new Date()): number {
+  const year = now.getUTCFullYear();
+  return now.getUTCMonth() >= 9 ? year + 1 : year;
+}
+
+/**
+ * Fiscal years the GSA API may already carry.
+ *
+ * Next year's table is typically posted in August. Detection is load-bearing:
+ * trying that year first, then the year in force, is how an August ingest
+ * lands FY2027 without waiting for 1 October.
+ */
+export function gsaFiscalYearsToDiscover(now: Date = new Date()): number[] {
+  const inForce = currentFederalFiscalYear(now);
+  if (now.getUTCMonth() < 9) return [inForce + 1, inForce];
+  return [inForce];
+}
+
+export function findEffectivePerDiemRelease(releases: PerDiemRelease[], asOf: string): PerDiemRelease | undefined {
+  const eligible = releases.filter((release) => release.effectiveFrom <= asOf && asOf <= release.effectiveTo);
+  if (eligible.length === 0) return undefined;
+  eligible.sort((left, right) => right.fiscalYear - left.fiscalYear || right.datasetPublishedAt.localeCompare(left.datasetPublishedAt));
+  return eligible[0];
+}
+
+export function resolveEffectivePerDiemRelease(releases: PerDiemRelease[], asOf: string): PerDiemRelease {
+  const found = findEffectivePerDiemRelease(releases, asOf);
+  if (!found) throw new Error(`No GSA per diem release is effective on ${asOf}.`);
+  return found;
+}
+
+/** Newest fiscal year wins. A later refetch of an older year must not steal the flag. */
+export function markLatestPublishedPerDiemReleases(releases: PerDiemRelease[]): PerDiemRelease[] {
+  const newest = [...releases].sort(
+    (left, right) => right.fiscalYear - left.fiscalYear || right.datasetPublishedAt.localeCompare(left.datasetPublishedAt),
+  )[0];
+  if (!newest) return [];
+  return releases.map((release) => ({ ...release, latestPublished: release.snapshotId === newest.snapshotId }));
+}
+
+export function resolveLatestPublishedPerDiemRelease(releases: PerDiemRelease[]): PerDiemRelease {
+  const flagged = releases.find((release) => release.latestPublished);
+  if (flagged) return flagged;
+  const newest = markLatestPublishedPerDiemReleases(releases).find((release) => release.latestPublished);
+  if (!newest) throw new Error('GSA per diem catalog has no releases.');
+  return newest;
+}
+
+/**
  * GSA's API repeats the Washington DC metro rate under Maryland and Virginia
  * as well as DC, with the same city name and the same numbers. Those extra
  * rows are the same ceiling, not a different destination, so pickers and ZIP

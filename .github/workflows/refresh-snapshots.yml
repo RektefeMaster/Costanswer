@@ -1,9 +1,27 @@
 name: Refresh official snapshots
 
+# Calendar is advisory. Detection (ingest no-ops when nothing newer exists) is
+# load-bearing. A US holiday that moves PMMS earlier in the week is caught by
+# the Monday weekly job or by workflow_dispatch, not by pinning Thursday alone.
+
 on:
   schedule:
-    - cron: '0 15 * * 2'
+    - cron: '0 16 * * 1'   # Monday after EIA gasoline
+    - cron: '0 21 * * 4'   # Thursday evening after PMMS noon ET
+    - cron: '0 16 15 * *'  # mid-month BLS CPI / grocery / electricity
+    - cron: '0 15 * * 2'   # Tuesday safety net: every scheduled family (detection no-ops)
   workflow_dispatch:
+    inputs:
+      family:
+        description: Which ingest family to run
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - weekly
+          - monthly
+          - annual
 
 permissions:
   contents: write
@@ -20,30 +38,41 @@ jobs:
           node-version: '22'
           cache: npm
       - run: npm ci
+      - name: Choose ingest family
+        id: family
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          DISPATCH_FAMILY: ${{ github.event.inputs.family }}
+          CRON: ${{ github.event.schedule }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            echo "family=${DISPATCH_FAMILY:-all}" >> "$GITHUB_OUTPUT"
+          elif [ "$CRON" = "0 16 * * 1" ] || [ "$CRON" = "0 21 * * 4" ]; then
+            echo "family=weekly" >> "$GITHUB_OUTPUT"
+          elif [ "$CRON" = "0 16 15 * *" ]; then
+            echo "family=monthly" >> "$GITHUB_OUTPUT"
+          else
+            # Tuesday catch-all, unknown cron, or a runner that omits event.schedule.
+            # Detection is load-bearing: a no-op ingest is cheaper than a missed EPM/PMMS.
+            echo "family=all" >> "$GITHUB_OUTPUT"
+          fi
       - name: Fetch and promote official datasets
         env:
           EIA_API_KEY: ${{ secrets.EIA_API_KEY }}
-        run: npm run data:refresh
+        run: npx tsx scripts/refresh-snapshots.ts --family=${{ steps.family.outputs.family }}
       - run: npm run verify:data
       - uses: peter-evans/create-pull-request@v7
         with:
           branch: data/official-snapshots
           delete-branch: true
-          title: Update official EIA, BLS, and Freddie Mac snapshots
+          title: Update official snapshots (${{ steps.family.outputs.family }})
           commit-message: |
-            Update official EIA, BLS, and Freddie Mac snapshots
+            Update official snapshots (${{ steps.family.outputs.family }})
 
             Scheduled ingest promoted a newer observation period. User-facing
             pages still read checked-in snapshots, not live APIs.
           body: |
-            Official ingest found a newer EIA, BLS, or Freddie Mac observation period.
-
-            - Electricity: EIA monthly residential averages
-            - Gasoline: EIA weekly regular retail
-            - Groceries: BLS Average Price Data
-            - CPI-U: BLS all-items index
-            - Mortgage rates: Freddie Mac PMMS weekly averages
-            - Occupation wages: BLS OEWS state and national estimates
+            Official ingest found a newer observation period for the ${{ steps.family.outputs.family }} family.
 
             Review the diff, then merge so the next deploy ships the new snapshot.
           add-paths: |
@@ -53,3 +82,5 @@ jobs:
             data/bls/**
             data/bls-cpi/**
             data/freddie-mac/**
+            data/gsa-perdiem/**
+            lib/data/gsa-perdiem-catalog.ts

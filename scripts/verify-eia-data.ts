@@ -21,6 +21,7 @@ import {
   validateNaicInsuranceEnvelope,
   validateTaxYearSnapshot,
   validateUsdaFoodEnvelope,
+  verifyBundledSnapshots,
 } from '../lib/data/verify';
 import { DATASET_IDS, DATASET_POLICIES } from '../lib/data/dataset-policy';
 import { geographySnapshotSchema } from '../lib/data/geography';
@@ -269,4 +270,5 @@ const ids = [
   await verifyCmsMarketplace(),
   ...(await verifyLocationDatasets()),
 ];
+verifyBundledSnapshots();
 console.log(`Verified ${ids.join(', ')}: raw hash, normalized hash, semantics and promotion envelope passed.`);

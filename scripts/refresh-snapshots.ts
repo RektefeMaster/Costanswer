@@ -1,21 +1,15 @@
 import { spawn } from 'node:child_process';
 import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { refreshJobsFor, type RefreshFamily } from './refresh-jobs';
 
-type RefreshJob = {
-  name: string;
-  script: string;
-  requiredEnv?: string;
-};
-
-const jobs: RefreshJob[] = [
-  { name: 'EIA gasoline', script: 'scripts/ingest-eia-gasoline.ts' },
-  { name: 'BLS grocery', script: 'scripts/ingest-bls-grocery.ts' },
-  { name: 'BLS CPI-U', script: 'scripts/ingest-bls-cpi.ts' },
-  { name: 'BLS OEWS wages', script: 'scripts/ingest-bls-oews.ts' },
-  { name: 'Freddie Mac PMMS', script: 'scripts/ingest-freddie-mac-pmms.ts' },
-  { name: 'EIA electricity', script: 'scripts/ingest-eia-electricity.ts', requiredEnv: 'EIA_API_KEY' },
-  { name: 'Official location datasets', script: 'scripts/ingest-location-official.ts' },
-];
+function parseFamily(argv: string[]): RefreshFamily | 'all' {
+  const flag = argv.find((arg) => arg.startsWith('--family='));
+  if (!flag) return 'all';
+  const value = flag.slice('--family='.length);
+  if (value === 'weekly' || value === 'monthly' || value === 'annual' || value === 'all') return value;
+  throw new Error(`Unknown refresh family ${value}. Use weekly, monthly, annual, or all.`);
+}
 
 function runScript(script: string): Promise<number> {
   return new Promise((resolve, reject) => {
@@ -34,22 +28,29 @@ function envPresent(name: string): boolean {
   return Boolean(value && value.trim() && !value.startsWith('replace-with-'));
 }
 
-const failures: string[] = [];
-const skipped: string[] = [];
+export async function refreshOfficialSnapshots(family: RefreshFamily | 'all' = 'all'): Promise<void> {
+  const jobs = refreshJobsFor(family);
+  const failures: string[] = [];
+  const skipped: string[] = [];
 
-for (const job of jobs) {
-  if (job.requiredEnv && !envPresent(job.requiredEnv)) {
-    skipped.push(`${job.name} (missing ${job.requiredEnv})`);
-    console.log(`Skipping ${job.name}: ${job.requiredEnv} is not set.`);
-    continue;
+  for (const job of jobs) {
+    if (job.requiredEnv && !envPresent(job.requiredEnv)) {
+      skipped.push(`${job.name} (missing ${job.requiredEnv})`);
+      console.log(`Skipping ${job.name}: ${job.requiredEnv} is not set.`);
+      continue;
+    }
+    console.log(`\nRefreshing ${job.name} from ${path.basename(job.script)}...`);
+    const code = await runScript(job.script);
+    if (code !== 0) failures.push(`${job.name} exited ${code}`);
   }
-  console.log(`\nRefreshing ${job.name} from ${path.basename(job.script)}...`);
-  const code = await runScript(job.script);
-  if (code !== 0) failures.push(`${job.name} exited ${code}`);
+
+  if (skipped.length > 0) console.log(`\nSkipped: ${skipped.join('; ')}`);
+  if (failures.length > 0) {
+    throw new Error(`Snapshot refresh failed: ${failures.join('; ')}`);
+  }
+  console.log('\nOfficial snapshots are current or unchanged.');
 }
 
-if (skipped.length > 0) console.log(`\nSkipped: ${skipped.join('; ')}`);
-if (failures.length > 0) {
-  throw new Error(`Snapshot refresh failed: ${failures.join('; ')}`);
+if (import.meta.url === pathToFileURL(path.resolve(process.argv[1] ?? '')).href) {
+  await refreshOfficialSnapshots(parseFamily(process.argv.slice(2)));
 }
-console.log('\nOfficial snapshots are current or unchanged.');

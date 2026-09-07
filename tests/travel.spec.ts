@@ -1,11 +1,71 @@
 import { describe, expect, it } from 'vitest';
 import { calculatePerDiem } from '@/lib/calculations/travel/per-diem';
-import { gsaPerDiemSnapshot, getMieBreakdown, listPerDiemDestinations } from '@/lib/data/gsa-perdiem-snapshot';
-import { parseMieBreakdowns, formatPerDiemDestinationLabel } from '@/lib/data/gsa-perdiem';
+import { gsaPerDiemSnapshot, getMieBreakdown, listPerDiemDestinations, resolveGsaPerDiemSnapshot, gsaPerDiemReleases } from '@/lib/data/gsa-perdiem-snapshot';
+import { parseMieBreakdowns, formatPerDiemDestinationLabel, resolveEffectivePerDiemRelease, resolveLatestPublishedPerDiemRelease, findEffectivePerDiemRelease, gsaFiscalYearsToDiscover, markLatestPublishedPerDiemReleases, type PerDiemRelease } from '@/lib/data/gsa-perdiem';
 
 const gulfShores = 'AL:gulf-shores:baldwin';
 
 describe('GSA per diem dataset', () => {
+  it('keeps FY2026 effective before October 1 even if FY2027 is already published', () => {
+    const releases: PerDiemRelease[] = [
+      {
+        snapshotId: 'gsa-perdiem-conus-fy2026-v1',
+        fiscalYear: 2026,
+        announcementPublishedAt: '2025-08-13T00:00:00.000Z',
+        datasetPublishedAt: '2025-08-13T00:00:00.000Z',
+        effectiveFrom: '2025-10-01',
+        effectiveTo: '2026-09-30',
+        latestPublished: false,
+      },
+      {
+        snapshotId: 'gsa-perdiem-conus-fy2027-v1',
+        fiscalYear: 2027,
+        announcementPublishedAt: '2026-08-12T00:00:00.000Z',
+        datasetPublishedAt: '2026-08-12T00:00:00.000Z',
+        effectiveFrom: '2026-10-01',
+        effectiveTo: '2027-09-30',
+        latestPublished: true,
+      },
+    ];
+    expect(resolveLatestPublishedPerDiemRelease(releases).fiscalYear).toBe(2027);
+    expect(resolveEffectivePerDiemRelease(releases, '2026-09-30').fiscalYear).toBe(2026);
+    expect(resolveEffectivePerDiemRelease(releases, '2026-10-01').fiscalYear).toBe(2027);
+  });
+
+  it('resolves the shipped catalog to FY2026 through 30 September 2026 and has no FY2027 rates on file', () => {
+    expect(resolveGsaPerDiemSnapshot('2026-09-07').fiscalYear).toBe(2026);
+    expect(resolveGsaPerDiemSnapshot('2026-09-30').fiscalYear).toBe(2026);
+    expect(() => resolveGsaPerDiemSnapshot('2026-10-01')).toThrow(/No GSA per diem release is effective/);
+    expect(findEffectivePerDiemRelease(gsaPerDiemReleases, '2026-10-01')).toBeUndefined();
+  });
+
+  it('discovers next fiscal year before 1 October and ranks latestPublished by year, not fetch time', () => {
+    expect(gsaFiscalYearsToDiscover(new Date(Date.UTC(2026, 7, 12)))).toEqual([2027, 2026]);
+    expect(gsaFiscalYearsToDiscover(new Date(Date.UTC(2026, 8, 7)))).toEqual([2027, 2026]);
+    expect(gsaFiscalYearsToDiscover(new Date(Date.UTC(2026, 9, 1)))).toEqual([2027]);
+    const ranked = markLatestPublishedPerDiemReleases([
+      {
+        snapshotId: 'fy2027',
+        fiscalYear: 2027,
+        announcementPublishedAt: '2026-08-12T00:00:00.000Z',
+        datasetPublishedAt: '2026-08-12T00:00:00.000Z',
+        effectiveFrom: '2026-10-01',
+        effectiveTo: '2027-09-30',
+        latestPublished: false,
+      },
+      {
+        snapshotId: 'fy2026',
+        fiscalYear: 2026,
+        announcementPublishedAt: '2025-08-13T00:00:00.000Z',
+        datasetPublishedAt: '2026-09-07T12:00:00.000Z',
+        effectiveFrom: '2025-10-01',
+        effectiveTo: '2026-09-30',
+        latestPublished: true,
+      },
+    ]);
+    expect(ranked.find((row) => row.latestPublished)?.snapshotId).toBe('fy2027');
+  });
+
   it('covers CONUS only and gives every state a standard rate', () => {
     const destinations = listPerDiemDestinations();
     const states = new Set(destinations.map((row) => row.state));

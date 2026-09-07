@@ -21,6 +21,9 @@ import currentElectricityJson from '@/data/eia/current.json';
 import currentGasolineJson from '@/data/eia-gasoline/current.json';
 import currentGeographyJson from '@/data/geography/current.json';
 import currentPerDiemJson from '@/data/gsa-perdiem/current.json';
+import gsaReleasesJson from '@/data/gsa-perdiem/releases.json';
+import { gsaPerDiemSnapshotDocuments } from './gsa-perdiem-catalog';
+import { getGsaPerDiemSnapshotById, latestPublishedGsaPerDiemSnapshot, resolveGsaPerDiemSnapshot } from './gsa-perdiem-snapshot';
 import currentZctaJson from '@/data/zcta-county/current.json';
 import currentGroceryJson from '@/data/bls/current.json';
 import oewsIndexJson from '@/data/bls-oews/index.json';
@@ -136,7 +139,18 @@ export function validateOewsIndex(rawIndex: unknown, rawManifest: unknown): BlsO
   return index;
 }
 
-/** HUD publishes a release calendar alongside the snapshots it selects between. */
+const gsaReleasesSchema = z.object({
+  schemaVersion: z.literal('1.0.0'),
+  releases: z.array(z.object({
+    snapshotId: z.string(),
+    fiscalYear: z.number().int(),
+    announcementPublishedAt: z.string(),
+    datasetPublishedAt: z.string(),
+    effectiveFrom: z.string(),
+    effectiveTo: z.string(),
+    latestPublished: z.boolean(),
+  }).strict()).min(1),
+}).strict();
 const hudReleasesSchema = z.object({
   schemaVersion: z.literal('1.0.0'),
   releases: z.array(z.object({
@@ -232,7 +246,31 @@ export function verifyBundledSnapshots(): void {
   validateGeographyEnvelope(currentGeographyJson);
   validateGroceryEnvelope(currentGroceryJson);
   validateOewsIndex(oewsIndexJson, oewsManifestJson);
-  validateGsaPerDiemEnvelope(currentPerDiemJson);
+  const gsaCurrent = validateGsaPerDiemEnvelope(currentPerDiemJson);
+  for (const document of gsaPerDiemSnapshotDocuments) {
+    gsaPerDiemSnapshotSchema.parse(document);
+  }
+  const gsaReleases = gsaReleasesSchema.parse(gsaReleasesJson);
+  if (gsaReleases.releases.filter((release) => release.latestPublished).length !== 1) {
+    throw new Error('GSA releases.json must flag exactly one latestPublished row.');
+  }
+  const gsaReleaseIds = new Set(gsaReleases.releases.map((release) => release.snapshotId));
+  for (const document of gsaPerDiemSnapshotDocuments) {
+    if (!gsaReleaseIds.has(document.snapshotId)) {
+      throw new Error(`GSA catalog ships ${document.snapshotId} which releases.json does not name.`);
+    }
+  }
+  for (const release of gsaReleases.releases) {
+    const snapshot = getGsaPerDiemSnapshotById(release.snapshotId);
+    if (snapshot.fiscalYear !== release.fiscalYear) {
+      throw new Error(`GSA release ${release.snapshotId} fiscal year does not match its snapshot.`);
+    }
+  }
+  const gsaLatest = latestPublishedGsaPerDiemSnapshot();
+  if (gsaLatest.snapshotId !== gsaCurrent.snapshot.snapshotId) {
+    throw new Error('GSA current.json must point at the latest published per diem snapshot.');
+  }
+  resolveGsaPerDiemSnapshot();
   validateZctaCountyEnvelope(currentZctaJson);
   validateHudEnvelope(currentHudJson);
   validateIrsRetirementEnvelope(currentIrsRetirementJson);
