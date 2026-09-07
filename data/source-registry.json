@@ -173,7 +173,7 @@
       "license": "AGPL-3.0",
       "licenseVerifiedFrom": "GitHub licence API on the repository itself",
       "commercialUse": "not-permitted-for-copying",
-      "attribution": "n/a — nothing is copied",
+      "attribution": "n/a — used as an index; one Arizona candidate was confirmed against the enacted bill and does not ship from here",
       "trustLevel": "discovery",
       "status": "discovery-only",
       "usefulFields": [
@@ -184,10 +184,11 @@
       "validationSource": "the official document each reference points to",
       "limitations": [
         "AGPL-3.0 is copyleft: its parameter files and code are not copied into this project",
-        "Used strictly as a pointer to the primary document, which is then fetched and transcribed independently",
-        "A value taken from here without opening its reference would be unverified"
+        "Used as a pointer to the primary document, which is then fetched and transcribed independently",
+        "A 2026 Arizona $125 candidate was first seen here citing HB 4168; production cites Laws 2026, Ch. 140, not this repository",
+        "A value taken from here without opening its reference would be unverified — Maine's phase-out increment was $1,000 here and $500 on the state's own instructions"
       ],
-      "lastVerified": "2026-09-06"
+      "lastVerified": "2026-09-07"
     },
     {
       "id": "cwicr",

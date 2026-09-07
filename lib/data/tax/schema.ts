@@ -99,6 +99,20 @@ const exemptionCreditSchema = z.object({
   perFilerByFilingStatus: filingStatusNumberSchema,
   perDependent: z.number().finite().min(0),
   /**
+   * Per-dependent dollars looked up on AGI, instead of one flat `perDependent`.
+   *
+   * Colorado's child tax credit is the case: $1,200 / $600 / $200 by federal
+   * AGI band, and the bands are wider for joint filers. A single `perDependent`
+   * would give the wrong credit in every band but one. When this is present it
+   * is the per-dependent amount; `perDependent` itself is then zero.
+   */
+  perDependentAmountStepsByFilingStatus: z.object({
+    single: exemptionStepsSchema,
+    marriedFilingJointly: exemptionStepsSchema,
+    marriedFilingSeparately: exemptionStepsSchema,
+    headOfHousehold: exemptionStepsSchema,
+  }).strict().optional(),
+  /**
    * Part of the credit stated as a share of the federal standard deduction.
    *
    * Utah is the case this exists for: its taxpayer tax credit is six percent of
@@ -185,6 +199,77 @@ const exemptionCreditSchema = z.object({
     headOfHousehold: incomeRateStepsSchema,
   }).strict().optional(),
 }).strict();
+
+/**
+ * A credit that is a percentage of the tax itself, with a poverty floor that
+ * rises for each dependent.
+ *
+ * Pennsylvania Tax Forgiveness is the case. Connecticut Table E is also a
+ * percentage of the tax, but its staircase ignores dependents; PA Schedule SP
+ * raises the 100% ceiling by $9,500 for each dependent child, then drops 10%
+ * for each $250 over that ceiling. Reusing Table E would freeze the credit at
+ * the zero-dependent column.
+ */
+const taxForgivenessSchema = z.object({
+  /** Eligibility income at which 100% of the tax is forgiven, before dependents. */
+  fullCreditIncomeByFilingStatus: filingStatusNumberSchema,
+  /** Extra eligibility income each dependent child adds to that ceiling. */
+  perDependent: z.number().finite().min(0),
+  /** Dollars of eligibility income that cost one step of the credit. */
+  increment: z.number().finite().positive(),
+  /** Share of the tax that each whole increment stops forgiving. */
+  shareLostPerIncrement: z.number().finite().min(0).max(1),
+}).strict();
+
+/**
+ * A share of the tax looked up on income as a multiple of a family-size
+ * poverty guideline.
+ *
+ * Kentucky's family size tax credit is the case. Family size is filers plus
+ * qualifying children, capped at four, and the last two bands are not the same
+ * width as the ones before them (128–130% then 130–133%). A uniform 4% step
+ * would give the wrong share in that last stretch.
+ */
+const familySizeTaxCreditSchema = z.object({
+  povertyByFamilySize: z.object({
+    1: z.number().finite().positive(),
+    2: z.number().finite().positive(),
+    3: z.number().finite().positive(),
+    4: z.number().finite().positive(),
+  }).strict(),
+  filerCountByFilingStatus: filingStatusNumberSchema,
+  maxFamilySize: z.literal(4),
+  shareSteps: z.array(z.object({
+    /** Inclusive poverty multiple this step covers; null for the open top. */
+    notOverPovertyShare: z.number().finite().positive().nullable(),
+    rate: z.number().finite().min(0).max(1),
+  }).strict()).min(1),
+}).strict();
+
+/**
+ * What this state does about dependents, where the dependents input still
+ * changes nothing — or where a modelled figure rests on terms the reader
+ * should know.
+ *
+ * There are four of these and they are not the same fact. `none` is Idaho,
+ * whose $205 child tax credit sunset by its own terms — no figure exists to
+ * transcribe. `not-modelled` is a state that does give something through a
+ * mechanism this engine still has no input for; none of the wage-taxing
+ * states sit there today. `assumption` is a state whose figure is modelled
+ * but on terms the reader should know — Arizona's credit is $125 for a
+ * dependent under 17 and $25 for an older one, and there is no age input
+ * here. Absent is the fourth, and means nobody has checked yet.
+ *
+ * Saying "this snapshot has no figure" about Idaho invents a gap on our
+ * side; saying it about a state we have modelled hides the caveat; saying
+ * nothing at all about Arizona lets a reader with grown dependents take a
+ * number that is too low.
+ */
+const dependentAllowanceStatusSchema = z.object({
+  kind: z.enum(['none', 'not-modelled', 'assumption']),
+  reason: z.string().min(1),
+  verifiedAt: z.string().datetime(),
+}).strict().optional();
 
 /**
  * A standard deduction stated as a share of income, within bounds.
@@ -512,30 +597,10 @@ const flatStateSchema = stateMetadataSchema.extend({
   /** A dependent deduction, where the state states one separately from the filer's. */
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
-  /**
-   * What this state does about dependents, where the dependents input still
-   * changes nothing.
-   *
-   * There are four of these and they are not the same fact. `none` is Idaho,
-   * whose $205 child tax credit sunset by its own terms — no figure exists to
-   * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
-   * which do give something but through a mechanism this engine has no input
-   * for: an income-tested forgiveness schedule, a credit gated on a child's
-   * age. `assumption` is a state whose figure is modelled but on terms the
-   * reader should know — Arizona's credit is $125 for a dependent under 17 and
-   * $25 for an older one, and there is no age input here. Absent is the
-   * fourth, and means nobody has checked yet.
-   *
-   * Saying "this snapshot has no figure" about Idaho invents a gap on our
-   * side; saying it about Pennsylvania hides one; saying nothing at all about
-   * Arizona lets a reader with grown dependents take a number that is too low.
-   */
-  dependentAllowanceStatus: z.object({
-    kind: z.enum(['none', 'not-modelled', 'assumption']),
-    reason: z.string().min(1),
-    verifiedAt: z.string().datetime(),
-  }).strict().optional(),
+  dependentAllowanceStatus: dependentAllowanceStatusSchema,
   exemptionCredit: exemptionCreditSchema.optional(),
+  taxForgiveness: taxForgivenessSchema.optional(),
+  familySizeTaxCredit: familySizeTaxCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
   federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),
   localAddOn: localAddOnSchema.optional(),
@@ -550,29 +615,7 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   exemptionByFilingStatus: filingStatusNumberSchema,
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
-  /**
-   * What this state does about dependents, where the dependents input still
-   * changes nothing.
-   *
-   * There are four of these and they are not the same fact. `none` is Idaho,
-   * whose $205 child tax credit sunset by its own terms — no figure exists to
-   * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
-   * which do give something but through a mechanism this engine has no input
-   * for: an income-tested forgiveness schedule, a credit gated on a child's
-   * age. `assumption` is a state whose figure is modelled but on terms the
-   * reader should know — Arizona's credit is $125 for a dependent under 17 and
-   * $25 for an older one, and there is no age input here. Absent is the
-   * fourth, and means nobody has checked yet.
-   *
-   * Saying "this snapshot has no figure" about Idaho invents a gap on our
-   * side; saying it about Pennsylvania hides one; saying nothing at all about
-   * Arizona lets a reader with grown dependents take a number that is too low.
-   */
-  dependentAllowanceStatus: z.object({
-    kind: z.enum(['none', 'not-modelled', 'assumption']),
-    reason: z.string().min(1),
-    verifiedAt: z.string().datetime(),
-  }).strict().optional(),
+  dependentAllowanceStatus: dependentAllowanceStatusSchema,
   /**
    * Cap on Social Security + Medicare withheld, deducted from income.
    *
@@ -581,6 +624,8 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
    */
   ficaDeductionCap: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
+  taxForgiveness: taxForgivenessSchema.optional(),
+  familySizeTaxCredit: familySizeTaxCreditSchema.optional(),
   localAddOn: localAddOnSchema.optional(),
   rate: z.number().finite().min(0).max(1),
   surtaxRate: z.number().finite().min(0).max(1),
@@ -691,30 +736,10 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   alternativeLowIncomeSchedule: alternativeLowIncomeScheduleSchema.optional(),
   perDependentExemption: z.number().finite().min(0).optional(),
   steppedDependentExemption: steppedDependentExemptionSchema.optional(),
-  /**
-   * What this state does about dependents, where the dependents input still
-   * changes nothing.
-   *
-   * There are four of these and they are not the same fact. `none` is Idaho,
-   * whose $205 child tax credit sunset by its own terms — no figure exists to
-   * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
-   * which do give something but through a mechanism this engine has no input
-   * for: an income-tested forgiveness schedule, a credit gated on a child's
-   * age. `assumption` is a state whose figure is modelled but on terms the
-   * reader should know — Arizona's credit is $125 for a dependent under 17 and
-   * $25 for an older one, and there is no age input here. Absent is the
-   * fourth, and means nobody has checked yet.
-   *
-   * Saying "this snapshot has no figure" about Idaho invents a gap on our
-   * side; saying it about Pennsylvania hides one; saying nothing at all about
-   * Arizona lets a reader with grown dependents take a number that is too low.
-   */
-  dependentAllowanceStatus: z.object({
-    kind: z.enum(['none', 'not-modelled', 'assumption']),
-    reason: z.string().min(1),
-    verifiedAt: z.string().datetime(),
-  }).strict().optional(),
+  dependentAllowanceStatus: dependentAllowanceStatusSchema,
   exemptionCredit: exemptionCreditSchema.optional(),
+  taxForgiveness: taxForgivenessSchema.optional(),
+  familySizeTaxCredit: familySizeTaxCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
   federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),
   localAddOn: localAddOnSchema.optional(),

@@ -167,6 +167,25 @@ describe('state income tax', () => {
     expect(calculateStateIncomeTax({ taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 0 }).tax).toBe(0);
   });
 
+  it('forgives Pennsylvania tax on the Schedule SP staircase, including the last 10% column', () => {
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 6_500,
+    }).tax).toBe(0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 16_000, dependents: 1,
+    }).tax).toBe(0);
+    // Table 1, 10% column: $8,750 unmarried, $18,250 with one child.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 8_750,
+    }).tax).toBeCloseTo(8_750 * 0.0307 * 0.9, 10);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 8_751,
+    }).tax).toBeCloseTo(8_751 * 0.0307, 10);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 18_250, dependents: 1,
+    }).tax).toBeCloseTo(18_250 * 0.0307 * 0.9, 10);
+  });
+
   it('applies the 2026 Massachusetts 5% wage tax after the exemption and FICA cap, and the 4% surtax over $1,107,750', () => {
     const snapshot = getTaxYearSnapshot(2026);
     const fica80k = calculateFica({
@@ -332,6 +351,47 @@ describe('state income tax', () => {
       taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 300_000, federalStandardDeduction: 16_100,
     });
     expect(justUnder.tax).toBeCloseTo((300_000 - 16_100) * 0.044, 2);
+  });
+
+  it('looks Colorado’s child tax credit up on federal AGI, not on Colorado taxable income', () => {
+    // $40,000 of wages is in the $600 band. Federal taxable income is $23,900,
+    // which would have been the $1,200 band and taken the tax to zero.
+    const mid = calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 40_000,
+      federalStandardDeduction: 16_100, dependents: 1,
+    });
+    expect(mid.tax).toBeCloseTo((40_000 - 16_100) * 0.044 - 600, 10);
+    const low = calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 21_250,
+      federalStandardDeduction: 16_100, dependents: 1,
+    });
+    expect(low.tax).toBe(0);
+  });
+
+  it('credits Kentucky tax on the family-size poverty staircase, including the last 10% band', () => {
+    const before = (wages: number) => Math.max(0, wages - 3_360) * 0.035;
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'KY', filingStatus: 'single', taxableIncome: 15_960,
+    }).tax).toBe(0);
+    // $21,000 / $15,960 is 131.6% — 10% credit. A uniform 4% step would be 20%.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'KY', filingStatus: 'single', taxableIncome: 21_000,
+    }).tax).toBeCloseTo(before(21_000) * 0.90, 10);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'KY', filingStatus: 'single', taxableIncome: 25_000, dependents: 2,
+    }).tax).toBe(0);
+  });
+
+  it('phases the District child tax credit out of the total, not off each child', () => {
+    const one = calculateStateIncomeTax({
+      taxYear: 2026, state: 'DC', filingStatus: 'single', taxableIncome: 75_000, dependents: 1,
+    });
+    const three = calculateStateIncomeTax({
+      taxYear: 2026, state: 'DC', filingStatus: 'single', taxableIncome: 75_000, dependents: 3,
+    });
+    // $75,000 is $20,000 over $55,000 → $1,000 off the credit as a whole.
+    expect(one.tax).toBeCloseTo(3_500, 10);
+    expect(three.tax).toBeCloseTo(1_500, 10);
   });
 
   it('gives Mississippi its zero band and charges nothing at the state filing threshold', () => {

@@ -248,7 +248,12 @@ function computeSupportedStateTax(
     }
   }
 
-  const exemptionCredit = exemptionCreditFor(policy, input, taxBeforeCredits);
+  const exemptionCredit = Math.min(
+    taxBeforeCredits,
+    exemptionCreditFor(policy, input, taxBeforeCredits)
+      + taxForgivenessCredit(policy, input, taxBeforeCredits)
+      + familySizeTaxCredit(policy, input, taxBeforeCredits),
+  );
   return {
     // A non-refundable credit cannot take the liability below zero. Letting it
     // would turn an exemption into a payment the state does not make.
@@ -497,8 +502,18 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
     federalShare = spec.rateOfFederalStandardDeduction * input.federalStandardDeduction;
   }
 
+  const dependents = input.dependents ?? 0;
+  /*
+   * Colorado's child tax credit is looked up on federal AGI, which for a
+   * wage-only filer is this input, not the federal-taxable-income figure the
+   * 4.4% is applied to. Using the smaller number would put a $40,000 wage
+   * earner in the $1,200 band instead of the $600 one.
+   */
+  const perDependent = spec.perDependentAmountStepsByFilingStatus
+    ? amountAtIncomeStep(spec.perDependentAmountStepsByFilingStatus[input.filingStatus], input.taxableIncome)
+    : spec.perDependent;
   const full = spec.perFilerByFilingStatus[input.filingStatus]
-    + spec.perDependent * (input.dependents ?? 0)
+    + perDependent * dependents
     + federalShare;
 
   if (spec.steppedPhaseOut) {
@@ -507,7 +522,6 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
     // Whole increments, rounded up: a dollar over the threshold costs a full step.
     const increments = Math.ceil(over / stepped.incrementByFilingStatus[input.filingStatus]);
     const reduction = increments * stepped.reductionPerIncrement;
-    const dependents = input.dependents ?? 0;
     if (stepped.appliesTo === 'total') {
       // Maine: one reduction off the whole credit, floored once.
       return Math.min(Math.max(0, full - reduction), taxBeforeCredits);
@@ -519,7 +533,7 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
      */
     const filerPart = Math.max(0, spec.perFilerByFilingStatus[input.filingStatus] + federalShare
       - reduction * (stepped.filerExemptionCountByFilingStatus?.[input.filingStatus] ?? 1));
-    const dependentPart = Math.max(0, spec.perDependent * dependents - reduction * dependents);
+    const dependentPart = Math.max(0, perDependent * dependents - reduction * dependents);
     return Math.min(filerPart + dependentPart, taxBeforeCredits);
   }
 
@@ -540,6 +554,58 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
   return Math.min(reduced, taxBeforeCredits);
 }
 
+/**
+ * Pennsylvania Tax Forgiveness: a share of the tax, with a poverty floor that
+ * rises $9,500 per dependent child, then drops 10% for each $250 over it.
+ *
+ * Eligibility income for a wage-only filer is this input. Nontaxable Schedule
+ * SP income is omitted, which is the assumption the row states.
+ */
+function taxForgivenessCredit(policy: SupportedPolicy, input: StateTaxInput, taxBeforeCredits: number): number {
+  const spec = 'taxForgiveness' in policy ? policy.taxForgiveness : undefined;
+  if (!spec) return 0;
+  const poverty = spec.fullCreditIncomeByFilingStatus[input.filingStatus]
+    + spec.perDependent * (input.dependents ?? 0);
+  if (input.taxableIncome <= poverty) return taxBeforeCredits;
+  const increments = Math.ceil((input.taxableIncome - poverty) / spec.increment);
+  const share = Math.max(0, 1 - increments * spec.shareLostPerIncrement);
+  return taxBeforeCredits * share;
+}
+
+type FamilySize = 1 | 2 | 3 | 4;
+
+function isFamilySize(value: number): value is FamilySize {
+  return value === 1 || value === 2 || value === 3 || value === 4;
+}
+
+/**
+ * Kentucky's family size tax credit: a share of the tax looked up on modified
+ * gross income as a multiple of the HHS poverty guideline for that family size.
+ *
+ * The last two bands are 128–130% then 130–133%, not another pair of 4%
+ * steps. A uniform staircase would give 20% of the tax in the 10% band.
+ */
+function familySizeTaxCredit(policy: SupportedPolicy, input: StateTaxInput, taxBeforeCredits: number): number {
+  const spec = 'familySizeTaxCredit' in policy ? policy.familySizeTaxCredit : undefined;
+  if (!spec) return 0;
+  const size = Math.min(
+    spec.maxFamilySize,
+    spec.filerCountByFilingStatus[input.filingStatus] + (input.dependents ?? 0),
+  );
+  if (!isFamilySize(size)) {
+    throw new Error(`Family-size credit produced a family of ${size}, which has no poverty figure.`);
+  }
+  const poverty = spec.povertyByFamilySize[size];
+  const povertyShare = input.taxableIncome / poverty;
+  const step = spec.shareSteps.find(
+    (candidate) => candidate.notOverPovertyShare === null || povertyShare <= candidate.notOverPovertyShare,
+  );
+  if (!step) {
+    throw new Error('Poverty-share staircase has no open top step, so high incomes fall through it.');
+  }
+  return taxBeforeCredits * step.rate;
+}
+
 function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefined {
   const spec = 'localAddOn' in policy ? policy.localAddOn : undefined;
   if (!spec) return undefined;
@@ -555,18 +621,19 @@ function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefine
 /**
  * Whether a dependent count changes this state's answer at all.
  *
- * Ten of the forty-two wage-taxing states carry no per-dependent amount in this
- * snapshot, so the dependents field is inert for them. Six of those give
- * nothing per dependent at all; the other four give something this engine has
- * no input for, such as a credit gated on a child's age. Which is which is
- * recorded per state, not inferred here. Either way the reader
- * must not type a number into a box and watch nothing happen with no
- * explanation, which is exactly what happened before this existed.
+ * Six of the forty-two wage-taxing states carry no per-dependent amount in this
+ * snapshot, so the dependents field is inert for them. All six give nothing
+ * per dependent at all — a credit that sunset, exemptions that were repealed,
+ * a structure that never had one. Which is which is recorded per state, not
+ * inferred here. The reader must not type a number into a box and watch
+ * nothing happen with no explanation, which is exactly what happened before
+ * this existed.
  *
  * Every channel the engine actually reads has to be checked here, or the hint
  * will lie in the other direction: a per-dependent exemption, a stepped
- * exemption whose count includes dependents, and an exemption credit with a
- * per-dependent amount.
+ * exemption whose count includes dependents, an exemption credit with a
+ * per-dependent amount, a poverty-floor credit that rises with dependents, or
+ * a family-size share of the tax.
  */
 export function stateUsesDependents(policy: StateTaxPolicy): boolean {
   if (policy.status !== 'supported' || policy.kind === 'none') return false;
@@ -576,9 +643,15 @@ export function stateUsesDependents(policy: StateTaxPolicy): boolean {
     if (stepped && stepped.includeDependents !== false
       && stepped.amountStepsByFilingStatus.single.some((step) => step.amount > 0)) return true;
   }
-  if ('exemptionCredit' in policy && policy.exemptionCredit && policy.exemptionCredit.perDependent > 0) return true;
+  if ('exemptionCredit' in policy && policy.exemptionCredit) {
+    if (policy.exemptionCredit.perDependent > 0) return true;
+    if (policy.exemptionCredit.perDependentAmountStepsByFilingStatus
+      ?.single.some((step) => step.amount > 0)) return true;
+  }
   if ('steppedDependentExemption' in policy && policy.steppedDependentExemption
     && policy.steppedDependentExemption.amountStepsByFilingStatus.single.some((step) => step.amount > 0)) return true;
+  if ('taxForgiveness' in policy && policy.taxForgiveness) return true;
+  if ('familySizeTaxCredit' in policy && policy.familySizeTaxCredit) return true;
   return false;
 }
 

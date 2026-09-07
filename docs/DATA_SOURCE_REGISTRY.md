@@ -41,7 +41,7 @@ we do not re-research from scratch what good open infrastructure already indexes
 | BEA RPP | Geographic price adjustment | State · metro | 2024, annual | Public domain | Yes | primary | Salary, Cost of living |
 | IRS Rev. Proc. / Pub 15 | Federal tax | National | TY2026 | Public domain | Yes | primary | Tax |
 | State DOR publications | State tax | 51 jurisdictions | TY2026 where published | State works | Yes | primary | Tax, Salary |
-| **PolicyEngine-US** | **Finding the official state-tax document; one figure taken directly** | 51 jurisdictions | Continuous | **AGPL-3.0** | **Index yes; one value, labelled** | **discovery + secondary** | Tax (as an index) |
+| **PolicyEngine-US** | **Finding the official state-tax document** | 51 jurisdictions | Continuous | **AGPL-3.0** | **Index only** | **discovery** | Tax (as an index) |
 | **CWICR** | — | **No US data** | 2026-08 | **CC BY-NC 4.0 (data)** | **No** | **rejected** | — |
 | FEMA equipment rates | Equipment hourly cost | National | ~Annual | Public domain | Yes | primary | Job Cost (equipment) |
 | Davis-Bacon determinations | Trade wages by county | County × trade | Continuous | Public domain | Yes | primary | Job Cost (labour) |
@@ -105,21 +105,19 @@ instructions settled it. Nothing here is a criticism of the repository, which
 is maintained openly and covers ground no official source consolidates; it is
 the reason the pointer is what gets taken and not the number.
 
-#### One value has been taken directly, and it is labelled
+#### A candidate was taken, then replaced by the statute it cited
 
-Arizona's dependent tax credit is $125 for 2026 under HB 4168. That figure was
-read from the repository's parameter set citing the bill, not from a Department
-of Revenue form this project has opened, because the Department's own site was
-not reachable at verification. It ships, and it carries the
-`secondary-source` basis on its golden vectors so that the difference from a
-transcribed figure is visible in the gate rather than lost.
+Arizona's 2026 dependent tax credit is $125 under HB 4168 / Laws 2026, Ch. 140.
+That figure was first read from the repository's parameter set citing the bill,
+because the Department of Revenue's own site was not reachable at the first
+pass. Production now cites the enacted session law itself — the same bill the
+repository pointed at — and the golden vectors for that credit are
+`worked-from-schedule` against that law, not `secondary-source`.
 
-The AGPL does not reach it. What was taken is a dollar amount fixed by Arizona
-statute — a fact about the law, not the repository's expression of it — and no
-file, structure or wording came with it. The registry row says "one value,
-labelled" rather than "nothing copied" because the second is no longer true and
-a registry that overstates its own cleanliness is worth less than one that does
-not.
+The AGPL never reached it. What was in question was a dollar amount fixed by
+Arizona statute. The registry row says "index only" because nothing from the
+repository ships; the episode is recorded so a later reader does not think the
+pointer was unused, or that the number is still second-hand.
 
 ### CWICR is rejected twice over
 
@@ -152,9 +150,11 @@ may also be read for structure. None of the numbers are used.
 
 Every rate, deduction, exemption, credit and recapture that ships in
 `data/tax/2026.json` was transcribed from a state DOR publication, statute, or
-IRS procedure. PolicyEngine-US was used as a document index. No PolicyEngine
-parameter file, no GitHub dataset, and no third-party projection was copied into
-the snapshot. CWICR remains rejected for both licence and geography.
+IRS procedure. PolicyEngine-US was used as a document index. One candidate
+(Arizona's 2026 $125 dependent credit) was first seen there and then replaced
+by the enacted session law it cited. No PolicyEngine parameter file, no GitHub
+dataset, and no third-party projection ships. CWICR remains rejected for both
+licence and geography.
 
 That same registry is the handoff to the Job Cost Engine. Construction sources
 already recorded there (BLS, BEA, Census, FEMA, Davis-Bacon, DOT bid tabs,

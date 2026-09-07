@@ -156,6 +156,18 @@ Reusable shapes added during P2 (no state-named hacks):
 Earlier P2 shapes retained: `additionalTax.thresholdByFilingStatus`,
 `TaxBracket.baseTax`, `steppedPersonalExemption`, `personalExemptionPhaseOut`.
 
+Follow-on shapes after close, forced by the dependents pass:
+
+| Shape | Forced by | Why a new shape |
+| --- | --- | --- |
+| `steppedDependentExemption` | AL, NC | Personal exemption is flat; the dependent amount is its own AGI chart |
+| `steppedPhaseOut.appliesTo` | ME vs CA | Maine takes $20 off the credit once; California takes $6 off every exemption |
+| `proportionalPhaseOut` | AZ | 5% of the credit per $1,000, so one dependent and three reach zero at the same income |
+| `perDependentAmountStepsByFilingStatus` | CO | Child tax credit is $1,200 / $600 / $200 by AGI, wider for joint filers |
+| `taxForgiveness` | PA | Share of the tax; poverty floor rises $9,500 per dependent child |
+| `familySizeTaxCredit` | KY | Share of the tax on FPL for family size; last two bands are not 4% |
+| `dependentAllowanceStatus` | ID vs AZ | “The state gives nothing” and “the figure rests on an assumption” are not the same sentence |
+
 Fail-closed: missing `federalIncomeTax` (AL/MO/OR), `employeeFica` (MA), or
 `federalStandardDeduction` (federal-taxable-income states) throws. Unknown is
 not zero.
@@ -190,12 +202,20 @@ Real remaining gaps, not polish items:
    (`scheduleTaxYear` 2025).
 7. **CT** 2025 TCS tables; Table B published examples round to the dollar,
    engine does not.
-8. **CA, MT and ND** lack a published-table golden vector.
+8. **MT and ND** lack a published-table golden vector. California now has
+    published-table rows from the 2025 Form 540 tax table (printed tax less the
+    printed exemption credit).
 9. Itemized deductions, most credits, capital gains, AMT, and age/blindness
-    extras are out of scope. Dependent exemptions apply where the snapshot
-    carries a per-person amount (including IL, MI, NM, VT, RI, OH, MD).
-    Alabama’s AGI-stepped dependent exemption, Maine’s $300 dependent credit,
-    and South Carolina’s 2026 dependent exemption after Act 110 are not modeled.
+    extras are out of scope. Dependent exemptions and credits apply where the
+    snapshot carries them, including Alabama’s AGI chart, California’s
+    exemption credits, Maine’s $305 credit, South Carolina’s $4,930, Arizona’s
+    $125 under-17 credit, North Carolina’s child deduction, Pennsylvania Tax
+    Forgiveness, Colorado’s under-six child tax credit, the District’s $1,000
+    child tax credit, Kentucky’s family size tax credit, and the per-person
+    amounts in IL, MI, NM, VT, RI, OH, MD and others. Where a modelled figure
+    rests on an assumption (age, qualifying-child status, eligibility income
+    equal to wages, refundability capped at tax), the row states which way
+    the estimate is wrong.
 10. **MA** 2026 Form 1 was not published; the exemption and $2,000 FICA cap are
     the current Mass.gov / 2025 Form 1 amounts, declared in the row notes.
 11. **NY** household credit (below $28,000 / $32,000 FAGI) is not modeled.
@@ -218,5 +238,6 @@ twenty-one income-tax states still rest on 2025 official annual forms, and
 local taxes remain omitted by design. Those are stated limitations, not silent
 errors.
 
-P2 is closed. Further state-tax work waits on newly published 2026 annual forms
-that replace a declared 2025 row, or a local-tax engine keyed on city/ZIP.
+P2 is closed. Coverage work does not reopen. Remaining state-tax work is
+either a newly published 2026 annual form that replaces a declared 2025 row,
+or a local-tax engine keyed on city/ZIP.

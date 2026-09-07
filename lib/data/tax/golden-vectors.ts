@@ -228,6 +228,26 @@ const PA_SOURCE = {
   sourceUrl: 'https://www.legis.state.pa.us/WU01/LI/LI/US/HTM/2003/0/0046..HTM',
   verifiedAt: '2026-09-03T00:00:00.000Z',
 };
+const PA_FORGIVENESS_SOURCE = {
+  sourceName: '2025 PA-40 Schedule SP, Eligibility Income Tables 1 and 2',
+  sourceUrl: 'https://www.pa.gov/content/dam/copapwp-pagov/en/revenue/documents/formsandpublications/formsforindividuals/pit/documents/2025/2025_pa-40sp.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const CO_CTC_SOURCE = {
+  sourceName: 'Colorado DOR, Income Tax Topics: Child Tax Credit (January 2026); CRS 39-22-129',
+  sourceUrl: 'https://tax.colorado.gov/sites/tax/files/documents/ITT_Child_Tax_Credit_Jan_2026.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const DC_CTC_SOURCE = {
+  sourceName: 'D.C. Code § 47-1806.17 as amended by temporary Law 26-89, child tax credit for tax year 2026',
+  sourceUrl: 'https://code.dccouncil.gov/us/dc/council/code/sections/47-1806.17',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const KY_FAMILY_SIZE_SOURCE = {
+  sourceName: 'KRS 141.066 family size tax credit, with the 2026 HHS poverty guidelines (FR 2026-00755)',
+  sourceUrl: 'https://apps.legislature.ky.gov/law/statutes/statute.aspx?id=49188',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const MA_SOURCE = {
   sourceName: 'Massachusetts DOR, Massachusetts Tax Rates (updated December 30, 2025)',
   sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates',
@@ -244,8 +264,8 @@ const ME_DEPENDENT_SOURCE = {
   verifiedAt: '2026-09-07T00:00:00.000Z',
 };
 const AZ_DEPENDENT_SOURCE = {
-  sourceName: 'Arizona dependent tax credit, A.R.S. 43-1073.01(B) as amended by HB 4168 (2026); figures read from the PolicyEngine-US parameter set, not from the Department of Revenue',
-  sourceUrl: 'https://www.azleg.gov/viewdocument/?docName=https://www.azleg.gov/ars/43/01073-01.htm',
+  sourceName: 'A.R.S. 43-1073.01 as amended by Laws 2026, Ch. 140 (HB 4168): $125 under 17, $25 otherwise, 5% per $1,000 of federal AGI over $200,000 / $400,000',
+  sourceUrl: 'https://www.azleg.gov/legtext/57leg/2r/laws/0140.pdf',
   verifiedAt: '2026-09-07T00:00:00.000Z',
 };
 const CA_CREDIT_SOURCE = {
@@ -302,6 +322,16 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('CO', 'single', 21_250, 227, 'published-table', CO_SOURCE, { federalStandardDeduction: FED_2026.single }),
   vector('CO', 'marriedFilingJointly', 100_000, 2_983.20, 'worked-from-schedule', CO_SOURCE, { federalStandardDeduction: FED_2026.marriedFilingJointly }),
   vector('CO', 'single', 350_000, 14_872, 'worked-from-schedule', CO_SOURCE, { federalStandardDeduction: FED_2026.single }),
+  /*
+   * The credit is looked up on federal AGI, not on Colorado taxable income.
+   * $21,250 of wages is in the $1,200 band and wipes the $227 of tax; $40,000
+   * is in the $600 band. Looking the second up on federal taxable income
+   * ($23,900) would have left it in the $1,200 band and taken tax to zero.
+   */
+  vector('CO', 'single', 21_250, 0, 'published-threshold', CO_CTC_SOURCE, { federalStandardDeduction: FED_2026.single, dependents: 1 }),
+  vector('CO', 'single', 40_000, 451.60, 'worked-from-schedule', CO_CTC_SOURCE, { federalStandardDeduction: FED_2026.single, dependents: 1 }),
+  vector('CO', 'single', 60_000, 1_731.60, 'worked-from-schedule', CO_CTC_SOURCE, { federalStandardDeduction: FED_2026.single, dependents: 1 }),
+  vector('CO', 'marriedFilingJointly', 50_000, 0, 'worked-from-schedule', CO_CTC_SOURCE, { federalStandardDeduction: FED_2026.marriedFilingJointly, dependents: 2 }),
 
   /*
    * Mississippi's own filing thresholds are the check. The department says a
@@ -337,6 +367,17 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('KY', 'marriedFilingJointly', 150_000, 5_132.40, 'worked-from-schedule', KY_SOURCE),
   // Below the deduction Kentucky owes nothing rather than a negative figure.
   vector('KY', 'single', 3_360, 0, 'worked-from-schedule', KY_SOURCE),
+  /*
+   * Family size tax credit. $15,960 is the 2026 FPL for a family of one, so
+   * 100% of the tax is credited. $21,000 sits in the last published band
+   * (130–133% → 10%); a uniform 4% step would have given 20% there. Two
+   * dependents at $25,000 make a family of three, at or below $27,320.
+   */
+  vector('KY', 'single', 15_960, 0, 'published-threshold', KY_FAMILY_SIZE_SOURCE),
+  vector('KY', 'single', 20_000, 407.68, 'worked-from-schedule', KY_FAMILY_SIZE_SOURCE),
+  vector('KY', 'single', 21_000, 555.66, 'worked-from-schedule', KY_FAMILY_SIZE_SOURCE),
+  vector('KY', 'single', 25_000, 0, 'published-threshold', KY_FAMILY_SIZE_SOURCE, { dependents: 2 }),
+  vector('KY', 'single', 30_000, 279.72, 'worked-from-schedule', KY_FAMILY_SIZE_SOURCE, { dependents: 2 }),
 
   /*
    * Maine prints the cumulative tax at each bracket edge — $1,589 and $4,117
@@ -484,6 +525,14 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('DC', 'marriedFilingJointly', 70_000, 2_200, 'published-table', DC_SOURCE),
   vector('DC', 'single', 75_000, 3_500, 'published-table', DC_SOURCE),
   vector('DC', 'single', 265_000, 19_650, 'published-table', DC_SOURCE),
+  /*
+   * The $1,000 credit is reduced once, not once per child. At $75,000 AGI
+   * three children still keep $2,000 of credit; California's each-exemption
+   * staircase would have wiped all three.
+   */
+  vector('DC', 'single', 40_000, 300, 'worked-from-schedule', DC_CTC_SOURCE, { dependents: 1 }),
+  vector('DC', 'single', 56_000, 1_315, 'worked-from-schedule', DC_CTC_SOURCE, { dependents: 1 }),
+  vector('DC', 'single', 75_000, 1_500, 'worked-from-schedule', DC_CTC_SOURCE, { dependents: 3 }),
 
   vector('HI', 'single', 33_144, 859, 'published-table', HI_SOURCE),
   vector('HI', 'single', 134_144, 8_391, 'published-table', HI_SOURCE),
@@ -560,6 +609,17 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('PA', 'single', 45_000, 1_381.50, 'worked-from-schedule', PA_SOURCE),
   vector('PA', 'single', 90_000, 2_763.00, 'worked-from-schedule', PA_SOURCE),
   vector('PA', 'marriedFilingJointly', 150_000, 4_605.00, 'worked-from-schedule', PA_SOURCE),
+  /*
+   * 2025 PA-40 SP Table 1: 100% forgiveness at $6,500 unmarried, $16,000 with
+   * one child; 10% at $8,750 and $18,250. Table 2: 100% at $32,000 married
+   * with two children. The $45,000 rows above are already past the last step.
+   */
+  vector('PA', 'single', 6_500, 0, 'published-threshold', PA_FORGIVENESS_SOURCE),
+  vector('PA', 'single', 8_750, 241.7625, 'worked-from-schedule', PA_FORGIVENESS_SOURCE),
+  vector('PA', 'single', 16_000, 0, 'published-threshold', PA_FORGIVENESS_SOURCE, { dependents: 1 }),
+  vector('PA', 'single', 16_250, 49.8875, 'worked-from-schedule', PA_FORGIVENESS_SOURCE, { dependents: 1 }),
+  vector('PA', 'single', 18_250, 504.2475, 'worked-from-schedule', PA_FORGIVENESS_SOURCE, { dependents: 1 }),
+  vector('PA', 'marriedFilingJointly', 32_000, 0, 'published-threshold', PA_FORGIVENESS_SOURCE, { dependents: 2 }),
 
   vector('MA', 'single', 60_000, 2_680, 'worked-from-schedule', MA_SOURCE, { employeeFica: 4_590 }),
   vector('MA', 'marriedFilingJointly', 100_000, 4_460, 'worked-from-schedule', MA_SOURCE, { employeeFica: 7_650 }),
@@ -783,15 +843,14 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    * $125 or $375. The last two rows are that claim — two dependents and three
    * both come out at nothing above the ceiling.
    *
-   * Labelled secondary-source: the $125 for 2026 comes from the PolicyEngine
-   * parameter set citing HB 4168, not from a Department of Revenue form this
-   * project has read. It also assumes the dependents are under 17; Arizona
-   * gives $25 rather than $125 for older ones, and there is no age input here.
+   * Arithmetic from the enacted statute, not a printed table. The $125 is the
+   * under-17 amount in Laws 2026, Ch. 140; Arizona pays $25 for older
+   * dependents and there is no age input here.
    */
-  vector('AZ', 'single', 60_000, 856.25, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
-  vector('AZ', 'single', 205_000, 4_543.75, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
-  vector('AZ', 'single', 220_000, 5_106.25, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
-  vector('AZ', 'single', 230_000, 5_356.25, 'secondary-source', AZ_DEPENDENT_SOURCE, { dependents: 3 }),
+  vector('AZ', 'single', 60_000, 856.25, 'worked-from-schedule', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('AZ', 'single', 205_000, 4_543.75, 'worked-from-schedule', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('AZ', 'single', 220_000, 5_106.25, 'worked-from-schedule', AZ_DEPENDENT_SOURCE, { dependents: 2 }),
+  vector('AZ', 'single', 230_000, 5_356.25, 'worked-from-schedule', AZ_DEPENDENT_SOURCE, { dependents: 3 }),
 
   /*
    * Connecticut TCS Table B example: $13,000 of taxable income is $335. At

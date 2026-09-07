@@ -48,6 +48,40 @@ function filingAmounts(single: number, joint: number, separate: number, head: nu
   };
 }
 
+/** Colorado child tax credit, 2025 DR 0104CN / ITT Child Tax Credit January 2026. Single, HOH and MFS share one table. */
+const CO_CTC_SINGLE: ExemptionStep[] = [
+  { notOver: 26_000, amount: 1_200 },
+  { notOver: 51_000, amount: 600 },
+  { notOver: 77_000, amount: 200 },
+  { notOver: null, amount: 0 },
+];
+const CO_CTC_JOINT: ExemptionStep[] = [
+  { notOver: 36_000, amount: 1_200 },
+  { notOver: 61_000, amount: 600 },
+  { notOver: 87_000, amount: 200 },
+  { notOver: null, amount: 0 },
+];
+
+/**
+ * Kentucky family size tax credit share of liability, KRS 141.066.
+ *
+ * Bands 1–7 are 4% of FPL; band 8 is 128–130%; band 9 is 130–133%. Writing
+ * them out is what stops a uniform 4% step from giving 20% in the 10% band.
+ */
+const KY_FAMILY_SIZE_SHARE_STEPS = [
+  { notOverPovertyShare: 1, rate: 1 },
+  { notOverPovertyShare: 1.04, rate: 0.90 },
+  { notOverPovertyShare: 1.08, rate: 0.80 },
+  { notOverPovertyShare: 1.12, rate: 0.70 },
+  { notOverPovertyShare: 1.16, rate: 0.60 },
+  { notOverPovertyShare: 1.20, rate: 0.50 },
+  { notOverPovertyShare: 1.24, rate: 0.40 },
+  { notOverPovertyShare: 1.28, rate: 0.30 },
+  { notOverPovertyShare: 1.30, rate: 0.20 },
+  { notOverPovertyShare: 1.33, rate: 0.10 },
+  { notOverPovertyShare: null, rate: 0 },
+];
+
 /**
  * Arkansas's 2025 regular schedule, as the state publishes it.
  *
@@ -566,14 +600,24 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       appliesTo: 'taxable-income',
       omissionNote: 'Act 32 EIT is commonly 1%–2.75% of wages. Philadelphia\'s wage tax is 3.735% for residents and 3.425% for non-residents as of 1 July 2026 (City of Philadelphia Department of Revenue). Pittsburgh, Reading and Scranton also sit above the Act 32 band. Your real take-home is lower than the state figure.',
     },
+    taxForgiveness: {
+      // 2025 PA-40 Schedule SP Eligibility Income Tables 1 and 2. Unmarried
+      // (single, HOH) uses Table 1; married (joint or separate) uses Table 2.
+      // Amounts have been $6,500 / $13,000 + $9,500 a child since tax year 2004.
+      fullCreditIncomeByFilingStatus: filingAmounts(6_500, 13_000, 13_000, 6_500),
+      perDependent: 9_500,
+      increment: 250,
+      shareLostPerIncrement: 0.10,
+    },
     dependentAllowanceStatus: {
-      kind: 'not-modelled',
-      reason: 'Pennsylvania gives nothing per dependent against the tax itself. Its Tax Forgiveness credit does depend on dependents \u2014 each one raises the eligibility income by $9,500 \u2014 but that is an income-tested schedule this estimate does not model.',
+      kind: 'assumption',
+      reason: 'Pennsylvania Tax Forgiveness is a share of Pennsylvania tax, and this estimate treats wages as eligibility income and every dependent as a dependent child on Schedule SP. A filer with extra nontaxable eligibility income, or whose dependents are not qualifying children, is shown less tax than they owe.',
       verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
       'Pennsylvania personal income tax is 3.07% (Tax Reform Code of 1971, Section 302, as amended by Act 46 of 2003).',
       'No standard deduction is applied.',
+      'Tax Forgiveness (PA-40 Schedule SP) is modeled: 100% of the tax is forgiven at eligibility income of $6,500 unmarried or $13,000 married, plus $9,500 per dependent child, then 10% less for each $250 over that ceiling (2025 PA-40 SP Eligibility Income Tables 1 and 2; amounts unchanged since tax year 2004). This estimate treats wages as eligibility income. Nontaxable Schedule SP income is omitted, so a filer who has any is shown less tax than they owe. Dependents are counted as dependent children; a filer whose dependents are not qualifying children is also shown less tax than they owe. Married filing separately uses the married table on this income only, not joint eligibility income.',
       'Local earned income tax is levied separately by municipality and school district. The omitted-tax band is Act 32\'s 1% floor through Philadelphia\'s published 3.735% resident wage tax, so the page does not describe Philadelphia as a 2.75% town.',
     ],
   }],
@@ -1157,9 +1201,23 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       ]),
     },
     standardDeductionByFilingStatus: filingAmounts(15_000, 30_000, 15_000, 22_500),
+    exemptionCredit: {
+      perFilerByFilingStatus: filingAmounts(0, 0, 0, 0),
+      perDependent: 1_000,
+      steppedPhaseOut: {
+        // D.C. Code § 47-1806.17: $50 off the credit as a whole for each $1,000
+        // or fraction thereof of AGI over the threshold. Maine's shape, not
+        // California's per-exemption one — three children and one child lose
+        // the same $50 per increment.
+        startIncomeByFilingStatus: filingAmounts(55_000, 70_000, 35_000, 55_000),
+        incrementByFilingStatus: filingAmounts(1_000, 1_000, 1_000, 1_000),
+        reductionPerIncrement: 50,
+        appliesTo: 'total',
+      },
+    },
     dependentAllowanceStatus: {
-      kind: 'not-modelled',
-      reason: 'The District of Columbia gives nothing per dependent against the tax itself. Its child tax credit is limited to children under six and to lower incomes, which this estimate has no input for.',
+      kind: 'assumption',
+      reason: 'The District’s child tax credit is $1,000 per qualifying child under 18. This estimate counts every dependent, so a filer whose dependents are not qualifying children is shown less tax than they owe. The credit is refundable and this estimate never takes state tax below zero, so a filer whose credit exceeds their tax is shown more tax than they owe.',
       verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
@@ -1167,6 +1225,7 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'The same brackets apply to every filing status. Only the standard deduction differs.',
       'Starting with tax year 2025 the District set its own basic standard deduction rather than following the federal one: $15,000 single, dependent filers and married filing separately, $22,500 head of household, $30,000 married filing jointly (2025 D-40 booklet).',
       'The District repealed its personal exemption, so the standard deduction is the whole of what comes off income here.',
+      'The child tax credit is modeled at $1,000 for each dependent, reduced by $50 for each $1,000, or fraction thereof, of adjusted gross income above $55,000 single or head of household, $70,000 filing jointly and $35,000 filing separately (D.C. Code § 47-1806.17 as amended by temporary Law 26-89, in force at verification). Those figures are for tax year 2026, applied alongside the 2025 rate schedule and standard deduction. The credit is for a qualifying child under 18 claimed as a dependent; this estimate counts every dependent. It is refundable; this estimate never lets a credit take state tax below zero.',
       'The additional standard deduction for age or blindness, the DC EITC, itemized deductions and the Health Care Shared Responsibility payment are not modeled. The starting point is gross wages.',
     ],
   }],
@@ -1480,6 +1539,14 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     // Kentucky's standard deduction sits in `exemption` because the flat shape
     // subtracts both and Kentucky has only one figure to subtract.
     exemptionByFilingStatus: filingAmounts(3_360, 3_360, 3_360, 3_360),
+    familySizeTaxCredit: {
+      // 2026 HHS poverty guidelines for the 48 contiguous states, FR 2026-00755,
+      // which are the guidelines available on 30 June 2026 (KRS 141.066).
+      povertyByFamilySize: { 1: 15_960, 2: 21_640, 3: 27_320, 4: 33_000 },
+      filerCountByFilingStatus: filingAmounts(1, 2, 1, 1),
+      maxFamilySize: 4,
+      shareSteps: KY_FAMILY_SIZE_SHARE_STEPS,
+    },
     localAddOn: {
       label: 'Kentucky local occupational license tax',
       basis: 'county',
@@ -1489,16 +1556,17 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       // band, so the page names the omission without inventing its size.
     },
     dependentAllowanceStatus: {
-      kind: 'not-modelled',
-      reason: 'Kentucky gives nothing per dependent against the tax itself. Its family size tax credit and dependent care credit depend on circumstances this estimate has no input for.',
+      kind: 'assumption',
+      reason: 'Kentucky’s family size tax credit counts qualifying children toward family size and is read on modified gross income. This estimate counts every dependent and treats wages as that income, so a filer whose dependents are not qualifying children, or who has other modified gross income, is shown less tax than they owe.',
       verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
       'Kentucky taxes individual income at a flat 3.5% for 2026, on wages less a $3,360 standard deduction (Kentucky DOR, 2026 Kentucky Withholding Tax Formula, form 42A003 (TCF)(10-2025); KRS 141.020 as amended by H.B. 1 of 2025; KRS 141.081(2)(a)).',
       'That document computes gross annual Kentucky tax, not a withholding approximation: its own example takes $39,240 of annual wages to $35,880 of Kentucky taxable wages and $1,255.80 of tax.',
       'The standard deduction is one figure for every filing status. On a Kentucky combined return each spouse claims it separately; this model has one income and claims it once.',
+      'The family size tax credit (KRS 141.066) is modeled: family size is the filer, plus a spouse on a joint return, plus dependents, capped at four. 100% of the tax is credited at or below the 2026 HHS poverty guideline for that size ($15,960 / $21,640 / $27,320 / $33,000; FR 2026-00755), then a published share down to 10% at 133% of that guideline. Qualifying dependents are qualifying children under IRC 152(c); this estimate counts every dependent. Modified gross income is treated as wages. The dependent-care credit is not modeled.',
       'Kentucky cities and counties levy occupational license taxes on wages, which are not included and are not estimated because no state agency publishes a statewide rate.',
-      'Kentucky itemized deductions, the family size tax credit and the pension income exclusion are not modeled.',
+      'Kentucky itemized deductions and the pension income exclusion are not modeled.',
     ],
   }],
   ['UT', {
@@ -1568,7 +1636,7 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'Exemption for 2026: $6,000 single and married filing separately, $12,000 married filing jointly or combined, $8,000 head of family. Standard deduction: $2,300, $4,600, $2,300 and $3,400 respectively (MS DOR).',
       'The department\u2019s own filing thresholds confirm those pairs: a single resident files above $8,300 of gross income and a married resident above $16,600, which are exactly exemption plus standard deduction.',
       'On a Mississippi combined return each spouse computes tax on their own income, so a two-earner couple gets the $10,000 zero band twice. This model has one income and applies it once, which is correct for a single-earner household and overstates tax for a two-earner one.',
-      'Mississippi credits and the aged, blind and dependent exemptions are not modeled. The starting point is gross wages.',
+      'The additional $1,500 exemptions for age and blindness are not modeled. Each dependent is another $1,500, which is. The starting point is gross wages.',
     ],
   }],
   ['CO', {
@@ -1595,9 +1663,22 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       appliesAboveIncomeByFilingStatus: filingAmounts(300_000, 300_000, 300_000, 300_000),
       keepAmountByFilingStatus: filingAmounts(12_000, 16_000, 12_000, 12_000),
     },
+    exemptionCredit: {
+      perFilerByFilingStatus: filingAmounts(0, 0, 0, 0),
+      perDependent: 0,
+      // Looked up on federal AGI (gross wages here), not on Colorado taxable
+      // income. Single, head of household and married filing separately share
+      // the single table (CRS 39-22-129; ITT Child Tax Credit, January 2026).
+      perDependentAmountStepsByFilingStatus: {
+        single: CO_CTC_SINGLE,
+        marriedFilingSeparately: CO_CTC_SINGLE,
+        headOfHousehold: CO_CTC_SINGLE,
+        marriedFilingJointly: CO_CTC_JOINT,
+      },
+    },
     dependentAllowanceStatus: {
-      kind: 'not-modelled',
-      reason: 'Colorado gives nothing per dependent against the tax itself. Its child tax credit is a share of the federal credit, limited by the age of the child and by income, which this estimate has no input for.',
+      kind: 'assumption',
+      reason: 'Colorado’s child tax credit is $1,200 / $600 / $200 per eligible child under six, by federal AGI. This estimate has no age input and applies that credit to every dependent, so a filer whose children are older is shown less tax than they owe. The credit is refundable and this estimate never takes state tax below zero, so a filer whose credit exceeds their tax is shown more tax than they owe.',
       verifiedAt: '2026-09-07T00:00:00.000Z',
     },
     notes: [
@@ -1605,7 +1686,8 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       'Colorado has no standard deduction or personal exemption of its own. The federal standard deduction is already inside its starting figure, which is why this row reads it from the federal snapshot rather than restating it.',
       'The rate moves with TABOR refund mechanisms rather than staying fixed, so this row is declared as the 2025 schedule. It had not been republished for 2026 at verification.',
       'Above $300,000 of federal adjusted gross income Colorado adds back the part of the federal standard deduction over $12,000 ($16,000 filing jointly). That addback is modeled.',
-      'Colorado additions, subtractions, the alternative minimum tax and credits are not modeled.',
+      'The child tax credit is modeled at the 2025 amounts, the latest Colorado has published: $1,200 / $600 / $200 per eligible child under six, by federal AGI band, with a wider staircase for joint filers (CRS 39-22-129; Colorado DOR, Income Tax Topics: Child Tax Credit, January 2026). This estimate has no age input and applies that credit to every dependent. The credit is refundable; this estimate never lets a credit take state tax below zero. The Family Affordability Tax Credit is paused for tax year 2026 and is not included.',
+      'Colorado additions, subtractions, the alternative minimum tax and other credits are not modeled.',
     ],
   }],
   ['MA', {
@@ -2079,8 +2161,8 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     notes: [
       'Arizona taxes Arizona taxable income at a flat 2.5% (A.R.S. 43-1011(A)(9); Arizona DOR 2025 Individual Income Tax Highlights). 2026 Form 140 was not published at verification.',
       'The 2025 standard deduction is $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household (DOR 2025 Highlights; A.R.S. 43-1041 inflation-adjusted). The extra standard-deduction increase for charitable contributions (34% for 2025) is not modeled.',
-      'The dependent tax credit is modeled at $125 for each dependent, with 5% of it removed for each $1,000 of adjusted gross income above $200,000 single or $400,000 filing jointly, so it reaches zero at $220,000 and $420,000 (A.R.S. 43-1073.01(B) as amended by HB 4168 of 2026).',
-      'Two cautions on that credit. Arizona pays $125 only for a dependent under 17 and $25 for an older one; this estimate has no age input and applies the higher figure to every dependent, so it understates tax for a filer whose dependents are grown. And the $125 was read from the PolicyEngine-US parameter set citing the bill, not from a Department of Revenue form, which is a weaker source than the rest of this row.',
+      'The dependent tax credit is modeled at $125 for each dependent, with 5% of it removed for each $1,000, or fraction thereof, of federal adjusted gross income above $200,000 single or $400,000 filing jointly, so it reaches zero at $220,000 and $420,000 (A.R.S. 43-1073.01 as amended by Laws 2026, Ch. 140 / HB 4168). A candidate $125 was first seen in PolicyEngine-US citing the bill; production cites the enacted session law.',
+      'Arizona pays $125 only for a dependent under 17 and $25 for an older one. This estimate has no age input and applies the higher figure to every dependent, so it understates tax for a filer whose dependents are grown.',
       'Other Arizona credits and Form 140 adjustments are not modeled. The starting point is gross wages.',
     ],
   }],
