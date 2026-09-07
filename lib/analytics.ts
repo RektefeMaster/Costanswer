@@ -9,11 +9,32 @@ export const ANALYTICS_EVENTS = [
   'search',
   'related_tool_click',
   'share',
+  'advanced_opened',
+  'compare_used',
+  'reverse_used',
+  'quote_checked',
+  'source_clicked',
+  'guide_to_calculator',
+  'language_switched',
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[number];
 
 type ToolContext = { toolId: string; category: CategoryId };
+
+/**
+ * Locales this site is planned to serve.
+ *
+ * Declared here rather than imported because the localization module does not
+ * exist yet, and `language_switched` needs a closed set to validate against —
+ * an open string would let a switcher send whatever it liked. When `lib/i18n`
+ * lands it should import this list rather than declaring a second one.
+ */
+export const ANALYTICS_LOCALES = ['en-US', 'es-US'] as const;
+export type AnalyticsLocale = (typeof ANALYTICS_LOCALES)[number];
+
+/** What the Job Cost quote checker concluded. Never the quoted amount. */
+export const QUOTE_VERDICTS = ['within', 'below', 'above', 'unassessable'] as const;
 
 export type AnalyticsPayloads = {
   tool_opened: ToolContext;
@@ -23,6 +44,16 @@ export type AnalyticsPayloads = {
   search: { resultType: 'matched' | 'empty' };
   related_tool_click: ToolContext & { relatedToolId: string };
   share: ToolContext & { interaction: 'native_share' | 'copy_link' };
+  /** Which collapsed section, by its stable id — never its contents. */
+  advanced_opened: ToolContext & { section: string };
+  compare_used: ToolContext;
+  /** Which input the reader solved backwards for, by field id. */
+  reverse_used: ToolContext & { solvedFor: string };
+  /** The verdict only. The quoted figure is a price and never leaves the page. */
+  quote_checked: ToolContext & { verdict: (typeof QUOTE_VERDICTS)[number] };
+  source_clicked: ToolContext & { sourceId: string };
+  guide_to_calculator: ToolContext & { guideSlug: string };
+  language_switched: { from: AnalyticsLocale; to: AnalyticsLocale };
 };
 
 export type AnalyticsEvent<Name extends AnalyticsEventName = AnalyticsEventName> = {
@@ -54,8 +85,21 @@ const eventFields: Record<AnalyticsEventName, Record<string, FieldCheck>> = {
   calculation_completed: { ...TOOL_CONTEXT, resultType: oneOf(['valid']) },
   result_interaction: { ...TOOL_CONTEXT, interaction: oneOf(['math_toggle', 'assumptions_toggle', 'search_result_click']) },
   search: { resultType: oneOf(['matched', 'empty']) },
+  /*
+   * The plan also lists `related_calculator_clicked`. It is not added: this
+   * event already carries exactly that — tool context plus the id of the tool
+   * clicked through to — and two names for one action would split the funnel
+   * between them for no gain.
+   */
   related_tool_click: { ...TOOL_CONTEXT, relatedToolId: boundedId },
   share: { ...TOOL_CONTEXT, interaction: oneOf(['native_share', 'copy_link']) },
+  advanced_opened: { ...TOOL_CONTEXT, section: boundedId },
+  compare_used: TOOL_CONTEXT,
+  reverse_used: { ...TOOL_CONTEXT, solvedFor: boundedId },
+  quote_checked: { ...TOOL_CONTEXT, verdict: oneOf(QUOTE_VERDICTS) },
+  source_clicked: { ...TOOL_CONTEXT, sourceId: boundedId },
+  guide_to_calculator: { ...TOOL_CONTEXT, guideSlug: boundedId },
+  language_switched: { from: oneOf(ANALYTICS_LOCALES), to: oneOf(ANALYTICS_LOCALES) },
 };
 
 /** Strict runtime boundary: unknown or extra fields are rejected, never forwarded. */

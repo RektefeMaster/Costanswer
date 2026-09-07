@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculateRetirement } from '@/lib/calculations/retirement';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { money } from './finance-format';
 
 export function RetirementCalculator() {
@@ -38,9 +38,17 @@ export function RetirementCalculator() {
         <Field label="Retirement age" htmlFor="ret-retire"><InputShell suffix="years"><input id="ret-retire" type="number" min="18" max="100" step="1" inputMode="numeric" value={retirementAge} onChange={(event) => setRetirementAge(event.target.value)} /></InputShell></Field>
         <Field label="Current savings" htmlFor="ret-now"><InputShell prefix="$"><input id="ret-now" type="number" min="0" step="1000" inputMode="decimal" value={currentSavings} onChange={(event) => setCurrentSavings(event.target.value)} /></InputShell></Field>
         <Field label="Monthly contribution" htmlFor="ret-contrib"><InputShell prefix="$"><input id="ret-contrib" type="number" min="0" step="25" inputMode="decimal" value={monthlyContribution} onChange={(event) => setMonthlyContribution(event.target.value)} /></InputShell></Field>
-        <Field label="Assumed annual return" htmlFor="ret-return"><InputShell suffix="%"><input id="ret-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
-        <Field label="Modeled goal" htmlFor="ret-goal"><InputShell prefix="$"><input id="ret-goal" type="number" min="0" step="10000" inputMode="decimal" value={goalAmount} onChange={(event) => setGoalAmount(event.target.value)} /></InputShell></Field>
       </div>
+      <AdvancedSection
+        id="assumptions"
+        title="Return and goal"
+        hint="Defaults are planning figures, not a forecast. Change them to match your own plan."
+      >
+        <div className="calc-form-grid">
+          <Field label="Assumed annual return" htmlFor="ret-return"><InputShell suffix="%"><input id="ret-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
+          <Field label="Modeled goal" htmlFor="ret-goal"><InputShell prefix="$"><input id="ret-goal" type="number" min="0" step="10000" inputMode="decimal" value={goalAmount} onChange={(event) => setGoalAmount(event.target.value)} /></InputShell></Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">

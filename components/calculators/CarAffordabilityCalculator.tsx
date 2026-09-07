@@ -19,7 +19,7 @@ import {
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { siteConfig } from '@/lib/site-config';
 import type { StateCode } from '@/lib/location/states';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { approxMoney, roundedGuidelineMoney } from './finance-format';
 
 export type VehicleStateEnergy = {
@@ -277,84 +277,92 @@ export function CarAffordabilityCalculator({
             </InputShell>
           </Field>
         )}
-        <Field label="Down payment" htmlFor="car-down" hint="Cash you hand over at signing">
-          <InputShell prefix="$">
-            <input id="car-down" type="number" min="0" step="500" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Trade-in value" htmlFor="car-trade-in" hint="Optional. Credited like a down payment, but not cash.">
-          <InputShell prefix="$">
-            <input id="car-trade-in" type="number" min="0" step="500" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Sales tax and fees" htmlFor="car-fees" hint="Optional. Added to the amount financed.">
-          <InputShell prefix="$">
-            <input id="car-fees" type="number" min="0" step="100" inputMode="decimal" value={salesTaxAndFees} onChange={(event) => setSalesTaxAndFees(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Interest rate" htmlFor="car-rate" hint="Your quoted rate. There is no car-loan rate feed here.">
-          <InputShell suffix="%">
-            <input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Loan term" htmlFor="car-term" hint="Use 0 for a cash purchase">
-          <InputShell suffix="months">
-            <input id="car-term" type="number" min="0" max="120" step="6" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Miles driven per year" htmlFor="car-miles">
-          <InputShell suffix="miles">
-            <input id="car-miles" type="number" min="0" step="1000" inputMode="decimal" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} />
-          </InputShell>
-        </Field>
-        {powertrain === 'gas' ? (
-          <>
-            <Field label="Fuel economy" htmlFor="car-mpg">
-              <InputShell suffix="MPG">
-                <input id="car-mpg" type="number" min="1" max="200" step="1" inputMode="decimal" value={mpg} onChange={(event) => setMpg(event.target.value)} />
-              </InputShell>
-            </Field>
-            <Field label="Pump price (optional)" htmlFor="car-gas-price" hint="Leave blank to use the EIA average">
-              <InputShell prefix="$" suffix="/ gal">
-                <input id="car-gas-price" type="number" min="0" max="20" step="0.01" inputMode="decimal" placeholder={selected.dollarsPerGallon.toFixed(3)} value={customGasPrice} onChange={(event) => setCustomGasPrice(event.target.value)} />
-              </InputShell>
-            </Field>
-          </>
-        ) : (
-          <>
-            <Field label="EV efficiency" htmlFor="car-kwh-100" hint="Battery energy per 100 miles">
-              <InputShell suffix="kWh / 100 mi">
-                <input id="car-kwh-100" type="number" min="5" max="100" step="1" inputMode="decimal" value={kwhPer100Miles} onChange={(event) => setKwhPer100Miles(event.target.value)} />
-              </InputShell>
-            </Field>
-            <Field label="Charging loss" htmlFor="car-charging-loss" hint="Added on top of battery energy">
-              <InputShell suffix="%">
-                <input id="car-charging-loss" type="number" min="0" max="30" step="1" inputMode="decimal" value={chargingLossPercent} onChange={(event) => setChargingLossPercent(event.target.value)} />
-              </InputShell>
-            </Field>
-            <Field label="Your rate (optional)" htmlFor="car-electricity-rate" hint="Leave blank to use the state average">
-              <InputShell suffix="¢ / kWh">
-                <input id="car-electricity-rate" type="number" min="0" max="200" step="0.01" inputMode="decimal" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customElectricityRate} onChange={(event) => setCustomElectricityRate(event.target.value)} />
-              </InputShell>
-            </Field>
-          </>
-        )}
-        <Field label="Insurance" htmlFor="car-insurance" hint="Your premium. The starting number is a placeholder, not a quote.">
-          <InputShell prefix="$" suffix="/ month">
-            <input id="car-insurance" type="number" min="0" step="10" inputMode="decimal" value={monthlyInsurance} onChange={(event) => setMonthlyInsurance(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Maintenance and repairs" htmlFor="car-maintenance" hint="A budget you choose, not a service schedule.">
-          <InputShell prefix="$" suffix="/ month">
-            <input id="car-maintenance" type="number" min="0" step="10" inputMode="decimal" value={monthlyMaintenance} onChange={(event) => setMonthlyMaintenance(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Registration and yearly fees" htmlFor="car-registration" hint="Optional. State fee tables are not modeled.">
-          <InputShell prefix="$" suffix="/ year">
-            <input id="car-registration" type="number" min="0" step="10" inputMode="decimal" value={annualRegistration} onChange={(event) => setAnnualRegistration(event.target.value)} />
-          </InputShell>
-        </Field>
       </div>
+      <AdvancedSection
+        id="purchase-details"
+        title="Trade-in, fees and running costs"
+        hint="Every one of these has a working default. Fill in the ones you know."
+      >
+        <div className="calc-form-grid">
+          <Field label="Down payment" htmlFor="car-down" hint="Cash you hand over at signing">
+            <InputShell prefix="$">
+              <input id="car-down" type="number" min="0" step="500" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Trade-in value" htmlFor="car-trade-in" hint="Optional. Credited like a down payment, but not cash.">
+            <InputShell prefix="$">
+              <input id="car-trade-in" type="number" min="0" step="500" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Sales tax and fees" htmlFor="car-fees" hint="Optional. Added to the amount financed.">
+            <InputShell prefix="$">
+              <input id="car-fees" type="number" min="0" step="100" inputMode="decimal" value={salesTaxAndFees} onChange={(event) => setSalesTaxAndFees(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Interest rate" htmlFor="car-rate" hint="Your quoted rate. There is no car-loan rate feed here.">
+            <InputShell suffix="%">
+              <input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Loan term" htmlFor="car-term" hint="Use 0 for a cash purchase">
+            <InputShell suffix="months">
+              <input id="car-term" type="number" min="0" max="120" step="6" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Miles driven per year" htmlFor="car-miles">
+            <InputShell suffix="miles">
+              <input id="car-miles" type="number" min="0" step="1000" inputMode="decimal" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} />
+            </InputShell>
+          </Field>
+          {powertrain === 'gas' ? (
+            <>
+              <Field label="Fuel economy" htmlFor="car-mpg">
+                <InputShell suffix="MPG">
+                  <input id="car-mpg" type="number" min="1" max="200" step="1" inputMode="decimal" value={mpg} onChange={(event) => setMpg(event.target.value)} />
+                </InputShell>
+              </Field>
+              <Field label="Pump price (optional)" htmlFor="car-gas-price" hint="Leave blank to use the EIA average">
+                <InputShell prefix="$" suffix="/ gal">
+                  <input id="car-gas-price" type="number" min="0" max="20" step="0.01" inputMode="decimal" placeholder={selected.dollarsPerGallon.toFixed(3)} value={customGasPrice} onChange={(event) => setCustomGasPrice(event.target.value)} />
+                </InputShell>
+              </Field>
+            </>
+          ) : (
+            <>
+              <Field label="EV efficiency" htmlFor="car-kwh-100" hint="Battery energy per 100 miles">
+                <InputShell suffix="kWh / 100 mi">
+                  <input id="car-kwh-100" type="number" min="5" max="100" step="1" inputMode="decimal" value={kwhPer100Miles} onChange={(event) => setKwhPer100Miles(event.target.value)} />
+                </InputShell>
+              </Field>
+              <Field label="Charging loss" htmlFor="car-charging-loss" hint="Added on top of battery energy">
+                <InputShell suffix="%">
+                  <input id="car-charging-loss" type="number" min="0" max="30" step="1" inputMode="decimal" value={chargingLossPercent} onChange={(event) => setChargingLossPercent(event.target.value)} />
+                </InputShell>
+              </Field>
+              <Field label="Your rate (optional)" htmlFor="car-electricity-rate" hint="Leave blank to use the state average">
+                <InputShell suffix="¢ / kWh">
+                  <input id="car-electricity-rate" type="number" min="0" max="200" step="0.01" inputMode="decimal" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customElectricityRate} onChange={(event) => setCustomElectricityRate(event.target.value)} />
+                </InputShell>
+              </Field>
+            </>
+          )}
+          <Field label="Insurance" htmlFor="car-insurance" hint="Your premium. The starting number is a placeholder, not a quote.">
+            <InputShell prefix="$" suffix="/ month">
+              <input id="car-insurance" type="number" min="0" step="10" inputMode="decimal" value={monthlyInsurance} onChange={(event) => setMonthlyInsurance(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Maintenance and repairs" htmlFor="car-maintenance" hint="A budget you choose, not a service schedule.">
+            <InputShell prefix="$" suffix="/ month">
+              <input id="car-maintenance" type="number" min="0" step="10" inputMode="decimal" value={monthlyMaintenance} onChange={(event) => setMonthlyMaintenance(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Registration and yearly fees" htmlFor="car-registration" hint="Optional. State fee tables are not modeled.">
+            <InputShell prefix="$" suffix="/ year">
+              <input id="car-registration" type="number" min="0" step="10" inputMode="decimal" value={annualRegistration} onChange={(event) => setAnnualRegistration(event.target.value)} />
+            </InputShell>
+          </Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && thisCar && thisCar.verdict && thisCar.vehiclePrice !== null && thisCar.monthlyTotal !== null && thisCar.totalShare !== null && (
         <div className="calculation-output">

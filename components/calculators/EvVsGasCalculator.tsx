@@ -5,7 +5,7 @@ import type { StateCode } from '@/lib/location/states';
 import { calculateEvVsGas } from '@/lib/calculations/ev-vs-gas';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type StateRate = { stateCode: StateCode; stateName: string; priceCentsPerKwh: number };
 type StateGasPrice = { stateCode: StateCode; dollarsPerGallon: number; geographyLabel: string };
@@ -106,8 +106,16 @@ export function EvVsGasCalculator({
         <p className="shared-inputs-kicker">TRIP SETTINGS</p>
         <div className="calc-form-grid compact-grid">
           <Field label="Miles driven per year" htmlFor="annual-miles"><InputShell suffix="miles"><input id="annual-miles" type="number" min="0" step="100" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} /></InputShell></Field>
-          <Field label="Charging loss" htmlFor="charging-loss" hint="Loss from the wall to the battery. 12% is a typical starting point."><InputShell suffix="%"><input id="charging-loss" type="number" min="0" max="30" step="1" value={chargingLoss} onChange={(event) => setChargingLoss(event.target.value)} /></InputShell></Field>
         </div>
+        <AdvancedSection
+          id="charging"
+          title="Charging losses"
+          hint="Energy lost between the wall and the battery. 12% is typical for home AC charging."
+        >
+          <div className="calc-form-grid compact-grid">
+            <Field label="Charging loss" htmlFor="charging-loss" hint="Loss from the wall to the battery. 12% is a typical starting point."><InputShell suffix="%"><input id="charging-loss" type="number" min="0" max="30" step="1" value={chargingLoss} onChange={(event) => setChargingLoss(event.target.value)} /></InputShell></Field>
+          </div>
+        </AdvancedSection>
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (

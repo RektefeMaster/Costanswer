@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculateCarLoan } from '@/lib/calculations/car-loan';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { pluralize } from '@/lib/plural';
 import { money } from './finance-format';
 
@@ -49,8 +49,16 @@ export function CarLoanCalculator() {
           <>
             <Field label="Vehicle price" htmlFor="car-price"><InputShell prefix="$"><input id="car-price" type="number" min="0" step="100" inputMode="decimal" value={vehiclePrice} onChange={(event) => setVehiclePrice(event.target.value)} /></InputShell></Field>
             <Field label="Down payment" htmlFor="car-down"><InputShell prefix="$"><input id="car-down" type="number" min="0" step="100" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} /></InputShell></Field>
-            <Field label="Trade-in" htmlFor="car-trade"><InputShell prefix="$"><input id="car-trade" type="number" min="0" step="100" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} /></InputShell></Field>
-            <Field label="Taxes and fees" htmlFor="car-fees"><InputShell prefix="$"><input id="car-fees" type="number" min="0" step="50" inputMode="decimal" value={taxesAndFees} onChange={(event) => setTaxesAndFees(event.target.value)} /></InputShell></Field>
+            <AdvancedSection
+              id="trade-and-fees"
+              title="Trade-in, taxes and fees"
+              hint="Both default to zero. A trade-in lowers the amount financed; taxes and fees raise it."
+            >
+              <div className="calc-form-grid">
+                <Field label="Trade-in" htmlFor="car-trade"><InputShell prefix="$"><input id="car-trade" type="number" min="0" step="100" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} /></InputShell></Field>
+                <Field label="Taxes and fees" htmlFor="car-fees"><InputShell prefix="$"><input id="car-fees" type="number" min="0" step="50" inputMode="decimal" value={taxesAndFees} onChange={(event) => setTaxesAndFees(event.target.value)} /></InputShell></Field>
+              </div>
+            </AdvancedSection>
           </>
         )}
         <Field label="Interest rate" htmlFor="car-rate" hint="Nominal annual rate"><InputShell suffix="%"><input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>

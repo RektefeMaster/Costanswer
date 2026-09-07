@@ -2,6 +2,16 @@
 
 import type { BreakdownStep } from '@/lib/calculations/contracts';
 import { emitAnalyticsEvent } from '@/lib/analytics';
+import {
+  compareScenarios,
+  confidenceStatement,
+  receiptText,
+  solveForTarget,
+  type CompareRow,
+  type ConfidenceLevel,
+  type ConfidenceReasons,
+  type ReverseSolveResult,
+} from '@/lib/calculators/depth';
 import { parseNumericBound, stepNumberValue } from '@/lib/number-step';
 import type { CategoryId } from '@/lib/categories';
 import {
@@ -292,21 +302,62 @@ export function StatGrid({ items }: { items: Array<{ label: string; value: strin
   );
 }
 
-export function ResultDetails({
-  breakdown,
-  assumptions,
-  calculationVersion,
-  datasetSnapshotIds,
-}: {
+type ReceiptProps = {
   breakdown: BreakdownStep[];
   assumptions: string[];
   calculationVersion: string;
   datasetSnapshotIds: string[];
-}) {
+  /** The headline figure, so copied text carries the answer and not only the working. */
+  headline?: { label: string; value: string };
+  title?: string;
+};
+
+/**
+ * Breakdown, assumptions, method version and snapshot ids — and a way to take
+ * all of it somewhere else.
+ *
+ * The copy action is the part that matters. A figure pasted into a message on
+ * its own has lost the assumptions that make it true, and those are usually
+ * exactly what the other person would have disagreed with.
+ */
+export function CalculationReceipt({
+  breakdown,
+  assumptions,
+  calculationVersion,
+  datasetSnapshotIds,
+  headline,
+  title,
+}: ReceiptProps) {
   const analytics = useContext(ToolAnalyticsContext);
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    if (!copied) return;
+    const timeout = window.setTimeout(() => setCopied(false), 1600);
+    return () => window.clearTimeout(timeout);
+  }, [copied]);
+
   const emitInteraction = (interaction: 'math_toggle' | 'assumptions_toggle') => {
     if (analytics) emitAnalyticsEvent('result_interaction', { ...analytics, interaction });
   };
+
+  const copyReceipt = async () => {
+    const text = receiptText({
+      title: title ?? 'CostAnswer result',
+      headline: headline ?? { label: 'Result', value: breakdown[breakdown.length - 1]?.value ?? '' },
+      breakdown,
+      assumptions,
+      calculationVersion,
+      datasetSnapshotIds,
+    });
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   return (
     <div className="result-details">
       <details open>
@@ -336,10 +387,275 @@ export function ResultDetails({
           <span>{datasetSnapshotIds.length > 0 ? `Data ${datasetSnapshotIds.join(', ')}` : 'Data Manual inputs / fixed rules'}</span>
         </p>
       </details>
+      <button type="button" className="receipt-copy" onClick={copyReceipt}>
+        {copied ? 'Copied the working' : 'Copy result and working'}
+      </button>
     </div>
   );
 }
 
+/**
+ * The original name, kept so the fifty-one existing calculators keep working.
+ *
+ * It is the receipt without a headline; they gain the copy action by being
+ * left alone, which is why this is an alias rather than a second component.
+ */
+export function ResultDetails(props: ReceiptProps) {
+  return <CalculationReceipt {...props} />;
+}
+
 export function InlineError({ message }: { message: string }) {
   return <p className="calc-error" role="alert">{message}</p>;
+}
+
+/*
+ * Whether a section is open is state the browser owns, not React, so it is read
+ * through `useSyncExternalStore` rather than copied into component state by an
+ * effect. That is what keeps the server render and the first client render
+ * agreeing: the server snapshot is always "closed", and a reader who opened the
+ * section earlier in the session gets it back on the first commit instead of
+ * after a second render.
+ */
+const sessionFlagListeners = new Map<string, Set<() => void>>();
+
+function readSessionFlag(key: string): boolean {
+  try {
+    return window.sessionStorage.getItem(key) === 'open';
+  } catch {
+    // Private mode and blocked site data both throw here. A section that will
+    // not remember its state is a much smaller problem than one that crashes.
+    return false;
+  }
+}
+
+function writeSessionFlag(key: string, open: boolean): void {
+  try {
+    window.sessionStorage.setItem(key, open ? 'open' : 'closed');
+  } catch {
+    // Nothing to do: the section still opens, it just will not be remembered.
+  }
+  for (const listener of sessionFlagListeners.get(key) ?? []) listener();
+}
+
+function subscribeToSessionFlag(key: string) {
+  return (onChange: () => void) => {
+    const listeners = sessionFlagListeners.get(key) ?? new Set<() => void>();
+    listeners.add(onChange);
+    sessionFlagListeners.set(key, listeners);
+    return () => {
+      listeners.delete(onChange);
+      if (listeners.size === 0) sessionFlagListeners.delete(key);
+    };
+  };
+}
+
+/**
+ * The inputs past the first few, folded away until asked for.
+ *
+ * Collapsed by default because a calculator that opens with nineteen fields
+ * reads as work rather than an answer. The content is in the DOM either way —
+ * a `details` element, not a conditional render — so it stays findable and
+ * crawlable while the page still opens on the question the reader came with.
+ */
+export function AdvancedSection({
+  id,
+  title,
+  hint,
+  children,
+}: {
+  /** Stable within the tool. Used for the session key and the analytics field. */
+  id: string;
+  title: string;
+  hint?: string;
+  children: ReactNode;
+}) {
+  const analytics = useContext(ToolAnalyticsContext);
+  const key = `costanswer:advanced:${analytics?.toolId ?? 'tool'}:${id}`;
+  const subscribe = useMemo(() => subscribeToSessionFlag(key), [key]);
+  const getSnapshot = useMemo(() => () => readSessionFlag(key), [key]);
+  const open = useSyncExternalStore(subscribe, getSnapshot, () => false);
+  const announced = useRef(false);
+
+  return (
+    <details
+      className="advanced-section"
+      open={open}
+      onToggle={(event) => {
+        const next = event.currentTarget.open;
+        writeSessionFlag(key, next);
+        // Once per tool view. Reopening the same section is the same intent.
+        if (next && !announced.current && analytics) {
+          announced.current = true;
+          emitAnalyticsEvent('advanced_opened', { ...analytics, section: id });
+        }
+      }}
+    >
+      <summary>{title}</summary>
+      {hint && <p className="advanced-hint">{hint}</p>}
+      <div className="advanced-body">{children}</div>
+    </details>
+  );
+}
+
+/**
+ * Two sets of inputs answered side by side, with the difference stated.
+ *
+ * Naming the delta is the whole point. Two columns of numbers make the reader
+ * do the subtraction, and the subtraction is the question they actually had.
+ */
+export function ScenarioCompare({
+  labelA,
+  labelB,
+  rows,
+  caption,
+}: {
+  labelA: string;
+  labelB: string;
+  rows: readonly CompareRow[];
+  caption?: string;
+}) {
+  const analytics = useContext(ToolAnalyticsContext);
+  const deltas = useMemo(() => compareScenarios(rows), [rows]);
+  const changed = deltas.some((delta) => delta.direction !== 'unchanged');
+  const announced = useRef(false);
+
+  useEffect(() => {
+    // Rendering the panel is not using it. A reader has compared something only
+    // once the two sides actually differ.
+    if (!changed || announced.current || !analytics) return;
+    announced.current = true;
+    emitAnalyticsEvent('compare_used', analytics);
+  }, [changed, analytics]);
+
+  return (
+    <div className="scenario-compare">
+      <table>
+        {caption && <caption>{caption}</caption>}
+        <thead>
+          <tr>
+            <th scope="col">Figure</th>
+            <th scope="col">{labelA}</th>
+            <th scope="col">{labelB}</th>
+            <th scope="col">Difference</th>
+          </tr>
+        </thead>
+        <tbody>
+          {deltas.map((delta) => (
+            <tr key={delta.label}>
+              <th scope="row">{delta.label}</th>
+              <td>{delta.a}</td>
+              <td>{delta.b}</td>
+              <td className={`delta delta-${delta.direction}`}>{delta.change}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+const REVERSE_STATUS_TONE: Record<Exclude<ReverseSolveResult['status'], 'solved'>, string> = {
+  unreachable: 'reverse-unreachable',
+  flat: 'reverse-flat',
+  'invalid-range': 'reverse-invalid',
+};
+
+/**
+ * The calculator run backwards: name the answer, get the input that reaches it.
+ *
+ * "What salary do I need to take home $5,000 a month" is the question people
+ * actually arrive with, and it is the forward calculation with one unknown
+ * moved. When no input in range reaches the target the panel says so rather
+ * than returning the closest value, because the closest value looks like a
+ * yes.
+ */
+export function ReverseSolve({
+  solvedFor,
+  targetLabel,
+  inputLabel,
+  evaluate,
+  lower,
+  upper,
+  tolerance,
+  formatInput,
+  prefix,
+}: {
+  /** Field id of the input being solved for. Used for analytics. */
+  solvedFor: string;
+  targetLabel: string;
+  inputLabel: string;
+  evaluate: (input: number) => number;
+  lower: number;
+  upper: number;
+  tolerance?: number;
+  formatInput: (value: number) => string;
+  prefix?: string;
+}) {
+  const analytics = useContext(ToolAnalyticsContext);
+  const [target, setTarget] = useState('');
+  const [result, setResult] = useState<ReverseSolveResult | null>(null);
+  const inputId = `reverse-${solvedFor}`;
+
+  const run = () => {
+    const parsed = Number(target);
+    if (target.trim() === '' || !Number.isFinite(parsed)) {
+      setResult({ status: 'invalid-range', reason: 'Enter a target first.' });
+      return;
+    }
+    setResult(solveForTarget({ evaluate, target: parsed, lower, upper, tolerance }));
+    if (analytics) emitAnalyticsEvent('reverse_used', { ...analytics, solvedFor });
+  };
+
+  return (
+    <div className="reverse-solve">
+      <Field label={targetLabel} htmlFor={inputId}>
+        <InputShell prefix={prefix}>
+          <input
+            id={inputId}
+            type="number"
+            inputMode="decimal"
+            value={target}
+            onChange={(event) => setTarget(event.target.value)}
+          />
+        </InputShell>
+      </Field>
+      <button type="button" className="reverse-solve-run" onClick={run}>Solve</button>
+      {result?.status === 'solved' && (
+        <p className="reverse-solve-answer" aria-live="polite">
+          <span>{inputLabel}</span>
+          <strong>{formatInput(result.value)}</strong>
+        </p>
+      )}
+      {result && result.status !== 'solved' && (
+        <p className={`reverse-solve-answer ${REVERSE_STATUS_TONE[result.status]}`} aria-live="polite">
+          {result.reason}
+        </p>
+      )}
+    </div>
+  );
+}
+
+const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = {
+  high: 'High confidence',
+  medium: 'Medium confidence',
+  low: 'Low confidence',
+};
+
+/**
+ * A confidence level that always says why.
+ *
+ * "Medium confidence" alone tells a reader neither what is uncertain nor
+ * whether it affects them. The reasons are required by the type, and if they
+ * come back empty at runtime — filtered lists do that — this renders nothing,
+ * because no reason means there is no claim to make.
+ */
+export function ConfidenceChip({ level, reasons }: { level: ConfidenceLevel; reasons: ConfidenceReasons }) {
+  const statement = confidenceStatement(level, reasons);
+  if (!statement) return null;
+  return (
+    <p className={`confidence-chip confidence-${statement.level}`}>
+      <span>{CONFIDENCE_LABEL[statement.level]}</span>
+      <small>{statement.reason}</small>
+    </p>
+  );
 }

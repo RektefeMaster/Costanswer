@@ -7,7 +7,7 @@ import { calculationErrorMessage } from '@/lib/calculations/error';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { STATE_CODES, US_STATES, type StateCode } from '@/lib/location/states';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 export function AutoCoverageCalculator() {
   const [stateCode, setStateCode] = useState<StateCode>('TX');
@@ -72,8 +72,11 @@ export function AutoCoverageCalculator() {
         </Field>
       </div>
 
-      <details className="health-advanced">
-        <summary>Use your own premiums <span>Read them off your declarations page</span></summary>
+      <AdvancedSection
+        id="own-premiums"
+        title="Use your own premiums"
+        hint="Read them off your declarations page"
+      >
         <div className="calc-form-grid">
           <Field label="Premium source" htmlFor="coverage-basis">
             <span className="input-shell select-shell">
@@ -96,7 +99,7 @@ export function AutoCoverageCalculator() {
             </Field>
           </>}
         </div>
-      </details>
+      </AdvancedSection>
 
       {calculation.error && <InlineError message={calculation.error} />}
       {result && value && (

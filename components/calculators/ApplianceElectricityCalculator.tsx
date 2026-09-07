@@ -5,7 +5,7 @@ import type { StateCode } from '@/lib/location/states';
 import { calculateApplianceElectricity } from '@/lib/calculations/appliance-electricity';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type StateRate = { stateCode: StateCode; stateName: string; priceCentsPerKwh: number };
 
@@ -156,19 +156,27 @@ export function ApplianceElectricityCalculator({
             <input id="appliance-duty" type="number" min="1" max="100" step="5" inputMode="decimal" value={dutyCyclePercent} onChange={(event) => { setExampleId(''); setDutyCyclePercent(event.target.value); }} />
           </InputShell>
         </Field>
-        <Field label="State" htmlFor="appliance-state">
-          <span className="input-shell select-shell">
-            <select id="appliance-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomRate(''); }}>
-              {rates.map((rate) => <option value={rate.stateCode} key={rate.stateCode}>{rate.stateName}</option>)}
-            </select>
-          </span>
-        </Field>
-        <Field label="Your rate (optional)" htmlFor="appliance-custom-rate" hint="Leave blank to use the state average">
-          <InputShell suffix="¢ / kWh">
-            <input id="appliance-custom-rate" type="number" min="0" step="0.01" inputMode="decimal" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customRate} onChange={(event) => setCustomRate(event.target.value)} />
-          </InputShell>
-        </Field>
       </div>
+      <AdvancedSection
+        id="rate"
+        title="Your own electricity rate"
+        hint="The state average is used unless you enter the rate from your own bill."
+      >
+        <div className="calc-form-grid">
+          <Field label="State" htmlFor="appliance-state">
+            <span className="input-shell select-shell">
+              <select id="appliance-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomRate(''); }}>
+                {rates.map((rate) => <option value={rate.stateCode} key={rate.stateCode}>{rate.stateName}</option>)}
+              </select>
+            </span>
+          </Field>
+          <Field label="Your rate (optional)" htmlFor="appliance-custom-rate" hint="Leave blank to use the state average">
+            <InputShell suffix="¢ / kWh">
+              <input id="appliance-custom-rate" type="number" min="0" step="0.01" inputMode="decimal" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customRate} onChange={(event) => setCustomRate(event.target.value)} />
+            </InputShell>
+          </Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">

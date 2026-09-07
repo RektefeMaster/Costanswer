@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculate401k, PAY_FREQUENCIES, PAY_FREQUENCY_LABELS, type PayFrequency } from '@/lib/calculations/k401';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { money } from './finance-format';
 
 export function K401Calculator() {
@@ -53,12 +53,20 @@ export function K401Calculator() {
         </Field>
         <Field label="Salary" htmlFor="k401-salary"><InputShell prefix="$"><input id="k401-salary" type="number" min="1" step="1000" inputMode="decimal" value={salary} onChange={(event) => setSalary(event.target.value)} /></InputShell></Field>
         <Field label="Employee contribution" htmlFor="k401-emp"><InputShell suffix="% of salary"><input id="k401-emp" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={employeePercent} onChange={(event) => setEmployeePercent(event.target.value)} /></InputShell></Field>
-        <Field label="Employer match rate" htmlFor="k401-match"><InputShell suffix="%"><input id="k401-match" type="number" min="0" max="100" step="1" inputMode="decimal" value={matchRatePercent} onChange={(event) => setMatchRatePercent(event.target.value)} /></InputShell></Field>
-        <Field label="Match applies up to" htmlFor="k401-cap" hint="Percent of salary"><InputShell suffix="% of salary"><input id="k401-cap" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={matchSalaryCapPercent} onChange={(event) => setMatchSalaryCapPercent(event.target.value)} /></InputShell></Field>
-        <Field label="Years" htmlFor="k401-years"><InputShell suffix="years"><input id="k401-years" type="number" min="1" max="50" step="1" inputMode="numeric" value={years} onChange={(event) => setYears(event.target.value)} /></InputShell></Field>
-        <Field label="Assumed annual return" htmlFor="k401-return"><InputShell suffix="%"><input id="k401-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
-        <Field label="Salary growth" htmlFor="k401-growth"><InputShell suffix="% / year"><input id="k401-growth" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={salaryGrowthPercent} onChange={(event) => setSalaryGrowthPercent(event.target.value)} /></InputShell></Field>
       </div>
+      <AdvancedSection
+        id="growth"
+        title="Match, horizon and growth assumptions"
+        hint="Planning figures, not a forecast. The match fields come off your plan document."
+      >
+        <div className="calc-form-grid">
+          <Field label="Employer match rate" htmlFor="k401-match"><InputShell suffix="%"><input id="k401-match" type="number" min="0" max="100" step="1" inputMode="decimal" value={matchRatePercent} onChange={(event) => setMatchRatePercent(event.target.value)} /></InputShell></Field>
+          <Field label="Match applies up to" htmlFor="k401-cap" hint="Percent of salary"><InputShell suffix="% of salary"><input id="k401-cap" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={matchSalaryCapPercent} onChange={(event) => setMatchSalaryCapPercent(event.target.value)} /></InputShell></Field>
+          <Field label="Years" htmlFor="k401-years"><InputShell suffix="years"><input id="k401-years" type="number" min="1" max="50" step="1" inputMode="numeric" value={years} onChange={(event) => setYears(event.target.value)} /></InputShell></Field>
+          <Field label="Assumed annual return" htmlFor="k401-return"><InputShell suffix="%"><input id="k401-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
+          <Field label="Salary growth" htmlFor="k401-growth"><InputShell suffix="% / year"><input id="k401-growth" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={salaryGrowthPercent} onChange={(event) => setSalaryGrowthPercent(event.target.value)} /></InputShell></Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">

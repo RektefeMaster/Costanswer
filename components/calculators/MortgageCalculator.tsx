@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { calculateMortgage, defaultRateForTerm, type MortgageTermYears } from '@/lib/calculations/mortgage';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { pluralize } from '@/lib/plural';
 
 type RateSnapshot = {
@@ -120,29 +120,37 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
             />
           </InputShell>
         </Field>
-        <Field label="Yearly property tax" htmlFor="mortgage-tax" hint="Optional">
-          <InputShell prefix="$">
-            <input id="mortgage-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Yearly home insurance" htmlFor="mortgage-insurance" hint="Enter an annual quote or planning estimate">
-          <InputShell prefix="$">
-            <input id="mortgage-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Monthly HOA" htmlFor="mortgage-hoa" hint="Optional">
-          <InputShell prefix="$">
-            <input id="mortgage-hoa" type="number" min="0" step="10" inputMode="decimal" value={monthlyHoa} onChange={(event) => setMonthlyHoa(event.target.value)} />
-          </InputShell>
-        </Field>
       </div>
-      <p className="decision-note">Need an insurance budget? Use the <Link href="/money/insurance-cost">Insurance Cost Calculator</Link>, then enter its annual homeowners estimate above. A carrier quote is more specific to your home.</p>
-      <div className="check-row">
-        <label>
-          <input type="checkbox" checked={includePmiEstimate} onChange={(event) => setIncludePmiEstimate(event.target.checked)} />
-          Add a rough PMI estimate if the down payment is under 20%
-        </label>
-      </div>
+      <AdvancedSection
+        id="carrying-costs"
+        title="Taxes, insurance and HOA"
+        hint="Leave these at zero for principal and interest only. Filling them in gives the payment a lender will actually quote."
+      >
+        <div className="calc-form-grid">
+          <Field label="Yearly property tax" htmlFor="mortgage-tax" hint="Optional">
+            <InputShell prefix="$">
+              <input id="mortgage-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Yearly home insurance" htmlFor="mortgage-insurance" hint="Enter an annual quote or planning estimate">
+            <InputShell prefix="$">
+              <input id="mortgage-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Monthly HOA" htmlFor="mortgage-hoa" hint="Optional">
+            <InputShell prefix="$">
+              <input id="mortgage-hoa" type="number" min="0" step="10" inputMode="decimal" value={monthlyHoa} onChange={(event) => setMonthlyHoa(event.target.value)} />
+            </InputShell>
+          </Field>
+        </div>
+        <p className="decision-note">Need an insurance budget? Use the <Link href="/money/insurance-cost">Insurance Cost Calculator</Link>, then enter its annual homeowners estimate above. A carrier quote is more specific to your home.</p>
+        <div className="check-row">
+          <label>
+            <input type="checkbox" checked={includePmiEstimate} onChange={(event) => setIncludePmiEstimate(event.target.checked)} />
+            Add a rough PMI estimate if the down payment is under 20%
+          </label>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">

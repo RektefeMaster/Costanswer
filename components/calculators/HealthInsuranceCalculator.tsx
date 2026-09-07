@@ -9,7 +9,7 @@ import { costSharingLevelForIncome, parseEnrollingAges } from '@/lib/data/cms-ma
 import type { CmsReleaseSummary } from '@/lib/data/cms-marketplace-client';
 import { useCmsQuote } from './useCmsQuote';
 import { US_STATES, type StateCode } from '@/lib/location/states';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type Eligibility = 'assumed-eligible' | 'unknown' | 'ineligible';
 
@@ -211,8 +211,11 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
         </p>
       )}
 
-      <details className="health-advanced">
-        <summary>Use your own premiums, or a partial year <span>Only if they apply to you</span></summary>
+      <AdvancedSection
+        id="own-premiums"
+        title="Use your own premiums, or a partial year"
+        hint="Only if they apply to you"
+      >
         <div className="calc-form-grid">
           <Field label="Your own benchmark premium" htmlFor="health-benchmark" hint={quotes ? `Leave blank to use the ${formatMoney(quotes.benchmark.premium)} filed for this county${quotes.benchmark.exactForAges ? ' and these ages' : ', quoted at the nearest published ages'}.` : 'The second-lowest-cost Silver premium for the people enrolling.'}>
             <InputShell prefix="$">
@@ -239,7 +242,7 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
             </InputShell>
           </Field>
         </div>
-      </details>
+      </AdvancedSection>
 
       {calculation.error && <InlineError message={calculation.error} />}
       {parsedAges.invalidTokens.length > 0 && (

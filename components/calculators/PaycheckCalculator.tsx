@@ -6,7 +6,7 @@ import { calculationErrorMessage } from '@/lib/calculations/error';
 import { DEFAULT_TAX_YEAR, FILING_STATUSES, FILING_STATUS_LABELS, PAY_FREQUENCIES, type PayFrequency } from '@/lib/calculations/tax';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { STATE_CODES, getStateName, type StateCode } from '@/lib/location/states';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 function money(value: number) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
@@ -116,26 +116,34 @@ export function PaycheckCalculator() {
             </select>
           </span>
         </Field>
-        <Field label="Filing status" htmlFor="paycheck-filing">
-          <span className="input-shell select-shell">
-            <select id="paycheck-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
-              {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
-            </select>
-          </span>
-        </Field>
-        <Field label="Dependents" htmlFor="paycheck-dependents">
-          <InputShell>
-            <input id="paycheck-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Tax year" htmlFor="paycheck-year">
-          <span className="input-shell select-shell">
-            <select id="paycheck-year" value={taxYear} onChange={(event) => setTaxYear(event.target.value)}>
-              <option value={snapshot.taxYear}>{snapshot.taxYear}</option>
-            </select>
-          </span>
-        </Field>
       </div>
+      <AdvancedSection
+        id="tax-detail"
+        title="Filing status, dependents and tax year"
+        hint="Defaults cover the common case: single, no dependents, the current year."
+      >
+        <div className="calc-form-grid">
+          <Field label="Filing status" htmlFor="paycheck-filing">
+            <span className="input-shell select-shell">
+              <select id="paycheck-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
+                {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
+              </select>
+            </span>
+          </Field>
+          <Field label="Dependents" htmlFor="paycheck-dependents">
+            <InputShell>
+              <input id="paycheck-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Tax year" htmlFor="paycheck-year">
+            <span className="input-shell select-shell">
+              <select id="paycheck-year" value={taxYear} onChange={(event) => setTaxYear(event.target.value)}>
+                <option value={snapshot.taxYear}>{snapshot.taxYear}</option>
+              </select>
+            </span>
+          </Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">

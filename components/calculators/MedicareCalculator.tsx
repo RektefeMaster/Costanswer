@@ -5,7 +5,7 @@ import { calculateMedicareCost } from '@/lib/calculations/medicare';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { formatMoney } from '@/lib/calculations/contracts';
 import { medicareSnapshot } from '@/lib/data/medicare';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 type FilingStatus = 'single' | 'married-joint' | 'married-separate';
 type Quarters = '40-or-more' | '30-to-39' | 'under-30';
@@ -101,8 +101,11 @@ export function MedicareCalculator() {
         )}
       </div>
 
-      <details className="health-advanced">
-        <summary>Medigap, or a part year <span>Only if they apply to you</span></summary>
+      <AdvancedSection
+        id="medigap"
+        title="Medigap, or a part year"
+        hint="Only if they apply to you"
+      >
         <div className="calc-form-grid">
           <Field label="Medigap premium, per month" htmlFor="medicare-medigap" hint="A supplement is priced by its insurer and appears in no federal table, so enter what you are quoted.">
             <InputShell prefix="$">
@@ -115,7 +118,7 @@ export function MedicareCalculator() {
             </InputShell>
           </Field>
         </div>
-      </details>
+      </AdvancedSection>
 
       {calculation.error && <InlineError message={calculation.error} />}
       {result && value && (

@@ -14,7 +14,7 @@ import {
 import { defaultRateForTerm, type MortgageTermYears } from '@/lib/calculations/mortgage';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { approxMoney, roundedGuidelineMoney } from './finance-format';
 
 type RateSnapshot = {
@@ -186,32 +186,40 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
             />
           </InputShell>
         </Field>
-        <Field label="Yearly property tax" htmlFor="afford-tax" hint="Optional">
-          <InputShell prefix="$">
-            <input id="afford-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Yearly home insurance" htmlFor="afford-insurance" hint="Enter an annual quote or planning estimate">
-          <InputShell prefix="$">
-            <input id="afford-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Monthly HOA" htmlFor="afford-hoa" hint="Optional">
-          <InputShell prefix="$">
-            <input id="afford-hoa" type="number" min="0" step="10" inputMode="decimal" value={monthlyHoa} onChange={(event) => setMonthlyHoa(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Yearly repairs" htmlFor="afford-maint" hint="Share of the home price. 1% is a planning default.">
-          <InputShell suffix="% / year">
-            <input id="afford-maint" type="number" min="0" max="5" step="0.1" inputMode="decimal" value={maintenanceAnnualPercent} onChange={(event) => setMaintenanceAnnualPercent(event.target.value)} />
-          </InputShell>
-        </Field>
-        <Field label="Closing costs" htmlFor="afford-closing" hint="Share of the price, on top of the down payment">
-          <InputShell suffix="%">
-            <input id="afford-closing" type="number" min="0" max="10" step="0.1" inputMode="decimal" value={closingCostPercent} onChange={(event) => setClosingCostPercent(event.target.value)} />
-          </InputShell>
-        </Field>
       </div>
+      <AdvancedSection
+        id="carrying-costs"
+        title="Taxes, insurance, HOA and upkeep"
+        hint="Every one has a working default. Filling them in gives the payment a lender would quote."
+      >
+        <div className="calc-form-grid">
+          <Field label="Yearly property tax" htmlFor="afford-tax" hint="Optional">
+            <InputShell prefix="$">
+              <input id="afford-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Yearly home insurance" htmlFor="afford-insurance" hint="Enter an annual quote or planning estimate">
+            <InputShell prefix="$">
+              <input id="afford-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Monthly HOA" htmlFor="afford-hoa" hint="Optional">
+            <InputShell prefix="$">
+              <input id="afford-hoa" type="number" min="0" step="10" inputMode="decimal" value={monthlyHoa} onChange={(event) => setMonthlyHoa(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Yearly repairs" htmlFor="afford-maint" hint="Share of the home price. 1% is a planning default.">
+            <InputShell suffix="% / year">
+              <input id="afford-maint" type="number" min="0" max="5" step="0.1" inputMode="decimal" value={maintenanceAnnualPercent} onChange={(event) => setMaintenanceAnnualPercent(event.target.value)} />
+            </InputShell>
+          </Field>
+          <Field label="Closing costs" htmlFor="afford-closing" hint="Share of the price, on top of the down payment">
+            <InputShell suffix="%">
+              <input id="afford-closing" type="number" min="0" max="10" step="0.1" inputMode="decimal" value={closingCostPercent} onChange={(event) => setClosingCostPercent(event.target.value)} />
+            </InputShell>
+          </Field>
+        </div>
+      </AdvancedSection>
       <p className="decision-note">Use the <Link href="/money/insurance-cost">Insurance Cost Calculator</Link> to prepare an annual homeowners budget, then enter that amount above. Replace it with a carrier quote when available.</p>
       <div className="check-row">
         <label>

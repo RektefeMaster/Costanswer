@@ -12,7 +12,7 @@ import { USDA_FOOD_PLANS, type UsdaFoodPlan } from '@/lib/data/usda-food';
 import type { LocationCoverage } from '@/lib/location/resolve';
 import type { LocationSearchHit } from '@/lib/location/search';
 import { getStateName, type StateCode } from '@/lib/location/states';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 function money(value: number) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
@@ -390,12 +390,26 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
             </Field>
           </>
         )}
-        <Field label="Other essentials (optional)" htmlFor="col-other" hint="Phone, internet, or similar. HUD gross rent does not include these.">
-          <InputShell prefix="$">
-            <input id="col-other" type="number" min="0" step="10" inputMode="decimal" value={otherEssentials} onChange={(event) => setOtherEssentials(event.target.value)} />
-          </InputShell>
-        </Field>
       </div>
+      {/*
+        Only this one field folds away. The rest of this form is already
+        conditional on the housing, transport and income modes above, so most
+        of them are not on screen at any one time — folding them again would
+        hide a field the reader has just asked to see.
+      */}
+      <AdvancedSection
+        id="other-essentials"
+        title="Other essentials"
+        hint="Phone, internet and similar. HUD gross rent does not include these, so they are not counted unless you add them."
+      >
+        <div className="calc-form-grid">
+          <Field label="Other essentials (optional)" htmlFor="col-other" hint="Phone, internet, or similar. HUD gross rent does not include these.">
+            <InputShell prefix="$">
+              <input id="col-other" type="number" min="0" step="10" inputMode="decimal" value={otherEssentials} onChange={(event) => setOtherEssentials(event.target.value)} />
+            </InputShell>
+          </Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && value && (
         <>

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { calculateRefinance } from '@/lib/calculations/refinance';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 import { money } from './finance-format';
 import { pluralize } from '@/lib/plural';
 
@@ -97,13 +97,19 @@ export function RefinanceCalculator({
           <Field label="New term" htmlFor="refi-new-term" hint="Going back to 30 years lowers the payment and usually raises total interest">
             <InputShell suffix="years"><input id="refi-new-term" type="number" min="1" max="50" step="1" inputMode="numeric" value={newTermYears} onChange={(event) => setNewTermYears(event.target.value)} /></InputShell>
           </Field>
-          <Field label="Closing costs" htmlFor="refi-costs" hint="Lender fees, title, appraisal, recording">
-            <InputShell prefix="$"><input id="refi-costs" type="number" min="0" step="100" inputMode="decimal" value={closingCosts} onChange={(event) => setClosingCosts(event.target.value)} /></InputShell>
-          </Field>
-          <div className="mode-tabs" role="group" aria-label="How closing costs are paid">
-            <button type="button" aria-pressed={!financeClosingCosts} className={!financeClosingCosts ? 'active' : ''} onClick={() => setFinanceClosingCosts(false)}>Pay at closing</button>
-            <button type="button" aria-pressed={financeClosingCosts} className={financeClosingCosts ? 'active' : ''} onClick={() => setFinanceClosingCosts(true)}>Add to the loan</button>
-          </div>
+          <AdvancedSection
+            id="closing-costs"
+            title="Closing costs"
+            hint="What the refinance itself costs up front. This is the figure the break-even point is measured against."
+          >
+            <Field label="Closing costs" htmlFor="refi-costs" hint="Lender fees, title, appraisal, recording">
+              <InputShell prefix="$"><input id="refi-costs" type="number" min="0" step="100" inputMode="decimal" value={closingCosts} onChange={(event) => setClosingCosts(event.target.value)} /></InputShell>
+            </Field>
+            <div className="mode-tabs" role="group" aria-label="How closing costs are paid">
+              <button type="button" aria-pressed={!financeClosingCosts} className={!financeClosingCosts ? 'active' : ''} onClick={() => setFinanceClosingCosts(false)}>Pay at closing</button>
+              <button type="button" aria-pressed={financeClosingCosts} className={financeClosingCosts ? 'active' : ''} onClick={() => setFinanceClosingCosts(true)}>Add to the loan</button>
+            </div>
+          </AdvancedSection>
         </section>
       </div>
 

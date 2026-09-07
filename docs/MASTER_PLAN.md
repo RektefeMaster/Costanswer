@@ -128,8 +128,8 @@ do not treat these as HEAD.
 | **Medical Cost Engine** | Medicare *premium* calculator only | wave 2 |
 | **Analytics sink** | Local `CustomEvent` bus; `analyticsEnabled` off | Connect **as soon as the custom domain is live**, not on a final launch day |
 | **Search Console / Bing** | Not connected | Same: the day the domain is live, not P9 |
-| **Missing analytics events** | No `advanced_opened`, `compare_used`, `reverse_used`, `quote_checked`, `source_clicked`, `guide_to_calculator`, `language_switched` | P5 |
-| **Basic/Advanced / compare / reverse / confidence** | Ad hoc; no shared primitives | **P5 before P4** |
+| ~~Missing analytics events~~ | **P5 closed.** All seven added to `lib/analytics.ts` behind the strict field allowlist. `related_calculator_clicked` was deliberately not added: `related_tool_click` already carries it | — |
+| ~~Basic/Advanced / compare / reverse / confidence~~ | **P5 closed.** `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt` in `CalculatorUI.tsx`, logic in `lib/calculators/depth.ts`, 24 tests | — |
 | **GSA per diem refresh + published-vs-effective** | Policy says scheduled; not in the refresh script; no `releases.json` | P3 |
 | **Freshness enforcement + clock** | Displayed, not gated; `asOf` frozen at publish/build time so labels do not age on a long-lived deploy | P3 — user-facing labels need a **runtime clock** or a daily freshness manifest |
 | **Custom domain** | Not deployed | **Launch blocker** (P1 deploy). D1 is not. |
@@ -1119,7 +1119,7 @@ P2” as current work.
 | **0** | **Clean checkpoint.** Commit the dirty working tree (CT Table A, IL/MI/NM/VT/RI dependents, snapshot, tests, this rebase). Record branch, SHA, dirty files, `tools.length`, test count, `npm run verify:tax` vector count | P2 close must have a clean baseline before any new phase |
 | **1** | **Production deploy + measurement.** Custom domain, TLS, `www` redirect. The day the domain is live: analytics, **Google Search Console**, Bing Webmaster Tools. Lighthouse/smoke as available | GSC is the data source for later expansion, not a last-day checklist item. D1 + monetization secrets are an **activation** blocker, not a public-launch blocker while providers stay off |
 | **2** | **P3 Freshness SLA** including runtime clock or daily `freshness-status.json` | Next infrastructure job after a working tax engine |
-| **3** | **P5 shared primitives** (`AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt`) | Must exist before a tool wave; P4 numbers after P5 in the sequence even though the phase id is “P4” |
+| **3** | ~~P5 shared primitives~~ **closed** | Done. P4 is now unblocked |
 | **4** | **P4 tax / high-value finance tools** — W-4, refund, EITC, CTC, effective tax, quarterly, capital gains, plus adjacent high-intent finance | Unblocked by P2; high YMYL value; uses P5 |
 | **5** | **P7 Job Cost Engine V1** | The product moat. Do not wait for 43 generic calculators. Field-level `SourcedValue`, `profitMarkupRate`, critical materials, no RPP-on-materials — §D |
 | **6** | **Remaining P4 catalogue** | Fill toward 101 only after Job V1 exists. 58 → ~67 quality tools + Job Engine can outrank 101 generic tools |
@@ -1608,10 +1608,31 @@ breaks.
 
 ---
 
-### P5 — Shared depth primitives
+### P5 — Shared depth primitives — **CLOSED 2026-09-07**
 
-**Runs before P4.** Sequence step 3. P4's phase number is historical; this card
-is the dependency.
+**Ran before P4.** Sequence step 3. P4's phase number is historical; this card
+was the dependency and it is now met.
+
+**What shipped.** The five primitives are exported from `CalculatorUI.tsx`,
+with their arithmetic and text in `lib/calculators/depth.ts` so it is testable
+in the node environment the suite already uses and is not bundled per tool.
+
+Nineteen tools opened with more than five inputs; all now fold their optional
+ones away. Three of them — auto coverage, health insurance, Medicare — had
+hand-rolled the same disclosure as a bare `<details className="health-advanced">`,
+which is exactly the duplication this card existed to remove, so they were
+switched to the primitive rather than left alongside it.
+
+One documented exemption: duration arithmetic takes two durations as
+hours/minutes/seconds, so it counts as six fields while asking for two things.
+Folding any of them would hide half of one duration. The test names the
+exemption and fails if that panel ever stops being crowded.
+
+`ReverseSolve` reports `unreachable`, `flat` and `invalid-range` as named
+outcomes rather than returning the closest value, because the closest value
+looks like a yes. Its solver is bisection and requires monotonicity across the
+bracket — which is why §M's warning about net tax not being monotonic in income
+is a real constraint on where it may be pointed, not a formality.
 
 **Goal.** The §4 standard is a contract, not 101 hand-rolled variants.
 

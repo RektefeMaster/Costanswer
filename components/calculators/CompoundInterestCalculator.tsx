@@ -7,7 +7,7 @@ import {
   type CompoundingFrequency,
 } from '@/lib/calculations/compound-interest';
 import { calculationErrorMessage } from '@/lib/calculations/error';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from './CalculatorUI';
 
 function money(value: number, digits = 2) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: digits });
@@ -88,25 +88,33 @@ export function CompoundInterestCalculator() {
             <input id="compound-contribution" type="number" min="0" step="25" inputMode="decimal" value={contribution} onChange={(event) => setContribution(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Compounding" htmlFor="compound-frequency">
-          <span className="input-shell select-shell">
-            <select id="compound-frequency" value={compounding} onChange={(event) => setCompounding(event.target.value as CompoundingFrequency)}>
-              {COMPOUNDING_FREQUENCIES.map((frequency) => (
-                <option value={frequency} key={frequency}>{frequencyOptionLabel(frequency)}</option>
-              ))}
-            </select>
-          </span>
-        </Field>
-        <Field label="Contribution frequency" htmlFor="contribution-frequency">
-          <span className="input-shell select-shell">
-            <select id="contribution-frequency" value={contributionFrequency} onChange={(event) => setContributionFrequency(event.target.value as CompoundingFrequency)}>
-              {COMPOUNDING_FREQUENCIES.map((frequency) => (
-                <option value={frequency} key={`contrib-${frequency}`}>{frequencyOptionLabel(frequency)}</option>
-              ))}
-            </select>
-          </span>
-        </Field>
       </div>
+      <AdvancedSection
+        id="frequency"
+        title="Compounding and contribution timing"
+        hint="Both default to monthly, which is what most accounts do."
+      >
+        <div className="calc-form-grid">
+          <Field label="Compounding" htmlFor="compound-frequency">
+            <span className="input-shell select-shell">
+              <select id="compound-frequency" value={compounding} onChange={(event) => setCompounding(event.target.value as CompoundingFrequency)}>
+                {COMPOUNDING_FREQUENCIES.map((frequency) => (
+                  <option value={frequency} key={frequency}>{frequencyOptionLabel(frequency)}</option>
+                ))}
+              </select>
+            </span>
+          </Field>
+          <Field label="Contribution frequency" htmlFor="contribution-frequency">
+            <span className="input-shell select-shell">
+              <select id="contribution-frequency" value={contributionFrequency} onChange={(event) => setContributionFrequency(event.target.value as CompoundingFrequency)}>
+                {COMPOUNDING_FREQUENCIES.map((frequency) => (
+                  <option value={frequency} key={`contrib-${frequency}`}>{frequencyOptionLabel(frequency)}</option>
+                ))}
+              </select>
+            </span>
+          </Field>
+        </div>
+      </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
