@@ -1,0 +1,25 @@
+Residential Air-Source Heat Pumps
+
+Extracted from EIA Appendix A (Updated Buildings Sector Appliance and Equipment Costs and Efficiencies).
+Source: https://www.eia.gov/analysis/studies/buildings/equipcosts/
+File: appendix-a.pdf, table "Residential Air-Source Heat Pumps".
+Retrieved 2026-09-08.
+
+Values shown are for split-system units in the 36 kBtu/h (3-ton) size class.
+Costs and efficiency levels are for "blower-coil" systems, meaning they include a blower.
+Note coil-only systems were analyzed for residential central air conditioners, which is why the HVAC split-system basket line is CAC coil-only plus a gas furnace, not this heat-pump table.
+
+Typical Capacity (kBtu/h) 36 for every 2022 column.
+
+2022 Typical column:
+Retail Equipment Cost (2022$) 4,270
+Total Installed Cost (2022$) 6,880
+
+2022 Current Standard column:
+Retail Equipment Cost (2022$) 3,970
+
+2022 High column:
+Retail Equipment Cost (2022$) 6,740
+
+Basket uses the 2022 Typical retail equipment cost 4,270. Installed cost is not used; Job Cost prices labor separately.
+This line is a complete outdoor + indoor blower-coil heat pump, not a coil-only air conditioner.

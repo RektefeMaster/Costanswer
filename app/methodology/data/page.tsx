@@ -28,6 +28,7 @@ import { DATASET_POLICIES } from '@/lib/data/dataset-policy';
 import { pageMetadata } from '@/lib/seo';
 import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 import { utcCalendarDate } from '@/lib/data/freshness';
+import { jobCostDatasetCards } from '@/lib/job/dataset-cards';
 
 export const dynamic = 'force-dynamic';
 
@@ -336,6 +337,7 @@ export default function DataSourcesPage() {
     cmsSource,
     allSources,
   } = dataPageSources();
+  const jobDatasets = jobCostDatasetCards();
   return (
     <InfoPage
       eyebrow="Data sources"
@@ -715,6 +717,22 @@ export default function DataSourcesPage() {
         </details>
         <p className="dataset-links"><a href={insuranceSnapshot.sources.homeowners.sourceUrl}>Homeowners report ↗</a><a href={insuranceSnapshot.sources.auto.sourceUrl}>Auto database report ↗</a><a href={insuranceSnapshot.termsUrl}>Terms ↗</a></p>
       </section>
+      {jobDatasets.map((dataset) => (
+        <section className="dataset-card" key={dataset.id}>
+          <p><span className="status-dot" /> Job Cost Engine</p>
+          <h2>{dataset.title}</h2>
+          <dl>
+            <div><dt>Observation period</dt><dd>{dataset.observationPeriod}</dd></div>
+            <div><dt>Snapshot</dt><dd>{dataset.snapshotId}</dd></div>
+            <div><dt>Cadence</dt><dd>Not on the DATASET_IDS freshness SLA. Refreshed with the Job Cost ingest.</dd></div>
+          </dl>
+          <p>{dataset.body}</p>
+          <p>{dataset.attribution}</p>
+          {dataset.sourceUrl && (
+            <p className="dataset-links"><a href={dataset.sourceUrl}>Source ↗</a></p>
+          )}
+        </section>
+      ))}
     </InfoPage>
   );
 }

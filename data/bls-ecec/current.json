@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterVersion": "bls-ecec-construction-v1.0.0",
+  "snapshotId": "bls-ecec-2026-03-v1",
+  "datasetId": "bls-ecec",
+  "observationPeriod": "2026-03",
+  "fetchedAt": "2026-09-07T21:17:23.562Z",
+  "publishedAt": "2026-06-12T00:00:00.000Z",
+  "sourceUrl": "https://www.bls.gov/news.release/ecec.t04.htm",
+  "sourceDocumentationUrl": "https://www.bls.gov/news.release/ecec.toc.htm",
+  "attribution": "U.S. Bureau of Labor Statistics, Employer Costs for Employee Compensation, private industry, construction, March 2026.",
+  "industry": "construction",
+  "totalCompensationHourly": 51.23,
+  "wagesAndSalariesHourly": 35.54,
+  "loadingFactor": 1.4415,
+  "rawSha256": "ab0341ace92434aa793779b5315f5694ff7ecd08238249d63f0e8a8b160f1548",
+  "validationReport": [
+    "Construction industry total compensation $51.23 and wages $35.54 from Table 4 (March 2026).",
+    "Loading factor 1.4415 = total compensation / wages and salaries.",
+    "This loading is a national industry model, not a local contractor wage."
+  ],
+  "normalizedSha256": "cb32f903ebecaf835c74b5e632bc19af630ca843d4c0e0ee8ec1bf364f19ee15"
+}

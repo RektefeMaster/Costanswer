@@ -3,6 +3,7 @@ import { siteConfig } from '@/lib/site-config';
 import { categories, CATEGORY_IDS } from '@/lib/categories';
 import { occupationHeadingName } from '@/lib/salary-content';
 import { FOOTER_SALARY_OCCUPATIONS, salaryFamilyPath, salaryOccupationPath, salaryStateIndexPath } from '@/lib/salary-pages';
+import { JOB_CATALOG } from '@/lib/job/catalog';
 
 export function SiteFooter() {
   return (
@@ -36,6 +37,11 @@ export function SiteFooter() {
             {FOOTER_SALARY_OCCUPATIONS.map((occupation) => (
               <Link href={salaryOccupationPath(occupation)} key={occupation.code}>{occupationHeadingName(occupation)}</Link>
             ))}
+            <Link href="/cost">Job costs</Link>
+            <Link href="/cost/estimate">Estimate a job</Link>
+            <Link href="/cost/check-quote">Check a quote</Link>
+            <Link href="/cost/hvac-replacement">{JOB_CATALOG['hvac-replacement'].shortTitle}</Link>
+            <Link href="/cost/tree-removal">{JOB_CATALOG['tree-removal'].shortTitle}</Link>
           </div>
         </nav>
         <nav className="footer-nav-site" aria-labelledby="footer-site-heading">

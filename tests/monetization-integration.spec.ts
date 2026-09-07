@@ -72,8 +72,8 @@ async function seed(database: FakeD1, overrides: Partial<LeadCampaign> = {}) {
 function submission(overrides: Partial<LeadSubmissionInput> = {}): LeadSubmissionInput {
   return {
     vertical: 'roofing',
-    pageId: 'job-roof-replacement',
-    calculatorId: 'job-roof-replacement',
+    pageId: 'job-hvac-replacement',
+    calculatorId: 'job-hvac-replacement',
     locale: 'en-US',
     zip: '75201',
     state: 'TX',
@@ -104,7 +104,7 @@ describe('lead pipeline, end to end', () => {
     expect(coverage.covered).toBe(true);
     expect(coverage.partnerName).toBe(PARTNER);
 
-    const outcome = await submitLead(database, submission(), config, { pagePath: '/cost/roof-replacement' });
+    const outcome = await submitLead(database, submission(), config, { pagePath: '/cost/hvac-replacement' });
     expect(outcome.disposition).toBe('submitted');
 
     const lead = await getLeadRequest(database, outcome.leadId);
@@ -139,7 +139,7 @@ describe('lead pipeline, end to end', () => {
 
   it('reports no route without claiming success when no campaign accepts', async () => {
     await seed(database, { stateCoverage: ['CA'] });
-    const outcome = await submitLead(database, submission(), config, { pagePath: '/cost/roof-replacement' });
+    const outcome = await submitLead(database, submission(), config, { pagePath: '/cost/hvac-replacement' });
     expect(outcome.disposition).toBe('no_route');
     const lead = await getLeadRequest(database, outcome.leadId);
     expect(lead?.status).toBe('failed');

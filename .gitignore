@@ -34,10 +34,17 @@ yarn-error.log*
 !.env.example
 data/**/.ingest.lock
 
+# NREL REMDB raw workbooks kept locally for research. Ingest validates the
+# 55 KB machine-readable file plus text extracts, not these multi-MB sheets.
+data/material-basket/raw/nremdb-envelope.xlsx
+data/material-basket/raw/nremdb-non-envelope.xlsx
+
 # deployment and generated files
 .vercel
 next-env.d.ts
 /dist/
+/public/store/*
+!/public/store/.gitkeep
 /.wrangler/
 /outputs/
 /work/

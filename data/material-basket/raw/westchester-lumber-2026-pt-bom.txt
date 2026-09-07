@@ -1,0 +1,42 @@
+Westchester County NY lumber award RFB-WC-26106
+Contract period: June 1, 2026 through November 30, 2026
+Date of issue: May 27, 2026
+URL: https://bps.westchestercountyny.gov/images/Lumber_and_Building_Materials_.pdf
+Vendor: Feldman Lumber Company
+Retrieved from the public award PDF 2026-09-07.
+
+This is a dated public procurement baseline used nationally and escalated with BLS PPI WPU081. It is not a Westchester-only multiplier and is not a retailer scrape.
+
+MCA treated Southern Yellow Pine must be purchased with MCA treatment:
+PRICE ADDITIONAL MCA - .40 RETENTION/CU. FT.
+Feldman: $485.00 per MBF
+
+ITEM #4 SOUTHERN YELLOW PINE # 2 & BETTER, D4S, K.D. PRICE/LINEAL FOOT
+2" x 4" x 8' to 20' $0.76
+2" x 6" x 8' to 20' $1.11
+2" x 8" x 8' to 20' $1.37
+4" x 4" x 8' to 20' $1.79
+
+ITEM #6 PONDEROSA PINE #2 COMMON K.D. SHELVING PRICE/LINEAL FOOT
+1" x 6" x 8' to 16' $0.90
+Used only as the closest published 1x6 board for fence pickets. The award does not list treated pickets.
+
+PT lineal = SYP lineal + $485/MBF × board-feet per lineal foot.
+2x4 PT = $0.76 + 0.323333 = $1.083333
+2x6 PT = $1.11 + 0.485000 = $1.595000
+2x8 PT = $1.37 + 0.646667 = $2.016667
+4x4 PT = $1.79 + 0.646667 = $2.436667
+
+Deck package per sq ft of walking surface (named 10 ft × 20 ft BOM, not one board and not OSB sheathing):
+2x8 joists/beam/ledger/rim 1.20 LF × $2.016667 = $2.420000
+2x6 PT decking 2.181818 LF × $1.595000 = $3.480000
+4x4 posts 0.12 LF × $2.436667 = $0.292400
+Deck package total $6.192400 → 619 cents per sq ft.
+
+Fence package per linear foot of 6 ft wood privacy (8 ft bays, three 2x4 rails, 5.5 in pickets):
+4x4 PT posts 1.00 LF × $2.436667 = $2.436667
+2x4 PT rails 3.00 LF × $1.083333 = $3.249999
+1x6 pickets 13.090909 LF × $0.90 = $11.781818
+Fence package total $17.468484 → 1747 cents per linear foot.
+
+Hardware, concrete footings, and gates are not in this package.

@@ -1,0 +1,53 @@
+NREL REMDB 2024.12.23 Machine Read — retail intercepts used by envelope recipes
+Source: https://data.openei.org/submissions/8336
+License: CC BY 4.0
+File: data/material-basket/raw/REMDB_2024.12.23.xlsx, sheet Machine Read
+Labor multipliers (New Construction / Retrofit columns) are not used.
+Installation adders are not used.
+RSMeans (data source 2) is not among the data_sources on these rows.
+
+row=126 name=Window class=Vinyl
+output_units=2023$/sqft
+coef_mid=0
+int_low=24.954681440443213 int_mid=54.113275397063234 int_high=113.34530109053355
+data_sources=1,4
+notes=Not a strong correlation between U-factor, number of panes, and costs
+
+row=38 name=Door class=Exterior Prehung, Fiberglass
+output_units=2023$/sqft
+coef_mid=0
+int_low=37.863500000000002 int_mid=55.491 int_high=55.491
+data_sources=1, 4
+
+row=39 name=Door class=Exterior Prehung, Metal
+output_units=2023$/sqft
+coef_mid=0
+int_low=15.88771 int_mid=41.994230000000002 int_high=80.784630000000007
+data_sources=1, 4
+
+row=40 name=Door class=Exterior Prehung, Wood
+output_units=2023$/sqft
+coef_mid=0
+int_low=55.970359999999999 int_mid=77.287499999999994 int_high=119.0682
+data_sources=1, 4
+
+row=58 name=Exterior Finish class=Vinyl
+output_units=2023$/sqft
+coef_mid=0
+int_low=4.4655019999999999 int_mid=6.9767530000000004 int_high=14.025969999999999
+data_sources=1, 4
+
+row=59 name=Exterior Finish class=Wood
+output_units=2023$/sqft
+coef_mid=0
+int_low=1.8151189999999999 int_mid=8.1136359999999996 int_high=30.928570000000001
+data_sources=1, 4
+
+row=115 name=Wall Sheathing class=Drywall
+output_units=2023$/sqft
+coef_mid=0
+int_low=0.377 int_mid=0.48614583333333333 int_high=0.71500000000000086
+data_sources=1, 4, 10
+
+Data Sources sheet: 1 = Retail/Distributor Websites, 4 = Homewyse, 10 = Home Guide.
+Basket uses Int-Mid only. coef_mid=0 so the intercept is the full retail unit price.

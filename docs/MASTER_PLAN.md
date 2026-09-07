@@ -124,7 +124,7 @@ do not treat these as HEAD.
 | **State tax** | **P2 closed.** Do not re-open. Local/payroll tax is a separate engine | — |
 | **Localization** | Zero. Root `app/layout.tsx` hardcodes `<html lang="en">`. Nested `/es` cannot change it — P6 needs dual root layouts (§G.2) | ES-US slice |
 | **Content engine** | No `/guides` surface. Per-tool editorial in `lib/tool-content/` is the only long-form | P8 |
-| **Job Cost Engine** | Does not exist | P7 — the product moat; do not bury it behind 43 generic tools |
+| **Job Cost Engine** | **P7 V1 shipped.** One engine, 9 recipes, `/cost` family. Sourced basket. Roof replacement and chain-link fence were dropped — no materials-only public baseline. `/cost/:job/:state` not opened | Calibration is wave 2 |
 | **Medical Cost Engine** | Medicare *premium* calculator only | wave 2 |
 | **Analytics sink** | Local `CustomEvent` bus; `analyticsEnabled` off | Connect **as soon as the custom domain is live**, not on a final launch day |
 | **Search Console / Bing** | Not connected | Same: the day the domain is live, not P9 |
@@ -445,7 +445,7 @@ points over the same engine:
 - `/cost/estimate` — "What should this job cost?"
 - `/cost/check-quote` — "Is this quote fair?"
 
-Plus one indexable page per job type: `/cost/:job` (e.g. `/cost/roof-replacement`).
+Plus one indexable page per job type: `/cost/:job` (e.g. `/cost/hvac-replacement`).
 Location pages (`/cost/:job/:state`) are **not** opened at first public launch —
 see §J. **Sequence: Job Cost V1 is step 5**, after P5 primitives and P4 tax
 tools, before remaining catalogue expansion. Do not bury it behind 43 generic
@@ -548,22 +548,21 @@ engine. Every modifier is its own `BreakdownStep`. **No unnamed adjustment.**
 The band is **CostAnswer estimated range**, never “normal range” or a market
 quantile. After permit/bid calibration (wave 2) the vocabulary can change.
 
-### D.4 Initial job inventory — 10 recipes, V1
+### D.4 Initial job inventory — 9 recipes, V1
 
-Chosen for search volume × recipe tractability, from the brief's own priority list:
+Chosen for search volume × recipe tractability, from the brief's own priority list. Roof replacement and chain-link fence are not in V1: no materials-only public baseline passed the sourcing bar.
 
 | # | jobId | Trade | Unit | Why first |
 | --- | --- | --- | --- | --- |
-| 1 | `roof-replacement` | roofing | roof-square | highest-volume home cost query; well-documented production rates |
-| 2 | `hvac-replacement` | hvac | each (system) | high value; ResStock gives building context |
-| 3 | `water-heater-replacement` | plumbing | each | simple recipe, high volume |
-| 4 | `electrical-panel-upgrade` | electrical | each | well-bounded scope |
-| 5 | `tree-removal` | tree | each | strong modifier story (height, access, proximity) |
-| 6 | `deck-build` | carpentry | sq-ft | material-dominant, good basket exercise |
-| 7 | `fence-install` | fencing | linear-ft | linear unit proves the unit model |
-| 8 | `concrete-driveway` | concrete | sq-ft | reuses the shipped `concrete` engine's material math |
-| 9 | `interior-painting` | painting | sq-ft | labor-dominant, proves productivity model |
-| 10 | `bathroom-remodel` | multi | each | composite recipe; proves recipe composition |
+| 1 | `hvac-replacement` | hvac | each (system) | high value; EIA Appendix A equipment dollars |
+| 2 | `water-heater-replacement` | plumbing | each | simple recipe, high volume |
+| 3 | `electrical-panel-upgrade` | electrical | each | well-bounded scope |
+| 4 | `tree-removal` | tree | each | strong modifier story (height, access, proximity) |
+| 5 | `deck-build` | carpentry | sq-ft | material-dominant, good basket exercise |
+| 6 | `fence-install` | fencing | linear-ft | wood privacy; linear unit proves the unit model |
+| 7 | `concrete-driveway` | concrete | sq-ft | reuses the shipped `concrete` engine's material math |
+| 8 | `interior-painting` | painting | sq-ft | labor-dominant, proves productivity model |
+| 9 | `bathroom-remodel` | multi | each | composite recipe; proves recipe composition |
 
 ### D.5 Datasets — V1 (all public, all commercially usable)
 
@@ -1041,7 +1040,7 @@ the domain can absorb them is the right one.
 | Topic hubs + site pages | ~20 |
 | Salary (leaves staged) | 813 |
 | Guides EN | 30 |
-| Job cost | 13 (`/cost`, 2 entry points, 10 job pages) |
+| Job cost | 12 (`/cost`, 2 entry points, 9 job pages) |
 | ES slice | ~60 |
 | **Total** | **≈ 1,040** |
 
@@ -1050,10 +1049,9 @@ defensible opening. Thirty-two thousand is not.
 
 ### J.3 Job-cost SEO
 
-Attack long-tail utility intent, as §25 says — `roof replacement cost
-calculator`, `2000 sq ft roof replacement cost`, `water heater replacement cost`,
-`is my plumbing quote fair`. These live as `searchTerms` and `longTail` sections
-on the 10 job pages. **`/cost/:job/:state` stays closed at launch** and opens
+Attack long-tail utility intent, as §25 says — `hvac replacement cost
+calculator`, `water heater replacement cost`, `is my plumbing quote fair`.
+These live as `searchTerms` and `longTail` sections on the 9 job pages. **`/cost/:job/:state` stays closed at launch** and opens
 only per-job, only where the OEWS trade wage for that state genuinely moves the
 answer — which is measurable, not assumed: open a state page only where the
 modeled cost differs from the national figure by more than the recipe's own
@@ -1116,8 +1114,8 @@ P2” as current work.
 | **2** | ~~P3 Freshness SLA~~ **closed** | Runtime clock and per-cadence refresh shipped |
 | **3** | ~~P5 shared primitives~~ **closed** | Done. P4 is now unblocked |
 | **4** | **P4 tax / high-value finance tools** — eight of nine landed (`effective-tax-rate`, `federal-tax-bracket`, `self-employment-tax`, `tax-refund`, `quarterly-estimated-tax`, `capital-gains`, `eitc`, `child-tax-credit`). `w4-withholding` **waits** on a transcribed Pub 15-T snapshot | Unblocked by P2 and P5. Pub 15-T is the remaining data dependency |
-| **4b** | **P1c tier-2 storage** (`lib/data/store/`) | Hard dependency of P7. Job/medical files cannot enter the JS bundle |
-| **5** | **P7 Job Cost Engine V1** | The product moat. Do not wait for 43 generic calculators. Field-level `SourcedValue`, `profitMarkupRate`, critical materials, no RPP-on-materials — §D |
+| **4b** | **P1c tier-2 storage** (`lib/data/store/`) — **shipped.** Job/medical/packed wage and premium columns are catalogued as Worker static assets. Request-time code reads them through `readStoreJson`; a static `import` of those files is a test failure | Hard dependency of P7. Do not put job/medical files in the JS bundle |
+| **5** | **P7 Job Cost Engine V1** — **shipped.** `lib/job/`, 9 recipes, ECEC/PPI/FEMA in tier 2, sourced material basket for HVAC (CAC+furnace), WH, panel, driveway, paint, deck, wood fence, and bath fixtures. Roof and chain-link dropped (no materials-only baseline). `/cost` family with publication gate | Remaining P4 catalogue is unblocked. `/cost/:job/:state` stays closed |
 | **6** | **Remaining P4 catalogue** including IRS mileage (expansion wave 2, still unbuilt) | Fill toward 101 only after Job V1 exists |
 | **7** | **P6 Spanish slice / P8 guides** | After some GSC signal exists. Dual-root-layout PoC before P6 copy |
 | **8** | **Local / payroll tax engine** | Own engine, own snapshots. Do not reopen P2. Official city/county/ZIP sources only; no invented typical rate |
@@ -1161,7 +1159,7 @@ and a **step**. Do not invent data to pull them forward.
 | --- | --- | --- | --- |
 | Mixed-year 2026 annual forms | ↻ on every `verify:tax` | Agency publishes the 2026 packet | Do not reopen P2 as a coverage project; do not forward-fill |
 | `costanswer.com` apex + GSC/Bing/analytics | **1** (remaining) | Domain registered and NS at Cloudflare | Do not point canonicals at `workers.dev` |
-| P1c `lib/data/store/` | **4b** | Before P7 recipes | Do not put job/medical files in the JS bundle |
+| P1c `lib/data/store/` | **4b shipped** | — | Do not put job/medical files in the JS bundle |
 | IRS mileage reimbursement | **6** | After Job V1; IRS rate snapshot | Do not hardcode an undated rate in a component |
 | `w4-withholding` | **4** remainder / **6** if still waiting | Pub 15-T percentage-method tables transcribed into a dated snapshot | Do not invent W-4 withholding from brackets or a blog rate |
 | Local / payroll tax | **8** | After P7 ZIP/ZCTA + official city datasets | Do not invent a typicalRate; do not fold into P2 |
@@ -1232,7 +1230,7 @@ and a **step**. Do not invent data to pull them forward.
 - Language switcher never puts salary/income/debt/insurance/health inputs in the query string.
 
 **P7 — Job Cost Engine**
-- 10 recipes validate; every numeric field is a `SourcedValue` whose `sourceId` exists in `sources: Record<string, RecipeSource>`.
+- 9 recipes validate; every numeric field is a `SourcedValue` whose `sourceId` exists in `sources: Record<string, RecipeSource>`.
 - Field is named `profitMarkupRate` (markup, not margin). `expected = subtotal × (1 + profitMarkupRate)`.
 - Direct labor burden (OEWS × ECEC model_transformation) is separate from business `overheadRate`; benefits are not double-counted.
 - Materials: national baseline × PPI. No BEA RPP material multiplier in V1.
@@ -1702,7 +1700,7 @@ English site is untouched.
 
 ---
 
-### P7 — Job Cost Engine V1
+### P7 — Job Cost Engine V1 — **SHIPPED 2026-09-07**
 
 **Goal.** One reusable engine, 10 cited recipes, two entry points, a quote
 checker that is never accusatory.

@@ -2,6 +2,7 @@ import { SearchExperience } from '@/components/search/SearchExperience';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { salarySearchIndex } from '@/lib/salary-pages';
+import { jobSearchIndex } from '@/lib/job/catalog';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata = pageMetadata(
@@ -23,7 +24,7 @@ export default function SearchPage() {
         </header>
         {/* The occupation index is built here so the browser only carries it on
             this page, and never carries the wage columns behind it. */}
-        <SearchExperience salaryIndex={salarySearchIndex()} />
+        <SearchExperience salaryIndex={salarySearchIndex()} jobIndex={jobSearchIndex()} />
       </main>
       <SiteFooter />
     </>

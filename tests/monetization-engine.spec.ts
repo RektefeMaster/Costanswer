@@ -5,6 +5,7 @@ import { generateId, isId } from '@/lib/monetization/ids';
 import { normalizeEmail, normalizePhone, pepperedHash, timingSafeEqual, verifyHmacSignature } from '@/lib/monetization/hash';
 import { assertPlainData, toCalculationFacts } from '@/lib/monetization/boundary';
 import { createMonetizationContext } from '@/lib/monetization/context';
+import { JOB_IDS } from '@/lib/job/catalog';
 import { assertPoliciesAreUnique, getMonetizationPolicy, MONETIZATION_POLICIES } from '@/lib/monetization/policy';
 import { tools } from '@/lib/tool-registry';
 import { resolveFlag } from '@/lib/monetization/flags';
@@ -207,6 +208,16 @@ describe('policy defaults', () => {
       .map((tool) => tool.id)
       .filter((id) => getMonetizationPolicy(id).pageId !== id);
     expect(missing, 'A calculator with no policy entry silently inherits __default__').toEqual([]);
+  });
+
+  it('gives every published job page its own policy and drops removed jobs', () => {
+    expect(getMonetizationPolicy('job-cost-hub').pageId).toBe('job-cost-hub');
+    expect(getMonetizationPolicy('job-cost-estimate').pageId).toBe('job-cost-estimate');
+    expect(getMonetizationPolicy('job-quote-check').pageId).toBe('job-quote-check');
+    for (const jobId of JOB_IDS) {
+      expect(getMonetizationPolicy(`job-${jobId}`).pageId).toBe(`job-${jobId}`);
+    }
+    expect(getMonetizationPolicy('job-roof-replacement').pageId).toBe('__default__');
   });
 
   it('never enables lead generation on a financial, insurance or health page', () => {
@@ -425,7 +436,7 @@ describe('state machines', () => {
 
 describe('delivery', () => {
   const payload = {
-    lead: { leadId: 'ld_1', vertical: 'roofing', pageId: 'job-roof-replacement', locale: 'en-US', zip: '75201', project: {}, qualification: {} },
+    lead: { leadId: 'ld_1', vertical: 'roofing', pageId: 'job-hvac-replacement', locale: 'en-US', zip: '75201', project: {}, qualification: {} },
     contact: { leadId: 'ld_1', phone: '2145551234' },
     campaign: campaign(),
     locale: 'en-US' as const,
@@ -597,7 +608,7 @@ describe('duplicate and idempotency protection', () => {
 
 describe('submission validation', () => {
   const valid = {
-    vertical: 'roofing', pageId: 'job-roof-replacement', locale: 'en-US' as const,
+    vertical: 'roofing', pageId: 'job-hvac-replacement', locale: 'en-US' as const,
     zip: '75201', project: {}, qualification: {},
     contact: { phone: '2145551234' },
     consent: { version: '2026-09-06.1', accepted: true as const, partnerName: 'Partner A' },
@@ -669,7 +680,7 @@ describe('revenue ledger', () => {
 describe('analytics boundary', () => {
   it('accepts a well-formed monetization event', () => {
     const event = parseMonetizationEvent('lead_cta_click', {
-      pageId: 'job-roof-replacement', calculatorId: undefined, locale: 'en-US',
+      pageId: 'job-hvac-replacement', calculatorId: undefined, locale: 'en-US',
       vertical: 'home_services', leadId: 'ld_1', state: 'TX',
     });
     expect(event).not.toBeNull();
@@ -873,7 +884,7 @@ describe('storage, fail closed', () => {
   it('records and re-reads a lead without ever joining the contact in', async () => {
     const database = new FakeD1();
     await saveLeadRequest(database, {
-      leadId: 'ld_1', vertical: 'roofing', pageId: 'job-roof-replacement', locale: 'en-US',
+      leadId: 'ld_1', vertical: 'roofing', pageId: 'job-hvac-replacement', locale: 'en-US',
       zip: '75201', project: {}, qualification: {}, attribution: {}, purgeAfter: '2030-01-01T00:00:00Z',
     });
     await saveLeadContact(database, { leadId: 'ld_1', phone: '2145551234', phoneHash: 'h' }, '2027-01-01T00:00:00Z');
@@ -1070,7 +1081,7 @@ describe('content security policy follows the ad configuration', () => {
 
 describe('the honeypot stays silent', () => {
   const valid = {
-    vertical: 'roofing', pageId: 'job-roof-replacement', locale: 'en-US' as const,
+    vertical: 'roofing', pageId: 'job-hvac-replacement', locale: 'en-US' as const,
     zip: '75201', project: {}, qualification: {},
     contact: { phone: '2145551234' },
     consent: { version: '2026-09-06.1', accepted: true as const, partnerName: 'Partner A' },

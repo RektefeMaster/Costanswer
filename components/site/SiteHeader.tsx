@@ -75,6 +75,13 @@ export function SiteHeader() {
             <NavChip />
             Salaries
           </Link>
+          <Link
+            href="/cost"
+            aria-current={pathname === '/cost' || pathname.startsWith('/cost/') ? 'page' : undefined}
+          >
+            <NavChip />
+            Job costs
+          </Link>
         </nav>
         <Link className="header-search" href="/search" aria-current={searchCurrent}>Search calculators</Link>
         <details className="mobile-menu" ref={menuRef} suppressHydrationWarning>
@@ -87,6 +94,14 @@ export function SiteHeader() {
             >
               <NavChip />
               Salaries
+            </Link>
+            <Link
+              className="mobile-search-link"
+              href="/cost"
+              aria-current={pathname === '/cost' || pathname.startsWith('/cost/') ? 'page' : undefined}
+            >
+              <NavChip />
+              Job costs
             </Link>
             <Link className="mobile-search-link" href="/search" aria-current={searchCurrent}>Search calculators</Link>
             {/* The drawer has room for the whole catalogue; the top bar does not. */}

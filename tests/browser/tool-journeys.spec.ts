@@ -639,9 +639,9 @@ test('header navigation at 390px with the mobile menu open stays inside the view
    * destinations makes a navigation change fail loudly and read as a decision.
    */
   const mobileLinks = menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link');
-  await expect(mobileLinks).toHaveCount(11);
+  await expect(mobileLinks).toHaveCount(12);
   expect(await mobileLinks.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')))).toEqual([
-    '/salary', '/search',
+    '/salary', '/cost', '/search',
     '/topics/money', '/topics/home', '/topics/car', '/topics/everyday', '/topics/food',
     '/topics/shopping', '/topics/health', '/topics/math', '/topics/education',
   ]);

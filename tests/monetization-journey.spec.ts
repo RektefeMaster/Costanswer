@@ -31,7 +31,7 @@ vi.mock('@/lib/monetization/policy', async (importOriginal) => {
   return {
     ...actual,
     getMonetizationPolicy: (pageId: string) =>
-      pageId === 'job-roof-replacement'
+      pageId === 'job-hvac-replacement'
         ? { ...actual.getMonetizationPolicy(pageId), lead: { enabled: true, vertical: 'roofing' as const } }
         : actual.getMonetizationPolicy(pageId),
   };
@@ -80,7 +80,7 @@ function post(path: string, body: unknown, headers: Record<string, string> = {})
   });
 }
 
-const PAGE_ID = 'job-roof-replacement';
+const PAGE_ID = 'job-hvac-replacement';
 
 const LIVE_ENV = {
   MONETIZATION_ENABLED: 'true',

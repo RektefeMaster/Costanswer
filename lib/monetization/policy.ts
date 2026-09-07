@@ -142,14 +142,11 @@ export const MONETIZATION_POLICIES: readonly MonetizationPolicy[] = Object.freez
     'grade', 'gpa',
   ] as const).map((id) => policy(id, 'general', 'low')),
 
-  // ---- Job Cost Engine. Entries exist ahead of the routes so that opening a ----
-  // ---- vertical is a configuration change and never a calculator change.   ----
-  policy('job-roof-replacement', 'home_services', 'low', {
-    ads: { enabled: true },
-    affiliate: { enabled: true, categories: ['roofing_tools'] },
-    lead: { enabled: false, vertical: 'roofing' },
-    intentSwitch: true,
-  }),
+  // ---- Job Cost Engine. One entry per published surface. Enabling a lead   ----
+  // ---- campaign is configuration, never a calculator change.               ----
+  policy('job-cost-hub', 'home_services', 'low', { ads: { enabled: true } }),
+  policy('job-cost-estimate', 'home_services', 'low', { ads: { enabled: true } }),
+  policy('job-quote-check', 'home_services', 'low', { ads: { enabled: true } }),
   policy('job-hvac-replacement', 'home_services', 'low', {
     ads: { enabled: true },
     affiliate: { enabled: true, categories: ['hvac_filters'] },
@@ -202,6 +199,36 @@ export const MONETIZATION_POLICIES: readonly MonetizationPolicy[] = Object.freez
     ads: { enabled: true },
     affiliate: { enabled: true, categories: ['bathroom_tools', 'tile_tools'] },
     lead: { enabled: false, vertical: 'bath_remodeling' },
+    intentSwitch: true,
+  }),
+  policy('job-heat-pump-replacement', 'home_services', 'low', {
+    ads: { enabled: true },
+    affiliate: { enabled: true, categories: ['hvac_filters'] },
+    lead: { enabled: false, vertical: 'hvac' },
+    intentSwitch: true,
+  }),
+  policy('job-window-replacement', 'home_services', 'low', {
+    ads: { enabled: true },
+    affiliate: { enabled: true, categories: ['measuring_tools'] },
+    lead: { enabled: false, vertical: 'windows' },
+    intentSwitch: true,
+  }),
+  policy('job-exterior-door-replacement', 'home_services', 'low', {
+    ads: { enabled: true },
+    affiliate: { enabled: true, categories: ['measuring_tools'] },
+    lead: { enabled: false, vertical: 'general_remodeling' },
+    intentSwitch: true,
+  }),
+  policy('job-siding-replacement', 'home_services', 'low', {
+    ads: { enabled: true },
+    affiliate: { enabled: true, categories: ['measuring_tools'] },
+    lead: { enabled: false, vertical: 'general_remodeling' },
+    intentSwitch: true,
+  }),
+  policy('job-drywall-install', 'home_services', 'low', {
+    ads: { enabled: true },
+    affiliate: { enabled: true, categories: ['measuring_tools'] },
+    lead: { enabled: false, vertical: 'general_remodeling' },
     intentSwitch: true,
   }),
 ]);

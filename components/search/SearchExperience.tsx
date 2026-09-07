@@ -9,8 +9,12 @@ import { categories, tools } from '@/lib/tool-registry';
 import { emitAnalyticsEvent } from '@/lib/analytics';
 import { CategoryChip } from '@/components/site/CategoryArt';
 import type { SalarySearchEntry } from '@/lib/salary-pages';
+import type { JobId } from '@/lib/job/catalog';
 
 const SALARY_RESULT_LIMIT = 5;
+const JOB_RESULT_LIMIT = 5;
+
+type JobSearchEntry = { jobId: JobId; name: string; path: `/cost/${JobId}`; terms: string[] };
 
 /**
  * Occupations whose name or common alias contains what was typed.
@@ -29,7 +33,22 @@ function matchSalaryPages(query: string, index: readonly SalarySearchEntry[]): S
     .slice(0, SALARY_RESULT_LIMIT);
 }
 
-export function SearchExperience({ salaryIndex = [] }: { salaryIndex?: readonly SalarySearchEntry[] }) {
+function matchJobPages(query: string, index: readonly JobSearchEntry[]): JobSearchEntry[] {
+  const needle = query.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\bcost|price|quote\b/g, '').trim();
+  if (needle.length < 3) return [];
+  return index
+    .filter((entry) => entry.terms.some((term) => term.includes(needle)) || entry.name.toLowerCase().includes(needle))
+    .sort((left, right) => left.name.length - right.name.length || left.name.localeCompare(right.name))
+    .slice(0, JOB_RESULT_LIMIT);
+}
+
+export function SearchExperience({
+  salaryIndex = [],
+  jobIndex = [],
+}: {
+  salaryIndex?: readonly SalarySearchEntry[];
+  jobIndex?: readonly JobSearchEntry[];
+}) {
   const hydrated = useSyncExternalStore(() => () => undefined, () => true, () => false);
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
@@ -43,12 +62,17 @@ export function SearchExperience({ salaryIndex = [] }: { salaryIndex?: readonly 
     () => (browsing ? [] : matchSalaryPages(query, salaryIndex)),
     [query, browsing, salaryIndex],
   );
+  const jobResults = useMemo(
+    () => (browsing ? [] : matchJobPages(query, jobIndex)),
+    [query, browsing, jobIndex],
+  );
+  const matchCount = results.length + salaryResults.length + jobResults.length;
 
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const nextUrl = query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : '/search';
     window.history.replaceState(null, '', nextUrl);
-    emitAnalyticsEvent('search', { resultType: results.length + salaryResults.length ? 'matched' : 'empty' });
+    emitAnalyticsEvent('search', { resultType: matchCount ? 'matched' : 'empty' });
   };
 
   return (
@@ -63,8 +87,16 @@ export function SearchExperience({ salaryIndex = [] }: { salaryIndex?: readonly 
         <p role="status" aria-live="polite" aria-atomic="true">
           {browsing
             ? (showAll ? `All ${tools.length} calculators` : 'Popular calculators')
-            : `${results.length + salaryResults.length} match${results.length + salaryResults.length === 1 ? '' : 'es'}`}
+            : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
         </p>
+        {jobResults.map((entry) => (
+          <Link href={entry.path} key={entry.jobId}>
+            <CategoryChip category="home" size="row" tone="color" />
+            <span><strong>{`${entry.name} cost`}</strong><small>CostAnswer estimated range for this job</small></span>
+            <span className="search-result-category">Job costs</span>
+            <b aria-hidden="true">→</b>
+          </Link>
+        ))}
         {salaryResults.map((entry) => (
           <Link href={`/salary/${entry.slug}`} key={entry.slug}>
             <CategoryChip category="money" size="row" tone="color" />
@@ -80,10 +112,10 @@ export function SearchExperience({ salaryIndex = [] }: { salaryIndex?: readonly 
             <span className="search-result-category">{categories[tool.category].name}</span>
             <b aria-hidden="true">→</b>
           </Link>
-        )) : salaryResults.length === 0 && (
+        )) : salaryResults.length === 0 && jobResults.length === 0 && (
           <div className="empty-search">
             <h2>Nothing matches that yet.</h2>
-            <p>Try a job title, pay, electricity, concrete, shopping, a recipe, or business days.</p>
+            <p>Try a job title, a home project, pay, electricity, concrete, shopping, a recipe, or business days.</p>
           </div>
         )}
         {browsing && !showAll && results.length < tools.length && (

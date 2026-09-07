@@ -1,0 +1,286 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterVersion": "material-basket-v1.0.0",
+  "snapshotId": "material-basket-sourced-v4",
+  "datasetId": "material-basket",
+  "observationPeriod": "2026-09",
+  "fetchedAt": "2026-09-07T21:17:23.562Z",
+  "publishedAt": "2026-09-07T21:17:23.562Z",
+  "attribution": "Sourced national baselines: EIA Appendix A (CAC+furnace, ASHP blower-coil, gas and electric storage WH midpoints); NREL REMDB 200A panel and envelope intercepts (vinyl window, prehung doors, vinyl/wood siding, drywall board); NRMCA ready-mix; EPC interior latex; Westchester County lumber award deck/fence BOMs; Plano ISD ceramic tile materials-only; Kohler manufacturer current prices.",
+  "components": [
+    {
+      "componentId": "split-system",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 390000,
+      "baselineDate": "2022-12-01",
+      "baselineSource": {
+        "name": "EIA Appendix A, 2022 typical retail: 3-ton coil-only CAC North $2,700 + gas furnace North $1,200",
+        "url": "https://www.eia.gov/analysis/studies/buildings/equipcosts/"
+      },
+      "ppiSeriesId": "WPU114701",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "air-source-heat-pump",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 427000,
+      "baselineDate": "2022-12-01",
+      "baselineSource": {
+        "name": "EIA Appendix A, 2022 typical retail: 3-ton blower-coil air-source heat pump $4,270",
+        "url": "https://www.eia.gov/analysis/studies/buildings/equipcosts/"
+      },
+      "ppiSeriesId": "WPU114701",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "tank-water-heater",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 70500,
+      "baselineDate": "2022-12-01",
+      "baselineSource": {
+        "name": "EIA Appendix A, residential gas-fired storage water heater, midpoint of 2022 typical/current-standard retail span $420–$990, 40 gal",
+        "url": "https://www.eia.gov/analysis/studies/buildings/equipcosts/"
+      },
+      "ppiSeriesId": "WPU124",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "tank-water-heater-electric",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 54500,
+      "baselineDate": "2022-12-01",
+      "baselineSource": {
+        "name": "EIA Appendix A, residential electric resistance storage water heater, midpoint of 2022 typical/current-standard retail span $330–$760, 36 gal",
+        "url": "https://www.eia.gov/analysis/studies/buildings/equipcosts/"
+      },
+      "ppiSeriesId": "WPU124",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "service-panel-200a",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 22509,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Electric Panel | 200A Int-Mid $225.09 (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU107",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "vinyl-window",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 5411,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Window | Vinyl Int-Mid $54.11/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU13",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "exterior-door-fiberglass",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 5549,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Door | Exterior Prehung, Fiberglass Int-Mid $55.49/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU07",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "exterior-door-metal",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 4199,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Door | Exterior Prehung, Metal Int-Mid $41.99/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU101",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "exterior-door-wood",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 7729,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Door | Exterior Prehung, Wood Int-Mid $77.29/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU081",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "vinyl-siding",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 698,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Exterior Finish | Vinyl Int-Mid $6.98/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU07",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "wood-siding",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 811,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Exterior Finish | Wood Int-Mid $8.11/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU081",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "drywall-board",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 49,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NREL REMDB 2024 Machine Read, Wall Sheathing | Drywall Int-Mid $0.49/sf (2023$). Labor multiplier ignored",
+        "url": "https://data.openei.org/submissions/8336"
+      },
+      "ppiSeriesId": "WPU137",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "ready-mix-concrete",
+      "unit": "cubic-yard",
+      "qualityTier": "builder",
+      "baselinePriceCents": 16000,
+      "baselineDate": "2023-12-01",
+      "baselineSource": {
+        "name": "NRMCA / Concrete Financial Insights, average 2023 ready-mix selling price $160 per cubic yard",
+        "url": "https://www.nrmca.org/wp-content/uploads/Performance_Benchmarking_Survey_and_State_of_the_Industry.pdf"
+      },
+      "ppiSeriesId": "WPU133",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "interior-paint",
+      "unit": "gallon",
+      "qualityTier": "builder",
+      "baselinePriceCents": 1625,
+      "baselineDate": "2025-05-01",
+      "baselineSource": {
+        "name": "Educational Purchasing Council 2025-26 paint pricing, interior latex flat 1-gallon PPG Speedhide EV $16.25 (May 1, 2025–April 30, 2026)",
+        "url": "https://epcschools.org/Programs/Paints/2025Paint.pdf"
+      },
+      "ppiSeriesId": "WPU062",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "pressure-treated-lumber",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 619,
+      "baselineDate": "2026-06-01",
+      "baselineSource": {
+        "name": "Westchester County NY RFB-WC-26106 PT lumber award, named 10×20 deck BOM $6.1924/sf (Jun–Nov 2026)",
+        "url": "https://bps.westchestercountyny.gov/images/Lumber_and_Building_Materials_.pdf"
+      },
+      "ppiSeriesId": "WPU081",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "wood-privacy-fence",
+      "unit": "linear-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 1747,
+      "baselineDate": "2026-06-01",
+      "baselineSource": {
+        "name": "Westchester County NY RFB-WC-26106, named 6 ft wood privacy BOM $17.4685/LF (Jun–Nov 2026)",
+        "url": "https://bps.westchestercountyny.gov/images/Lumber_and_Building_Materials_.pdf"
+      },
+      "ppiSeriesId": "WPU081",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "bath-tile",
+      "unit": "sq-ft",
+      "qualityTier": "builder",
+      "baselinePriceCents": 315,
+      "baselineDate": "2023-05-09",
+      "baselineSource": {
+        "name": "Plano ISD RFP 2023-027 Line 9 material-only ceramic tile, recommended C&C Group $3.15/sf",
+        "url": "https://pisd.diligent.community/document/b3782408-0db2-455c-bc7b-77191e4b14e1/"
+      },
+      "ppiSeriesId": "WPU134",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "toilet",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 34376,
+      "baselineDate": "2026-09-07",
+      "baselineSource": {
+        "name": "Kohler Highline K-3999-0 manufacturer current price $343.76 (2026-09-07)",
+        "url": "https://www.kohler.com/en/products/toilets/shop-toilets/highline-comfort-height-two-piece-elongated-1-28-gpf-chair-height-toilet-3999"
+      },
+      "ppiSeriesId": "WPU1241",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "vanity",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 104339,
+      "baselineDate": "2026-09-07",
+      "baselineSource": {
+        "name": "Kohler Hadron 36-inch K-39605-ASB-0 manufacturer current price $1,043.39 (2026-09-07)",
+        "url": "https://www.kohler.com/en/products/vanities/shop-vanities/hadron-36-bathroom-vanity-cabinet-w-sink-and-quartz-top-39605-asb"
+      },
+      "ppiSeriesId": "WPU1241",
+      "regionalAdjustment": "none",
+      "critical": true
+    }
+  ],
+  "rawSha256": "b1a7f2bf0867403511778b8304d2d5525f38ca9ff229fcc4793a415b43b40986",
+  "validationReport": [
+    "Each baseline is copied from a retained extract; missing critical recipe lines stay unpriced.",
+    "NREL labor multipliers and RSMeans-tinged install adders are not used.",
+    "RPP is never applied to materials. Current price is baseline × PPI ratio, or 1.0 if the series is missing.",
+    "Westchester lumber is a public procurement baseline, not a local NY multiplier."
+  ],
+  "normalizedSha256": "3e2f844b91ed8d26e7f90b6943367881ad420525a4a9fc2148d652b5262fe544"
+}

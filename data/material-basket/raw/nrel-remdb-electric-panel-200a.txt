@@ -1,0 +1,10 @@
+NREL REMDB 2024.12.23 Machine Read
+Source: https://data.openei.org/submissions/8336
+License: CC BY 4.0
+Labor multipliers are not used (RSMeans-tinged). Retail intercept only.
+row=51 name=Electric Panel | 200A
+output_units=2023$
+coef_mid=0
+int_low=152.20000000000002 int_mid=225.08999999999997 int_high=470.738
+data_sources=1, 2, 4, 11
+notes=None

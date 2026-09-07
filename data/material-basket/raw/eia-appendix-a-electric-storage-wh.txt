@@ -1,0 +1,29 @@
+Residential Electric Resistance Storage Water Heaters                                                                                                                                   Return to Table of Contents
+
+
+                                                2015          2020                      2022                               2030                       2040                       2050
+                     DATA
+                                             Installed      Installed      Current
+                                                                                      Typical        High        Typical          High      Typical          High      Typical          High
+                                               Base           Base        Standard
+
+      Typical Capacity (gal)                           36            36         36             36         36            36            36           36            36           36             36
+
+      Uniform Energy Factor1                       0.88          0.93         0.92         0.92          0.93         0.92          0.93         0.92          0.93         0.92           0.93
+
+      Average Life (y)                                 13            13       15.1         15.1          15.1         15.1          15.1         15.1          15.1         15.1           15.1
+
+                                                   290           350           330          330          600           330           600         330            600         330             600
+      Retail Equipment Cost (2022$)
+                                                   530           650           760          760          850           760           850         760            850         760             850
+
+                                                   590           710           500          500          550           500           550         500            550         500             550
+      Total Installed Cost (2022$)
+                                                   940          1,290        1,310        1,310        1,430         1,310         1,430        1,310         1,430        1,310          1,430
+
+
+      Annual Maintenance Cost (2022$)2                 20            20         20             20         20            20            20           20            20           20             20
+
+1. Beginning in 2016, the efficiency metric for water heaters changed from energy factor (EF) to UEF based on DOE test procedures. The UEF values for the installed base in 2015 are
+   converted values equivalent to 0.90 EF. Analysis is based on an average of low and medium draw pattern units, as this is most reflective of the market.
+2. Similar to gas-fired and oil-fired storage water heaters, manufacture

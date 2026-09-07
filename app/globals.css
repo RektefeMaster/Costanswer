@@ -2673,3 +2673,77 @@ input, select { font-variant-numeric: tabular-nums; }
 .admin-funnel { list-style: none; padding: 0; display: grid; gap: 0.3rem; font-size: 0.9rem; }
 .admin-funnel li { display: grid; grid-template-columns: 1fr auto 4rem; gap: 0.75rem; }
 .admin-audit { list-style: none; padding: 0; display: grid; gap: 0.3rem; font-size: 0.85rem; }
+
+.job-picker-wrap { margin: 0 0 28px; }
+.job-picker-filter {
+  display: grid;
+  gap: 6px;
+  max-width: 22rem;
+  margin: 0 0 16px;
+  font-size: 12px;
+  font-weight: 750;
+}
+.job-picker-filter input {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--ink);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+}
+.job-picker-empty { margin: 0; color: rgba(16,42,42,.76); }
+.job-picker {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+}
+.job-picker-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 118px;
+  padding: 16px;
+  border: 1px solid var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+  box-shadow: 4px 4px 0 var(--ink);
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+.job-picker-card.is-active,
+.job-picker-card[aria-current='page'] {
+  background: #fff6e8;
+}
+.job-picker-trade {
+  color: #207767;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.job-picker-card small { color: rgba(16,42,42,.7); font-size: 12px; }
+.quote-verdict {
+  margin: 18px 0;
+  padding: 20px;
+  border: 1px solid var(--ink);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 5px 5px 0 var(--ink);
+}
+.quote-verdict-label {
+  margin: 0 0 6px;
+  color: #207767;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.quote-verdict > strong { display: block; margin: 0 0 14px; font-size: 28px; line-height: 1.15; }
+.quote-verdict dl { display: grid; gap: 10px; margin: 0 0 14px; }
+.quote-verdict dt { color: rgba(16,42,42,.7); font-size: 11px; }
+.quote-verdict dd { margin: 2px 0 0; font-weight: 750; }
+.quote-verdict ul { margin: 8px 0 0; padding-left: 1.2em; }

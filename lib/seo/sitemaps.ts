@@ -18,6 +18,7 @@ import {
   statesWithWageFor,
 } from '@/lib/salary-pages';
 import { STATE_CODES } from '@/lib/location/states';
+import { costFamilySitemapPaths } from '@/lib/job/paths';
 
 export const SITEMAP_URL_LIMIT = 50_000;
 /**
@@ -36,7 +37,7 @@ const SITEMAP_FAMILY_PAGE_SIZE: Partial<Record<SitemapFamilyId, number>> = {
 function familyPageSize(family: SitemapFamilyId): number {
   return SITEMAP_FAMILY_PAGE_SIZE[family] ?? SITEMAP_URL_LIMIT;
 }
-export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary'] as const;
+export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary', 'cost'] as const;
 export type SitemapFamilyId = (typeof SITEMAP_FAMILY_IDS)[number];
 
 export type SitemapEntry = {
@@ -125,6 +126,13 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
     })),
     /** Whatever `SALARY_PUBLICATION` has opened, hubs first, then the leaves. */
     salary: salaryEntries(),
+    /** Job Cost family. Setting COST_PUBLICATION to staged empties this list. */
+    cost: costFamilySitemapPaths().map((path) => ({
+      path,
+      lastModified: CONTENT_RELEASE_DATE,
+      changeFrequency: 'weekly' as const,
+      priority: path === '/cost' ? 0.8 : 0.7,
+    })),
     tools: tools.filter((tool) => evaluateToolIndexability(tool).indexable).map((tool) => ({
       path: tool.path,
       lastModified: toolLastModified(tool),

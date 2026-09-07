@@ -1,0 +1,18 @@
+Residential Gas-Fired Furnaces (North)
+
+Extracted from EIA Appendix A (Updated Buildings Sector Appliance and Equipment Costs and Efficiencies).
+Source: https://www.eia.gov/analysis/studies/buildings/equipcosts/
+File: appendix-a.pdf, table "Residential Gas-Fired Furnaces (North)".
+Retrieved 2026-09-07.
+
+Typical Input Capacity (kBtu/h) 80 for every 2022 column.
+
+2022 Typical column:
+Retail Equipment Cost (2022$) 1,200
+Total Installed Cost (2022$) 4,130
+
+2022 Current Standard column:
+Retail Equipment Cost (2022$) 1,080
+
+Basket uses the 2022 Typical retail equipment cost 1,200. Installed cost is not used; Job Cost prices labor separately.
+This line is added to the coil-only 3-ton central AC typical retail 2,700 so the split-system component is outdoor coil-only AC plus a gas furnace (blower/air handler), matching "complete outdoor + indoor" HVAC replacement.

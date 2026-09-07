@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "1.0.0",
+  "adapterVersion": "fema-equipment-v1.0.0",
+  "snapshotId": "fema-equipment-2025-v1",
+  "datasetId": "fema-equipment",
+  "observationPeriod": "2025",
+  "fetchedAt": "2026-09-07T21:17:23.562Z",
+  "publishedAt": "2025-07-01T00:00:00.000Z",
+  "sourceUrl": "https://www.fema.gov/assistance/public/tools-resources/schedule-equipment-rates",
+  "sourceDocumentationUrl": "https://www.fema.gov/assistance/public/tools-resources/schedule-equipment-rates",
+  "attribution": "FEMA Schedule of Equipment Rates (2025). Cost proxy for ownership and operating cost; labor of the operator is not included.",
+  "disclaimer": "FEMA Schedule of Equipment Rates is a public cost proxy, not a contractor market rental price.",
+  "rates": [
+    {
+      "rateId": "8201",
+      "description": "Chipper, Brush — Vermeer BC1000XL",
+      "unit": "hour",
+      "rateCents": 2970
+    },
+    {
+      "rateId": "8414",
+      "description": "Truck, Concrete Mixer — Freightliner 114SD 11 CY",
+      "unit": "hour",
+      "rateCents": 8176
+    },
+    {
+      "rateId": "8510",
+      "description": "Saw, Concrete — 14 in",
+      "unit": "hour",
+      "rateCents": 1269
+    },
+    {
+      "rateId": "8541",
+      "description": "Loader, Skid Steer — Bobcat S76",
+      "unit": "hour",
+      "rateCents": 4523
+    },
+    {
+      "rateId": "8721",
+      "description": "Truck, Dump — 9 CY",
+      "unit": "hour",
+      "rateCents": 10063
+    },
+    {
+      "rateId": "8801",
+      "description": "Truck, Pickup — 4x2 1/2 ton",
+      "unit": "hour",
+      "rateCents": 1751
+    }
+  ],
+  "rawSha256": "26e9b7b82c1db20645d28b69535fc9cb35c53536099a356ec6db794d4be34f1d",
+  "validationReport": [
+    "6 rates transcribed from the 2025 schedule for recipes that name them.",
+    "Each rate is greater than zero and has a known unit."
+  ],
+  "normalizedSha256": "10e20c8aad6a35ffdf3621e325c862a0df3c3c132c7232cbe5de113548d9308d"
+}

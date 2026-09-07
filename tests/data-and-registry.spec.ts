@@ -472,6 +472,10 @@ describe('sitemap scale contract', () => {
   it('uses each child sitemap maximum timestamp in the sitemap index contract', () => {
     const families = getSitemapFamilies();
     for (const [family, entries] of Object.entries(families)) {
+      if (entries.length === 0) {
+        expect(sitemapPageLastModified(family as keyof typeof families, 1)).toBeNull();
+        continue;
+      }
       const expected = entries.reduce((latest, entry) => entry.lastModified > latest ? entry.lastModified : latest, entries[0].lastModified);
       expect(sitemapPageLastModified(family as keyof typeof families, 1)).toBe(expected);
       expect(Number.isFinite(Date.parse(expected))).toBe(true);

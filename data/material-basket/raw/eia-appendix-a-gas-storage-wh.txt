@@ -1,0 +1,40 @@
+Residential Gas-Fired Storage Water Heaters                                                                                                                                     Return to Table of Contents
+
+
+                                         2015       2020                         2022                        2023             2030                   2040                   2050
+
+                  DATA                                                              ENERGY                 ENERGY
+                                      Installed Installed Current
+                                                                         Typical     STAR        High       STAR       Typical       High     Typical       High     Typical       High
+                                        Base      Base    Standard
+                                                                                     V. 4.0                 V. 5.0
+
+      Typical Capacity (gal)                 40         40          40         40         40          40         40          40         40         40          40         40          40
+
+      Uniform Energy Factor (UEF)1         0.58        0.63       0.61       0.61        0.66       0.84       0.83        0.61        0.84       0.61        0.84      0.61         0.84
+
+      Average Life (y)                       13         13        14.5       14.5        14.5       14.5       14.5        14.5        14.5       14.5        14.5      14.5         14.5
+
+                                            590        880        420         420        490         720        700        420         720        420         720        420         720
+      Retail Equipment Cost
+      (2022$)
+                                            650      1,410        990         990       1,110      1,650      1,590        990        1,650       990        1,650       990        1,650
+
+                                          1,240      1,650        740         740        800       1,140      1,130        740        1,140       740        1,140       740        1,140
+      Total Installed Cost (2022$)
+                                          1,240      2,880       1,690      1,690       1,850      3,130      3,160       1,690       3,130     1,690        3,130     1,690        3,130
+
+      Annual Maintenance Cost
+                                             20         20          20         20         20          20         20          20         20         20          20         20          20
+      (2022$)2
+
+1. Analysis is based on an average of medium and high draw pattern units, as this is most reflective of the market.
+2. Maintenance includes manufacturer recommendation for the water heater to be drained and flushed annually to minimize deposition of sediment, maintain operating efficiency, and prolong product
+   life. Available evidence indicates that this is performed in 10% of households.
+Note:
+Ranges represent the span of typical values.
+Current standards went into effect April 16, 2015.
+ENERGY STAR V. 4.0 went into effect January 5, 2022.
+ENERGY STAR V. 5.0 will go into effect April 18, 2023
+Average life is determined using a Weibull distribution characterized by the following scale (α), shape (β), and delay (θ) parameters: (15.1, 1.76, 1).
+                                                                                                                                                                                                       56

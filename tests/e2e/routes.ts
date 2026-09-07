@@ -92,6 +92,23 @@ const htmlPaths = [
   '/salary/states/texas',
   '/salary/registered-nurse',
   '/salary/registered-nurse/texas',
+  '/cost',
+  '/cost/estimate',
+  '/cost/check-quote',
+  '/cost/hvac-replacement',
+  '/cost/water-heater-replacement',
+  '/cost/electrical-panel-upgrade',
+  '/cost/tree-removal',
+  '/cost/deck-build',
+  '/cost/fence-install',
+  '/cost/concrete-driveway',
+  '/cost/interior-painting',
+  '/cost/bathroom-remodel',
+  '/cost/heat-pump-replacement',
+  '/cost/window-replacement',
+  '/cost/exterior-door-replacement',
+  '/cost/siding-replacement',
+  '/cost/drywall-install',
 ];
 
 async function fetchWithTimeout(path: string): Promise<Response> {
@@ -110,7 +127,7 @@ for (const path of htmlPaths) {
   }
 }
 
-for (const path of ['/sitemap.xml', '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/sitemaps/salary/1.xml', '/robots.txt', '/manifest.webmanifest']) {
+for (const path of ['/sitemap.xml', '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/sitemaps/salary/1.xml', '/sitemaps/cost/1.xml', '/robots.txt', '/manifest.webmanifest']) {
   const response = await fetchWithTimeout(path);
   if (response.status !== 200) throw new Error(`${path} returned HTTP ${response.status}`);
 }
@@ -122,7 +139,7 @@ const robotsText = await (await fetchWithTimeout('/robots.txt')).text();
 if (robotsText.includes('Disallow: /search')) throw new Error('Crawlers must be able to read the search page noindex directive.');
 
 const sitemapIndex = await (await fetchWithTimeout('/sitemap.xml')).text();
-if (!sitemapIndex.includes('<sitemapindex') || !sitemapIndex.includes('/sitemaps/tools/1.xml')) throw new Error('Sitemap index is incomplete.');
+if (!sitemapIndex.includes('<sitemapindex') || !sitemapIndex.includes('/sitemaps/tools/1.xml') || !sitemapIndex.includes('/sitemaps/cost/1.xml')) throw new Error('Sitemap index is incomplete.');
 const toolsSitemap = await (await fetchWithTimeout('/sitemaps/tools/1.xml')).text();
 if (!toolsSitemap.includes('/home/electricity-cost') || !toolsSitemap.includes('/home/appliance-electricity-cost') || !toolsSitemap.includes('/health/bmi') || !toolsSitemap.includes('/money/car-loan') || toolsSitemap.includes('/search') || toolsSitemap.includes('/kg-to-lbs') || toolsSitemap.includes('/45-days-from-today')) throw new Error('Tool sitemap membership is incorrect.');
 const topicsSitemap = await (await fetchWithTimeout('/sitemaps/topics/1.xml')).text();
@@ -201,7 +218,41 @@ if (leavesOpen) {
 }
 if (!leafHtml.includes('/salary/registered-nurse/oklahoma')) throw new Error('An occupation-in-state page must link its peer states.');
 
-for (const path of ['/salary/all-occupations', '/salary/not-a-real-job', '/salary/registered-nurse/not-a-state']) {
+const costSitemap = await (await fetchWithTimeout('/sitemaps/cost/1.xml')).text();
+if (!costSitemap.includes('/cost/hvac-replacement') || !costSitemap.includes('/cost/estimate') || !costSitemap.includes('/cost/check-quote')) {
+  throw new Error('Job Cost URLs are missing from the cost sitemap.');
+}
+for (const jobPath of [
+  '/cost/hvac-replacement',
+  '/cost/water-heater-replacement',
+  '/cost/electrical-panel-upgrade',
+  '/cost/tree-removal',
+  '/cost/deck-build',
+  '/cost/fence-install',
+  '/cost/concrete-driveway',
+  '/cost/interior-painting',
+  '/cost/bathroom-remodel',
+  '/cost/heat-pump-replacement',
+  '/cost/window-replacement',
+  '/cost/exterior-door-replacement',
+  '/cost/siding-replacement',
+  '/cost/drywall-install',
+]) {
+  if (!costSitemap.includes(jobPath)) throw new Error(`${jobPath} is missing from the cost sitemap.`);
+}
+if (costSitemap.includes('/cost/roof-replacement')) throw new Error('Removed roof-replacement must not stay in the cost sitemap.');
+const costHubHtml = await (await fetchWithTimeout('/cost')).text();
+if (!costHubHtml.includes('/cost/tree-removal')) throw new Error('The job-cost hub must link the published jobs.');
+if (costHubHtml.includes('/cost/roof-replacement') || costHubHtml.includes('Chain link')) {
+  throw new Error('The job-cost hub still advertises a removed roof or chain-link job.');
+}
+if (!costHubHtml.includes('CostAnswer estimated range') && !costHubHtml.includes('Job Cost Engine')) {
+  throw new Error('The job-cost hub is missing engine copy.');
+}
+const treeHtml = await (await fetchWithTimeout('/cost/tree-removal')).text();
+if (treeHtml.includes('noindex')) throw new Error('Job pages should be indexable while COST_PUBLICATION is open.');
+
+for (const path of ['/salary/all-occupations', '/salary/not-a-real-job', '/salary/registered-nurse/not-a-state', '/cost/not-a-real-job', '/cost/roof-replacement']) {
   const response = await fetchWithTimeout(path);
   if (response.status !== 404) throw new Error(`${path} should not exist, got HTTP ${response.status}`);
 }

@@ -12,7 +12,8 @@
   },
   "scripts": {
     "dev": "vinext dev",
-    "build": "vinext build",
+    "build": "tsx scripts/promote-store-assets.ts && vinext build",
+    "store:promote": "tsx scripts/promote-store-assets.ts",
     "start": "vinext start",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "typecheck": "tsc --noEmit",
@@ -29,6 +30,7 @@
     "data:bls-cpi": "tsx scripts/ingest-bls-cpi.ts",
     "data:oews": "tsx scripts/ingest-bls-oews.ts",
     "data:oews:rebuild": "tsx scripts/ingest-bls-oews.ts --rebuild",
+    "data:job": "tsx scripts/ingest-job-cost-data.ts",
     "data:pmms": "tsx scripts/ingest-freddie-mac-pmms.ts",
     "data:insurance": "tsx scripts/ingest-naic-insurance.ts",
     "data:cms": "tsx scripts/ingest-cms-marketplace.ts",

@@ -1,0 +1,17 @@
+Kohler manufacturer-published prices on kohler.com product pages.
+Retrieved 2026-09-07. These are manufacturer List / current prices, not a home-center scrape.
+
+Highline two-piece elongated toilet, 1.28 gpf, Comfort Height
+SKU K-3999-0
+URL: https://www.kohler.com/en/products/toilets/shop-toilets/highline-comfort-height-two-piece-elongated-1-28-gpf-chair-height-toilet-3999
+Current Price $343.76
+List Price $458.35
+Basket uses the manufacturer current price $343.76 as the typical published retail analog (same role as EIA typical retail).
+
+Hadron 36" bathroom vanity cabinet with sink and quartz top
+SKU K-39605-ASB-0
+URL: https://www.kohler.com/en/products/vanities/shop-vanities/hadron-36-bathroom-vanity-cabinet-w-sink-and-quartz-top-39605-asb
+Current Price $1,043.39
+List Price $1,391.19
+Basket uses the manufacturer current price $1,043.39.
+The set includes cabinet, quartz top, and sink. Faucet, toilet, and tile are separate recipe lines.

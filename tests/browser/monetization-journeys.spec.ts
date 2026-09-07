@@ -73,7 +73,7 @@ test.describe('ad placement', () => {
 test.describe('the coverage endpoint', () => {
   test('never asks for contact details before it knows there is a buyer', async ({ request }) => {
     const response = await request.post('/api/monetization/coverage', {
-      data: { vertical: 'roofing', zip: '75201', pageId: 'job-roof-replacement', locale: 'en-US' },
+      data: { vertical: 'roofing', zip: '75201', pageId: 'job-hvac-replacement', locale: 'en-US' },
     });
     const body = await response.json();
     // With leads disabled and no database bound, the honest answer is "no

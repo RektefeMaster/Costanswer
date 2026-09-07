@@ -27,7 +27,7 @@ const PEPPER = 'operations-pepper-at-least-thirty-two-chars';
 describe('attribution', () => {
   it('records a source without recording a person', () => {
     const clean = sanitizeAttribution({
-      landingPath: '/cost/roof-replacement?utm_source=google&secret=hunter2',
+      landingPath: '/cost/hvac-replacement?utm_source=google&secret=hunter2',
       referrerCategory: 'organic_search',
       referrerHost: 'WWW.GOOGLE.COM',
       utmSource: 'google',
@@ -35,7 +35,7 @@ describe('attribution', () => {
     });
     // The query string is discarded, not trimmed: it is where a search term or
     // a personal value would sit.
-    expect(clean.landingPath).toBe('/cost/roof-replacement');
+    expect(clean.landingPath).toBe('/cost/hvac-replacement');
     expect(clean.referrerHost).toBe('www.google.com');
     expect(JSON.stringify(clean)).not.toContain('hunter2');
   });
