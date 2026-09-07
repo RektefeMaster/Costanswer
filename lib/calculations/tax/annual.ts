@@ -13,6 +13,7 @@ export const salaryAfterTaxInputSchema = z.object({
   state: z.string().refine(isStateCode, 'Choose a U.S. state or D.C.'),
   filingStatus: z.enum(FILING_STATUSES),
   taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  dependents: finiteNumber('Dependents', 0, 20).optional(),
 });
 
 export type SalaryAfterTaxInput = z.infer<typeof salaryAfterTaxInputSchema>;
@@ -65,6 +66,8 @@ export function estimateAnnualTaxLiability(rawInput: unknown): AnnualTaxLiabilit
     // Some states tax federal taxable income rather than gross wages, so they
     // need the deduction that has already come out of that base.
     federalStandardDeduction: federal.standardDeduction,
+    employeeFica: fica.socialSecurity + fica.medicare + fica.additionalMedicare,
+    dependents: input.dependents,
   });
   const totalTax = federal.tax + fica.total + stateTax.tax;
   const takeHome = input.annualGrossSalary - totalTax;
@@ -89,7 +92,7 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
     `This estimate uses tax year ${liability.taxYear}.`,
     `Federal filing status: ${FILING_STATUS_LABELS[liability.filingStatus]}.`,
     `Federal income tax uses the IRS standard deduction of ${formatMoney(liability.federal.standardDeduction)}. Itemized deductions are not used.`,
-    'Tax credits, dependents, capital gains, self-employment tax, and AMT are not included.',
+    'Tax credits, capital gains, self-employment tax, and AMT are not included. Dependent exemptions apply only where this snapshot carries a per-dependent amount for the state.',
     'Employer benefits and pre-tax payroll deductions are not included.',
     'This is an estimate, not a tax return or employer withholding notice.',
     `Federal source: IRS Revenue Procedure for tax year ${liability.taxYear}.`,
@@ -115,21 +118,19 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
    */
   const local = liability.stateTax.omittedLocalTax;
   if (local) {
-    const asPercent = (rate: number) => formatNumber(rate * 100, { maximumFractionDigits: 2 });
+    const asPercent = (rate: number) => formatNumber(rate * 100, { maximumFractionDigits: 3 });
     const base = local.appliesTo === 'taxable-income' ? 'taxable income' : 'state tax';
     const where = local.basis.replace('-', ' ');
-    /*
-     * Where no official source sizes the local tax, the sentence says the
-     * direction and stops. Quoting a made-up band would read as knowledge and
-     * be wrong for most readers; saying nothing at all would let the page imply
-     * the state figure is the whole bill.
-     */
-    assumptions.push(local.typicalRateRange
-      ? `${local.label} is not included. It is set by your ${where} and typically runs `
+    if (local.omissionNote) {
+      assumptions.push(`${local.label} is not included. ${local.omissionNote}`);
+    } else if (local.typicalRateRange) {
+      assumptions.push(`${local.label} is not included. It is set by your ${where} and typically runs `
         + `${asPercent(local.typicalRateRange.low)}% to ${asPercent(local.typicalRateRange.high)}% of ${base}, `
-        + 'so your real take-home is lower than this.'
-      : `${local.label} is not included. It is set by your ${where} and applies to ${base}. `
+        + 'so your real take-home is lower than this.');
+    } else {
+      assumptions.push(`${local.label} is not included. It is set by your ${where} and applies to ${base}. `
         + 'No state agency publishes a single rate for it, so its size is not estimated here — but your real take-home is lower than this.');
+    }
   } else if (liability.stateTax.status === 'supported') {
     assumptions.push('This state levies no local income tax on wages, so nothing is omitted on that account.');
   }

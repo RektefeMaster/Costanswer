@@ -80,8 +80,9 @@ test('salary after tax and paycheck use the tax snapshot and stay estimates', as
   await expect(page.locator('.result-audit')).toContainText('Method salary-after-tax-v1.0.0');
   await expect(page.locator('.result-audit')).toContainText('us-tax-2026-v1');
   await page.locator('#salary-state').selectOption('NY');
-  await expect(page.locator('.data-callout')).toContainText('federal and FICA only');
-  await expect(page.locator('.result-details')).toContainText('Omitted (unsupported state)');
+  await expect(page.locator('.data-callout')).not.toContainText('federal and FICA only');
+  await expect(page.locator('.result-details')).toContainText('New York');
+  await expect(page.locator('.result-details')).not.toContainText('Omitted (unsupported state)');
 
   await page.goto('/money/paycheck');
   await expect(page.getByRole('heading', { name: 'Paycheck Calculator' })).toBeVisible();

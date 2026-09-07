@@ -121,6 +121,18 @@ work, so a job's cost is `Σ (quantity × unit cost)` with productivity as the
 labour driver. That is the shape the Job Cost Engine takes. The Apache-2.0 code
 may also be read for structure. None of the numbers are used.
 
+### P2 state tax: government facts only in production
+
+Every rate, deduction, exemption, credit and recapture that ships in
+`data/tax/2026.json` was transcribed from a state DOR publication, statute, or
+IRS procedure. PolicyEngine-US was used as a document index. No PolicyEngine
+parameter file, no GitHub dataset, and no third-party projection was copied into
+the snapshot. CWICR remains rejected for both licence and geography.
+
+That same registry is the handoff to the Job Cost Engine. Construction sources
+already recorded there (BLS, BEA, Census, FEMA, Davis-Bacon, DOT bid tabs,
+NREL) are not re-researched from scratch.
+
 ### The generic GitHub search for US construction cost data comes back empty
 
 Searches across construction cost estimating, quantity takeoff, unit price

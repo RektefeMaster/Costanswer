@@ -430,14 +430,13 @@ describe('car affordability data provenance', () => {
     expect(result.datasetSnapshotIds).toEqual([gasolineSnapshotId, taxSnapshotId]);
   });
 
-  it('says plainly that an unsupported state overstates take-home pay', () => {
+  it('computes New York state tax and names the omitted city tax', () => {
     const result = calculateCarAffordability(withInput({
       state: 'NY',
       income: { incomeMode: 'gross-salary', annualGrossSalary: 100_000, filingStatus: 'single', taxYear: 2026 },
     }));
-    expect(result.value.stateTaxStatus).toBe('unsupported');
-    expect(result.assumptions.join(' ')).toContain('New York wage income tax is omitted');
-    expect(result.assumptions.join(' ')).toContain('overstated');
+    expect(result.value.stateTaxStatus).toBe('supported');
+    expect(result.assumptions.join(' ')).toContain('local income taxes are not included');
   });
 
   it('leads the explanation with the numbers and labels the bands as ours', () => {

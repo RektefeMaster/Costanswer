@@ -35,6 +35,14 @@ export type StateTaxInput = {
    * is what stops those rows going stale the year it changes.
    */
   federalStandardDeduction?: number;
+  /**
+   * Employee Social Security + Medicare withheld, for states that deduct it.
+   *
+   * Massachusetts Form 1 line 11 caps that subtraction at $2,000 per earner.
+   * Required when the policy has `ficaDeductionCap`; silently skipping it
+   * would overstate tax by up to $100.
+   */
+  employeeFica?: number;
 };
 
 type SupportedPolicy = Extract<StateTaxPolicy, { status: 'supported' }>;
@@ -53,6 +61,52 @@ type SupportedPolicy = Extract<StateTaxPolicy, { status: 'supported' }>;
  * local tax it cannot know is named as an omission; a state with no verified
  * schedule returns `unsupported` and the page says federal and FICA only.
  */
+function roundToFourthDecimal(value: number): number {
+  return Math.round(value * 10_000) / 10_000;
+}
+
+type NySupplementalTax = NonNullable<Extract<SupportedPolicy, { kind: 'progressive' }>['nySupplementalTax']>;
+
+/**
+ * New York IT-2105-I tax computation worksheets for NYAGI above $107,650.
+ *
+ * The rate schedule already includes the lower-bracket benefit. These
+ * worksheets take that benefit back as AGI rises, either by interpolating up
+ * to a flat rate on all taxable income or by adding a published recapture
+ * base plus a fraction of the next increment. Above $25 million the tax is
+ * simply taxable income times 10.9%.
+ */
+function applyNySupplementalTax(
+  agi: number,
+  taxableIncome: number,
+  mainTax: number,
+  spec: NySupplementalTax,
+  filingStatus: FilingStatus,
+): number {
+  if (agi <= spec.minAgi) return mainTax;
+  if (agi > spec.topRateAgi) return taxableIncome * spec.topRate;
+
+  const firstCap = spec.firstBandNotOverByFilingStatus[filingStatus];
+  if (taxableIncome <= firstCap) {
+    const flat = taxableIncome * spec.firstBandRateByFilingStatus[filingStatus];
+    if (agi >= spec.minAgi + spec.phaseInLength) return flat;
+    const fraction = roundToFourthDecimal((agi - spec.minAgi) / spec.phaseInLength);
+    return mainTax + fraction * (flat - mainTax);
+  }
+
+  let previousCap = firstCap;
+  for (const step of spec.recaptureStepsByFilingStatus[filingStatus]) {
+    const cap = step.notOver ?? Number.POSITIVE_INFINITY;
+    if (taxableIncome > previousCap && taxableIncome <= cap) {
+      const excess = Math.min(Math.max(0, agi - step.agiThreshold), spec.phaseInLength);
+      const fraction = roundToFourthDecimal(excess / spec.phaseInLength);
+      return mainTax + step.recaptureBase + fraction * step.incrementalBenefit;
+    }
+    previousCap = cap;
+  }
+  return mainTax;
+}
+
 function computeSupportedStateTax(
   policy: SupportedPolicy,
   input: StateTaxInput,
@@ -62,22 +116,33 @@ function computeSupportedStateTax(
   if (policy.kind === 'none') return none;
 
   const federalTaxDeducted = federalDeductionFor(policy, input);
-  const income = Math.max(
-    0,
-    startingIncomeFor(policy, input) - federalTaxDeducted,
-  );
+  const startingIncome = startingIncomeFor(policy, input);
+  const income = Math.max(0, startingIncome - federalTaxDeducted);
 
   let taxBeforeCredits: number;
   switch (policy.kind) {
     case 'flat': {
       const deduction = policy.standardDeductionByFilingStatus?.[filingStatus] ?? 0;
-      const exemption = policy.exemptionByFilingStatus[filingStatus];
+      const exemption = policy.exemptionByFilingStatus[filingStatus]
+        + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
       taxBeforeCredits = Math.max(0, income - deduction - exemption) * policy.rate;
       break;
     }
     case 'flatWithSurtax': {
-      taxBeforeCredits = income * policy.rate
-        + Math.max(0, income - policy.surtaxThreshold) * policy.surtaxRate;
+      let afterFica = income;
+      if (policy.ficaDeductionCap !== undefined) {
+        if (input.employeeFica === undefined) {
+          throw new Error(
+            `${input.state} deducts Social Security and Medicare from taxable income, so employeeFica is required.`,
+          );
+        }
+        afterFica = Math.max(0, income - Math.min(input.employeeFica, policy.ficaDeductionCap));
+      }
+      const exemption = policy.exemptionByFilingStatus[filingStatus]
+        + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
+      const taxable = Math.max(0, afterFica - exemption);
+      taxBeforeCredits = taxable * policy.rate
+        + Math.max(0, taxable - policy.surtaxThreshold) * policy.surtaxRate;
       break;
     }
     case 'progressive': {
@@ -99,10 +164,32 @@ function computeSupportedStateTax(
         }
       }
 
-      const fullDeduction = policy.percentageStandardDeduction
-        ? boundedPercentageDeduction(policy.percentageStandardDeduction, income, filingStatus)
-        : policy.standardDeductionByFilingStatus[filingStatus];
-      const deduction = afterPhaseOut(fullDeduction, policy.standardDeductionPhaseOut, income, filingStatus);
+      const fullDeduction = policy.standardDeductionRatePhaseOut
+        ? deductionAtRateStages(
+          policy.standardDeductionRatePhaseOut.stagesByFilingStatus[filingStatus],
+          /*
+           * Wisconsin's schedules are looked up on Wisconsin income, which is
+           * this starting income, before exemptions. A later number would pick
+           * the wrong stage of the head-of-household two-rate formula.
+           */
+          startingIncome,
+        )
+        : policy.steppedStandardDeduction
+          ? amountAtIncomeStep(
+            policy.steppedStandardDeduction.amountStepsByFilingStatus[filingStatus],
+            /*
+             * Alabama's chart is looked up on Alabama AGI (Form 40 line 10),
+             * which is this starting income — before the federal-tax subtraction
+             * on line 12. Looking it up after that subtraction would pick the
+             * wrong row whenever federal tax is large enough to cross a band.
+             */
+            startingIncome,
+          )
+          : policy.percentageStandardDeduction
+            ? boundedPercentageDeduction(policy.percentageStandardDeduction, income, filingStatus)
+            : policy.standardDeductionByFilingStatus?.[filingStatus] ?? 0;
+      const limited = limitedStandardDeduction(fullDeduction, policy.standardDeductionLimitation, income, filingStatus);
+      const deduction = afterPhaseOut(limited, policy.standardDeductionPhaseOut, income, filingStatus);
       const stepped = policy.steppedPersonalExemption;
       const exemptions = stepped
         ? steppedExemptionAt(stepped, income, filingStatus, input.dependents ?? 0)
@@ -117,6 +204,21 @@ function computeSupportedStateTax(
         + (policy.additionalTax
           ? Math.max(0, taxableIncome - policy.additionalTax.thresholdByFilingStatus[filingStatus]) * policy.additionalTax.rate
           : 0);
+      for (const addOn of policy.taxAddOnSteps ?? []) {
+        taxBeforeCredits += amountAtIncomeStep(
+          addOn.amountStepsByFilingStatus[filingStatus],
+          startingIncome,
+        );
+      }
+      if (policy.nySupplementalTax) {
+        taxBeforeCredits = applyNySupplementalTax(
+          income,
+          taxableIncome,
+          taxBeforeCredits,
+          policy.nySupplementalTax,
+          filingStatus,
+        );
+      }
       break;
     }
     default: {
@@ -168,6 +270,55 @@ function afterPhaseOut(
   return Math.max(0, amount - reduction);
 }
 
+type StandardDeductionLimitation = {
+  startIncomeByFilingStatus: Record<FilingStatus, number>;
+  secondStartIncomeByFilingStatus: Record<FilingStatus, number>;
+  firstRate: number;
+  secondRate: number;
+  maximumReductionShare: number;
+  fullLimitationIncomeByFilingStatus: Record<FilingStatus, number>;
+};
+
+function limitedStandardDeduction(
+  amount: number,
+  spec: StandardDeductionLimitation | undefined,
+  income: number,
+  filingStatus: FilingStatus,
+): number {
+  if (!spec || amount === 0) return amount;
+  const floor = amount * (1 - spec.maximumReductionShare);
+  if (income > spec.fullLimitationIncomeByFilingStatus[filingStatus]) return floor;
+  const start = spec.startIncomeByFilingStatus[filingStatus];
+  if (income <= start) return amount;
+  const second = spec.secondStartIncomeByFilingStatus[filingStatus];
+  const reduction = income <= second
+    ? spec.firstRate * (income - start)
+    : spec.firstRate * (second - start) + spec.secondRate * (income - second);
+  return Math.max(floor, amount - reduction);
+}
+
+/**
+ * Wisconsin's formula: a starting amount, minus a rate times income over a
+ * floor, looked up in published stages. Head of household has two rates; the
+ * others have one. Stages are inclusive at `notOver`, matching "not over" on
+ * the Form 1-ES schedules.
+ */
+function deductionAtRateStages(
+  stages: ReadonlyArray<{
+    notOver: number | null;
+    amount: number;
+    rate?: number;
+    excessOver?: number;
+  }>,
+  income: number,
+): number {
+  const stage = stages.find((candidate) => candidate.notOver === null || income <= candidate.notOver);
+  if (!stage) throw new Error('Deduction rate-phase-out has no open top stage, so high incomes fall through it.');
+  const rate = stage.rate ?? 0;
+  const excessOver = stage.excessOver ?? 0;
+  return Math.max(0, stage.amount - rate * Math.max(0, income - excessOver));
+}
+
 /**
  * A stepped exemption: look the per-person amount up by income, then count heads.
  *
@@ -210,14 +361,20 @@ function boundedPercentageDeduction(
  */
 function startingIncomeFor(policy: SupportedPolicy, input: StateTaxInput): number {
   const basis = 'taxableIncomeBasis' in policy ? policy.taxableIncomeBasis : undefined;
-  if (basis !== 'federal-taxable-income') return input.taxableIncome;
-
-  if (input.federalStandardDeduction === undefined) {
-    throw new Error(
-      `${input.state} taxes federal taxable income, so federalStandardDeduction is required.`,
-    );
+  let start = input.taxableIncome;
+  if (basis === 'federal-taxable-income') {
+    if (input.federalStandardDeduction === undefined) {
+      throw new Error(
+        `${input.state} taxes federal taxable income, so federalStandardDeduction is required.`,
+      );
+    }
+    start = Math.max(0, input.taxableIncome - input.federalStandardDeduction);
+    const addBack = 'federalStandardDeductionAddBack' in policy ? policy.federalStandardDeductionAddBack : undefined;
+    if (addBack && input.taxableIncome > addBack.appliesAboveIncomeByFilingStatus[input.filingStatus]) {
+      start += Math.max(0, input.federalStandardDeduction - addBack.keepAmountByFilingStatus[input.filingStatus]);
+    }
   }
-  return Math.max(0, input.taxableIncome - input.federalStandardDeduction);
+  return start;
 }
 
 function federalDeductionFor(policy: SupportedPolicy, input: StateTaxInput): number {
@@ -230,13 +387,25 @@ function federalDeductionFor(policy: SupportedPolicy, input: StateTaxInput): num
       `${input.state} deducts federal income tax from state taxable income, so federalIncomeTax is required.`,
     );
   }
+  let allowed = Math.max(0, input.federalIncomeTax);
+  if (spec.shareOfFederalTax) {
+    /*
+     * Missouri's percentage is based on Missouri AGI (MO-1040 line 6), not on
+     * income after this deduction. The engine's taxableIncome input is that
+     * AGI for a wage-only filer.
+     */
+    allowed *= rateAtIncomeStep(
+      spec.shareOfFederalTax.rateStepsByFilingStatus[input.filingStatus],
+      input.taxableIncome,
+    );
+  }
   const stepped = spec.capStepsByFilingStatus?.[input.filingStatus];
   const cap = stepped
     ? amountAtIncomeStep(stepped, input.taxableIncome)
     : spec.capByFilingStatus?.[input.filingStatus];
   return cap === undefined || cap === null
-    ? Math.max(0, input.federalIncomeTax)
-    : Math.min(Math.max(0, input.federalIncomeTax), cap);
+    ? allowed
+    : Math.min(allowed, cap);
 }
 
 /**
@@ -254,9 +423,26 @@ function amountAtIncomeStep(
   return step.amount;
 }
 
+function rateAtIncomeStep(
+  steps: ReadonlyArray<{ notOver: number | null; rate: number }>,
+  income: number,
+): number {
+  const step = steps.find((candidate) => candidate.notOver === null || income <= candidate.notOver);
+  if (!step) throw new Error('Income rate staircase has no open top step, so high incomes fall through it.');
+  return step.rate;
+}
+
 function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBeforeCredits: number): number {
   const spec = 'exemptionCredit' in policy ? policy.exemptionCredit : undefined;
   if (!spec) return 0;
+
+  const cliff = spec.disallowedAboveIncomeByFilingStatus?.[input.filingStatus];
+  if (cliff !== undefined && input.taxableIncome > cliff) return 0;
+
+  if (spec.rateStepsByFilingStatus) {
+    const rate = rateAtIncomeStep(spec.rateStepsByFilingStatus[input.filingStatus], input.taxableIncome);
+    return Math.min(taxBeforeCredits * rate, taxBeforeCredits);
+  }
 
   let federalShare = 0;
   if (spec.rateOfFederalStandardDeduction !== undefined) {
@@ -267,9 +453,6 @@ function exemptionCreditFor(policy: SupportedPolicy, input: StateTaxInput, taxBe
     }
     federalShare = spec.rateOfFederalStandardDeduction * input.federalStandardDeduction;
   }
-
-  const cliff = spec.disallowedAboveIncomeByFilingStatus?.[input.filingStatus];
-  if (cliff !== undefined && input.taxableIncome > cliff) return 0;
 
   const full = spec.perFilerByFilingStatus[input.filingStatus]
     + spec.perDependent * (input.dependents ?? 0)
@@ -290,6 +473,7 @@ function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefine
     basis: spec.basis,
     typicalRateRange: spec.typicalRateRange,
     appliesTo: spec.appliesTo,
+    omissionNote: spec.omissionNote,
   };
 }
 

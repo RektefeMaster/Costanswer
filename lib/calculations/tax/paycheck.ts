@@ -15,6 +15,7 @@ const paycheckBaseSchema = z.object({
   state: z.string().refine(isStateCode, 'Choose a U.S. state or D.C.'),
   filingStatus: z.enum(FILING_STATUSES),
   taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  dependents: finiteNumber('Dependents', 0, 20).optional(),
 });
 
 export const paycheckInputSchema = paycheckBaseSchema.superRefine((input, context) => {
@@ -106,6 +107,7 @@ export function calculatePaycheck(rawInput: unknown): CalculationResult<Paycheck
     state: input.state,
     filingStatus: input.filingStatus,
     taxYear: input.taxYear,
+    dependents: input.dependents,
   });
   const medicare = liability.fica.medicare + liability.fica.additionalMedicare;
   const stateName = getStateName(liability.state);

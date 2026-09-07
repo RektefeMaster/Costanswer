@@ -80,6 +80,12 @@ const exemptionStepsSchema = z.array(z.object({
   amount: z.number().finite().min(0),
 }).strict()).min(1);
 
+/** A rate looked up by income, the way Missouri's federal-tax percentage is. */
+const incomeRateStepsSchema = z.array(z.object({
+  notOver: z.number().finite().positive().nullable(),
+  rate: z.number().finite().min(0).max(1),
+}).strict()).min(1);
+
 /**
  * A per-person credit subtracted after tax is computed.
  *
@@ -117,6 +123,19 @@ const exemptionCreditSchema = z.object({
     /** Credit reduced by this fraction of income above the start, to zero. */
     ratePerDollar: z.number().finite().min(0).max(1),
   }).strict().optional(),
+  /**
+   * A credit that is a percentage of the tax itself, looked up on AGI.
+   *
+   * Connecticut Table E is the case: 75% of the tax at low AGI, stepping down
+   * to nothing. A dollar credit, or a linear phase-out of one, cannot express
+   * those published decimals.
+   */
+  rateStepsByFilingStatus: z.object({
+    single: incomeRateStepsSchema,
+    marriedFilingJointly: incomeRateStepsSchema,
+    marriedFilingSeparately: incomeRateStepsSchema,
+    headOfHousehold: incomeRateStepsSchema,
+  }).strict().optional(),
 }).strict();
 
 /**
@@ -130,6 +149,32 @@ const percentageDeductionSchema = z.object({
   rate: z.number().finite().min(0).max(1),
   minimumByFilingStatus: filingStatusNumberSchema,
   maximumByFilingStatus: filingStatusNumberSchema,
+}).strict();
+
+/**
+ * A standard deduction written as "amount less X% of income over Y", in stages.
+ *
+ * The existing proportional phase-out shrinks the whole deduction across one
+ * band. Wisconsin's head-of-household schedule does that twice, at two rates,
+ * and the second stage reuses the single filer's remaining amount. Stages are
+ * the smallest shape that can follow the published rows without approximating.
+ */
+const deductionRateStageSchema = z.object({
+  /** Inclusive top of this stage; null on the residual (usually $0) stage. */
+  notOver: z.number().finite().positive().nullable(),
+  amount: z.number().finite().min(0),
+  /** Subtract this rate times income above `excessOver`. Absent means a flat amount. */
+  rate: z.number().finite().min(0).max(1).optional(),
+  excessOver: z.number().finite().min(0).optional(),
+}).strict();
+
+const standardDeductionRatePhaseOutSchema = z.object({
+  stagesByFilingStatus: z.object({
+    single: z.array(deductionRateStageSchema).min(1),
+    marriedFilingJointly: z.array(deductionRateStageSchema).min(1),
+    marriedFilingSeparately: z.array(deductionRateStageSchema).min(1),
+    headOfHousehold: z.array(deductionRateStageSchema).min(1),
+  }).strict(),
 }).strict();
 
 /**
@@ -155,6 +200,35 @@ const proportionalPhaseOutSchema = z.object({
    * exactly why it is stated rather than silently dropped.
    */
   roundReductionDownToMultipleOf: z.number().finite().positive().optional(),
+}).strict();
+
+/**
+ * A standard deduction reduced by two successive rates, then capped.
+ *
+ * Minnesota is the case: 3% of AGI over the first threshold, plus 10% over
+ * the second, never more than 80% of the deduction, and the 80% cut is forced
+ * above an indexed millionaire line. A single proportional band cannot make
+ * that switch.
+ */
+const standardDeductionLimitationSchema = z.object({
+  startIncomeByFilingStatus: filingStatusNumberSchema,
+  secondStartIncomeByFilingStatus: filingStatusNumberSchema,
+  firstRate: z.number().finite().min(0).max(1),
+  secondRate: z.number().finite().min(0).max(1),
+  maximumReductionShare: z.number().finite().min(0).max(1),
+  fullLimitationIncomeByFilingStatus: filingStatusNumberSchema,
+}).strict();
+
+/**
+ * Add back part of the federal standard deduction above a high-income line.
+ *
+ * Colorado is the case: above $300,000 of federal AGI the state adds back the
+ * federal deduction over $12,000 ($16,000 joint). Ignoring it understates tax
+ * for those filers.
+ */
+const federalStandardDeductionAddBackSchema = z.object({
+  appliesAboveIncomeByFilingStatus: filingStatusNumberSchema,
+  keepAmountByFilingStatus: filingStatusNumberSchema,
 }).strict();
 
 /**
@@ -228,6 +302,55 @@ const federalDeductionSchema = z.object({
     marriedFilingSeparately: exemptionStepsSchema,
     headOfHousehold: exemptionStepsSchema,
   }).strict().optional(),
+  /**
+   * Which federal figure is deducted.
+   *
+   * `income-tax` is regular federal income tax as this engine computes it —
+   * Form 1040 tax after the standard deduction, without refundable credits.
+   * Missouri multiplies that figure (MO-1040 line 11) by an AGI-based share.
+   * Alabama's worksheet starts from Form 1040 line 22, adds NIIT and subtracts
+   * refundable credits; for a wage-only filer with none of those, it is the
+   * same number. The engine always receives `federalIncomeTax`; this field
+   * records what that number is supposed to represent, rather than stretching
+   * a cap to fake a percentage.
+   */
+  federalTaxBase: z.enum([
+    'income-tax',
+    'income-tax-plus-niit-minus-refundable-credits',
+  ]).optional(),
+  /**
+   * Share of that federal tax allowed, looked up on the filer's AGI.
+   *
+   * Missouri is the case: 35% at or below $25,000 of Missouri AGI, then 25%,
+   * 15%, 5% and 0%, after which the product is capped. Reusing `capSteps` for
+   * those percentages would store a rate in a dollar field and still not
+   * multiply, so the share is a separate shape.
+   */
+  shareOfFederalTax: z.object({
+    rateStepsByFilingStatus: z.object({
+      single: incomeRateStepsSchema,
+      marriedFilingJointly: incomeRateStepsSchema,
+      marriedFilingSeparately: incomeRateStepsSchema,
+      headOfHousehold: incomeRateStepsSchema,
+    }).strict(),
+  }).strict().optional(),
+}).strict();
+
+/**
+ * A standard deduction looked up from an income chart, not a single figure.
+ *
+ * Alabama is the case: $8,500 filing jointly at or below $25,999 of Alabama
+ * AGI, then $175 less in each $500 band down to $5,000. Storing the $8,500,
+ * or approximating the drop as a linear phase-out, misses every interior row
+ * of the published chart.
+ */
+const steppedDeductionSchema = z.object({
+  amountStepsByFilingStatus: z.object({
+    single: exemptionStepsSchema,
+    marriedFilingJointly: exemptionStepsSchema,
+    marriedFilingSeparately: exemptionStepsSchema,
+    headOfHousehold: exemptionStepsSchema,
+  }).strict(),
 }).strict();
 
 /**
@@ -261,6 +384,12 @@ const localAddOnSchema = z.object({
     high: z.number().finite().min(0).max(1),
   }).strict().optional(),
   appliesTo: z.enum(['taxable-income', 'state-tax-liability']),
+  /**
+   * Extra sentence the take-home page prints, where the range alone would
+   * mislead. Pennsylvania's Act 32 band is not Philadelphia's wage tax;
+   * Delaware's only local income tax is Wilmington's 1.25%.
+   */
+  omissionNote: z.string().min(1).optional(),
 }).strict();
 
 /**
@@ -287,8 +416,11 @@ const flatStateSchema = stateMetadataSchema.extend({
   rate: z.number().finite().min(0).max(1),
   exemptionByFilingStatus: filingStatusNumberSchema,
   standardDeductionByFilingStatus: filingStatusNumberSchema.optional(),
+  /** A dependent deduction, where the state states one separately from the filer's. */
+  perDependentExemption: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
+  federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),
   localAddOn: localAddOnSchema.optional(),
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
@@ -298,6 +430,15 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   kind: z.literal('flatWithSurtax'),
   sourceStatus: z.literal('verified'),
   scheduleTaxYear: z.number().int().min(2000).max(2100),
+  exemptionByFilingStatus: filingStatusNumberSchema,
+  perDependentExemption: z.number().finite().min(0).optional(),
+  /**
+   * Cap on Social Security + Medicare withheld, deducted from income.
+   *
+   * Massachusetts Form 1 line 11 is $2,000 per earner. Absent means the state
+   * does not allow that subtraction. Required at runtime as `employeeFica`.
+   */
+  ficaDeductionCap: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   localAddOn: localAddOnSchema.optional(),
   rate: z.number().finite().min(0).max(1),
@@ -306,17 +447,46 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   notes: z.array(z.string().min(1)).min(1),
 }).strict();
 
+const nyRecaptureStepSchema = z.object({
+  /** Inclusive taxable-income cap of this worksheet; null for the open top below `topRateAgi`. */
+  notOver: z.number().finite().positive().nullable(),
+  recaptureBase: z.number().finite().min(0),
+  incrementalBenefit: z.number().finite().min(0),
+  /** AGI floor used on the worksheet's "excess of line 1 over …" line. */
+  agiThreshold: z.number().finite().positive(),
+}).strict();
+
 const progressiveStateSchema = stateMetadataSchema.extend({
   status: z.literal('supported'),
   kind: z.literal('progressive'),
   sourceStatus: z.literal('verified'),
   scheduleTaxYear: z.number().int().min(2000).max(2100),
   taxableIncomeBasis: taxableIncomeBasisSchema.optional(),
-  standardDeductionByFilingStatus: filingStatusNumberSchema,
+  /**
+   * Flat deduction by filing status. Optional where `steppedStandardDeduction`,
+   * `percentageStandardDeduction` or `standardDeductionRatePhaseOut` is the
+   * actual rule — a dummy constant would be an approximation of a chart the
+   * engine can already look up.
+   */
+  standardDeductionByFilingStatus: filingStatusNumberSchema.optional(),
   /** Where the deduction is a share of income rather than a flat amount. */
   percentageStandardDeduction: percentageDeductionSchema.optional(),
+  /** Where the deduction is a published income chart rather than one number. */
+  steppedStandardDeduction: steppedDeductionSchema.optional(),
   /** Where the deduction shrinks with income rather than staying flat. */
   standardDeductionPhaseOut: proportionalPhaseOutSchema.optional(),
+  /** Two-rate high-income limitation, as Minnesota writes it. */
+  standardDeductionLimitation: standardDeductionLimitationSchema.optional(),
+  /**
+   * Where the deduction is a published rate formula, possibly in more than one
+   * stage, rather than a single proportional band.
+   *
+   * Wisconsin is the case. Head of household phases $18,030 at 22.515% until
+   * $58,827, then follows the single 12% schedule. One `proportionalPhaseOut`
+   * cannot make that switch, and approximating it with the first rate would
+   * understate the deduction (and overstate tax) in the second stage.
+   */
+  standardDeductionRatePhaseOut: standardDeductionRatePhaseOutSchema.optional(),
   bracketsByFilingStatus: filingStatusBracketsSchema,
   additionalTax: z.object({
     name: z.string().min(1),
@@ -328,6 +498,50 @@ const progressiveStateSchema = stateMetadataSchema.extend({
     thresholdByFilingStatus: filingStatusNumberSchema,
     rate: z.number().finite().min(0).max(1),
   }).strict().optional(),
+  /**
+   * Dollar amounts added to the tax after the brackets, looked up on AGI.
+   *
+   * Connecticut Tables C and D are the case: a 2% phase-out add-back and a
+   * recapture staircase. `additionalTax` is a single rate above a threshold and
+   * cannot follow those published rows.
+   */
+  taxAddOnSteps: z.array(z.object({
+    name: z.string().min(1),
+    amountStepsByFilingStatus: z.object({
+      single: exemptionStepsSchema,
+      marriedFilingJointly: exemptionStepsSchema,
+      marriedFilingSeparately: exemptionStepsSchema,
+      headOfHousehold: exemptionStepsSchema,
+    }).strict(),
+  }).strict()).optional(),
+  /**
+   * New York's high-AGI recapture (IT-2105-I tax computation worksheets).
+   *
+   * Below `minAgi` the rate schedule is the whole tax. Above `topRateAgi` the
+   * tax is taxable income times `topRate`. Between those, the first band
+   * interpolates the schedule up to a flat rate on all taxable income, and
+   * later bands add a published recapture base plus a fraction of the
+   * incremental benefit. A single `additionalTax` rate cannot follow that.
+   */
+  nySupplementalTax: z.object({
+    minAgi: z.number().finite().positive(),
+    phaseInLength: z.number().finite().positive(),
+    topRateAgi: z.number().finite().positive(),
+    topRate: z.number().finite().min(0).max(1),
+    firstBandNotOverByFilingStatus: filingStatusNumberSchema,
+    firstBandRateByFilingStatus: z.object({
+      single: z.number().finite().min(0).max(1),
+      marriedFilingJointly: z.number().finite().min(0).max(1),
+      marriedFilingSeparately: z.number().finite().min(0).max(1),
+      headOfHousehold: z.number().finite().min(0).max(1),
+    }).strict(),
+    recaptureStepsByFilingStatus: z.object({
+      single: z.array(nyRecaptureStepSchema).min(1),
+      marriedFilingJointly: z.array(nyRecaptureStepSchema).min(1),
+      marriedFilingSeparately: z.array(nyRecaptureStepSchema).min(1),
+      headOfHousehold: z.array(nyRecaptureStepSchema).min(1),
+    }).strict(),
+  }).strict().optional(),
   personalExemptionByFilingStatus: filingStatusNumberSchema.optional(),
   personalExemptionPhaseOut: proportionalPhaseOutSchema.optional(),
   /** Where the exemption steps down with income instead of being flat. */
@@ -337,6 +551,7 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   perDependentExemption: z.number().finite().min(0).optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
+  federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),
   localAddOn: localAddOnSchema.optional(),
   notes: z.array(z.string().min(1)).min(1),
 }).strict();

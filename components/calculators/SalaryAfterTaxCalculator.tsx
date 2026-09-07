@@ -18,6 +18,7 @@ export function SalaryAfterTaxCalculator() {
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [filingStatus, setFilingStatus] = useState<(typeof FILING_STATUSES)[number]>('single');
   const [taxYear, setTaxYear] = useState(String(DEFAULT_TAX_YEAR));
+  const [dependents, setDependents] = useState('0');
 
   const calculation = useMemo(() => {
     try {
@@ -27,13 +28,14 @@ export function SalaryAfterTaxCalculator() {
           state: stateCode,
           filingStatus,
           taxYear: Number(taxYear),
+          dependents: Number(dependents),
         }),
         error: '',
       };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [annualGrossSalary, stateCode, filingStatus, taxYear]);
+  }, [annualGrossSalary, stateCode, filingStatus, taxYear, dependents]);
 
   const selectedPolicy = snapshot.states.find((row) => row.stateCode === stateCode);
 
@@ -44,7 +46,7 @@ export function SalaryAfterTaxCalculator() {
       toolId="salary-after-tax"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([annualGrossSalary, stateCode, filingStatus, taxYear])}
+      calculationSignature={JSON.stringify([annualGrossSalary, stateCode, filingStatus, taxYear, dependents])}
     >
       {selectedPolicy?.status === 'unsupported' && (
         <div className="data-callout">
@@ -83,6 +85,11 @@ export function SalaryAfterTaxCalculator() {
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
             </select>
           </span>
+        </Field>
+        <Field label="Dependents" htmlFor="salary-dependents">
+          <InputShell>
+            <input id="salary-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
+          </InputShell>
         </Field>
         <Field label="Tax year" htmlFor="salary-year">
           <span className="input-shell select-shell">

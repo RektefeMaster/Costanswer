@@ -86,6 +86,8 @@ export type OmittedLocalTax = {
   /** Absent where no official source states a statewide band. */
   typicalRateRange?: { low: number; high: number };
   appliesTo: 'taxable-income' | 'state-tax-liability';
+  /** Extra sentence the take-home page prints, where a range alone would mislead. */
+  omissionNote?: string;
 };
 
 export type StateIncomeTaxBreakdown = {

@@ -47,6 +47,8 @@ export type StateGoldenVector = {
   readonly federalStandardDeduction?: number;
   /** Needed by states that let federal income tax be deducted. */
   readonly federalIncomeTax?: number;
+  /** Needed by states that deduct Social Security and Medicare. */
+  readonly employeeFica?: number;
   readonly dependents?: number;
   /** Where that figure was read from. A vector without one proves nothing. */
   readonly sourceUrl: string;
@@ -149,6 +151,9 @@ export function verifyStatePolicy(policy: StateTaxPolicy, taxYear: number): Stat
   if ('federalDeduction' in policy && policy.federalDeduction) {
     warn('This state deducts federal income tax; every caller must supply federalIncomeTax or the engine throws.');
   }
+  if ('ficaDeductionCap' in policy && policy.ficaDeductionCap !== undefined) {
+    warn('This state deducts Social Security and Medicare; every caller must supply employeeFica or the engine throws.');
+  }
 
   return issues;
 }
@@ -166,6 +171,7 @@ export type GoldenVectorInput = {
   readonly taxableIncome: number;
   readonly federalStandardDeduction?: number;
   readonly federalIncomeTax?: number;
+  readonly employeeFica?: number;
   readonly dependents?: number;
 };
 
@@ -179,6 +185,7 @@ export function checkGoldenVector(
     taxableIncome: vector.taxableIncome,
     federalStandardDeduction: vector.federalStandardDeduction,
     federalIncomeTax: vector.federalIncomeTax,
+    employeeFica: vector.employeeFica,
     dependents: vector.dependents,
   });
   const differenceDollars = Math.abs(actualTax - vector.expectedTax);

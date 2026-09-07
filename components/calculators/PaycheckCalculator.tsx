@@ -31,6 +31,7 @@ export function PaycheckCalculator() {
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [filingStatus, setFilingStatus] = useState<(typeof FILING_STATUSES)[number]>('single');
   const [taxYear, setTaxYear] = useState(String(DEFAULT_TAX_YEAR));
+  const [dependents, setDependents] = useState('0');
 
   const calculation = useMemo(() => {
     try {
@@ -44,13 +45,14 @@ export function PaycheckCalculator() {
           state: stateCode,
           filingStatus,
           taxYear: Number(taxYear),
+          dependents: Number(dependents),
         }),
         error: '',
       };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [payFrequency, amount, hourlyRate, hoursPerWeek, weeksPerYear, stateCode, filingStatus, taxYear]);
+  }, [payFrequency, amount, hourlyRate, hoursPerWeek, weeksPerYear, stateCode, filingStatus, taxYear, dependents]);
 
   return (
     <CalculatorPanel
@@ -59,7 +61,7 @@ export function PaycheckCalculator() {
       toolId="paycheck"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([payFrequency, amount, hourlyRate, hoursPerWeek, weeksPerYear, stateCode, filingStatus, taxYear])}
+      calculationSignature={JSON.stringify([payFrequency, amount, hourlyRate, hoursPerWeek, weeksPerYear, stateCode, filingStatus, taxYear, dependents])}
     >
       <div className="data-callout">
         <span>ASSUMPTION</span>
@@ -120,6 +122,11 @@ export function PaycheckCalculator() {
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
             </select>
           </span>
+        </Field>
+        <Field label="Dependents" htmlFor="paycheck-dependents">
+          <InputShell>
+            <input id="paycheck-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
+          </InputShell>
         </Field>
         <Field label="Tax year" htmlFor="paycheck-year">
           <span className="input-shell select-shell">

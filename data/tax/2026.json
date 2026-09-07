@@ -208,14 +208,444 @@
     {
       "stateCode": "AL",
       "provider": "Alabama Department of Revenue",
-      "sourceName": "Alabama Department of Revenue",
-      "sourceUrl": "https://www.revenue.alabama.gov/",
+      "sourceName": "2025 Form 40 booklet: standard deduction chart, personal exemption, tax tables and Form 40A Brown example",
+      "sourceUrl": "https://www.revenue.alabama.gov/wp-content/uploads/2026/01/25f40bk.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Alabama. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 500,
+            "rate": 0.02
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": null,
+            "rate": 0.05
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 500,
+            "rate": 0.02
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": null,
+            "rate": 0.05
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 500,
+            "rate": 0.02
+          },
+          {
+            "notOver": 3000,
+            "rate": 0.04
+          },
+          {
+            "notOver": null,
+            "rate": 0.05
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 1000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 6000,
+            "rate": 0.04
+          },
+          {
+            "notOver": null,
+            "rate": 0.05
+          }
+        ]
+      },
+      "steppedStandardDeduction": {
+        "amountStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 25999,
+              "amount": 3000
+            },
+            {
+              "notOver": 26499,
+              "amount": 2975
+            },
+            {
+              "notOver": 26999,
+              "amount": 2950
+            },
+            {
+              "notOver": 27499,
+              "amount": 2925
+            },
+            {
+              "notOver": 27999,
+              "amount": 2900
+            },
+            {
+              "notOver": 28499,
+              "amount": 2875
+            },
+            {
+              "notOver": 28999,
+              "amount": 2850
+            },
+            {
+              "notOver": 29499,
+              "amount": 2825
+            },
+            {
+              "notOver": 29999,
+              "amount": 2800
+            },
+            {
+              "notOver": 30499,
+              "amount": 2775
+            },
+            {
+              "notOver": 30999,
+              "amount": 2750
+            },
+            {
+              "notOver": 31499,
+              "amount": 2725
+            },
+            {
+              "notOver": 31999,
+              "amount": 2700
+            },
+            {
+              "notOver": 32499,
+              "amount": 2675
+            },
+            {
+              "notOver": 32999,
+              "amount": 2650
+            },
+            {
+              "notOver": 33499,
+              "amount": 2625
+            },
+            {
+              "notOver": 33999,
+              "amount": 2600
+            },
+            {
+              "notOver": 34499,
+              "amount": 2575
+            },
+            {
+              "notOver": 34999,
+              "amount": 2550
+            },
+            {
+              "notOver": 35499,
+              "amount": 2525
+            },
+            {
+              "notOver": null,
+              "amount": 2500
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 25999,
+              "amount": 8500
+            },
+            {
+              "notOver": 26499,
+              "amount": 8325
+            },
+            {
+              "notOver": 26999,
+              "amount": 8150
+            },
+            {
+              "notOver": 27499,
+              "amount": 7975
+            },
+            {
+              "notOver": 27999,
+              "amount": 7800
+            },
+            {
+              "notOver": 28499,
+              "amount": 7625
+            },
+            {
+              "notOver": 28999,
+              "amount": 7450
+            },
+            {
+              "notOver": 29499,
+              "amount": 7275
+            },
+            {
+              "notOver": 29999,
+              "amount": 7100
+            },
+            {
+              "notOver": 30499,
+              "amount": 6925
+            },
+            {
+              "notOver": 30999,
+              "amount": 6750
+            },
+            {
+              "notOver": 31499,
+              "amount": 6575
+            },
+            {
+              "notOver": 31999,
+              "amount": 6400
+            },
+            {
+              "notOver": 32499,
+              "amount": 6225
+            },
+            {
+              "notOver": 32999,
+              "amount": 6050
+            },
+            {
+              "notOver": 33499,
+              "amount": 5875
+            },
+            {
+              "notOver": 33999,
+              "amount": 5700
+            },
+            {
+              "notOver": 34499,
+              "amount": 5525
+            },
+            {
+              "notOver": 34999,
+              "amount": 5350
+            },
+            {
+              "notOver": 35499,
+              "amount": 5175
+            },
+            {
+              "notOver": null,
+              "amount": 5000
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 12999,
+              "amount": 4250
+            },
+            {
+              "notOver": 13249,
+              "amount": 4162
+            },
+            {
+              "notOver": 13499,
+              "amount": 4074
+            },
+            {
+              "notOver": 13749,
+              "amount": 3986
+            },
+            {
+              "notOver": 13999,
+              "amount": 3898
+            },
+            {
+              "notOver": 14249,
+              "amount": 3810
+            },
+            {
+              "notOver": 14499,
+              "amount": 3722
+            },
+            {
+              "notOver": 14749,
+              "amount": 3634
+            },
+            {
+              "notOver": 14999,
+              "amount": 3546
+            },
+            {
+              "notOver": 15249,
+              "amount": 3458
+            },
+            {
+              "notOver": 15499,
+              "amount": 3370
+            },
+            {
+              "notOver": 15749,
+              "amount": 3282
+            },
+            {
+              "notOver": 15999,
+              "amount": 3194
+            },
+            {
+              "notOver": 16249,
+              "amount": 3106
+            },
+            {
+              "notOver": 16499,
+              "amount": 3018
+            },
+            {
+              "notOver": 16749,
+              "amount": 2930
+            },
+            {
+              "notOver": 16999,
+              "amount": 2842
+            },
+            {
+              "notOver": 17249,
+              "amount": 2754
+            },
+            {
+              "notOver": 17499,
+              "amount": 2666
+            },
+            {
+              "notOver": 17749,
+              "amount": 2578
+            },
+            {
+              "notOver": null,
+              "amount": 2500
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 25999,
+              "amount": 5200
+            },
+            {
+              "notOver": 26499,
+              "amount": 5065
+            },
+            {
+              "notOver": 26999,
+              "amount": 4930
+            },
+            {
+              "notOver": 27499,
+              "amount": 4795
+            },
+            {
+              "notOver": 27999,
+              "amount": 4660
+            },
+            {
+              "notOver": 28499,
+              "amount": 4525
+            },
+            {
+              "notOver": 28999,
+              "amount": 4390
+            },
+            {
+              "notOver": 29499,
+              "amount": 4255
+            },
+            {
+              "notOver": 29999,
+              "amount": 4120
+            },
+            {
+              "notOver": 30499,
+              "amount": 3985
+            },
+            {
+              "notOver": 30999,
+              "amount": 3850
+            },
+            {
+              "notOver": 31499,
+              "amount": 3715
+            },
+            {
+              "notOver": 31999,
+              "amount": 3580
+            },
+            {
+              "notOver": 32499,
+              "amount": 3445
+            },
+            {
+              "notOver": 32999,
+              "amount": 3310
+            },
+            {
+              "notOver": 33499,
+              "amount": 3175
+            },
+            {
+              "notOver": 33999,
+              "amount": 3040
+            },
+            {
+              "notOver": 34499,
+              "amount": 2905
+            },
+            {
+              "notOver": 34999,
+              "amount": 2770
+            },
+            {
+              "notOver": 35499,
+              "amount": 2635
+            },
+            {
+              "notOver": null,
+              "amount": 2500
+            }
+          ]
+        }
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 1500,
+        "marriedFilingJointly": 3000,
+        "marriedFilingSeparately": 1500,
+        "headOfHousehold": 3000
+      },
+      "federalDeduction": {
+        "capByFilingStatus": null,
+        "federalTaxBase": "income-tax-plus-niit-minus-refundable-credits"
+      },
+      "localAddOn": {
+        "label": "Alabama municipal occupational tax",
+        "basis": "municipality",
+        "appliesTo": "taxable-income"
+      },
+      "notes": [
+        "Alabama taxes taxable income at 2%, 4% and 5% (Alabama Department of Revenue FAQ; 2025 Form 40 booklet tax tables). Single, head of family and married filing separately: 2% of the first $500, 4% of the next $2,500, 5% over $3,000. Married filing jointly: 2% of the first $1,000, 4% of the next $5,000, 5% over $6,000. 2026 Form 40 was not published at verification.",
+        "The standard deduction is the 21-row chart on pages 8–9 of the 2025 Form 40 booklet, looked up on Alabama AGI (line 10), not a single figure and not a linear phase-out. Married filing jointly: $8,500 at or below $25,999, then $175 less in each $500 band to $5,000 at $35,500 and above. Head of family: $5,200 down $135 per $500 to $2,500. Single: $3,000 down $25 per $500 to $2,500, on the same $26,000–$35,500 income bands. Married filing separately: $4,250 at or below $12,999, then $88 less in each $250 band to $2,500 at $17,750 and above.",
+        "The personal exemption is $1,500 single or married filing separately and $3,000 married filing jointly or head of family (Form 40 lines 1–4). Dependent exemptions ($1,000 / $500 / $300 by AGI) are not modeled; the calculator has no dependents input on this path.",
+        "Alabama subtracts federal income tax in full (Form 40 line 12 worksheet: Form 1040 line 22 plus NIIT, minus refundable credits, not below zero). For a wage-only filer with none of those extras, that is the federal income tax this engine computes.",
+        "Alabama cities levy occupational taxes that are not included. No statewide rate is published, so the page names the omission without inventing its size.",
+        "Alabama itemized deductions, credits and other Form 40 adjustments are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "AR",
@@ -1088,14 +1518,33 @@
     {
       "stateCode": "AZ",
       "provider": "Arizona Department of Revenue",
-      "sourceName": "Arizona Department of Revenue",
-      "sourceUrl": "https://azdor.gov/",
+      "sourceName": "A.R.S. 43-1011 (2.5% rate) and Arizona DOR 2025 Individual Income Tax Highlights (standard deduction)",
+      "sourceUrl": "https://azdor.gov/forms/individual-income-tax-highlights",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Arizona. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "rate": 0.025,
+      "standardDeductionByFilingStatus": {
+        "single": 15750,
+        "marriedFilingJointly": 31500,
+        "marriedFilingSeparately": 15750,
+        "headOfHousehold": 23625
+      },
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "notes": [
+        "Arizona taxes Arizona taxable income at a flat 2.5% (A.R.S. 43-1011(A)(9); Arizona DOR 2025 Individual Income Tax Highlights). 2026 Form 140 was not published at verification.",
+        "The 2025 standard deduction is $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household (DOR 2025 Highlights; A.R.S. 43-1041 inflation-adjusted). The extra standard-deduction increase for charitable contributions (34% for 2025) is not modeled.",
+        "Arizona credits and other Form 140 adjustments are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "CA",
@@ -1282,7 +1731,7 @@
       "notes": [
         "California 2026 Form 540 rate schedules were not published at verification. This snapshot uses the official 2025 FTB indexed tax rate schedules and 2025 standard deduction.",
         "Mental Health Services Tax is 1% of taxable income over $1,000,000 (Cal. Rev. & Tax. Code § 17043).",
-        "California credits, itemized deductions, and locality taxes are not modeled."
+        "California credits and itemized deductions are not modeled. California levies no local wage income tax."
       ]
     },
     {
@@ -1305,25 +1754,1954 @@
         "marriedFilingSeparately": 0,
         "headOfHousehold": 0
       },
+      "federalStandardDeductionAddBack": {
+        "appliesAboveIncomeByFilingStatus": {
+          "single": 300000,
+          "marriedFilingJointly": 300000,
+          "marriedFilingSeparately": 300000,
+          "headOfHousehold": 300000
+        },
+        "keepAmountByFilingStatus": {
+          "single": 12000,
+          "marriedFilingJointly": 16000,
+          "marriedFilingSeparately": 12000,
+          "headOfHousehold": 12000
+        }
+      },
       "notes": [
         "Colorado taxes federal taxable income at a flat 4.40% (2025 Colorado Individual Income Tax Filing Guide, DR 0104 Book, line 13).",
         "Colorado has no standard deduction or personal exemption of its own. The federal standard deduction is already inside its starting figure, which is why this row reads it from the federal snapshot rather than restating it.",
         "The rate moves with TABOR refund mechanisms rather than staying fixed, so this row is declared as the 2025 schedule. It had not been republished for 2026 at verification.",
-        "Above $300,000 of federal adjusted gross income Colorado adds back the part of the federal standard or itemized deduction over $12,000 ($16,000 filing jointly). That addback is not modeled, so this understates tax for those filers by at most about $180 single and $713 filing jointly.",
+        "Above $300,000 of federal adjusted gross income Colorado adds back the part of the federal standard deduction over $12,000 ($16,000 filing jointly). That addback is modeled.",
         "Colorado additions, subtractions, the alternative minimum tax and credits are not modeled."
       ]
     },
     {
       "stateCode": "CT",
       "provider": "Connecticut Department of Revenue Services",
-      "sourceName": "Connecticut Department of Revenue Services",
-      "sourceUrl": "https://portal.ct.gov/drs",
+      "sourceName": "2025 Form CT-1040 TCS, Tables A–E (personal exemption, initial tax, 2% phase-out add-back, recapture, personal tax credits)",
+      "sourceUrl": "https://portal.ct.gov/-/media/drs/forms/2025/income/ct-1040-tcs_1225.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Connecticut. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 10000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.045
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 200000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.069
+          },
+          {
+            "notOver": null,
+            "rate": 0.0699
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 10000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 50000,
+            "rate": 0.045
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 200000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 250000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.069
+          },
+          {
+            "notOver": null,
+            "rate": 0.0699
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 20000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 100000,
+            "rate": 0.045
+          },
+          {
+            "notOver": 200000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 400000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 500000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 1000000,
+            "rate": 0.069
+          },
+          {
+            "notOver": null,
+            "rate": 0.0699
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 16000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 80000,
+            "rate": 0.045
+          },
+          {
+            "notOver": 160000,
+            "rate": 0.055
+          },
+          {
+            "notOver": 320000,
+            "rate": 0.06
+          },
+          {
+            "notOver": 400000,
+            "rate": 0.065
+          },
+          {
+            "notOver": 800000,
+            "rate": 0.069
+          },
+          {
+            "notOver": null,
+            "rate": 0.0699
+          }
+        ]
+      },
+      "steppedPersonalExemption": {
+        "amountStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 30000,
+              "amount": 15000
+            },
+            {
+              "notOver": 31000,
+              "amount": 14000
+            },
+            {
+              "notOver": 32000,
+              "amount": 13000
+            },
+            {
+              "notOver": 33000,
+              "amount": 12000
+            },
+            {
+              "notOver": 34000,
+              "amount": 11000
+            },
+            {
+              "notOver": 35000,
+              "amount": 10000
+            },
+            {
+              "notOver": 36000,
+              "amount": 9000
+            },
+            {
+              "notOver": 37000,
+              "amount": 8000
+            },
+            {
+              "notOver": 38000,
+              "amount": 7000
+            },
+            {
+              "notOver": 39000,
+              "amount": 6000
+            },
+            {
+              "notOver": 40000,
+              "amount": 5000
+            },
+            {
+              "notOver": 41000,
+              "amount": 4000
+            },
+            {
+              "notOver": 42000,
+              "amount": 3000
+            },
+            {
+              "notOver": 43000,
+              "amount": 2000
+            },
+            {
+              "notOver": 44000,
+              "amount": 1000
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 48000,
+              "amount": 24000
+            },
+            {
+              "notOver": 49000,
+              "amount": 23000
+            },
+            {
+              "notOver": 50000,
+              "amount": 22000
+            },
+            {
+              "notOver": 51000,
+              "amount": 21000
+            },
+            {
+              "notOver": 52000,
+              "amount": 20000
+            },
+            {
+              "notOver": 53000,
+              "amount": 19000
+            },
+            {
+              "notOver": 54000,
+              "amount": 18000
+            },
+            {
+              "notOver": 55000,
+              "amount": 17000
+            },
+            {
+              "notOver": 56000,
+              "amount": 16000
+            },
+            {
+              "notOver": 57000,
+              "amount": 15000
+            },
+            {
+              "notOver": 58000,
+              "amount": 14000
+            },
+            {
+              "notOver": 59000,
+              "amount": 13000
+            },
+            {
+              "notOver": 60000,
+              "amount": 12000
+            },
+            {
+              "notOver": 61000,
+              "amount": 11000
+            },
+            {
+              "notOver": 62000,
+              "amount": 10000
+            },
+            {
+              "notOver": 63000,
+              "amount": 9000
+            },
+            {
+              "notOver": 64000,
+              "amount": 8000
+            },
+            {
+              "notOver": 65000,
+              "amount": 7000
+            },
+            {
+              "notOver": 66000,
+              "amount": 6000
+            },
+            {
+              "notOver": 67000,
+              "amount": 5000
+            },
+            {
+              "notOver": 68000,
+              "amount": 4000
+            },
+            {
+              "notOver": 69000,
+              "amount": 3000
+            },
+            {
+              "notOver": 70000,
+              "amount": 2000
+            },
+            {
+              "notOver": 71000,
+              "amount": 1000
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 24000,
+              "amount": 12000
+            },
+            {
+              "notOver": 25000,
+              "amount": 11000
+            },
+            {
+              "notOver": 26000,
+              "amount": 10000
+            },
+            {
+              "notOver": 27000,
+              "amount": 9000
+            },
+            {
+              "notOver": 28000,
+              "amount": 8000
+            },
+            {
+              "notOver": 29000,
+              "amount": 7000
+            },
+            {
+              "notOver": 30000,
+              "amount": 6000
+            },
+            {
+              "notOver": 31000,
+              "amount": 5000
+            },
+            {
+              "notOver": 32000,
+              "amount": 4000
+            },
+            {
+              "notOver": 33000,
+              "amount": 3000
+            },
+            {
+              "notOver": 34000,
+              "amount": 2000
+            },
+            {
+              "notOver": 35000,
+              "amount": 1000
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 38000,
+              "amount": 19000
+            },
+            {
+              "notOver": 39000,
+              "amount": 18000
+            },
+            {
+              "notOver": 40000,
+              "amount": 17000
+            },
+            {
+              "notOver": 41000,
+              "amount": 16000
+            },
+            {
+              "notOver": 42000,
+              "amount": 15000
+            },
+            {
+              "notOver": 43000,
+              "amount": 14000
+            },
+            {
+              "notOver": 44000,
+              "amount": 13000
+            },
+            {
+              "notOver": 45000,
+              "amount": 12000
+            },
+            {
+              "notOver": 46000,
+              "amount": 11000
+            },
+            {
+              "notOver": 47000,
+              "amount": 10000
+            },
+            {
+              "notOver": 48000,
+              "amount": 9000
+            },
+            {
+              "notOver": 49000,
+              "amount": 8000
+            },
+            {
+              "notOver": 50000,
+              "amount": 7000
+            },
+            {
+              "notOver": 51000,
+              "amount": 6000
+            },
+            {
+              "notOver": 52000,
+              "amount": 5000
+            },
+            {
+              "notOver": 53000,
+              "amount": 4000
+            },
+            {
+              "notOver": 54000,
+              "amount": 3000
+            },
+            {
+              "notOver": 55000,
+              "amount": 2000
+            },
+            {
+              "notOver": 56000,
+              "amount": 1000
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ]
+        },
+        "countByFilingStatus": {
+          "single": 1,
+          "marriedFilingJointly": 1,
+          "marriedFilingSeparately": 1,
+          "headOfHousehold": 1
+        }
+      },
+      "taxAddOnSteps": [
+        {
+          "name": "Connecticut 2% tax rate phase-out add-back",
+          "amountStepsByFilingStatus": {
+            "single": [
+              {
+                "notOver": 56500,
+                "amount": 0
+              },
+              {
+                "notOver": 61500,
+                "amount": 25
+              },
+              {
+                "notOver": 66500,
+                "amount": 50
+              },
+              {
+                "notOver": 71500,
+                "amount": 75
+              },
+              {
+                "notOver": 76500,
+                "amount": 100
+              },
+              {
+                "notOver": 81500,
+                "amount": 125
+              },
+              {
+                "notOver": 86500,
+                "amount": 150
+              },
+              {
+                "notOver": 91500,
+                "amount": 175
+              },
+              {
+                "notOver": 96500,
+                "amount": 200
+              },
+              {
+                "notOver": 101500,
+                "amount": 225
+              },
+              {
+                "notOver": null,
+                "amount": 250
+              }
+            ],
+            "marriedFilingJointly": [
+              {
+                "notOver": 100500,
+                "amount": 0
+              },
+              {
+                "notOver": 105500,
+                "amount": 50
+              },
+              {
+                "notOver": 110500,
+                "amount": 100
+              },
+              {
+                "notOver": 115500,
+                "amount": 150
+              },
+              {
+                "notOver": 120500,
+                "amount": 200
+              },
+              {
+                "notOver": 125500,
+                "amount": 250
+              },
+              {
+                "notOver": 130500,
+                "amount": 300
+              },
+              {
+                "notOver": 135500,
+                "amount": 350
+              },
+              {
+                "notOver": 140500,
+                "amount": 400
+              },
+              {
+                "notOver": 145500,
+                "amount": 450
+              },
+              {
+                "notOver": null,
+                "amount": 500
+              }
+            ],
+            "marriedFilingSeparately": [
+              {
+                "notOver": 50250,
+                "amount": 0
+              },
+              {
+                "notOver": 52750,
+                "amount": 25
+              },
+              {
+                "notOver": 55250,
+                "amount": 50
+              },
+              {
+                "notOver": 57750,
+                "amount": 75
+              },
+              {
+                "notOver": 60250,
+                "amount": 100
+              },
+              {
+                "notOver": 62750,
+                "amount": 125
+              },
+              {
+                "notOver": 65250,
+                "amount": 150
+              },
+              {
+                "notOver": 67750,
+                "amount": 175
+              },
+              {
+                "notOver": 70250,
+                "amount": 200
+              },
+              {
+                "notOver": 72750,
+                "amount": 225
+              },
+              {
+                "notOver": null,
+                "amount": 250
+              }
+            ],
+            "headOfHousehold": [
+              {
+                "notOver": 78500,
+                "amount": 0
+              },
+              {
+                "notOver": 82500,
+                "amount": 40
+              },
+              {
+                "notOver": 86500,
+                "amount": 80
+              },
+              {
+                "notOver": 90500,
+                "amount": 120
+              },
+              {
+                "notOver": 94500,
+                "amount": 160
+              },
+              {
+                "notOver": 98500,
+                "amount": 200
+              },
+              {
+                "notOver": 102500,
+                "amount": 240
+              },
+              {
+                "notOver": 106500,
+                "amount": 280
+              },
+              {
+                "notOver": 110500,
+                "amount": 320
+              },
+              {
+                "notOver": 114500,
+                "amount": 360
+              },
+              {
+                "notOver": null,
+                "amount": 400
+              }
+            ]
+          }
+        },
+        {
+          "name": "Connecticut tax recapture",
+          "amountStepsByFilingStatus": {
+            "single": [
+              {
+                "notOver": 105000,
+                "amount": 0
+              },
+              {
+                "notOver": 110000,
+                "amount": 25
+              },
+              {
+                "notOver": 115000,
+                "amount": 50
+              },
+              {
+                "notOver": 120000,
+                "amount": 75
+              },
+              {
+                "notOver": 125000,
+                "amount": 100
+              },
+              {
+                "notOver": 130000,
+                "amount": 125
+              },
+              {
+                "notOver": 135000,
+                "amount": 150
+              },
+              {
+                "notOver": 140000,
+                "amount": 175
+              },
+              {
+                "notOver": 145000,
+                "amount": 200
+              },
+              {
+                "notOver": 150000,
+                "amount": 225
+              },
+              {
+                "notOver": 200000,
+                "amount": 250
+              },
+              {
+                "notOver": 205000,
+                "amount": 340
+              },
+              {
+                "notOver": 210000,
+                "amount": 430
+              },
+              {
+                "notOver": 215000,
+                "amount": 520
+              },
+              {
+                "notOver": 220000,
+                "amount": 610
+              },
+              {
+                "notOver": 225000,
+                "amount": 700
+              },
+              {
+                "notOver": 230000,
+                "amount": 790
+              },
+              {
+                "notOver": 235000,
+                "amount": 880
+              },
+              {
+                "notOver": 240000,
+                "amount": 970
+              },
+              {
+                "notOver": 245000,
+                "amount": 1060
+              },
+              {
+                "notOver": 250000,
+                "amount": 1150
+              },
+              {
+                "notOver": 255000,
+                "amount": 1240
+              },
+              {
+                "notOver": 260000,
+                "amount": 1330
+              },
+              {
+                "notOver": 265000,
+                "amount": 1420
+              },
+              {
+                "notOver": 270000,
+                "amount": 1510
+              },
+              {
+                "notOver": 275000,
+                "amount": 1600
+              },
+              {
+                "notOver": 280000,
+                "amount": 1690
+              },
+              {
+                "notOver": 285000,
+                "amount": 1780
+              },
+              {
+                "notOver": 290000,
+                "amount": 1870
+              },
+              {
+                "notOver": 295000,
+                "amount": 1960
+              },
+              {
+                "notOver": 300000,
+                "amount": 2050
+              },
+              {
+                "notOver": 305000,
+                "amount": 2140
+              },
+              {
+                "notOver": 310000,
+                "amount": 2230
+              },
+              {
+                "notOver": 315000,
+                "amount": 2320
+              },
+              {
+                "notOver": 320000,
+                "amount": 2410
+              },
+              {
+                "notOver": 325000,
+                "amount": 2500
+              },
+              {
+                "notOver": 330000,
+                "amount": 2590
+              },
+              {
+                "notOver": 335000,
+                "amount": 2680
+              },
+              {
+                "notOver": 340000,
+                "amount": 2770
+              },
+              {
+                "notOver": 345000,
+                "amount": 2860
+              },
+              {
+                "notOver": 500000,
+                "amount": 2950
+              },
+              {
+                "notOver": 505000,
+                "amount": 3000
+              },
+              {
+                "notOver": 510000,
+                "amount": 3050
+              },
+              {
+                "notOver": 515000,
+                "amount": 3100
+              },
+              {
+                "notOver": 520000,
+                "amount": 3150
+              },
+              {
+                "notOver": 525000,
+                "amount": 3200
+              },
+              {
+                "notOver": 530000,
+                "amount": 3250
+              },
+              {
+                "notOver": 535000,
+                "amount": 3300
+              },
+              {
+                "notOver": 540000,
+                "amount": 3350
+              },
+              {
+                "notOver": null,
+                "amount": 3400
+              }
+            ],
+            "marriedFilingSeparately": [
+              {
+                "notOver": 105000,
+                "amount": 0
+              },
+              {
+                "notOver": 110000,
+                "amount": 25
+              },
+              {
+                "notOver": 115000,
+                "amount": 50
+              },
+              {
+                "notOver": 120000,
+                "amount": 75
+              },
+              {
+                "notOver": 125000,
+                "amount": 100
+              },
+              {
+                "notOver": 130000,
+                "amount": 125
+              },
+              {
+                "notOver": 135000,
+                "amount": 150
+              },
+              {
+                "notOver": 140000,
+                "amount": 175
+              },
+              {
+                "notOver": 145000,
+                "amount": 200
+              },
+              {
+                "notOver": 150000,
+                "amount": 225
+              },
+              {
+                "notOver": 200000,
+                "amount": 250
+              },
+              {
+                "notOver": 205000,
+                "amount": 340
+              },
+              {
+                "notOver": 210000,
+                "amount": 430
+              },
+              {
+                "notOver": 215000,
+                "amount": 520
+              },
+              {
+                "notOver": 220000,
+                "amount": 610
+              },
+              {
+                "notOver": 225000,
+                "amount": 700
+              },
+              {
+                "notOver": 230000,
+                "amount": 790
+              },
+              {
+                "notOver": 235000,
+                "amount": 880
+              },
+              {
+                "notOver": 240000,
+                "amount": 970
+              },
+              {
+                "notOver": 245000,
+                "amount": 1060
+              },
+              {
+                "notOver": 250000,
+                "amount": 1150
+              },
+              {
+                "notOver": 255000,
+                "amount": 1240
+              },
+              {
+                "notOver": 260000,
+                "amount": 1330
+              },
+              {
+                "notOver": 265000,
+                "amount": 1420
+              },
+              {
+                "notOver": 270000,
+                "amount": 1510
+              },
+              {
+                "notOver": 275000,
+                "amount": 1600
+              },
+              {
+                "notOver": 280000,
+                "amount": 1690
+              },
+              {
+                "notOver": 285000,
+                "amount": 1780
+              },
+              {
+                "notOver": 290000,
+                "amount": 1870
+              },
+              {
+                "notOver": 295000,
+                "amount": 1960
+              },
+              {
+                "notOver": 300000,
+                "amount": 2050
+              },
+              {
+                "notOver": 305000,
+                "amount": 2140
+              },
+              {
+                "notOver": 310000,
+                "amount": 2230
+              },
+              {
+                "notOver": 315000,
+                "amount": 2320
+              },
+              {
+                "notOver": 320000,
+                "amount": 2410
+              },
+              {
+                "notOver": 325000,
+                "amount": 2500
+              },
+              {
+                "notOver": 330000,
+                "amount": 2590
+              },
+              {
+                "notOver": 335000,
+                "amount": 2680
+              },
+              {
+                "notOver": 340000,
+                "amount": 2770
+              },
+              {
+                "notOver": 345000,
+                "amount": 2860
+              },
+              {
+                "notOver": 500000,
+                "amount": 2950
+              },
+              {
+                "notOver": 505000,
+                "amount": 3000
+              },
+              {
+                "notOver": 510000,
+                "amount": 3050
+              },
+              {
+                "notOver": 515000,
+                "amount": 3100
+              },
+              {
+                "notOver": 520000,
+                "amount": 3150
+              },
+              {
+                "notOver": 525000,
+                "amount": 3200
+              },
+              {
+                "notOver": 530000,
+                "amount": 3250
+              },
+              {
+                "notOver": 535000,
+                "amount": 3300
+              },
+              {
+                "notOver": 540000,
+                "amount": 3350
+              },
+              {
+                "notOver": null,
+                "amount": 3400
+              }
+            ],
+            "marriedFilingJointly": [
+              {
+                "notOver": 210000,
+                "amount": 0
+              },
+              {
+                "notOver": 220000,
+                "amount": 50
+              },
+              {
+                "notOver": 230000,
+                "amount": 100
+              },
+              {
+                "notOver": 240000,
+                "amount": 150
+              },
+              {
+                "notOver": 250000,
+                "amount": 200
+              },
+              {
+                "notOver": 260000,
+                "amount": 250
+              },
+              {
+                "notOver": 270000,
+                "amount": 300
+              },
+              {
+                "notOver": 280000,
+                "amount": 350
+              },
+              {
+                "notOver": 290000,
+                "amount": 400
+              },
+              {
+                "notOver": 300000,
+                "amount": 450
+              },
+              {
+                "notOver": 400000,
+                "amount": 500
+              },
+              {
+                "notOver": 410000,
+                "amount": 680
+              },
+              {
+                "notOver": 420000,
+                "amount": 860
+              },
+              {
+                "notOver": 430000,
+                "amount": 1040
+              },
+              {
+                "notOver": 440000,
+                "amount": 1220
+              },
+              {
+                "notOver": 450000,
+                "amount": 1400
+              },
+              {
+                "notOver": 460000,
+                "amount": 1580
+              },
+              {
+                "notOver": 470000,
+                "amount": 1760
+              },
+              {
+                "notOver": 480000,
+                "amount": 1940
+              },
+              {
+                "notOver": 490000,
+                "amount": 2120
+              },
+              {
+                "notOver": 500000,
+                "amount": 2300
+              },
+              {
+                "notOver": 510000,
+                "amount": 2480
+              },
+              {
+                "notOver": 520000,
+                "amount": 2660
+              },
+              {
+                "notOver": 530000,
+                "amount": 2840
+              },
+              {
+                "notOver": 540000,
+                "amount": 3020
+              },
+              {
+                "notOver": 550000,
+                "amount": 3200
+              },
+              {
+                "notOver": 560000,
+                "amount": 3380
+              },
+              {
+                "notOver": 570000,
+                "amount": 3560
+              },
+              {
+                "notOver": 580000,
+                "amount": 3740
+              },
+              {
+                "notOver": 590000,
+                "amount": 3920
+              },
+              {
+                "notOver": 600000,
+                "amount": 4100
+              },
+              {
+                "notOver": 610000,
+                "amount": 4280
+              },
+              {
+                "notOver": 620000,
+                "amount": 4460
+              },
+              {
+                "notOver": 630000,
+                "amount": 4640
+              },
+              {
+                "notOver": 640000,
+                "amount": 4820
+              },
+              {
+                "notOver": 650000,
+                "amount": 5000
+              },
+              {
+                "notOver": 660000,
+                "amount": 5180
+              },
+              {
+                "notOver": 670000,
+                "amount": 5360
+              },
+              {
+                "notOver": 680000,
+                "amount": 5540
+              },
+              {
+                "notOver": 690000,
+                "amount": 5720
+              },
+              {
+                "notOver": 1000000,
+                "amount": 5900
+              },
+              {
+                "notOver": 1010000,
+                "amount": 6000
+              },
+              {
+                "notOver": 1020000,
+                "amount": 6100
+              },
+              {
+                "notOver": 1030000,
+                "amount": 6200
+              },
+              {
+                "notOver": 1040000,
+                "amount": 6300
+              },
+              {
+                "notOver": 1050000,
+                "amount": 6400
+              },
+              {
+                "notOver": 1060000,
+                "amount": 6500
+              },
+              {
+                "notOver": 1070000,
+                "amount": 6600
+              },
+              {
+                "notOver": 1080000,
+                "amount": 6700
+              },
+              {
+                "notOver": null,
+                "amount": 6800
+              }
+            ],
+            "headOfHousehold": [
+              {
+                "notOver": 168000,
+                "amount": 0
+              },
+              {
+                "notOver": 176000,
+                "amount": 40
+              },
+              {
+                "notOver": 184000,
+                "amount": 80
+              },
+              {
+                "notOver": 192000,
+                "amount": 120
+              },
+              {
+                "notOver": 200000,
+                "amount": 160
+              },
+              {
+                "notOver": 208000,
+                "amount": 200
+              },
+              {
+                "notOver": 216000,
+                "amount": 240
+              },
+              {
+                "notOver": 224000,
+                "amount": 280
+              },
+              {
+                "notOver": 232000,
+                "amount": 320
+              },
+              {
+                "notOver": 240000,
+                "amount": 360
+              },
+              {
+                "notOver": 320000,
+                "amount": 400
+              },
+              {
+                "notOver": 328000,
+                "amount": 540
+              },
+              {
+                "notOver": 336000,
+                "amount": 680
+              },
+              {
+                "notOver": 344000,
+                "amount": 820
+              },
+              {
+                "notOver": 352000,
+                "amount": 960
+              },
+              {
+                "notOver": 360000,
+                "amount": 1100
+              },
+              {
+                "notOver": 368000,
+                "amount": 1240
+              },
+              {
+                "notOver": 376000,
+                "amount": 1380
+              },
+              {
+                "notOver": 384000,
+                "amount": 1520
+              },
+              {
+                "notOver": 392000,
+                "amount": 1660
+              },
+              {
+                "notOver": 400000,
+                "amount": 1800
+              },
+              {
+                "notOver": 408000,
+                "amount": 1940
+              },
+              {
+                "notOver": 416000,
+                "amount": 2080
+              },
+              {
+                "notOver": 424000,
+                "amount": 2220
+              },
+              {
+                "notOver": 432000,
+                "amount": 2360
+              },
+              {
+                "notOver": 440000,
+                "amount": 2500
+              },
+              {
+                "notOver": 448000,
+                "amount": 2640
+              },
+              {
+                "notOver": 456000,
+                "amount": 2780
+              },
+              {
+                "notOver": 464000,
+                "amount": 2920
+              },
+              {
+                "notOver": 472000,
+                "amount": 3060
+              },
+              {
+                "notOver": 480000,
+                "amount": 3200
+              },
+              {
+                "notOver": 488000,
+                "amount": 3340
+              },
+              {
+                "notOver": 496000,
+                "amount": 3480
+              },
+              {
+                "notOver": 504000,
+                "amount": 3620
+              },
+              {
+                "notOver": 512000,
+                "amount": 3760
+              },
+              {
+                "notOver": 520000,
+                "amount": 3900
+              },
+              {
+                "notOver": 528000,
+                "amount": 4040
+              },
+              {
+                "notOver": 536000,
+                "amount": 4180
+              },
+              {
+                "notOver": 544000,
+                "amount": 4320
+              },
+              {
+                "notOver": 552000,
+                "amount": 4460
+              },
+              {
+                "notOver": 800000,
+                "amount": 4600
+              },
+              {
+                "notOver": 808000,
+                "amount": 4680
+              },
+              {
+                "notOver": 816000,
+                "amount": 4760
+              },
+              {
+                "notOver": 824000,
+                "amount": 4840
+              },
+              {
+                "notOver": 832000,
+                "amount": 4920
+              },
+              {
+                "notOver": 840000,
+                "amount": 5000
+              },
+              {
+                "notOver": 848000,
+                "amount": 5080
+              },
+              {
+                "notOver": 856000,
+                "amount": 5160
+              },
+              {
+                "notOver": 864000,
+                "amount": 5240
+              },
+              {
+                "notOver": null,
+                "amount": 5320
+              }
+            ]
+          }
+        }
+      ],
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 0,
+          "marriedFilingJointly": 0,
+          "marriedFilingSeparately": 0,
+          "headOfHousehold": 0
+        },
+        "perDependent": 0,
+        "rateStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 18800,
+              "rate": 0.75
+            },
+            {
+              "notOver": 19300,
+              "rate": 0.7
+            },
+            {
+              "notOver": 19800,
+              "rate": 0.65
+            },
+            {
+              "notOver": 20300,
+              "rate": 0.6
+            },
+            {
+              "notOver": 20800,
+              "rate": 0.55
+            },
+            {
+              "notOver": 21300,
+              "rate": 0.5
+            },
+            {
+              "notOver": 21800,
+              "rate": 0.45
+            },
+            {
+              "notOver": 22300,
+              "rate": 0.4
+            },
+            {
+              "notOver": 25000,
+              "rate": 0.35
+            },
+            {
+              "notOver": 25500,
+              "rate": 0.3
+            },
+            {
+              "notOver": 26000,
+              "rate": 0.25
+            },
+            {
+              "notOver": 26500,
+              "rate": 0.2
+            },
+            {
+              "notOver": 31300,
+              "rate": 0.15
+            },
+            {
+              "notOver": 31800,
+              "rate": 0.14
+            },
+            {
+              "notOver": 32300,
+              "rate": 0.13
+            },
+            {
+              "notOver": 32800,
+              "rate": 0.12
+            },
+            {
+              "notOver": 33300,
+              "rate": 0.11
+            },
+            {
+              "notOver": 60000,
+              "rate": 0.1
+            },
+            {
+              "notOver": 60500,
+              "rate": 0.09
+            },
+            {
+              "notOver": 61000,
+              "rate": 0.08
+            },
+            {
+              "notOver": 61500,
+              "rate": 0.07
+            },
+            {
+              "notOver": 62000,
+              "rate": 0.06
+            },
+            {
+              "notOver": 62500,
+              "rate": 0.05
+            },
+            {
+              "notOver": 63000,
+              "rate": 0.04
+            },
+            {
+              "notOver": 63500,
+              "rate": 0.03
+            },
+            {
+              "notOver": 64000,
+              "rate": 0.02
+            },
+            {
+              "notOver": 64500,
+              "rate": 0.01
+            },
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 30000,
+              "rate": 0.75
+            },
+            {
+              "notOver": 30500,
+              "rate": 0.7
+            },
+            {
+              "notOver": 31000,
+              "rate": 0.65
+            },
+            {
+              "notOver": 31500,
+              "rate": 0.6
+            },
+            {
+              "notOver": 32000,
+              "rate": 0.55
+            },
+            {
+              "notOver": 32500,
+              "rate": 0.5
+            },
+            {
+              "notOver": 33000,
+              "rate": 0.45
+            },
+            {
+              "notOver": 33500,
+              "rate": 0.4
+            },
+            {
+              "notOver": 40000,
+              "rate": 0.35
+            },
+            {
+              "notOver": 40500,
+              "rate": 0.3
+            },
+            {
+              "notOver": 41000,
+              "rate": 0.25
+            },
+            {
+              "notOver": 41500,
+              "rate": 0.2
+            },
+            {
+              "notOver": 50000,
+              "rate": 0.15
+            },
+            {
+              "notOver": 50500,
+              "rate": 0.14
+            },
+            {
+              "notOver": 51000,
+              "rate": 0.13
+            },
+            {
+              "notOver": 51500,
+              "rate": 0.12
+            },
+            {
+              "notOver": 52000,
+              "rate": 0.11
+            },
+            {
+              "notOver": 96000,
+              "rate": 0.1
+            },
+            {
+              "notOver": 96500,
+              "rate": 0.09
+            },
+            {
+              "notOver": 97000,
+              "rate": 0.08
+            },
+            {
+              "notOver": 97500,
+              "rate": 0.07
+            },
+            {
+              "notOver": 98000,
+              "rate": 0.06
+            },
+            {
+              "notOver": 98500,
+              "rate": 0.05
+            },
+            {
+              "notOver": 99000,
+              "rate": 0.04
+            },
+            {
+              "notOver": 99500,
+              "rate": 0.03
+            },
+            {
+              "notOver": 100000,
+              "rate": 0.02
+            },
+            {
+              "notOver": 100500,
+              "rate": 0.01
+            },
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 15000,
+              "rate": 0.75
+            },
+            {
+              "notOver": 15500,
+              "rate": 0.7
+            },
+            {
+              "notOver": 16000,
+              "rate": 0.65
+            },
+            {
+              "notOver": 16500,
+              "rate": 0.6
+            },
+            {
+              "notOver": 17000,
+              "rate": 0.55
+            },
+            {
+              "notOver": 17500,
+              "rate": 0.5
+            },
+            {
+              "notOver": 18000,
+              "rate": 0.45
+            },
+            {
+              "notOver": 18500,
+              "rate": 0.4
+            },
+            {
+              "notOver": 20000,
+              "rate": 0.35
+            },
+            {
+              "notOver": 20500,
+              "rate": 0.3
+            },
+            {
+              "notOver": 21000,
+              "rate": 0.25
+            },
+            {
+              "notOver": 21500,
+              "rate": 0.2
+            },
+            {
+              "notOver": 25000,
+              "rate": 0.15
+            },
+            {
+              "notOver": 25500,
+              "rate": 0.14
+            },
+            {
+              "notOver": 26000,
+              "rate": 0.13
+            },
+            {
+              "notOver": 26500,
+              "rate": 0.12
+            },
+            {
+              "notOver": 27000,
+              "rate": 0.11
+            },
+            {
+              "notOver": 48000,
+              "rate": 0.1
+            },
+            {
+              "notOver": 48500,
+              "rate": 0.09
+            },
+            {
+              "notOver": 49000,
+              "rate": 0.08
+            },
+            {
+              "notOver": 49500,
+              "rate": 0.07
+            },
+            {
+              "notOver": 50000,
+              "rate": 0.06
+            },
+            {
+              "notOver": 50500,
+              "rate": 0.05
+            },
+            {
+              "notOver": 51000,
+              "rate": 0.04
+            },
+            {
+              "notOver": 51500,
+              "rate": 0.03
+            },
+            {
+              "notOver": 52000,
+              "rate": 0.02
+            },
+            {
+              "notOver": 52500,
+              "rate": 0.01
+            },
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 24000,
+              "rate": 0.75
+            },
+            {
+              "notOver": 24500,
+              "rate": 0.7
+            },
+            {
+              "notOver": 25000,
+              "rate": 0.65
+            },
+            {
+              "notOver": 25500,
+              "rate": 0.6
+            },
+            {
+              "notOver": 26000,
+              "rate": 0.55
+            },
+            {
+              "notOver": 26500,
+              "rate": 0.5
+            },
+            {
+              "notOver": 27000,
+              "rate": 0.45
+            },
+            {
+              "notOver": 27500,
+              "rate": 0.4
+            },
+            {
+              "notOver": 34000,
+              "rate": 0.35
+            },
+            {
+              "notOver": 34500,
+              "rate": 0.3
+            },
+            {
+              "notOver": 35000,
+              "rate": 0.25
+            },
+            {
+              "notOver": 35500,
+              "rate": 0.2
+            },
+            {
+              "notOver": 44000,
+              "rate": 0.15
+            },
+            {
+              "notOver": 44500,
+              "rate": 0.14
+            },
+            {
+              "notOver": 45000,
+              "rate": 0.13
+            },
+            {
+              "notOver": 45500,
+              "rate": 0.12
+            },
+            {
+              "notOver": 46000,
+              "rate": 0.11
+            },
+            {
+              "notOver": 74000,
+              "rate": 0.1
+            },
+            {
+              "notOver": 74500,
+              "rate": 0.09
+            },
+            {
+              "notOver": 75000,
+              "rate": 0.08
+            },
+            {
+              "notOver": 75500,
+              "rate": 0.07
+            },
+            {
+              "notOver": 76000,
+              "rate": 0.06
+            },
+            {
+              "notOver": 76500,
+              "rate": 0.05
+            },
+            {
+              "notOver": 77000,
+              "rate": 0.04
+            },
+            {
+              "notOver": 77500,
+              "rate": 0.03
+            },
+            {
+              "notOver": 78000,
+              "rate": 0.02
+            },
+            {
+              "notOver": 78500,
+              "rate": 0.01
+            },
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ]
+        }
+      },
+      "notes": [
+        "Connecticut computes 2025 income tax from Connecticut AGI on Form CT-1040 TCS: a personal exemption (Table A), initial tax on taxable income (Table B), a 2% rate phase-out add-back (Table C), tax recapture (Table D), then a personal tax credit that is a percentage of that tax (Table E). 2026 CT-1040 was not published at verification.",
+        "Table B rates are 2%, 4.5%, 5.5%, 6%, 6.5%, 6.9% and 6.99%. Single and married filing separately share one width; joint and head of household have their own. The TCS worked examples ($13,000 taxable → $335; $22,500 joint → $513; $20,000 head of household → $500) are the initial tax only, before add-backs and the credit.",
+        "Table C and Table D are dollar staircases looked up on Connecticut AGI, not a single surcharge rate. Recapture begins above $105,000 single / $210,000 joint / $168,000 head of household and caps at $3,400 / $6,800 / $5,320.",
+        "The personal tax credit is a published decimal of the tax itself, 75% at low AGI stepping to zero, not a dollar exemption. Connecticut has no standard deduction.",
+        "The property tax credit, credit for taxes paid to other jurisdictions, and other CT-1040 adjustments are not modeled. The starting point is gross wages treated as Connecticut AGI."
+      ]
     },
     {
       "stateCode": "DC",
@@ -1622,11 +4000,18 @@
         },
         "perDependent": 110
       },
+      "localAddOn": {
+        "label": "City of Wilmington wage tax",
+        "basis": "municipality",
+        "appliesTo": "taxable-income",
+        "omissionNote": "Wilmington residents, and people who work in the city, pay 1.25% of wages (City of Wilmington Earned Income Tax Regulations). No other Delaware municipality levies an income tax. It is not included because this estimate does not know a city — if you live or work in Wilmington, real take-home is lower."
+      },
       "notes": [
         "Delaware taxes taxable income in seven bands from 0% to 6.60% (2025 Delaware Income Tax Table and State Income Tax Schedule; 30 Del. C. 1102).",
         "The same bands apply to every filing status. Above $60,000 the state prints the tax as $2,943.50 plus 6.60% of the excess, which is exactly what these bands sum to.",
         "Standard deduction for 2025 is $3,250, or $6,500 on a joint return. Head of household uses $3,250, the same as single.",
         "Delaware gives $110 per person as a credit against tax rather than a deduction from income — $110 filing single, $220 filing jointly, and $110 for each dependent.",
+        "The City of Wilmington levies a 1.25% earned income tax on residents and on wages earned in the city (City of Wilmington Earned Income Tax Regulations). It is named as an omission rather than estimated for the rest of Delaware.",
         "The additional deductions for age and blindness, the $110 credit for filers 60 and over, the child care credit and the earned income credit are not modeled. The starting point is gross wages."
       ]
     },
@@ -1648,27 +4033,47 @@
     {
       "stateCode": "GA",
       "provider": "Georgia Department of Revenue",
-      "sourceName": "Georgia Department of Revenue",
-      "sourceUrl": "https://dor.georgia.gov/",
+      "sourceName": "2026 Employer's Tax Guide (updated June 2026): 4.99% rate and standard deduction amounts",
+      "sourceUrl": "https://dor.georgia.gov/document/document/2026-employers-tax-guide-updated-june-2026/download",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Georgia. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "rate": 0.0499,
+      "standardDeductionByFilingStatus": {
+        "single": 15000,
+        "marriedFilingJointly": 30000,
+        "marriedFilingSeparately": 15000,
+        "headOfHousehold": 15000
+      },
+      "exemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "perDependentExemption": 5000,
+      "notes": [
+        "Georgia taxes Georgia taxable income at a flat 4.99% for 2026 (Georgia Department of Revenue, 2026 Employer's Tax Guide, updated June 2026). The same guide states that the income tax rate fell from 5.19% to 4.99%. 2026 Form 500 was not published at verification.",
+        "The 2026 standard deduction is $15,000 single, head of household or married filing separately, and $30,000 married filing jointly. There is no separate personal exemption for the filer. The dependent deduction is $5,000.",
+        "Georgia credits and other Form 500 adjustments are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "HI",
       "provider": "Hawaii Department of Taxation",
-      "sourceName": "Instructions for Form N-11 (Rev. 2025), 2025 Tax Rate Schedules I-III and the standard deduction and exemption tables",
-      "sourceUrl": "https://files.hawaii.gov/tax/forms/current/n11ins.pdf",
+      "sourceName": "DOT Announcement 2024-03 (Act 46, SLH 2024) for the 2026 standard deduction, with 2025 N-11 Schedules I–III for the 2026 brackets",
+      "sourceUrl": "https://files.hawaii.gov/tax/news/announce/ann24-03.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "progressive",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
       "bracketsByFilingStatus": {
         "single": [
           {
@@ -1872,10 +4277,10 @@
         ]
       },
       "standardDeductionByFilingStatus": {
-        "single": 4400,
-        "marriedFilingJointly": 8800,
-        "marriedFilingSeparately": 4400,
-        "headOfHousehold": 6424
+        "single": 8000,
+        "marriedFilingJointly": 16000,
+        "marriedFilingSeparately": 8000,
+        "headOfHousehold": 12000
       },
       "personalExemptionByFilingStatus": {
         "single": 1144,
@@ -1885,10 +4290,9 @@
       },
       "perDependentExemption": 1144,
       "notes": [
-        "Hawaii taxes taxable income in twelve brackets from 1.40% to 11.00% (Instructions for Form N-11, Rev. 2025, Tax Rate Schedules I, II and III; HRS 235-51).",
-        "Standard deduction for 2025: $4,400 single and married filing separately, $8,800 married filing jointly, $6,424 head of household. Each personal exemption is $1,144 as a deduction from income.",
-        "Hawaii did not adopt the federal suspension of personal exemptions, so it still allows one for the taxpayer, spouse and each dependent.",
-        "The department had published Rev. 2025 forms and not 2026 at verification, so this row declares the 2025 schedule. Hawaii has legislated further standard deduction increases in later years.",
+        "Hawaii taxes taxable income in twelve brackets from 1.40% to 11.00%. Act 46, SLH 2024 (DOT Announcement 2024-03) keeps the 2025 brackets for tax year 2026 and raises the standard deduction to $8,000 single or married filing separately, $16,000 married filing jointly, $12,000 head of household. The department’s FAQ restated those 2026 amounts on 27 August 2026.",
+        "Each personal exemption remains $1,144 as a deduction from income (2025 N-11; HRS 235-54). Hawaii did not adopt the federal suspension of personal exemptions.",
+        "Act 24, SLH 2026 (S.B. 3125) adds a 13% top bracket beginning in tax year 2027, not 2026. 2026 Form N-11 was not published at verification; the 2026 standard deduction is the enacted Act 46 amount and the brackets are the 2025 schedules that Act 46 continues into 2026.",
         "The alternative tax on capital gains, the additional exemption for taxpayers 65 and older, Hawaii credits and itemized deductions are not modeled. The starting point is gross wages."
       ]
     },
@@ -1941,14 +4345,33 @@
     {
       "stateCode": "ID",
       "provider": "Idaho State Tax Commission",
-      "sourceName": "Idaho State Tax Commission",
-      "sourceUrl": "https://tax.idaho.gov/",
+      "sourceName": "2025 Form 40 packet (EIN00046), tax worksheet and standard deduction worksheet",
+      "sourceUrl": "https://tax.idaho.gov/wp-content/uploads/forms/EIN00046/EIN00046_03-02-2026.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Idaho. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "rate": 0.053,
+      "standardDeductionByFilingStatus": {
+        "single": 15750,
+        "marriedFilingJointly": 31500,
+        "marriedFilingSeparately": 15750,
+        "headOfHousehold": 23625
+      },
+      "exemptionByFilingStatus": {
+        "single": 4811,
+        "marriedFilingJointly": 9622,
+        "marriedFilingSeparately": 4811,
+        "headOfHousehold": 9622
+      },
+      "notes": [
+        "Idaho taxes Idaho taxable income at 5.3% of the amount over an indexed zero band (2025 Form 40 packet tax worksheet; I.C. 63-3024). Single and married filing separately: 5.3% of taxable income over $4,811. Married filing jointly, head of household and qualifying surviving spouse: 5.3% over $9,622. Those 2025 worksheet amounts are the inflation-adjusted thresholds for 2025. 2026 Form 40 was not published at verification, so this row is the 2025 schedule — the 2025 threshold is not forwarded as if it were 2026.",
+        "The standard deduction on the 2025 Form 40 worksheet is the 2025 federal amount: $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household. Those printed 2025 figures are stored here rather than reading the 2026 federal snapshot, which would mix years.",
+        "Idaho credits, the grocery credit, itemized-deduction addbacks and other Form 39R adjustments are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "IL",
@@ -1978,26 +4401,108 @@
     {
       "stateCode": "IN",
       "provider": "Indiana Department of Revenue",
-      "sourceName": "Indiana Department of Revenue",
-      "sourceUrl": "https://www.in.gov/dor/",
+      "sourceName": "SEA 451 (2025) amending IC 6-3-2-1 (2.95% for 2026) and DOR Information Bulletin #117 (personal exemptions)",
+      "sourceUrl": "https://iga.in.gov/pdf-documents/124/2025/senate/bills/SB0451/SB0451.04.ENRH.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Indiana. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "flat",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "rate": 0.0295,
+      "exemptionByFilingStatus": {
+        "single": 1000,
+        "marriedFilingJointly": 2000,
+        "marriedFilingSeparately": 1000,
+        "headOfHousehold": 1000
+      },
+      "perDependentExemption": 1000,
+      "localAddOn": {
+        "label": "Indiana county income tax",
+        "basis": "county",
+        "appliesTo": "taxable-income"
+      },
+      "notes": [
+        "Indiana taxes Indiana adjusted gross income at 2.95% for taxable years beginning after December 31, 2025 and before January 1, 2027 (SEA 451, amending IC 6-3-2-1). There is no Indiana standard deduction; the starting point for a wage-only filer is gross wages.",
+        "The personal exemption is $1,000 for the filer and $1,000 for a spouse on a joint return (DOR Information Bulletin #117; IC 6-3-1-3.5). Each dependent is another $1,000. The extra $1,500 qualifying-child exemption, the $3,000 first-year and adopted-child exemptions, and the age/blind extras are not modeled.",
+        "Indiana counties levy a local income tax that is not included. No single statewide rate is published, so the page names the omission without inventing its size. County rates are not stored in this engine.",
+        "Indiana add-backs, Schedule 2 deductions and credits are not modeled."
+      ]
     },
     {
       "stateCode": "KS",
       "provider": "Kansas Department of Revenue",
-      "sourceName": "Kansas Department of Revenue",
-      "sourceUrl": "https://www.ksrevenue.gov/",
+      "sourceName": "2025 Kansas Individual Income Tax Booklet (K-40), tax tables and computation worksheet, with K.S.A. 79-32,110b",
+      "sourceUrl": "https://www.ksrevenue.gov/incomebook25.html",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Kansas. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 23000,
+            "rate": 0.052
+          },
+          {
+            "notOver": null,
+            "rate": 0.0558
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 23000,
+            "rate": 0.052
+          },
+          {
+            "notOver": null,
+            "rate": 0.0558
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 23000,
+            "rate": 0.052
+          },
+          {
+            "notOver": null,
+            "rate": 0.0558
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 46000,
+            "rate": 0.052
+          },
+          {
+            "notOver": null,
+            "rate": 0.0558
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 3605,
+        "marriedFilingJointly": 8240,
+        "marriedFilingSeparately": 4120,
+        "headOfHousehold": 6180
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 9160,
+        "marriedFilingJointly": 18320,
+        "marriedFilingSeparately": 9160,
+        "headOfHousehold": 11480
+      },
+      "perDependentExemption": 2320,
+      "notes": [
+        "Kansas taxes Kansas taxable income at 5.2% then 5.58% for tax year 2024 and thereafter (K.S.A. 79-32,110b; 2025 K-40 booklet tax computation worksheet). Married filing jointly: 5.2% of the first $46,000, then 5.58%. All other individuals: 5.2% of the first $23,000, then 5.58%. The worksheet's $175 / $87 subtraction is the same arithmetic. 2026 K-40 was not published at verification; the statute is \"all tax years thereafter.\"",
+        "The 2025 standard deduction is $3,605 single, $8,240 married filing jointly, $6,180 head of household, $4,120 married filing separately (2025 K-40 booklet).",
+        "The personal exemption allowance is $9,160 single or married filing separately, $18,320 married filing jointly, and $11,480 head of household ($9,160 plus the additional $2,320 head-of-household exemption). Each dependent is another $2,320. Age, birth and disabled-veteran extras are not modeled.",
+        "Kansas credits and Schedule S adjustments are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "KY",
@@ -2034,26 +4539,25 @@
     {
       "stateCode": "LA",
       "provider": "Louisiana Department of Revenue",
-      "sourceName": "2025 Louisiana IT-540 instructions, lines 7, 8 and 11, with Revenue Information Bulletin 25-012",
-      "sourceUrl": "https://dam.ldr.la.gov/taxforms/IT540i%20WEB(2025)D11.pdf",
+      "sourceName": "2026 Form R-1306 withholding tables, with Act 11 / RIB 25-012 for the 3% rate",
+      "sourceUrl": "https://dam.ldr.la.gov/taxforms/1306-1-26.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "flat",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
       "rate": 0.03,
       "exemptionByFilingStatus": {
-        "single": 12500,
-        "marriedFilingJointly": 25000,
-        "marriedFilingSeparately": 12500,
-        "headOfHousehold": 25000
+        "single": 12875,
+        "marriedFilingJointly": 25750,
+        "marriedFilingSeparately": 12875,
+        "headOfHousehold": 25750
       },
       "notes": [
-        "Louisiana taxes income at a flat 3% from tax year 2025, replacing the old 1.85%/3.50%/4.25% brackets (2025 IT-540 instructions, line 11; Act 11 of the 2024 Third Extraordinary Session; RIB 25-012).",
-        "The standard deduction is $12,500 filing single or separately and $25,000 filing jointly, as a surviving spouse or as head of household — nearly triple the old $4,500 and $9,000.",
-        "Act 11 indexes those amounts to CPI-U with the first adjustment on January 1, 2026. The department had not published the adjusted figures at verification, so this row declares the 2025 schedule.",
+        "Louisiana taxes income at a flat 3% from tax year 2025 onward (Act 11 of the 2024 Third Extraordinary Session; RIB 25-012; 2025 IT-540 line 11). The 2026 withholding tables use 3.09%; that is a withholding formula, not the tax rate, so this row keeps 3%.",
+        "The 2026 standard deduction used in Form R-1306 and RIB 26-005 is $12,875 filing single or separately and $25,750 filing jointly, as a surviving spouse or as head of household. Those are the CPI-U-indexed withholding figures. RIB 26-005 says the official return amounts may differ slightly based on January 2026 CPI-U; no different return figure had been published at verification.",
         "The additional exemptions for dependents, blindness and age were repealed, though the deduction for taxpayers 65 and older was raised to $12,000 a person and is not modeled here.",
         "Louisiana credits and Schedule E adjustments are not modeled. The starting point is gross wages."
       ]
@@ -2061,10 +4565,10 @@
     {
       "stateCode": "MA",
       "provider": "Massachusetts Department of Revenue",
-      "sourceName": "Massachusetts Department of Revenue",
+      "sourceName": "Massachusetts DOR tax rates page (5% + 4% surtax) and Personal Income Tax Exemptions / Form 1 line 11",
       "sourceUrl": "https://www.mass.gov/info-details/massachusetts-tax-rates",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "flatWithSurtax",
@@ -2073,10 +4577,18 @@
       "rate": 0.05,
       "surtaxRate": 0.04,
       "surtaxThreshold": 1107750,
+      "exemptionByFilingStatus": {
+        "single": 4400,
+        "marriedFilingJointly": 8800,
+        "marriedFilingSeparately": 4400,
+        "headOfHousehold": 6800
+      },
+      "perDependentExemption": 1000,
+      "ficaDeductionCap": 2000,
       "notes": [
-        "Massachusetts Part B income (including wages) is taxed at 5% for tax year 2026 (Massachusetts DOR tax rates page, updated December 30, 2025).",
-        "Income exceeding $1,107,750 is subject to an additional 4% surtax in tax year 2026.",
-        "Massachusetts deductions, exemptions, and the short-term capital gains rate are not modeled."
+        "Massachusetts Part B income (including wages) is taxed at 5% for tax year 2026 (Massachusetts DOR tax rates page, updated December 30, 2025). Income exceeding $1,107,750 of Massachusetts taxable income is subject to an additional 4% surtax.",
+        "The personal exemption is $4,400 single or married filing separately, $8,800 married filing jointly, $6,800 head of household, plus $1,000 per dependent (Mass.gov, Personal Income Tax Exemptions, updated 6 January 2026; 2025 Form 1). 2026 Form 1 was not published at verification; the department has not restated these amounts as changing for 2026.",
+        "Form 1 line 11 deducts Social Security and Medicare withheld, capped at $2,000 per earner (2025 Form 1). This model has one wage income, so the cap is $2,000. Age, blindness and rental deductions are not modeled."
       ]
     },
     {
@@ -2499,21 +5011,21 @@
     {
       "stateCode": "MI",
       "provider": "Michigan Department of Treasury",
-      "sourceName": "Michigan Department of Treasury, Tax Year 2025 Information (rate and exemption amounts)",
-      "sourceUrl": "https://www.michigan.gov/taxes/iit/tax-guidance/tax-year-info/tax-year-2025-guidance",
+      "sourceName": "Michigan Department of Treasury, Withholding Tax Information by Calendar Year 2026, with the April 15, 2026 rate notice",
+      "sourceUrl": "https://www.michigan.gov/taxes/business-taxes/withholding/calendar-year-tax-information",
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "flat",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
       "rate": 0.0425,
       "exemptionByFilingStatus": {
-        "single": 5800,
-        "marriedFilingJointly": 11600,
-        "marriedFilingSeparately": 5800,
-        "headOfHousehold": 5800
+        "single": 5900,
+        "marriedFilingJointly": 11800,
+        "marriedFilingSeparately": 5900,
+        "headOfHousehold": 5900
       },
       "localAddOn": {
         "label": "Michigan city income tax",
@@ -2521,20 +5033,19 @@
         "appliesTo": "taxable-income"
       },
       "notes": [
-        "Michigan taxes income at a flat 4.25% for tax year 2025 (Michigan Department of Treasury, Tax Year 2025 Information; MCL 206.51).",
-        "The personal exemption is $5,800 a person for 2025, and a joint return claims two. Michigan has no standard deduction of its own.",
+        "Michigan taxes income at a flat 4.25% for tax year 2026 (Treasury taxpayer notice, April 15, 2026; MCL 206.51). The FY 2025 ACFR did not trigger the statutory rate-reduction formula.",
+        "The personal exemption is $5,900 a person for 2026 (Treasury withholding calendar and 2026 Form 446). A joint return claims two. Michigan has no standard deduction of its own. Dependents also receive this exemption on a return; they are not an input here.",
         "Twenty-four Michigan cities levy their own income tax, Detroit’s administered by Treasury and the rest by the cities themselves. Treasury publishes the list but no statewide rate, so that tax is named here without a size.",
-        "Treasury had published 2025 amounts and not 2026 at verification, so this row declares the 2025 schedule.",
         "The special exemption for disability, the qualified disabled veteran deduction, retirement and pension subtractions, the homestead property tax credit and the home heating credit are not modeled. The starting point is gross wages."
       ]
     },
     {
       "stateCode": "MN",
       "provider": "Minnesota Department of Revenue",
-      "sourceName": "Minnesota Department of Revenue",
-      "sourceUrl": "https://www.revenue.state.mn.us/",
+      "sourceName": "Minnesota DOR 2026 income tax rates and brackets, with Inflation Adjusted Amounts for 2026",
+      "sourceUrl": "https://www.revenue.state.mn.us/minnesota-income-tax-rates-and-brackets",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "progressive",
@@ -2621,25 +5132,341 @@
         ]
       },
       "perDependentExemption": 5300,
+      "standardDeductionLimitation": {
+        "startIncomeByFilingStatus": {
+          "single": 244400,
+          "marriedFilingJointly": 244400,
+          "marriedFilingSeparately": 122200,
+          "headOfHousehold": 244400
+        },
+        "secondStartIncomeByFilingStatus": {
+          "single": 337800,
+          "marriedFilingJointly": 337800,
+          "marriedFilingSeparately": 168900,
+          "headOfHousehold": 337800
+        },
+        "firstRate": 0.03,
+        "secondRate": 0.1,
+        "maximumReductionShare": 0.8,
+        "fullLimitationIncomeByFilingStatus": {
+          "single": 1107750,
+          "marriedFilingJointly": 1107750,
+          "marriedFilingSeparately": 1107750,
+          "headOfHousehold": 1107750
+        }
+      },
       "notes": [
-        "Minnesota income tax brackets and rates for tax year 2026 (Minn. Stat. 290.06, Subd. 2c; Minnesota Department of Revenue rates and brackets page).",
-        "Standard deduction for 2026 is $15,300 single and married filing separately, $30,600 married filing jointly, $23,000 head of household (Minn. Stat. 290.0123, Subd. 1, as inflation-adjusted for tax year 2026).",
+        "Minnesota income tax brackets and rates for tax year 2026 (Minn. Stat. 290.06, Subd. 2c; Minnesota Department of Revenue rates and brackets page, 16 December 2025).",
+        "Standard deduction for 2026 is $15,300 single and married filing separately, $30,600 married filing jointly, $23,000 head of household (Minn. Stat. 290.0123, Subd. 1; Inflation Adjusted Amounts for 2026).",
         "Dependent exemption is $5,300 per dependent for 2026 (Minn. Stat. 290.0121, Subd. 1).",
-        "The standard deduction phases out above $244,400 of income ($122,200 married filing separately) and is not modeled; this understates tax at high incomes.",
+        "The standard deduction is reduced by 3% of AGI over $244,400 ($122,200 married filing separately) plus 10% over $337,800 ($168,900), never by more than 80% of the deduction, and the 80% cut is forced above $1,107,750 (Minn. Stat. 290.0123, Subd. 5 as indexed).",
         "Minnesota subtractions, credits and the alternative minimum tax are not modeled. The starting point is gross wages."
       ]
     },
     {
       "stateCode": "MO",
       "provider": "Missouri Department of Revenue",
-      "sourceName": "Missouri Department of Revenue",
-      "sourceUrl": "https://dor.mo.gov/",
+      "sourceName": "2025 Form MO-1040 instructions: Line 12 federal tax percentage, Line 13 cap, tax rate chart and worksheet examples",
+      "sourceUrl": "https://dor.mo.gov/forms/MO-1040%20Instructions_2025.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Missouri. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 1313,
+            "rate": 0
+          },
+          {
+            "notOver": 2626,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 3939,
+            "rate": 0.025,
+            "baseTax": 26
+          },
+          {
+            "notOver": 5252,
+            "rate": 0.03,
+            "baseTax": 59
+          },
+          {
+            "notOver": 6565,
+            "rate": 0.035,
+            "baseTax": 98
+          },
+          {
+            "notOver": 7878,
+            "rate": 0.04,
+            "baseTax": 144
+          },
+          {
+            "notOver": 9191,
+            "rate": 0.045,
+            "baseTax": 197
+          },
+          {
+            "notOver": null,
+            "rate": 0.047,
+            "baseTax": 256
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 1313,
+            "rate": 0
+          },
+          {
+            "notOver": 2626,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 3939,
+            "rate": 0.025,
+            "baseTax": 26
+          },
+          {
+            "notOver": 5252,
+            "rate": 0.03,
+            "baseTax": 59
+          },
+          {
+            "notOver": 6565,
+            "rate": 0.035,
+            "baseTax": 98
+          },
+          {
+            "notOver": 7878,
+            "rate": 0.04,
+            "baseTax": 144
+          },
+          {
+            "notOver": 9191,
+            "rate": 0.045,
+            "baseTax": 197
+          },
+          {
+            "notOver": null,
+            "rate": 0.047,
+            "baseTax": 256
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 1313,
+            "rate": 0
+          },
+          {
+            "notOver": 2626,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 3939,
+            "rate": 0.025,
+            "baseTax": 26
+          },
+          {
+            "notOver": 5252,
+            "rate": 0.03,
+            "baseTax": 59
+          },
+          {
+            "notOver": 6565,
+            "rate": 0.035,
+            "baseTax": 98
+          },
+          {
+            "notOver": 7878,
+            "rate": 0.04,
+            "baseTax": 144
+          },
+          {
+            "notOver": 9191,
+            "rate": 0.045,
+            "baseTax": 197
+          },
+          {
+            "notOver": null,
+            "rate": 0.047,
+            "baseTax": 256
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 1313,
+            "rate": 0
+          },
+          {
+            "notOver": 2626,
+            "rate": 0.02,
+            "baseTax": 0
+          },
+          {
+            "notOver": 3939,
+            "rate": 0.025,
+            "baseTax": 26
+          },
+          {
+            "notOver": 5252,
+            "rate": 0.03,
+            "baseTax": 59
+          },
+          {
+            "notOver": 6565,
+            "rate": 0.035,
+            "baseTax": 98
+          },
+          {
+            "notOver": 7878,
+            "rate": 0.04,
+            "baseTax": 144
+          },
+          {
+            "notOver": 9191,
+            "rate": 0.045,
+            "baseTax": 197
+          },
+          {
+            "notOver": null,
+            "rate": 0.047,
+            "baseTax": 256
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 15750,
+        "marriedFilingJointly": 31500,
+        "marriedFilingSeparately": 15750,
+        "headOfHousehold": 23625
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 1400
+      },
+      "federalDeduction": {
+        "capByFilingStatus": {
+          "single": 5000,
+          "marriedFilingJointly": 10000,
+          "marriedFilingSeparately": 5000,
+          "headOfHousehold": 5000
+        },
+        "federalTaxBase": "income-tax",
+        "shareOfFederalTax": {
+          "rateStepsByFilingStatus": {
+            "single": [
+              {
+                "notOver": 25000,
+                "rate": 0.35
+              },
+              {
+                "notOver": 50000,
+                "rate": 0.25
+              },
+              {
+                "notOver": 100000,
+                "rate": 0.15
+              },
+              {
+                "notOver": 125000,
+                "rate": 0.05
+              },
+              {
+                "notOver": null,
+                "rate": 0
+              }
+            ],
+            "marriedFilingJointly": [
+              {
+                "notOver": 25000,
+                "rate": 0.35
+              },
+              {
+                "notOver": 50000,
+                "rate": 0.25
+              },
+              {
+                "notOver": 100000,
+                "rate": 0.15
+              },
+              {
+                "notOver": 125000,
+                "rate": 0.05
+              },
+              {
+                "notOver": null,
+                "rate": 0
+              }
+            ],
+            "marriedFilingSeparately": [
+              {
+                "notOver": 25000,
+                "rate": 0.35
+              },
+              {
+                "notOver": 50000,
+                "rate": 0.25
+              },
+              {
+                "notOver": 100000,
+                "rate": 0.15
+              },
+              {
+                "notOver": 125000,
+                "rate": 0.05
+              },
+              {
+                "notOver": null,
+                "rate": 0
+              }
+            ],
+            "headOfHousehold": [
+              {
+                "notOver": 25000,
+                "rate": 0.35
+              },
+              {
+                "notOver": 50000,
+                "rate": 0.25
+              },
+              {
+                "notOver": 100000,
+                "rate": 0.15
+              },
+              {
+                "notOver": 125000,
+                "rate": 0.05
+              },
+              {
+                "notOver": null,
+                "rate": 0
+              }
+            ]
+          }
+        }
+      },
+      "localAddOn": {
+        "label": "Kansas City and St. Louis earnings tax",
+        "basis": "municipality",
+        "appliesTo": "taxable-income"
+      },
+      "notes": [
+        "Missouri taxes Missouri taxable income on the 2025 MO-1040 tax rate chart, the same schedule for every filing status: $0 through $1,313, then 2.0% to 4.7% of the excess over each $1,313 band, with published lumps at each threshold (2025 Form MO-1040 instructions). 2026 MO-1040 was not published at verification.",
+        "The standard deduction is the 2025 federal amount: $15,750 single or married filing separately, $31,500 married filing combined, $23,625 head of household. Head of household and qualifying widow(er) also take a $1,400 additional exemption on Line 15.",
+        "Missouri subtracts a percentage of federal income tax (MO-1040 Line 11, federal Form 1040 total tax, not withholding) based on Missouri AGI on Line 6: 35% at or below $25,000, 25% to $50,000, 15% to $100,000, 5% to $125,000, and 0% above. That product is capped at $5,000, or $10,000 on a combined return. The percentage is looked up on AGI, not on income after the deduction.",
+        "A combined return computes tax separately on each spouse's Missouri taxable income. This model has one wage income and treats a joint filer as the Y column of a one-income combined return.",
+        "Kansas City and St. Louis levy an earnings tax that is not included. No statewide rate is published, so the page names the omission without inventing its size.",
+        "Missouri itemized deductions, the property tax credit, and other MO-A adjustments are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "MS",
@@ -2719,55 +5546,55 @@
     {
       "stateCode": "MT",
       "provider": "Montana Department of Revenue",
-      "sourceName": "2025 Montana Tax Tables and Deductions, with the 2025 Form 2 instruction booklet",
-      "sourceUrl": "https://mtrevenue.gov/taxes/tax-tables-and-deductions/2025",
+      "sourceName": "2026 Montana Publication 1 tax tables (HB 337), ordinary income rates for tax year 2026",
+      "sourceUrl": "https://revenuefiles.mt.gov/files/Forms/Publication-1/Publication-1-2026.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "progressive",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
       "taxableIncomeBasis": "federal-taxable-income",
       "bracketsByFilingStatus": {
         "single": [
           {
-            "notOver": 21100,
+            "notOver": 47500,
             "rate": 0.047
           },
           {
             "notOver": null,
-            "rate": 0.059
+            "rate": 0.0565
           }
         ],
         "marriedFilingSeparately": [
           {
-            "notOver": 21100,
+            "notOver": 47500,
             "rate": 0.047
           },
           {
             "notOver": null,
-            "rate": 0.059
+            "rate": 0.0565
           }
         ],
         "marriedFilingJointly": [
           {
-            "notOver": 42200,
+            "notOver": 95000,
             "rate": 0.047
           },
           {
             "notOver": null,
-            "rate": 0.059
+            "rate": 0.0565
           }
         ],
         "headOfHousehold": [
           {
-            "notOver": 31700,
+            "notOver": 71250,
             "rate": 0.047
           },
           {
             "notOver": null,
-            "rate": 0.059
+            "rate": 0.0565
           }
         ]
       },
@@ -2778,25 +5605,25 @@
         "headOfHousehold": 0
       },
       "notes": [
-        "Montana taxes ordinary income at 4.7% on the first $21,100 single or married filing separately, $42,200 married filing jointly and $31,700 head of household, and 5.9% above that (Montana DOR, 2025 Montana Tax Tables and Deductions; MCA 15-30-2103).",
+        "Montana taxes ordinary income at 4.7% on the first $47,500 single or married filing separately, $95,000 married filing jointly and $71,250 head of household, and 5.65% above that (2026 Montana Publication 1 tax tables; HB 337 of 2025).",
         "Montana Form 2 starts from federal taxable income, so the federal standard deduction is already out of the base and Montana adds no deduction of its own.",
-        "The department publishes 2025 rates and had not published 2026 at verification, so this row declares the 2025 schedule.",
+        "2026 Form 2 was not published at verification. Publication 1 is the department's 2026 estimated-tax guide and prints the 2026 ordinary-income tables used here. 2027 tables in the same PDF are not used.",
         "Montana taxes net long-term capital gains at separate 3.0% and 4.1% rates. Those do not apply to wages and are not modeled.",
-        "The $5,660 subtraction for taxpayers 65 and older, Montana additions and subtractions, and credits are not modeled. The starting point is gross wages."
+        "The volunteer-firefighter subtraction, the subtraction for taxpayers 65 and older, Montana additions and credits are not modeled. The starting point is gross wages."
       ]
     },
     {
       "stateCode": "NC",
       "provider": "North Carolina Department of Revenue",
-      "sourceName": "North Carolina Department of Revenue",
-      "sourceUrl": "https://www.ncdor.gov/",
+      "sourceName": "NCDOR Tax Rate Schedules (3.99% after 2025) and G.S. 105-153.5 standard deduction",
+      "sourceUrl": "https://www.ncdor.gov/taxes-forms/individual-income-tax/tax-rate-schedules",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "flat",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
       "rate": 0.0399,
       "exemptionByFilingStatus": {
         "single": 0,
@@ -2811,8 +5638,8 @@
         "headOfHousehold": 19125
       },
       "notes": [
-        "North Carolina taxes individual income at a flat 3.99% for taxable years after 2025 (NCDOR Tax Rate Schedules; G.S. 105-153.7).",
-        "The standard deduction is the latest NCDOR published figure, for tax year 2025: $12,750 single, $25,500 married filing jointly, $12,750 married filing separately, $19,125 head of household. NCDOR had not published 2026 amounts at verification.",
+        "North Carolina taxes individual income at a flat 3.99% for taxable years after 2025 (NCDOR Tax Rate Schedules; Session Law 2023-134; G.S. 105-153.7).",
+        "The standard deduction is the amount currently in G.S. 105-153.5: $12,750 single or married filing separately, $25,500 married filing jointly, $19,125 head of household. Those figures are the enacted 2026 amounts — Senate Bill 437 would have raised them and did not pass.",
         "Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.",
         "The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages."
       ]
@@ -2905,14 +5732,94 @@
     {
       "stateCode": "NE",
       "provider": "Nebraska Department of Revenue",
-      "sourceName": "Nebraska Department of Revenue",
-      "sourceUrl": "https://revenue.nebraska.gov/",
+      "sourceName": "2026 Form 1040N-ES, estimated income tax rate schedule and standard deduction",
+      "sourceUrl": "https://revenue.nebraska.gov/sites/default/files/doc/tax-forms/2025/f_1040N-ES.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Nebraska. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 4130,
+            "rate": 0.0246
+          },
+          {
+            "notOver": 24760,
+            "rate": 0.0351
+          },
+          {
+            "notOver": null,
+            "rate": 0.0455
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 4130,
+            "rate": 0.0246
+          },
+          {
+            "notOver": 24760,
+            "rate": 0.0351
+          },
+          {
+            "notOver": null,
+            "rate": 0.0455
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 7700,
+            "rate": 0.0246
+          },
+          {
+            "notOver": 39620,
+            "rate": 0.0351
+          },
+          {
+            "notOver": null,
+            "rate": 0.0455
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 8250,
+            "rate": 0.0246
+          },
+          {
+            "notOver": 49530,
+            "rate": 0.0351
+          },
+          {
+            "notOver": null,
+            "rate": 0.0455
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 8850,
+        "marriedFilingJointly": 17700,
+        "marriedFilingSeparately": 8850,
+        "headOfHousehold": 12950
+      },
+      "exemptionCredit": {
+        "perFilerByFilingStatus": {
+          "single": 176,
+          "marriedFilingJointly": 352,
+          "marriedFilingSeparately": 176,
+          "headOfHousehold": 176
+        },
+        "perDependent": 176
+      },
+      "notes": [
+        "Nebraska taxes Nebraska taxable income at 2.46%, 3.51% and 4.55% for 2026 (2026 Form 1040N-ES rate schedule; Neb. Rev. Stat. § 77-2715.03(2)(c)(v) equalises the third and fourth brackets at 4.55%). Single and married filing separately share one schedule; head of household and joint have their own widths. 2026 Form 1040N was not published at verification; these are the Department of Revenue's 2026 estimated-tax rates.",
+        "The 2026 Nebraska standard deduction is $8,850 single or married filing separately, $17,700 married filing jointly, $12,950 head of household. Additional amounts for age or blindness are not modeled.",
+        "The personal exemption is a $176 credit per allowed exemption, not a deduction from income, so it is subtracted after tax. This model grants one exemption single, two filing jointly, and none for dependents unless they are supplied.",
+        "Nebraska credits other than the personal exemption credit, and Nebraska adjustments to federal AGI, are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "NH",
@@ -2933,10 +5840,10 @@
     {
       "stateCode": "NJ",
       "provider": "New Jersey Division of Taxation",
-      "sourceName": "New Jersey Division of Taxation",
-      "sourceUrl": "https://www.nj.gov/treasury/taxation/nj1040faqs.shtml",
+      "sourceName": "New Jersey Division of Taxation GIT overview and 2025 NJ-1040 instructions (exemptions and filing threshold)",
+      "sourceUrl": "https://www.nj.gov/treasury/taxation/git_over.shtml",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "progressive",
@@ -2947,6 +5854,47 @@
         "marriedFilingJointly": 0,
         "marriedFilingSeparately": 0,
         "headOfHousehold": 0
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 1000,
+        "marriedFilingJointly": 2000,
+        "marriedFilingSeparately": 1000,
+        "headOfHousehold": 1000
+      },
+      "perDependentExemption": 1500,
+      "alternativeLowIncomeSchedule": {
+        "appliesAtOrBelowByFilingStatus": {
+          "single": 10000,
+          "marriedFilingJointly": 20000,
+          "marriedFilingSeparately": 10000,
+          "headOfHousehold": 20000
+        },
+        "bracketsByFilingStatus": {
+          "single": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ]
+        }
       },
       "bracketsByFilingStatus": {
         "single": [
@@ -3080,7 +6028,8 @@
       },
       "notes": [
         "New Jersey Division of Taxation stated that GIT rates did not change for tax year 2025. 2026 NJ-1040 rate schedules were not separately located at verification; the latest published 2025 GIT rate schedules are used.",
-        "New Jersey personal exemptions, retirement exclusions, and credits are not modeled. The starting point is gross wages."
+        "A filer with New Jersey gross income of $10,000 or less (single or married filing separately) or $20,000 or less (joint or head of household) pays no tax (GIT overview). Above that, the regular exemption is $1,000 for the filer, $1,000 for a spouse on a joint return, and $1,500 per dependent (2025 NJ-1040 instructions, lines 6 and 10).",
+        "Age, blindness, veteran and college-dependent extras, retirement exclusions and credits are not modeled. The starting point is gross wages."
       ]
     },
     {
@@ -3230,8 +6179,8 @@
       "notes": [
         "New Mexico taxes New Mexico taxable income at 1.5%, 3.2%, 4.3%, 4.7%, 4.9% and 5.9% for tax years beginning on or after January 1, 2025 (7-2-7 NMSA 1978 as amended by Laws 2024, Chapter 67 (H.B. 252)).",
         "The starting point is federal adjusted gross income. PIT-1 line 12 then subtracts the federal standard deduction — $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household, from the 2025 Form 1040 instructions.",
-        "A low- and middle-income exemption of $2,500 a person applies at or below $36,667 of federal AGI single, $27,500 married filing separately, and $55,000 filing jointly or head of household. It is the full $2,500 below $20,000 / $15,000 / $30,000 and then falls by 15¢, 20¢ or 10¢ per dollar (2025 PIT-1 instructions, line 14 worksheet). A joint return claims two.",
-        "The 2025 Tax Look Up Table the instructions point to is a separate document; NMAC 3.3.7.9 says to use 7-2-7 itself when taxable income is outside that table. These bands are the statute. The table is midpoint-based over $50 income bands, so its printed figure can differ from this by about a dollar.",
+        "A low- and middle-income exemption of $2,500 a person applies at or below $36,667 of federal AGI single, $27,500 married filing separately, and $55,000 filing jointly or head of household. It is the full $2,500 below $20,000 / $15,000 / $30,000 and then falls by 15¢, 20¢ or 10¢ per dollar (2025 PIT-1 instructions, line 14 worksheet). A joint return claims two. The worksheet then multiplies that remaining $2,500 by PIT-1 line 5 (taxpayer, spouse and dependents). This row models taxpayer and spouse only; dependents are not counted, which overstates tax for a return that claims them.",
+        "The 2025 PIT packet prints a Tax Rate Table on taxable income in $100 bands. NMAC 3.3.7.9 says to use 7-2-7 itself when taxable income is outside that table. These bands are the statute. The table is midpoint-based, so a printed figure can differ from 7-2-7 by about a dollar at a band edge. The packet’s own example is $679 of tax at $25,300–$25,400 of taxable income, married filing jointly.",
         "The $4,000 deduction for certain dependents on a joint or head-of-household return, the Working Families Tax Credit, the child income tax credit, the low-income comprehensive tax rebate and other PIT-ADJ / PIT-RC items are not modeled. New Mexico does not levy a local wage income tax.",
         "The department had published the 2025 PIT-1 and not a 2026 schedule at verification, so this row declares the 2025 schedule."
       ]
@@ -3254,27 +6203,346 @@
     {
       "stateCode": "NY",
       "provider": "New York State Department of Taxation and Finance",
-      "sourceName": "New York State Department of Taxation and Finance",
-      "sourceUrl": "https://www.tax.ny.gov/pit/file/tax_tables.htm",
-      "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
-      "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "New York 2026 Form IT-201 resident tax rate schedules were not published at verification. 2026 withholding tables are not used as annual tax liability. Federal income tax and FICA are still estimated."
-    },
-    {
-      "stateCode": "OH",
-      "provider": "Ohio Department of Taxation",
-      "sourceName": "Ohio Individual Income Tax Rates (taxable years beginning in 2025), confirmed against the 2025 Ohio IT 1040 instruction booklet",
-      "sourceUrl": "https://tax.ohio.gov/individual/resources/annual-tax-rates",
+      "sourceName": "2026 Form IT-2105-I, New York State tax rates, standard deduction table, dependent exemption, and tax computation worksheets 1–16",
+      "sourceUrl": "https://www.tax.ny.gov/pdf/current_forms/it/it2105i.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "progressive",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 8500,
+            "rate": 0.039
+          },
+          {
+            "notOver": 11700,
+            "rate": 0.044,
+            "baseTax": 332
+          },
+          {
+            "notOver": 13900,
+            "rate": 0.0515,
+            "baseTax": 473
+          },
+          {
+            "notOver": 80650,
+            "rate": 0.054,
+            "baseTax": 586
+          },
+          {
+            "notOver": 215400,
+            "rate": 0.059,
+            "baseTax": 4191
+          },
+          {
+            "notOver": 1077550,
+            "rate": 0.0685,
+            "baseTax": 12141
+          },
+          {
+            "notOver": 5000000,
+            "rate": 0.0965,
+            "baseTax": 71198
+          },
+          {
+            "notOver": 25000000,
+            "rate": 0.103,
+            "baseTax": 449714
+          },
+          {
+            "notOver": null,
+            "rate": 0.109,
+            "baseTax": 2509714
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 8500,
+            "rate": 0.039
+          },
+          {
+            "notOver": 11700,
+            "rate": 0.044,
+            "baseTax": 332
+          },
+          {
+            "notOver": 13900,
+            "rate": 0.0515,
+            "baseTax": 473
+          },
+          {
+            "notOver": 80650,
+            "rate": 0.054,
+            "baseTax": 586
+          },
+          {
+            "notOver": 215400,
+            "rate": 0.059,
+            "baseTax": 4191
+          },
+          {
+            "notOver": 1077550,
+            "rate": 0.0685,
+            "baseTax": 12141
+          },
+          {
+            "notOver": 5000000,
+            "rate": 0.0965,
+            "baseTax": 71198
+          },
+          {
+            "notOver": 25000000,
+            "rate": 0.103,
+            "baseTax": 449714
+          },
+          {
+            "notOver": null,
+            "rate": 0.109,
+            "baseTax": 2509714
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 17150,
+            "rate": 0.039
+          },
+          {
+            "notOver": 23600,
+            "rate": 0.044,
+            "baseTax": 669
+          },
+          {
+            "notOver": 27900,
+            "rate": 0.0515,
+            "baseTax": 953
+          },
+          {
+            "notOver": 161550,
+            "rate": 0.054,
+            "baseTax": 1174
+          },
+          {
+            "notOver": 323200,
+            "rate": 0.059,
+            "baseTax": 8391
+          },
+          {
+            "notOver": 2155350,
+            "rate": 0.0685,
+            "baseTax": 17928
+          },
+          {
+            "notOver": 5000000,
+            "rate": 0.0965,
+            "baseTax": 143430
+          },
+          {
+            "notOver": 25000000,
+            "rate": 0.103,
+            "baseTax": 417939
+          },
+          {
+            "notOver": null,
+            "rate": 0.109,
+            "baseTax": 2477939
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 12800,
+            "rate": 0.039
+          },
+          {
+            "notOver": 17650,
+            "rate": 0.044,
+            "baseTax": 499
+          },
+          {
+            "notOver": 20900,
+            "rate": 0.0515,
+            "baseTax": 712
+          },
+          {
+            "notOver": 107650,
+            "rate": 0.054,
+            "baseTax": 879
+          },
+          {
+            "notOver": 269300,
+            "rate": 0.059,
+            "baseTax": 5564
+          },
+          {
+            "notOver": 1616450,
+            "rate": 0.0685,
+            "baseTax": 15101
+          },
+          {
+            "notOver": 5000000,
+            "rate": 0.0965,
+            "baseTax": 107381
+          },
+          {
+            "notOver": 25000000,
+            "rate": 0.103,
+            "baseTax": 433894
+          },
+          {
+            "notOver": null,
+            "rate": 0.109,
+            "baseTax": 2493894
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 8000,
+        "marriedFilingJointly": 16050,
+        "marriedFilingSeparately": 8000,
+        "headOfHousehold": 11200
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "perDependentExemption": 1000,
+      "nySupplementalTax": {
+        "minAgi": 107650,
+        "phaseInLength": 50000,
+        "topRateAgi": 25000000,
+        "topRate": 0.109,
+        "firstBandNotOverByFilingStatus": {
+          "single": 215400,
+          "marriedFilingJointly": 161550,
+          "marriedFilingSeparately": 215400,
+          "headOfHousehold": 269300
+        },
+        "firstBandRateByFilingStatus": {
+          "single": 0.059,
+          "marriedFilingJointly": 0.054,
+          "marriedFilingSeparately": 0.059,
+          "headOfHousehold": 0.059
+        },
+        "recaptureStepsByFilingStatus": {
+          "single": [
+            {
+              "notOver": 1077550,
+              "recaptureBase": 567,
+              "incrementalBenefit": 2047,
+              "agiThreshold": 215400
+            },
+            {
+              "notOver": 5000000,
+              "recaptureBase": 2614,
+              "incrementalBenefit": 30172,
+              "agiThreshold": 1077550
+            },
+            {
+              "notOver": null,
+              "recaptureBase": 32786,
+              "incrementalBenefit": 32500,
+              "agiThreshold": 5000000
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 1077550,
+              "recaptureBase": 567,
+              "incrementalBenefit": 2047,
+              "agiThreshold": 215400
+            },
+            {
+              "notOver": 5000000,
+              "recaptureBase": 2614,
+              "incrementalBenefit": 30172,
+              "agiThreshold": 1077550
+            },
+            {
+              "notOver": null,
+              "recaptureBase": 32786,
+              "incrementalBenefit": 32500,
+              "agiThreshold": 5000000
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 323200,
+              "recaptureBase": 333,
+              "incrementalBenefit": 807,
+              "agiThreshold": 161550
+            },
+            {
+              "notOver": 2155350,
+              "recaptureBase": 1140,
+              "incrementalBenefit": 3071,
+              "agiThreshold": 323200
+            },
+            {
+              "notOver": 5000000,
+              "recaptureBase": 4211,
+              "incrementalBenefit": 60350,
+              "agiThreshold": 2155350
+            },
+            {
+              "notOver": null,
+              "recaptureBase": 64561,
+              "incrementalBenefit": 32500,
+              "agiThreshold": 5000000
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 1616450,
+              "recaptureBase": 787,
+              "incrementalBenefit": 2559,
+              "agiThreshold": 269300
+            },
+            {
+              "notOver": 5000000,
+              "recaptureBase": 3346,
+              "incrementalBenefit": 45260,
+              "agiThreshold": 1616450
+            },
+            {
+              "notOver": null,
+              "recaptureBase": 48606,
+              "incrementalBenefit": 32500,
+              "agiThreshold": 5000000
+            }
+          ]
+        }
+      },
+      "localAddOn": {
+        "label": "New York City resident income tax and Yonkers surcharge",
+        "basis": "municipality",
+        "appliesTo": "taxable-income",
+        "omissionNote": "New York City residents pay a separate city income tax (2026 IT-2105-I NYC rate schedule, 3.078%–3.876%). Yonkers residents pay 16.75% of New York State tax. Location is unknown here, so neither is included — if you live in NYC or Yonkers, real take-home is lower."
+      },
+      "notes": [
+        "New York taxes New York taxable income at 3.90% to 10.90% (2026 Form IT-2105-I, New York State tax rates). Chapter 59 of the Laws of 2025 reduced several middle rates from the 2025 IT-201 schedule; IT-2105-I is the department’s 2026 annual computation, not a withholding substitute.",
+        "The 2026 standard deduction is $8,000 single or married filing separately, $16,050 married filing jointly or qualifying surviving spouse, and $11,200 head of household. There is no personal exemption for the taxpayer or spouse; each dependent is a $1,000 exemption.",
+        "When NYAGI exceeds $107,650 the tax computation worksheets recapture the benefit of the lower brackets, and above $25 million the tax is 10.90% of taxable income. Those worksheets are modeled.",
+        "The New York household credit (a small stepped credit below $28,000 / $32,000 of federal AGI), itemized deductions and their high-income limitation, and New York additions and subtractions from federal AGI are not modeled. The starting point for a wage-only filer is gross wages treated as NYAGI.",
+        "New York City resident tax and the Yonkers 16.75% surcharge of state tax are named as omitted local tax. The MCTMT applies to self-employment in the MCTD and is not a wage tax here."
+      ]
+    },
+    {
+      "stateCode": "OH",
+      "provider": "Ohio Department of Taxation",
+      "sourceName": "R.C. 5747.02(A)(3)(c) and 5747.025 as amended by H.B. 96 (136th G.A.), tax year 2026",
+      "sourceUrl": "https://codes.ohio.gov/ohio-revised-code/section-5747.02",
+      "publishedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
+      "version": "1.0.0",
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
       "bracketsByFilingStatus": {
         "single": [
           {
@@ -3282,14 +6550,9 @@
             "rate": 0
           },
           {
-            "notOver": 100000,
-            "rate": 0.0275,
-            "baseTax": 342
-          },
-          {
             "notOver": null,
-            "rate": 0.03125,
-            "baseTax": 2394.32
+            "rate": 0.0275,
+            "baseTax": 332
           }
         ],
         "marriedFilingSeparately": [
@@ -3298,14 +6561,9 @@
             "rate": 0
           },
           {
-            "notOver": 100000,
-            "rate": 0.0275,
-            "baseTax": 342
-          },
-          {
             "notOver": null,
-            "rate": 0.03125,
-            "baseTax": 2394.32
+            "rate": 0.0275,
+            "baseTax": 332
           }
         ],
         "marriedFilingJointly": [
@@ -3314,14 +6572,9 @@
             "rate": 0
           },
           {
-            "notOver": 100000,
-            "rate": 0.0275,
-            "baseTax": 342
-          },
-          {
             "notOver": null,
-            "rate": 0.03125,
-            "baseTax": 2394.32
+            "rate": 0.0275,
+            "baseTax": 332
           }
         ],
         "headOfHousehold": [
@@ -3330,14 +6583,9 @@
             "rate": 0
           },
           {
-            "notOver": 100000,
-            "rate": 0.0275,
-            "baseTax": 342
-          },
-          {
             "notOver": null,
-            "rate": 0.03125,
-            "baseTax": 2394.32
+            "rate": 0.0275,
+            "baseTax": 332
           }
         ]
       },
@@ -3359,7 +6607,7 @@
               "amount": 2150
             },
             {
-              "notOver": 749999,
+              "notOver": 499999,
               "amount": 1900
             },
             {
@@ -3377,7 +6625,7 @@
               "amount": 2150
             },
             {
-              "notOver": 749999,
+              "notOver": 499999,
               "amount": 1900
             },
             {
@@ -3395,7 +6643,7 @@
               "amount": 2150
             },
             {
-              "notOver": 749999,
+              "notOver": 499999,
               "amount": 1900
             },
             {
@@ -3413,7 +6661,7 @@
               "amount": 2150
             },
             {
-              "notOver": 749999,
+              "notOver": 499999,
               "amount": 1900
             },
             {
@@ -3435,9 +6683,9 @@
         "appliesTo": "taxable-income"
       },
       "notes": [
-        "Ohio taxes nonbusiness income at 0% below $26,050, then $342 plus 2.750% of the excess, and $2,394.32 plus 3.125% above $100,000 (Ohio Department of Taxation, Ohio Individual Income Tax Rates for taxable years beginning in 2025; 2025 Ohio IT 1040 instructions; R.C. 5747.02).",
-        "Those two constants are what Ohio publishes and are used as published. They do not reconcile with each other — the band below $100,000 sums to $2,375.63 — and the state’s figure wins.",
-        "The same schedule applies to every filing status. Ohio gives no standard deduction; instead each exemption is worth $2,400 up to $40,000 of modified adjusted gross income, $2,150 to $80,000, $1,900 to $749,999 and nothing above.",
+        "Ohio taxes nonbusiness income for 2026 at 0% on a balance of $26,050 or less, then $332 plus 2.75% of the excess (R.C. 5747.02(A)(3)(c) as amended by H.B. 96, effective 30 September 2025). The 2025 $100,000 / 3.125% band is gone. The department’s annual-rate page still listed only 2025 at verification; the enacted statute is the 2026 annual computation.",
+        "H.B. 96 suspends inflation indexing of the $26,050 floor and the personal-exemption dollar amounts for 2025 and 2026, so those stay at the 2025 figures: $2,400 / $2,150 / $1,900 by MAGI band (R.C. 5747.025; 2025 IT 1040). Eligibility for the exemption ends below $500,000 of MAGI in 2026, down from $750,000 in 2025.",
+        "The same schedule applies to every filing status. Ohio gives no standard deduction.",
         "Ohio municipalities and school districts levy their own income taxes on top of this, set locally and not included here.",
         "The exemption credit, joint filing credit, retirement and senior credits, and the separate 3% rate on business income are not modeled. The starting point is gross wages."
       ]
@@ -3445,118 +6693,86 @@
     {
       "stateCode": "OK",
       "provider": "Oklahoma Tax Commission",
-      "sourceName": "2025 Oklahoma Resident Individual Income Tax Forms and Instructions (Form 511 packet), income tax table and tax computation worksheets",
-      "sourceUrl": "https://oklahoma.gov/content/dam/ok/en/tax/documents/forms/individuals/current/511-Pkt.pdf",
+      "sourceName": "Enrolled H.B. 2764 (approved 28 May 2025), amending 68 O.S. 2355(D) for tax year 2026, with 68 O.S. 2358 standard deduction amounts",
+      "sourceUrl": "https://www.oklegislature.gov/cf_pdf/2025-26%20ENR/hB/HB2764%20ENR.PDF",
       "publishedAt": "2026-09-03T00:00:00.000Z",
       "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
       "status": "supported",
       "kind": "progressive",
       "sourceStatus": "verified",
-      "scheduleTaxYear": 2025,
+      "scheduleTaxYear": 2026,
       "bracketsByFilingStatus": {
         "single": [
           {
-            "notOver": 1000,
-            "rate": 0.0025
-          },
-          {
-            "notOver": 2500,
-            "rate": 0.0075
-          },
-          {
             "notOver": 3750,
-            "rate": 0.0175
+            "rate": 0
           },
           {
             "notOver": 4900,
-            "rate": 0.0275
+            "rate": 0.025
           },
           {
             "notOver": 7200,
-            "rate": 0.0375
+            "rate": 0.035
           },
           {
             "notOver": null,
-            "rate": 0.0475
+            "rate": 0.045
           }
         ],
         "marriedFilingSeparately": [
           {
-            "notOver": 1000,
-            "rate": 0.0025
-          },
-          {
-            "notOver": 2500,
-            "rate": 0.0075
-          },
-          {
             "notOver": 3750,
-            "rate": 0.0175
+            "rate": 0
           },
           {
             "notOver": 4900,
-            "rate": 0.0275
+            "rate": 0.025
           },
           {
             "notOver": 7200,
-            "rate": 0.0375
+            "rate": 0.035
           },
           {
             "notOver": null,
-            "rate": 0.0475
+            "rate": 0.045
           }
         ],
         "marriedFilingJointly": [
           {
-            "notOver": 2000,
-            "rate": 0.0025
-          },
-          {
-            "notOver": 5000,
-            "rate": 0.0075
-          },
-          {
             "notOver": 7500,
-            "rate": 0.0175
+            "rate": 0
           },
           {
             "notOver": 9800,
-            "rate": 0.0275
+            "rate": 0.025
           },
           {
             "notOver": 14400,
-            "rate": 0.0375
+            "rate": 0.035
           },
           {
             "notOver": null,
-            "rate": 0.0475
+            "rate": 0.045
           }
         ],
         "headOfHousehold": [
           {
-            "notOver": 2000,
-            "rate": 0.0025
-          },
-          {
-            "notOver": 5000,
-            "rate": 0.0075
-          },
-          {
             "notOver": 7500,
-            "rate": 0.0175
+            "rate": 0
           },
           {
             "notOver": 9800,
-            "rate": 0.0275
+            "rate": 0.025
           },
           {
             "notOver": 14400,
-            "rate": 0.0375
+            "rate": 0.035
           },
           {
             "notOver": null,
-            "rate": 0.0475
+            "rate": 0.045
           }
         ]
       },
@@ -3574,10 +6790,9 @@
       },
       "perDependentExemption": 1000,
       "notes": [
-        "Oklahoma taxes Oklahoma taxable income in six bands from 0.25% to 4.75% (2025 Form 511 packet, Oklahoma income tax table and tax computation worksheets; 68 O.S. 2355).",
-        "Standard deduction for 2025: $6,350 single and married filing separately, $12,700 married filing jointly, $9,350 head of household. Each exemption is worth $1,000 as a deduction from income.",
-        "Married filing jointly and head of household use the same doubled bands, which is how Oklahoma’s own table is laid out.",
-        "The Tax Commission had published 2025 forms and not 2026 at verification, so this row declares the 2025 schedule.",
+        "Oklahoma taxes Oklahoma taxable income for tax year 2026 at 0% on the first $3,750 single or married filing separately ($7,500 joint or head of household), 2.5% on the next $1,150 ($2,300), 3.5% on the next $2,300 ($4,600), and 4.5% on the remainder (enrolled H.B. 2764, approved 28 May 2025, amending 68 O.S. 2355(D)).",
+        "The standard deduction is statutory and unindexed (68 O.S. 2358): $6,350 single or married filing separately, $12,700 married filing jointly, $9,350 head of household. Each exemption is $1,000 as a deduction from income.",
+        "Married filing jointly and head of household use the same doubled bands. Form 511 for 2026 was not published at verification; these are the enacted 2026 annual rates, not withholding tables.",
         "Oklahoma additions, subtractions, the capital gain deduction and credits are not modeled. The starting point is gross wages."
       ]
     },
@@ -3849,14 +7064,15 @@
         "basis": "municipality",
         "typicalRateRange": {
           "low": 0.01,
-          "high": 0.0275
+          "high": 0.03735
         },
-        "appliesTo": "taxable-income"
+        "appliesTo": "taxable-income",
+        "omissionNote": "Act 32 EIT is commonly 1%–2.75% of wages. Philadelphia's wage tax is 3.735% for residents and 3.425% for non-residents as of 1 July 2026 (City of Philadelphia Department of Revenue). Pittsburgh, Reading and Scranton also sit above the Act 32 band. Your real take-home is lower than the state figure."
       },
       "notes": [
         "Pennsylvania personal income tax is 3.07% (Tax Reform Code of 1971, Section 302, as amended by Act 46 of 2003).",
         "No standard deduction is applied.",
-        "Local earned income tax is levied separately by municipality and school district and is named as an omission rather than estimated."
+        "Local earned income tax is levied separately by municipality and school district. The omitted-tax band is Act 32's 1% floor through Philadelphia's published 3.735% resident wage tax, so the page does not describe Philadelphia as a 2.75% town."
       ]
     },
     {
@@ -3943,7 +7159,7 @@
       },
       "notes": [
         "Rhode Island taxes Rhode Island taxable income at 3.75%, 4.75% and 5.99% for tax year 2025, the same bands for every filing status (2025 Rhode Island Tax Tables, page T-1 computation worksheet).",
-        "Standard deduction for 2025 is $10,900 single or married filing separately, $21,800 married filing jointly, $16,350 head of household. The personal exemption is $5,100 a person, doubled on a joint return. Rhode Island does not allow federal itemized deductions.",
+        "Standard deduction for 2025 is $10,900 single or married filing separately, $21,800 married filing jointly, $16,350 head of household. The personal exemption is $5,100 a person, doubled on a joint return. Dependents are not modeled. Rhode Island does not allow federal itemized deductions.",
         "Both the deduction and the exemption phase out above $254,250 of modified federal AGI. That band is well above ordinary wages, so it is noted rather than modelled; this overstates the deduction for those filers.",
         "The 2025 table is midpoint-based over $50 income bands, so its printed figure can differ from the exact 3.75% by up to about a dollar. The booklet’s own example is $950 of tax at $25,300–$25,350 of taxable income.",
         "The percentage of allowable federal credits, the earned income credit at 16% of the federal credit, and other Rhode Island credits are not modeled. The starting point is gross wages.",
@@ -4129,14 +7345,143 @@
     {
       "stateCode": "VA",
       "provider": "Virginia Department of Taxation",
-      "sourceName": "Virginia Department of Taxation",
-      "sourceUrl": "https://www.tax.virginia.gov/",
+      "sourceName": "2025 Form 760 Resident Individual Income Tax Instructions: standard deduction, exemptions, tax rate schedule example",
+      "sourceUrl": "https://www.tax.virginia.gov/sites/default/files/vatax-pdf/2025-760-instructions.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Virginia. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2025,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 3000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 17000,
+            "rate": 0.05
+          },
+          {
+            "notOver": null,
+            "rate": 0.0575
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 3000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 17000,
+            "rate": 0.05
+          },
+          {
+            "notOver": null,
+            "rate": 0.0575
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 3000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 17000,
+            "rate": 0.05
+          },
+          {
+            "notOver": null,
+            "rate": 0.0575
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 3000,
+            "rate": 0.02
+          },
+          {
+            "notOver": 5000,
+            "rate": 0.03
+          },
+          {
+            "notOver": 17000,
+            "rate": 0.05
+          },
+          {
+            "notOver": null,
+            "rate": 0.0575
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 8750,
+        "marriedFilingJointly": 17500,
+        "marriedFilingSeparately": 8750,
+        "headOfHousehold": 8750
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 930,
+        "marriedFilingJointly": 1860,
+        "marriedFilingSeparately": 930,
+        "headOfHousehold": 930
+      },
+      "perDependentExemption": 930,
+      "alternativeLowIncomeSchedule": {
+        "appliesAtOrBelowByFilingStatus": {
+          "single": 11949,
+          "marriedFilingJointly": 23899,
+          "marriedFilingSeparately": 11949,
+          "headOfHousehold": 11949
+        },
+        "bracketsByFilingStatus": {
+          "single": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": null,
+              "rate": 0
+            }
+          ]
+        }
+      },
+      "notes": [
+        "Virginia taxes Virginia taxable income at 2% of the first $3,000, $60 plus 3% of the excess over $3,000 through $5,000, $120 plus 5% through $17,000, and $720 plus 5.75% above that (2025 Form 760 instructions, tax rate schedule). The same schedule is used for every filing status. Head of household files as single with an oval and uses the single deduction.",
+        "The 2025–2026 standard deduction is $8,750 filing status 1 or 3 and $17,500 filing status 2 (2025 General Assembly increase). Personal and dependent exemptions are $930 each.",
+        "If Virginia AGI is less than $11,950 single or married filing separately, or $23,900 married filing jointly, Form 760 says to enter $0 of tax. That floor is modeled; it is not the standard deduction plus exemption, which is a smaller figure.",
+        "The spouse tax adjustment (up to $259) applies only when both spouses have Virginia AGI. This model has one wage income, so a joint filer does not qualify — matching the worksheet instruction to stop if either spouse's amount is zero.",
+        "Virginia credits, itemized deductions, the age deduction and locality taxes are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "VT",
@@ -4270,7 +7615,7 @@
       },
       "notes": [
         "Vermont taxes Vermont taxable income at 3.35%, 6.60%, 7.60% and 8.75% for tax year 2025 (2025 IN-111 instructions, tax rate schedules X, Y-1, Y-2 and Z).",
-        "Standard deduction for 2025 is $7,650 single or married filing separately, $15,300 married filing jointly, $11,450 head of household. The personal exemption is $5,300 a person, doubled on a joint return.",
+        "Standard deduction for 2025 is $7,650 single or married filing separately, $15,300 married filing jointly, $11,450 head of household. The personal exemption is $5,300 a person (IN-111 line 5e), including other dependents on line 5c. This row models taxpayer and spouse only.",
         "The booklet works a married filing jointly example: $85,000 of Vermont taxable income is $2,929 of tax, which is the $2,764 printed at $82,500 plus 6.60% of the $2,500 excess.",
         "Above $150,000 of federal adjusted gross income Vermont charges the greater of the schedule and 3% of that AGI. On a wage-only return with these deductions the schedule is already higher, so the floor is noted rather than modelled.",
         "The additional standard deduction for age or blindness, the charitable contribution credit and Vermont school district taxes are not modeled. The starting point is gross wages.",
@@ -4297,26 +7642,299 @@
     {
       "stateCode": "WI",
       "provider": "Wisconsin Department of Revenue",
-      "sourceName": "Wisconsin Department of Revenue",
-      "sourceUrl": "https://www.revenue.wi.gov/",
+      "sourceName": "2026 Form 1-ES instructions, standard deduction schedules and tax rate schedules",
+      "sourceUrl": "https://www.revenue.wi.gov/TaxForms2026/2026-Form1-ES-Inst.pdf",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for Wisconsin. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 15110,
+            "rate": 0.035
+          },
+          {
+            "notOver": 51950,
+            "rate": 0.044
+          },
+          {
+            "notOver": 332720,
+            "rate": 0.053
+          },
+          {
+            "notOver": null,
+            "rate": 0.0765
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 15110,
+            "rate": 0.035
+          },
+          {
+            "notOver": 51950,
+            "rate": 0.044
+          },
+          {
+            "notOver": 332720,
+            "rate": 0.053
+          },
+          {
+            "notOver": null,
+            "rate": 0.0765
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 20150,
+            "rate": 0.035
+          },
+          {
+            "notOver": 69260,
+            "rate": 0.044
+          },
+          {
+            "notOver": 443630,
+            "rate": 0.053
+          },
+          {
+            "notOver": null,
+            "rate": 0.0765
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 10080,
+            "rate": 0.035
+          },
+          {
+            "notOver": 34630,
+            "rate": 0.044
+          },
+          {
+            "notOver": 221820,
+            "rate": 0.053,
+            "baseTax": 1433
+          },
+          {
+            "notOver": null,
+            "rate": 0.0765,
+            "baseTax": 11354.07
+          }
+        ]
+      },
+      "standardDeductionRatePhaseOut": {
+        "stagesByFilingStatus": {
+          "single": [
+            {
+              "notOver": 20119,
+              "amount": 13960
+            },
+            {
+              "notOver": 136453,
+              "amount": 13960,
+              "rate": 0.12,
+              "excessOver": 20120
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "headOfHousehold": [
+            {
+              "notOver": 20119,
+              "amount": 18030
+            },
+            {
+              "notOver": 58827,
+              "amount": 18030,
+              "rate": 0.22515,
+              "excessOver": 20120
+            },
+            {
+              "notOver": 136453,
+              "amount": 13960,
+              "rate": 0.12,
+              "excessOver": 20120
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingJointly": [
+            {
+              "notOver": 29039,
+              "amount": 25840
+            },
+            {
+              "notOver": 159690,
+              "amount": 25840,
+              "rate": 0.19778,
+              "excessOver": 29040
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ],
+          "marriedFilingSeparately": [
+            {
+              "notOver": 13779,
+              "amount": 12280
+            },
+            {
+              "notOver": 75869,
+              "amount": 12280,
+              "rate": 0.19778,
+              "excessOver": 13780
+            },
+            {
+              "notOver": null,
+              "amount": 0
+            }
+          ]
+        }
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 700,
+        "marriedFilingJointly": 1400,
+        "marriedFilingSeparately": 700,
+        "headOfHousehold": 700
+      },
+      "perDependentExemption": 700,
+      "notes": [
+        "Wisconsin taxes Wisconsin taxable income at 3.5%, 4.4%, 5.3% and 7.65% for 2026 (2026 Form 1-ES instructions, tax rate schedules A–C). Single and head of household share Schedule A. Married filing separately uses Schedule C, whose published $1,433 lump at $34,630 does not reconcile with summing the bands beneath it and is stored as published.",
+        "The 2026 standard deduction is income-dependent: $13,960 single until Wisconsin income $20,119, then $13,960 less 12% of the amount over $20,120, to zero above $136,453. Joint: $25,840 until $29,039, then less 19.778% over $29,040. Separate: $12,280 until $13,779, then less 19.778% over $13,780. Head of household: $18,030 until $20,119, then $18,030 less 22.515% over $20,120 until $58,827, then the single 12% formula. That two-stage switch is modeled as published; a single phase-out would miss it.",
+        "The personal exemption is $700 for the filer, $700 for a spouse on a joint return, and $700 for each dependent. The extra $250 for age 65 or over is not modeled. A filer claimed as a dependent on someone else's return takes no exemption.",
+        "Wisconsin credits, itemized deductions and the married-couple credit are not modeled. The starting point is gross wages treated as Wisconsin income."
+      ]
     },
     {
       "stateCode": "WV",
       "provider": "West Virginia State Tax Department",
-      "sourceName": "West Virginia State Tax Department",
-      "sourceUrl": "https://tax.wv.gov/",
+      "sourceName": "W.Va. Code §11-21-4j (2026 rates) and §11-21-16 (personal exemption)",
+      "sourceUrl": "https://code.wvlegislature.gov/11-21-4J/",
       "publishedAt": "2026-09-03T00:00:00.000Z",
-      "verifiedAt": "2026-09-03T00:00:00.000Z",
+      "verifiedAt": "2026-09-07T00:00:00.000Z",
       "version": "1.0.0",
-      "status": "unsupported",
-      "sourceStatus": "unsupported",
-      "reason": "This release does not include a verified 2026 wage income tax schedule for West Virginia. Federal income tax and FICA are still estimated."
+      "status": "supported",
+      "kind": "progressive",
+      "sourceStatus": "verified",
+      "scheduleTaxYear": 2026,
+      "bracketsByFilingStatus": {
+        "single": [
+          {
+            "notOver": 10000,
+            "rate": 0.0211
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.0281
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.0316
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0422
+          },
+          {
+            "notOver": null,
+            "rate": 0.0458
+          }
+        ],
+        "headOfHousehold": [
+          {
+            "notOver": 10000,
+            "rate": 0.0211
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.0281
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.0316
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0422
+          },
+          {
+            "notOver": null,
+            "rate": 0.0458
+          }
+        ],
+        "marriedFilingJointly": [
+          {
+            "notOver": 10000,
+            "rate": 0.0211
+          },
+          {
+            "notOver": 25000,
+            "rate": 0.0281
+          },
+          {
+            "notOver": 40000,
+            "rate": 0.0316
+          },
+          {
+            "notOver": 60000,
+            "rate": 0.0422
+          },
+          {
+            "notOver": null,
+            "rate": 0.0458
+          }
+        ],
+        "marriedFilingSeparately": [
+          {
+            "notOver": 5000,
+            "rate": 0.0211
+          },
+          {
+            "notOver": 12500,
+            "rate": 0.0281
+          },
+          {
+            "notOver": 20000,
+            "rate": 0.0316
+          },
+          {
+            "notOver": 30000,
+            "rate": 0.0422
+          },
+          {
+            "notOver": null,
+            "rate": 0.0458
+          }
+        ]
+      },
+      "standardDeductionByFilingStatus": {
+        "single": 0,
+        "marriedFilingJointly": 0,
+        "marriedFilingSeparately": 0,
+        "headOfHousehold": 0
+      },
+      "personalExemptionByFilingStatus": {
+        "single": 2000,
+        "marriedFilingJointly": 4000,
+        "marriedFilingSeparately": 2000,
+        "headOfHousehold": 2000
+      },
+      "perDependentExemption": 2000,
+      "notes": [
+        "West Virginia taxes West Virginia taxable income for tax years beginning on or after January 1, 2026 at 2.11%, 2.81%, 3.16%, 4.22% and 4.58% (W.Va. Code §11-21-4j). Married filing separately uses half the bracket widths. The same full table applies to single, joint, head of household and surviving-spouse filers.",
+        "The personal exemption is $2,000 for each federal exemption (W.Va. Code §11-21-16), so $2,000 single and $4,000 joint in this model. There is no West Virginia standard deduction. A dependent claimed as a federal exemption is another $2,000. The $500 exemption for a filer who cannot claim a federal exemption is not modeled.",
+        "West Virginia credits, the low-income exclusion and other modifications in §11-21-12 are not modeled. The starting point is gross wages."
+      ]
     },
     {
       "stateCode": "WY",
@@ -4334,5 +7952,5 @@
       ]
     }
   ],
-  "normalizedSha256": "84138a8dd356db719fb8ab840f9b41892ba9b47fd90df2524c074a7ece00edc7"
+  "normalizedSha256": "4818910a5fa82d519354a72c2cd08dc5b50ee10eb6b53562d777630ef451e6ac"
 }

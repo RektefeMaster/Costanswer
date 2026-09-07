@@ -113,6 +113,7 @@ export function calculateBonusTax(rawInput: unknown): CalculationResult<BonusTax
     taxYear, state, filingStatus: input.filingStatus,
     taxableIncome: wagesBefore, federalIncomeTax: federalBefore.tax,
     federalStandardDeduction: federalBefore.standardDeduction,
+    employeeFica: ficaBefore.socialSecurity + ficaBefore.medicare + ficaBefore.additionalMedicare,
   });
   const stateAfter = calculateStateIncomeTax({
     taxYear,
@@ -121,6 +122,7 @@ export function calculateBonusTax(rawInput: unknown): CalculationResult<BonusTax
     taxableIncome: wagesBefore + input.bonusAmount,
     federalIncomeTax: federalAfter.tax,
     federalStandardDeduction: federalAfter.standardDeduction,
+    employeeFica: ficaAfter.socialSecurity + ficaAfter.medicare + ficaAfter.additionalMedicare,
   });
   const stateSupported = stateAfter.status === 'supported';
   const stateWithholding = stateSupported ? Math.max(0, stateAfter.tax - stateBefore.tax) : 0;
