@@ -49,3 +49,5 @@ Electricity ingest needs the EIA key. Gasoline, grocery, CPI-U, and Freddie Mac 
 - `docs/ARCHITECTURE.md` — decisions, boundaries and scale strategy
 - `docs/ROADMAP.md` — phased acceptance criteria and expansion waves
 - `docs/ADDING_A_TOOL.md` — quality and implementation checklist
+- `docs/MONETIZATION.md` — the commercial layer, its boundary, and how to switch a channel on
+- `docs/MASTER_PLAN.md` — current-state audit and the phased plan to launch

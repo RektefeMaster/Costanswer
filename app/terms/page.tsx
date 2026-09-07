@@ -25,6 +25,7 @@ const CONTENTS = [
   { id: 'prohibited-use', label: 'Prohibited use' },
   { id: 'feedback', label: 'Corrections and feedback' },
   { id: 'advertising', label: 'Advertising' },
+  { id: 'referrals', label: 'Professional referrals' },
   { id: 'availability', label: 'Availability' },
   { id: 'disclaimer', label: 'No warranty' },
   { id: 'liability', label: 'Liability' },
@@ -299,6 +300,35 @@ export default function TermsPage() {
         lender decision, and not financial, tax, or legal advice. Example partner names in configuration are
         placeholders until a contract and URL exist. A disclosure sits on the slot.
       </p>
+      <h2 id="referrals">14a. Professional referrals</h2>
+      <p>
+        Some home-project pages may offer to pass your request to a partner who works with local service
+        professionals. Using that is entirely your choice, and nothing on this site requires it. Before you
+        agree we name the partner who will receive your request, and we ask only for what that partner
+        needs.
+      </p>
+      <p>
+        CostAnswer is paid a referral fee when a request is passed on. That fee does not change what you
+        pay and does not affect any calculation, range, source, or estimate on this site.
+      </p>
+      <p>
+        CostAnswer is not a contractor, a broker, or an agent for any contractor. We do not inspect,
+        license-check, vet, endorse, or supervise any professional, and we do not say that we do. Any
+        agreement you reach is between you and that professional. Their price, their work, their
+        licensing, their insurance, and their conduct are theirs, not ours.
+      </p>
+      <p>
+        An estimate produced by a CostAnswer calculator is our own modelled figure. It is not a quote,
+        not an offer, and not a promise about what anyone will charge. A professional may price the same
+        job differently for good reasons, and a difference between the two is not evidence of anything
+        by itself.
+      </p>
+      <p>
+        Requesting estimates does not commit you to hiring anyone. How your details are handled, how long
+        they are kept, and how to have them removed are set out in the privacy policy, and how CostAnswer
+        is compensated is set out on the disclosure page.
+      </p>
+
       <p>
         Third-party ads, if enabled, are not CostAnswer content. Their terms and privacy notices apply to the
         network that serves them. We do not warrant those ads.

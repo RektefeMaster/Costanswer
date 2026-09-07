@@ -17,7 +17,7 @@ export function InfoPage({
   intro: string;
   effective?: string;
   contents?: Array<{ id: string; label: string }>;
-  currentPolicy?: '/terms' | '/privacy' | '/contact' | '/faq' | '/about';
+  currentPolicy?: '/terms' | '/privacy' | '/disclosure' | '/contact' | '/faq' | '/about';
   children: ReactNode;
 }) {
   const documentLayout = contents !== undefined;

@@ -17,7 +17,9 @@ export default defineConfig({
     launchOptions: executablePath ? { executablePath } : undefined,
   },
   webServer: {
-    command: 'PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH" npm run dev',
+    // No absolute local path: CI provides its own Node, and hard-coding one
+    // developer's nvm directory is why this suite could never run there.
+    command: 'npm run dev',
     url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

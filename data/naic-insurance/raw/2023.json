@@ -1,0 +1,2211 @@
+{
+  "schemaVersion": "naic-insurance-recorded-v1",
+  "observationPeriod": "2023",
+  "fetchedAt": "2026-09-05T12:15:17.761Z",
+  "sources": {
+    "homeowners": {
+      "sourceUrl": "https://content.naic.org/sites/default/files/publication-hmr-zu-homeowners-report.pdf",
+      "title": "Dwelling Fire, Homeowners Owner-Occupied, and Homeowners Tenant and Condominium/Cooperative Unit Owners Insurance: Data for 2023",
+      "observationPeriod": "2023",
+      "publicationLabel": "July 2026",
+      "publishedAt": null,
+      "publicationPeriod": "2026-07",
+      "publicationPrecision": "month",
+      "pdfSha256": "b157866e6656e17041416665557867f4effe77b7b124656a747d2833ea9f4739",
+      "tables": [
+        "Table 4: HO-3 total average by state and countrywide",
+        "Table 5: HO-4 total average by state and countrywide"
+      ]
+    },
+    "auto": {
+      "sourceUrl": "https://content.naic.org/sites/default/files/publication-aut-pb-auto-insurance-database.pdf",
+      "title": "2022/2023 Auto Insurance Database Report",
+      "observationPeriod": "2023",
+      "publicationLabel": "February 13, 2026",
+      "publishedAt": "2026-02-13T00:00:00.000Z",
+      "publicationPeriod": "2026-02-13",
+      "publicationPrecision": "day",
+      "pdfSha256": "34759655ce8e5387b48d523ebab89f9cd8f29d3f67c6d391838398b7d2659b78",
+      "tables": [
+        "Table 1C: Liability average premium",
+        "Table 2C: Collision average premium",
+        "Table 3C: Comprehensive average premium",
+        "Table 4: Average expenditure",
+        "Table 5: Combined average premium"
+      ]
+    }
+  },
+  "homeowners": [
+    {
+      "geography": "Countrywide",
+      "pdfPage": 34,
+      "printedPage": 31,
+      "writtenPremium": 97559502869,
+      "writtenHouseYears": 56164751.3,
+      "annualPremium": 1737
+    },
+    {
+      "geography": "Alabama",
+      "pdfPage": 36,
+      "printedPage": 33,
+      "writtenPremium": 1874181529,
+      "writtenHouseYears": 983091.4,
+      "annualPremium": 1906
+    },
+    {
+      "geography": "Alaska",
+      "pdfPage": 38,
+      "printedPage": 35,
+      "writtenPremium": 184432093,
+      "writtenHouseYears": 151711.6,
+      "annualPremium": 1216
+    },
+    {
+      "geography": "Arizona",
+      "pdfPage": 40,
+      "printedPage": 37,
+      "writtenPremium": 1760264698,
+      "writtenHouseYears": 1474848.8,
+      "annualPremium": 1194
+    },
+    {
+      "geography": "Arkansas",
+      "pdfPage": 42,
+      "printedPage": 39,
+      "writtenPremium": 859484952,
+      "writtenHouseYears": 459589,
+      "annualPremium": 1870
+    },
+    {
+      "geography": "California",
+      "pdfPage": 44,
+      "printedPage": 41,
+      "writtenPremium": 8652528350,
+      "writtenHouseYears": 5227903.4,
+      "annualPremium": 1655
+    },
+    {
+      "geography": "Colorado",
+      "pdfPage": 46,
+      "printedPage": 43,
+      "writtenPremium": 3140038597,
+      "writtenHouseYears": 1260123.9,
+      "annualPremium": 2492
+    },
+    {
+      "geography": "Connecticut",
+      "pdfPage": 48,
+      "printedPage": 45,
+      "writtenPremium": 1329982867,
+      "writtenHouseYears": 653255.3,
+      "annualPremium": 2036
+    },
+    {
+      "geography": "Delaware",
+      "pdfPage": 50,
+      "printedPage": 47,
+      "writtenPremium": 306909020,
+      "writtenHouseYears": 256605.3,
+      "annualPremium": 1196
+    },
+    {
+      "geography": "District of Columbia",
+      "pdfPage": 52,
+      "printedPage": 49,
+      "writtenPremium": 122336092,
+      "writtenHouseYears": 79202.5,
+      "annualPremium": 1545
+    },
+    {
+      "geography": "Florida",
+      "pdfPage": 54,
+      "printedPage": 51,
+      "writtenPremium": 10402414497,
+      "writtenHouseYears": 3743014,
+      "annualPremium": 2779
+    },
+    {
+      "geography": "Georgia",
+      "pdfPage": 56,
+      "printedPage": 53,
+      "writtenPremium": 3474434766,
+      "writtenHouseYears": 1900180.4,
+      "annualPremium": 1828
+    },
+    {
+      "geography": "Hawaii",
+      "pdfPage": 58,
+      "printedPage": 55,
+      "writtenPremium": 330554191,
+      "writtenHouseYears": 213397.9,
+      "annualPremium": 1549
+    },
+    {
+      "geography": "Idaho",
+      "pdfPage": 60,
+      "printedPage": 57,
+      "writtenPremium": 379131885,
+      "writtenHouseYears": 333978.3,
+      "annualPremium": 1135
+    },
+    {
+      "geography": "Illinois",
+      "pdfPage": 62,
+      "printedPage": 59,
+      "writtenPremium": 3155916330,
+      "writtenHouseYears": 2132797.8,
+      "annualPremium": 1480
+    },
+    {
+      "geography": "Indiana",
+      "pdfPage": 64,
+      "printedPage": 61,
+      "writtenPremium": 1718205285,
+      "writtenHouseYears": 1365138.7,
+      "annualPremium": 1259
+    },
+    {
+      "geography": "Iowa",
+      "pdfPage": 66,
+      "printedPage": 63,
+      "writtenPremium": 860085384,
+      "writtenHouseYears": 640972.3,
+      "annualPremium": 1342
+    },
+    {
+      "geography": "Kansas",
+      "pdfPage": 68,
+      "printedPage": 65,
+      "writtenPremium": 1070644224,
+      "writtenHouseYears": 617687.8,
+      "annualPremium": 1733
+    },
+    {
+      "geography": "Kentucky",
+      "pdfPage": 70,
+      "printedPage": 67,
+      "writtenPremium": 1181147857,
+      "writtenHouseYears": 774282.6,
+      "annualPremium": 1525
+    },
+    {
+      "geography": "Louisiana",
+      "pdfPage": 72,
+      "printedPage": 69,
+      "writtenPremium": 2182256688,
+      "writtenHouseYears": 720868.3,
+      "annualPremium": 3027
+    },
+    {
+      "geography": "Maine",
+      "pdfPage": 74,
+      "printedPage": 71,
+      "writtenPremium": 394200997,
+      "writtenHouseYears": 342748.3,
+      "annualPremium": 1150
+    },
+    {
+      "geography": "Maryland",
+      "pdfPage": 76,
+      "printedPage": 73,
+      "writtenPremium": 1870129097,
+      "writtenHouseYears": 1184758.8,
+      "annualPremium": 1578
+    },
+    {
+      "geography": "Massachusetts",
+      "pdfPage": 78,
+      "printedPage": 75,
+      "writtenPremium": 2733239944,
+      "writtenHouseYears": 1280537.2,
+      "annualPremium": 2134
+    },
+    {
+      "geography": "Michigan",
+      "pdfPage": 80,
+      "printedPage": 77,
+      "writtenPremium": 2592998716,
+      "writtenHouseYears": 2335550.8,
+      "annualPremium": 1110
+    },
+    {
+      "geography": "Minnesota",
+      "pdfPage": 82,
+      "printedPage": 79,
+      "writtenPremium": 2289884623,
+      "writtenHouseYears": 1152131.6,
+      "annualPremium": 1988
+    },
+    {
+      "geography": "Mississippi",
+      "pdfPage": 84,
+      "printedPage": 81,
+      "writtenPremium": 898253059,
+      "writtenHouseYears": 442671.2,
+      "annualPremium": 2029
+    },
+    {
+      "geography": "Missouri",
+      "pdfPage": 86,
+      "printedPage": 83,
+      "writtenPremium": 2073206155,
+      "writtenHouseYears": 1304378.2,
+      "annualPremium": 1589
+    },
+    {
+      "geography": "Montana",
+      "pdfPage": 88,
+      "printedPage": 85,
+      "writtenPremium": 366281885,
+      "writtenHouseYears": 207134.7,
+      "annualPremium": 1768
+    },
+    {
+      "geography": "Nebraska",
+      "pdfPage": 90,
+      "printedPage": 87,
+      "writtenPremium": 879883239,
+      "writtenHouseYears": 410827.3,
+      "annualPremium": 2142
+    },
+    {
+      "geography": "Nevada",
+      "pdfPage": 92,
+      "printedPage": 89,
+      "writtenPremium": 569525269,
+      "writtenHouseYears": 562405.2,
+      "annualPremium": 1013
+    },
+    {
+      "geography": "New Hampshire",
+      "pdfPage": 94,
+      "printedPage": 91,
+      "writtenPremium": 392736737,
+      "writtenHouseYears": 302069.3,
+      "annualPremium": 1300
+    },
+    {
+      "geography": "New Jersey",
+      "pdfPage": 96,
+      "printedPage": 93,
+      "writtenPremium": 2315072326,
+      "writtenHouseYears": 1492295.8,
+      "annualPremium": 1551
+    },
+    {
+      "geography": "New Mexico",
+      "pdfPage": 98,
+      "printedPage": 95,
+      "writtenPremium": 520749965,
+      "writtenHouseYears": 349489.2,
+      "annualPremium": 1490
+    },
+    {
+      "geography": "New York",
+      "pdfPage": 100,
+      "printedPage": 97,
+      "writtenPremium": 3978003119,
+      "writtenHouseYears": 2209137.8,
+      "annualPremium": 1801
+    },
+    {
+      "geography": "North Carolina",
+      "pdfPage": 102,
+      "printedPage": 99,
+      "writtenPremium": 3778565035,
+      "writtenHouseYears": 2040734,
+      "annualPremium": 1852
+    },
+    {
+      "geography": "North Dakota",
+      "pdfPage": 104,
+      "printedPage": 101,
+      "writtenPremium": 177315484,
+      "writtenHouseYears": 125368.6,
+      "annualPremium": 1414
+    },
+    {
+      "geography": "Ohio",
+      "pdfPage": 106,
+      "printedPage": 103,
+      "writtenPremium": 2553315347,
+      "writtenHouseYears": 2288747.8,
+      "annualPremium": 1116
+    },
+    {
+      "geography": "Oklahoma",
+      "pdfPage": 108,
+      "printedPage": 105,
+      "writtenPremium": 1563394258,
+      "writtenHouseYears": 628892.8,
+      "annualPremium": 2486
+    },
+    {
+      "geography": "Oregon",
+      "pdfPage": 110,
+      "printedPage": 107,
+      "writtenPremium": 722219021,
+      "writtenHouseYears": 720317.7,
+      "annualPremium": 1003
+    },
+    {
+      "geography": "Pennsylvania",
+      "pdfPage": 112,
+      "printedPage": 109,
+      "writtenPremium": 2845454668,
+      "writtenHouseYears": 2338688.6,
+      "annualPremium": 1217
+    },
+    {
+      "geography": "Rhode Island",
+      "pdfPage": 114,
+      "printedPage": 111,
+      "writtenPremium": 438018811,
+      "writtenHouseYears": 182838.4,
+      "annualPremium": 2396
+    },
+    {
+      "geography": "South Carolina",
+      "pdfPage": 116,
+      "printedPage": 113,
+      "writtenPremium": 1879876057,
+      "writtenHouseYears": 1072109.3,
+      "annualPremium": 1753
+    },
+    {
+      "geography": "South Dakota",
+      "pdfPage": 118,
+      "printedPage": 115,
+      "writtenPremium": 295705472,
+      "writtenHouseYears": 183176.3,
+      "annualPremium": 1614
+    },
+    {
+      "geography": "Tennessee",
+      "pdfPage": 120,
+      "printedPage": 117,
+      "writtenPremium": 2188777438,
+      "writtenHouseYears": 1327530.3,
+      "annualPremium": 1649
+    },
+    {
+      "geography": "Texas",
+      "pdfPage": 122,
+      "printedPage": 119,
+      "writtenPremium": 9572766392,
+      "writtenHouseYears": 3342767,
+      "annualPremium": 2864
+    },
+    {
+      "geography": "Utah",
+      "pdfPage": 124,
+      "printedPage": 121,
+      "writtenPremium": 585349037,
+      "writtenHouseYears": 528833.9,
+      "annualPremium": 1107
+    },
+    {
+      "geography": "Vermont",
+      "pdfPage": 126,
+      "printedPage": 123,
+      "writtenPremium": 194061102,
+      "writtenHouseYears": 159691.1,
+      "annualPremium": 1215
+    },
+    {
+      "geography": "Virginia",
+      "pdfPage": 128,
+      "printedPage": 125,
+      "writtenPremium": 2547019708,
+      "writtenHouseYears": 1656961.1,
+      "annualPremium": 1537
+    },
+    {
+      "geography": "Washington",
+      "pdfPage": 130,
+      "printedPage": 127,
+      "writtenPremium": 1655357026,
+      "writtenHouseYears": 1344132.3,
+      "annualPremium": 1232
+    },
+    {
+      "geography": "West Virginia",
+      "pdfPage": 132,
+      "printedPage": 129,
+      "writtenPremium": 325347897,
+      "writtenHouseYears": 275848.8,
+      "annualPremium": 1179
+    },
+    {
+      "geography": "Wisconsin",
+      "pdfPage": 134,
+      "printedPage": 131,
+      "writtenPremium": 1175615081,
+      "writtenHouseYears": 1274175.6,
+      "annualPremium": 923
+    },
+    {
+      "geography": "Wyoming",
+      "pdfPage": 136,
+      "printedPage": 133,
+      "writtenPremium": 202230599,
+      "writtenHouseYears": 109153.5,
+      "annualPremium": 1853
+    }
+  ],
+  "renters": [
+    {
+      "geography": "Countrywide",
+      "pdfPage": 139,
+      "printedPage": 136,
+      "writtenPremium": 3855915324,
+      "writtenHouseYears": 22301933.3,
+      "annualPremium": 173
+    },
+    {
+      "geography": "Alabama",
+      "pdfPage": 140,
+      "printedPage": 137,
+      "writtenPremium": 48511948,
+      "writtenHouseYears": 221095.2,
+      "annualPremium": 219
+    },
+    {
+      "geography": "Alaska",
+      "pdfPage": 141,
+      "printedPage": 138,
+      "writtenPremium": 7690748,
+      "writtenHouseYears": 39933.3,
+      "annualPremium": 193
+    },
+    {
+      "geography": "Arizona",
+      "pdfPage": 142,
+      "printedPage": 139,
+      "writtenPremium": 85433614,
+      "writtenHouseYears": 513541.4,
+      "annualPremium": 166
+    },
+    {
+      "geography": "Arkansas",
+      "pdfPage": 143,
+      "printedPage": 140,
+      "writtenPremium": 24125000,
+      "writtenHouseYears": 115933.3,
+      "annualPremium": 208
+    },
+    {
+      "geography": "California",
+      "pdfPage": 144,
+      "printedPage": 141,
+      "writtenPremium": 512295146,
+      "writtenHouseYears": 2994585.4,
+      "annualPremium": 171
+    },
+    {
+      "geography": "Colorado",
+      "pdfPage": 145,
+      "printedPage": 142,
+      "writtenPremium": 92037146,
+      "writtenHouseYears": 555939.3,
+      "annualPremium": 166
+    },
+    {
+      "geography": "Connecticut",
+      "pdfPage": 146,
+      "printedPage": 143,
+      "writtenPremium": 41228649,
+      "writtenHouseYears": 232372.2,
+      "annualPremium": 177
+    },
+    {
+      "geography": "Delaware",
+      "pdfPage": 147,
+      "printedPage": 144,
+      "writtenPremium": 10849056,
+      "writtenHouseYears": 74538.7,
+      "annualPremium": 146
+    },
+    {
+      "geography": "District of Columbia",
+      "pdfPage": 148,
+      "printedPage": 145,
+      "writtenPremium": 18642783,
+      "writtenHouseYears": 120378.4,
+      "annualPremium": 155
+    },
+    {
+      "geography": "Florida",
+      "pdfPage": 149,
+      "printedPage": 146,
+      "writtenPremium": 211929209,
+      "writtenHouseYears": 1140303.5,
+      "annualPremium": 186
+    },
+    {
+      "geography": "Georgia",
+      "pdfPage": 150,
+      "printedPage": 147,
+      "writtenPremium": 153937642,
+      "writtenHouseYears": 747276.1,
+      "annualPremium": 206
+    },
+    {
+      "geography": "Hawaii",
+      "pdfPage": 151,
+      "printedPage": 148,
+      "writtenPremium": 15721348,
+      "writtenHouseYears": 88185.9,
+      "annualPremium": 178
+    },
+    {
+      "geography": "Idaho",
+      "pdfPage": 152,
+      "printedPage": 149,
+      "writtenPremium": 18120520,
+      "writtenHouseYears": 119440.3,
+      "annualPremium": 152
+    },
+    {
+      "geography": "Illinois",
+      "pdfPage": 153,
+      "printedPage": 150,
+      "writtenPremium": 106691043,
+      "writtenHouseYears": 686696.8,
+      "annualPremium": 155
+    },
+    {
+      "geography": "Indiana",
+      "pdfPage": 154,
+      "printedPage": 151,
+      "writtenPremium": 65042479,
+      "writtenHouseYears": 388826.8,
+      "annualPremium": 167
+    },
+    {
+      "geography": "Iowa",
+      "pdfPage": 155,
+      "printedPage": 152,
+      "writtenPremium": 28445327,
+      "writtenHouseYears": 200819.3,
+      "annualPremium": 142
+    },
+    {
+      "geography": "Kansas",
+      "pdfPage": 156,
+      "printedPage": 153,
+      "writtenPremium": 35925940,
+      "writtenHouseYears": 220699.7,
+      "annualPremium": 163
+    },
+    {
+      "geography": "Kentucky",
+      "pdfPage": 157,
+      "printedPage": 154,
+      "writtenPremium": 44382472,
+      "writtenHouseYears": 277122.5,
+      "annualPremium": 160
+    },
+    {
+      "geography": "Louisiana",
+      "pdfPage": 158,
+      "printedPage": 155,
+      "writtenPremium": 40458095,
+      "writtenHouseYears": 161964.5,
+      "annualPremium": 250
+    },
+    {
+      "geography": "Maine",
+      "pdfPage": 159,
+      "printedPage": 156,
+      "writtenPremium": 10939112,
+      "writtenHouseYears": 74844,
+      "annualPremium": 146
+    },
+    {
+      "geography": "Maryland",
+      "pdfPage": 160,
+      "printedPage": 157,
+      "writtenPremium": 84361915,
+      "writtenHouseYears": 519838.2,
+      "annualPremium": 162
+    },
+    {
+      "geography": "Massachusetts",
+      "pdfPage": 161,
+      "printedPage": 158,
+      "writtenPremium": 81442563,
+      "writtenHouseYears": 452864.6,
+      "annualPremium": 180
+    },
+    {
+      "geography": "Michigan",
+      "pdfPage": 162,
+      "printedPage": 159,
+      "writtenPremium": 109535480,
+      "writtenHouseYears": 616684.5,
+      "annualPremium": 178
+    },
+    {
+      "geography": "Minnesota",
+      "pdfPage": 163,
+      "printedPage": 160,
+      "writtenPremium": 64683891,
+      "writtenHouseYears": 473452.6,
+      "annualPremium": 137
+    },
+    {
+      "geography": "Mississippi",
+      "pdfPage": 164,
+      "printedPage": 161,
+      "writtenPremium": 20746031,
+      "writtenHouseYears": 78889.8,
+      "annualPremium": 263
+    },
+    {
+      "geography": "Missouri",
+      "pdfPage": 165,
+      "printedPage": 162,
+      "writtenPremium": 74432159,
+      "writtenHouseYears": 430413.7,
+      "annualPremium": 173
+    },
+    {
+      "geography": "Montana",
+      "pdfPage": 166,
+      "printedPage": 163,
+      "writtenPremium": 13358294,
+      "writtenHouseYears": 82196.3,
+      "annualPremium": 163
+    },
+    {
+      "geography": "Nebraska",
+      "pdfPage": 167,
+      "printedPage": 164,
+      "writtenPremium": 23681924,
+      "writtenHouseYears": 162143.3,
+      "annualPremium": 146
+    },
+    {
+      "geography": "Nevada",
+      "pdfPage": 168,
+      "printedPage": 165,
+      "writtenPremium": 47120643,
+      "writtenHouseYears": 271388.5,
+      "annualPremium": 174
+    },
+    {
+      "geography": "New Hampshire",
+      "pdfPage": 169,
+      "printedPage": 166,
+      "writtenPremium": 13335212,
+      "writtenHouseYears": 87383.2,
+      "annualPremium": 153
+    },
+    {
+      "geography": "New Jersey",
+      "pdfPage": 170,
+      "printedPage": 167,
+      "writtenPremium": 83439321,
+      "writtenHouseYears": 554176.8,
+      "annualPremium": 151
+    },
+    {
+      "geography": "New Mexico",
+      "pdfPage": 171,
+      "printedPage": 168,
+      "writtenPremium": 15858249,
+      "writtenHouseYears": 89602.9,
+      "annualPremium": 177
+    },
+    {
+      "geography": "New York",
+      "pdfPage": 172,
+      "printedPage": 169,
+      "writtenPremium": 198860534,
+      "writtenHouseYears": 1132785.3,
+      "annualPremium": 176
+    },
+    {
+      "geography": "North Carolina",
+      "pdfPage": 173,
+      "printedPage": 170,
+      "writtenPremium": 108763393,
+      "writtenHouseYears": 625767.3,
+      "annualPremium": 174
+    },
+    {
+      "geography": "North Dakota",
+      "pdfPage": 174,
+      "printedPage": 171,
+      "writtenPremium": 10036375,
+      "writtenHouseYears": 79173.3,
+      "annualPremium": 127
+    },
+    {
+      "geography": "Ohio",
+      "pdfPage": 175,
+      "printedPage": 172,
+      "writtenPremium": 123006681,
+      "writtenHouseYears": 756037.5,
+      "annualPremium": 163
+    },
+    {
+      "geography": "Oklahoma",
+      "pdfPage": 176,
+      "printedPage": 173,
+      "writtenPremium": 40047072,
+      "writtenHouseYears": 182087.2,
+      "annualPremium": 220
+    },
+    {
+      "geography": "Oregon",
+      "pdfPage": 177,
+      "printedPage": 174,
+      "writtenPremium": 63852482,
+      "writtenHouseYears": 399820,
+      "annualPremium": 160
+    },
+    {
+      "geography": "Pennsylvania",
+      "pdfPage": 178,
+      "printedPage": 175,
+      "writtenPremium": 136855734,
+      "writtenHouseYears": 894456.8,
+      "annualPremium": 153
+    },
+    {
+      "geography": "Rhode Island",
+      "pdfPage": 179,
+      "printedPage": 176,
+      "writtenPremium": 10103490,
+      "writtenHouseYears": 55050.6,
+      "annualPremium": 184
+    },
+    {
+      "geography": "South Carolina",
+      "pdfPage": 180,
+      "printedPage": 177,
+      "writtenPremium": 55862202,
+      "writtenHouseYears": 299068.8,
+      "annualPremium": 187
+    },
+    {
+      "geography": "South Dakota",
+      "pdfPage": 181,
+      "printedPage": 178,
+      "writtenPremium": 9186958,
+      "writtenHouseYears": 73354.1,
+      "annualPremium": 125
+    },
+    {
+      "geography": "Tennessee",
+      "pdfPage": 182,
+      "printedPage": 179,
+      "writtenPremium": 81000182,
+      "writtenHouseYears": 428684.4,
+      "annualPremium": 189
+    },
+    {
+      "geography": "Texas",
+      "pdfPage": 183,
+      "printedPage": 180,
+      "writtenPremium": 457892592,
+      "writtenHouseYears": 2274574.8,
+      "annualPremium": 201
+    },
+    {
+      "geography": "Utah",
+      "pdfPage": 184,
+      "printedPage": 181,
+      "writtenPremium": 32283079,
+      "writtenHouseYears": 217866.6,
+      "annualPremium": 148
+    },
+    {
+      "geography": "Vermont",
+      "pdfPage": 185,
+      "printedPage": 182,
+      "writtenPremium": 5723926,
+      "writtenHouseYears": 36823.9,
+      "annualPremium": 155
+    },
+    {
+      "geography": "Virginia",
+      "pdfPage": 186,
+      "printedPage": 183,
+      "writtenPremium": 113055891,
+      "writtenHouseYears": 717775.2,
+      "annualPremium": 158
+    },
+    {
+      "geography": "Washington",
+      "pdfPage": 187,
+      "printedPage": 184,
+      "writtenPremium": 127277470,
+      "writtenHouseYears": 769175.3,
+      "annualPremium": 165
+    },
+    {
+      "geography": "West Virginia",
+      "pdfPage": 188,
+      "printedPage": 185,
+      "writtenPremium": 10591724,
+      "writtenHouseYears": 61462.8,
+      "annualPremium": 172
+    },
+    {
+      "geography": "Wisconsin",
+      "pdfPage": 189,
+      "printedPage": 186,
+      "writtenPremium": 62835454,
+      "writtenHouseYears": 474095.8,
+      "annualPremium": 133
+    },
+    {
+      "geography": "Wyoming",
+      "pdfPage": 190,
+      "printedPage": 187,
+      "writtenPremium": 4277126,
+      "writtenHouseYears": 30343.3,
+      "annualPremium": 141
+    }
+  ],
+  "auto": {
+    "expenditure": {
+      "table": "4",
+      "pdfPage": 29,
+      "printedPage": 24,
+      "rows": [
+        {
+          "geography": "Alabama",
+          "annualValue": 1081.24,
+          "previousAnnualValue": 966.1
+        },
+        {
+          "geography": "Alaska",
+          "annualValue": 1112.96,
+          "previousAnnualValue": 1013.94
+        },
+        {
+          "geography": "Arizona",
+          "annualValue": 1344.24,
+          "previousAnnualValue": 1154.5
+        },
+        {
+          "geography": "Arkansas",
+          "annualValue": 1050.52,
+          "previousAnnualValue": 926.47
+        },
+        {
+          "geography": "California",
+          "annualValue": 1225.02,
+          "previousAnnualValue": 1086.6
+        },
+        {
+          "geography": "Colorado",
+          "annualValue": 1452.82,
+          "previousAnnualValue": 1274.6
+        },
+        {
+          "geography": "Connecticut",
+          "annualValue": 1393.9,
+          "previousAnnualValue": 1279.23
+        },
+        {
+          "geography": "Delaware",
+          "annualValue": 1462.03,
+          "previousAnnualValue": 1296.14
+        },
+        {
+          "geography": "District of Columbia",
+          "annualValue": 1676.99,
+          "previousAnnualValue": 1501.41
+        },
+        {
+          "geography": "Florida",
+          "annualValue": 1864.63,
+          "previousAnnualValue": 1567.88
+        },
+        {
+          "geography": "Georgia",
+          "annualValue": 1555.1,
+          "previousAnnualValue": 1345.38
+        },
+        {
+          "geography": "Hawaii",
+          "annualValue": 888.07,
+          "previousAnnualValue": 843.84
+        },
+        {
+          "geography": "Idaho",
+          "annualValue": 863.91,
+          "previousAnnualValue": 772.38
+        },
+        {
+          "geography": "Illinois",
+          "annualValue": 1153.11,
+          "previousAnnualValue": 993.88
+        },
+        {
+          "geography": "Indiana",
+          "annualValue": 926.41,
+          "previousAnnualValue": 814.11
+        },
+        {
+          "geography": "Iowa",
+          "annualValue": 872.61,
+          "previousAnnualValue": 776.66
+        },
+        {
+          "geography": "Kansas",
+          "annualValue": 972.57,
+          "previousAnnualValue": 868.11
+        },
+        {
+          "geography": "Kentucky",
+          "annualValue": 1045.66,
+          "previousAnnualValue": 937.84
+        },
+        {
+          "geography": "Louisiana",
+          "annualValue": 1754.03,
+          "previousAnnualValue": 1557.99
+        },
+        {
+          "geography": "Maine",
+          "annualValue": 856.28,
+          "previousAnnualValue": 766.89
+        },
+        {
+          "geography": "Maryland",
+          "annualValue": 1476.78,
+          "previousAnnualValue": 1281.25
+        },
+        {
+          "geography": "Massachusetts",
+          "annualValue": 1326.46,
+          "previousAnnualValue": 1191.02
+        },
+        {
+          "geography": "Michigan",
+          "annualValue": 1444.01,
+          "previousAnnualValue": 1339.53
+        },
+        {
+          "geography": "Minnesota",
+          "annualValue": 1103.05,
+          "previousAnnualValue": 961.76
+        },
+        {
+          "geography": "Mississippi",
+          "annualValue": 1199.52,
+          "previousAnnualValue": 1060.9
+        },
+        {
+          "geography": "Missouri",
+          "annualValue": 1154.78,
+          "previousAnnualValue": 1003.6
+        },
+        {
+          "geography": "Montana",
+          "annualValue": 975.02,
+          "previousAnnualValue": 884.92
+        },
+        {
+          "geography": "Nebraska",
+          "annualValue": 981.06,
+          "previousAnnualValue": 872.22
+        },
+        {
+          "geography": "Nevada",
+          "annualValue": 1461.54,
+          "previousAnnualValue": 1291.11
+        },
+        {
+          "geography": "New Hampshire",
+          "annualValue": 986.84,
+          "previousAnnualValue": 880.82
+        },
+        {
+          "geography": "New Jersey",
+          "annualValue": 1573.21,
+          "previousAnnualValue": 1411.47
+        },
+        {
+          "geography": "New Mexico",
+          "annualValue": 1081.61,
+          "previousAnnualValue": 957.5
+        },
+        {
+          "geography": "New York",
+          "annualValue": 1752.55,
+          "previousAnnualValue": 1548.26
+        },
+        {
+          "geography": "North Carolina",
+          "annualValue": 925.08,
+          "previousAnnualValue": 839.28
+        },
+        {
+          "geography": "North Dakota",
+          "annualValue": 807.77,
+          "previousAnnualValue": 729.28
+        },
+        {
+          "geography": "Ohio",
+          "annualValue": 947.22,
+          "previousAnnualValue": 835.23
+        },
+        {
+          "geography": "Oklahoma",
+          "annualValue": 1083.97,
+          "previousAnnualValue": 958.51
+        },
+        {
+          "geography": "Oregon",
+          "annualValue": 1170.31,
+          "previousAnnualValue": 1005.65
+        },
+        {
+          "geography": "Pennsylvania",
+          "annualValue": 1154.57,
+          "previousAnnualValue": 1017.59
+        },
+        {
+          "geography": "Rhode Island",
+          "annualValue": 1539.65,
+          "previousAnnualValue": 1422.82
+        },
+        {
+          "geography": "South Carolina",
+          "annualValue": 1367.39,
+          "previousAnnualValue": 1205
+        },
+        {
+          "geography": "South Dakota",
+          "annualValue": 936.84,
+          "previousAnnualValue": 823.25
+        },
+        {
+          "geography": "Tennessee",
+          "annualValue": 1049.8,
+          "previousAnnualValue": 924.1
+        },
+        {
+          "geography": "Texas",
+          "annualValue": 1428.94,
+          "previousAnnualValue": 1232.79
+        },
+        {
+          "geography": "Utah",
+          "annualValue": 1168.93,
+          "previousAnnualValue": 1024.11
+        },
+        {
+          "geography": "Vermont",
+          "annualValue": 893.16,
+          "previousAnnualValue": 792.96
+        },
+        {
+          "geography": "Virginia",
+          "annualValue": 1114.46,
+          "previousAnnualValue": 949.76
+        },
+        {
+          "geography": "Washington",
+          "annualValue": 1152.5,
+          "previousAnnualValue": 1048.33
+        },
+        {
+          "geography": "West Virginia",
+          "annualValue": 1062.98,
+          "previousAnnualValue": 952.67
+        },
+        {
+          "geography": "Wisconsin",
+          "annualValue": 922.41,
+          "previousAnnualValue": 810.42
+        },
+        {
+          "geography": "Wyoming",
+          "annualValue": 948.37,
+          "previousAnnualValue": 848.02
+        },
+        {
+          "geography": "Countrywide",
+          "annualValue": 1281.92,
+          "previousAnnualValue": 1124.57
+        }
+      ]
+    },
+    "liability": {
+      "table": "1C",
+      "pdfPage": 22,
+      "printedPage": 17,
+      "rows": [
+        {
+          "geography": "Alabama",
+          "annualValue": 575.51,
+          "previousAnnualValue": 529.38
+        },
+        {
+          "geography": "Alaska",
+          "annualValue": 624.01,
+          "previousAnnualValue": 578.09
+        },
+        {
+          "geography": "Arizona",
+          "annualValue": 792.89,
+          "previousAnnualValue": 690.75
+        },
+        {
+          "geography": "Arkansas",
+          "annualValue": 538.39,
+          "previousAnnualValue": 482.64
+        },
+        {
+          "geography": "California",
+          "annualValue": 660.84,
+          "previousAnnualValue": 613.67
+        },
+        {
+          "geography": "Colorado",
+          "annualValue": 781.9,
+          "previousAnnualValue": 713.31
+        },
+        {
+          "geography": "Connecticut",
+          "annualValue": 853.74,
+          "previousAnnualValue": 796.71
+        },
+        {
+          "geography": "Delaware",
+          "annualValue": 962.42,
+          "previousAnnualValue": 867.74
+        },
+        {
+          "geography": "District of Columbia",
+          "annualValue": 890.7,
+          "previousAnnualValue": 805.63
+        },
+        {
+          "geography": "Florida",
+          "annualValue": 1294.57,
+          "previousAnnualValue": 1112.13
+        },
+        {
+          "geography": "Georgia",
+          "annualValue": 1046.3,
+          "previousAnnualValue": 895.77
+        },
+        {
+          "geography": "Hawaii",
+          "annualValue": 463.89,
+          "previousAnnualValue": 451.13
+        },
+        {
+          "geography": "Idaho",
+          "annualValue": 481.74,
+          "previousAnnualValue": 439.54
+        },
+        {
+          "geography": "Illinois",
+          "annualValue": 597.91,
+          "previousAnnualValue": 524.55
+        },
+        {
+          "geography": "Indiana",
+          "annualValue": 485.37,
+          "previousAnnualValue": 443.29
+        },
+        {
+          "geography": "Iowa",
+          "annualValue": 386.85,
+          "previousAnnualValue": 355.88
+        },
+        {
+          "geography": "Kansas",
+          "annualValue": 483.45,
+          "previousAnnualValue": 437.51
+        },
+        {
+          "geography": "Kentucky",
+          "annualValue": 632.75,
+          "previousAnnualValue": 591.01
+        },
+        {
+          "geography": "Louisiana",
+          "annualValue": 1055.1,
+          "previousAnnualValue": 990.81
+        },
+        {
+          "geography": "Maine",
+          "annualValue": 424.93,
+          "previousAnnualValue": 394.57
+        },
+        {
+          "geography": "Maryland",
+          "annualValue": 868.68,
+          "previousAnnualValue": 754.62
+        },
+        {
+          "geography": "Massachusetts",
+          "annualValue": 710.19,
+          "previousAnnualValue": 652.97
+        },
+        {
+          "geography": "Michigan",
+          "annualValue": 765.72,
+          "previousAnnualValue": 775.07
+        },
+        {
+          "geography": "Minnesota",
+          "annualValue": 542.43,
+          "previousAnnualValue": 501.77
+        },
+        {
+          "geography": "Mississippi",
+          "annualValue": 636.67,
+          "previousAnnualValue": 574.27
+        },
+        {
+          "geography": "Missouri",
+          "annualValue": 614.25,
+          "previousAnnualValue": 546.62
+        },
+        {
+          "geography": "Montana",
+          "annualValue": 471.84,
+          "previousAnnualValue": 435.44
+        },
+        {
+          "geography": "Nebraska",
+          "annualValue": 483.69,
+          "previousAnnualValue": 433.74
+        },
+        {
+          "geography": "Nevada",
+          "annualValue": 1040.03,
+          "previousAnnualValue": 920.31
+        },
+        {
+          "geography": "New Hampshire",
+          "annualValue": 482.42,
+          "previousAnnualValue": 444.5
+        },
+        {
+          "geography": "New Jersey",
+          "annualValue": 1032.5,
+          "previousAnnualValue": 930.9
+        },
+        {
+          "geography": "New Mexico",
+          "annualValue": 623.83,
+          "previousAnnualValue": 572.01
+        },
+        {
+          "geography": "New York",
+          "annualValue": 1115.97,
+          "previousAnnualValue": 989.2
+        },
+        {
+          "geography": "North Carolina",
+          "annualValue": 447.99,
+          "previousAnnualValue": 418.7
+        },
+        {
+          "geography": "North Dakota",
+          "annualValue": 331.5,
+          "previousAnnualValue": 308.19
+        },
+        {
+          "geography": "Ohio",
+          "annualValue": 485.07,
+          "previousAnnualValue": 445.27
+        },
+        {
+          "geography": "Oklahoma",
+          "annualValue": 565.91,
+          "previousAnnualValue": 506.33
+        },
+        {
+          "geography": "Oregon",
+          "annualValue": 751.17,
+          "previousAnnualValue": 670.07
+        },
+        {
+          "geography": "Pennsylvania",
+          "annualValue": 567.27,
+          "previousAnnualValue": 525.29
+        },
+        {
+          "geography": "Rhode Island",
+          "annualValue": 984.27,
+          "previousAnnualValue": 919.75
+        },
+        {
+          "geography": "South Carolina",
+          "annualValue": 879.4,
+          "previousAnnualValue": 772.57
+        },
+        {
+          "geography": "South Dakota",
+          "annualValue": 378.14,
+          "previousAnnualValue": 342.7
+        },
+        {
+          "geography": "Tennessee",
+          "annualValue": 541.98,
+          "previousAnnualValue": 488.73
+        },
+        {
+          "geography": "Texas",
+          "annualValue": 797.86,
+          "previousAnnualValue": 690.73
+        },
+        {
+          "geography": "Utah",
+          "annualValue": 746.43,
+          "previousAnnualValue": 660.28
+        },
+        {
+          "geography": "Vermont",
+          "annualValue": 381.32,
+          "previousAnnualValue": 353.95
+        },
+        {
+          "geography": "Virginia",
+          "annualValue": 626.63,
+          "previousAnnualValue": 532.57
+        },
+        {
+          "geography": "Washington",
+          "annualValue": 708.06,
+          "previousAnnualValue": 667.97
+        },
+        {
+          "geography": "West Virginia",
+          "annualValue": 523.08,
+          "previousAnnualValue": 492.77
+        },
+        {
+          "geography": "Wisconsin",
+          "annualValue": 446.8,
+          "previousAnnualValue": 411.68
+        },
+        {
+          "geography": "Wyoming",
+          "annualValue": 389.93,
+          "previousAnnualValue": 358.33
+        },
+        {
+          "geography": "Countrywide",
+          "annualValue": 736.65,
+          "previousAnnualValue": 660.6
+        }
+      ]
+    },
+    "collision": {
+      "table": "2C",
+      "pdfPage": 25,
+      "printedPage": 20,
+      "rows": [
+        {
+          "geography": "Alabama",
+          "annualValue": 452.04,
+          "previousAnnualValue": 397.14
+        },
+        {
+          "geography": "Alaska",
+          "annualValue": 458.33,
+          "previousAnnualValue": 415.26
+        },
+        {
+          "geography": "Arizona",
+          "annualValue": 436.44,
+          "previousAnnualValue": 355.62
+        },
+        {
+          "geography": "Arkansas",
+          "annualValue": 466.45,
+          "previousAnnualValue": 391.05
+        },
+        {
+          "geography": "California",
+          "annualValue": 607.06,
+          "previousAnnualValue": 534.43
+        },
+        {
+          "geography": "Colorado",
+          "annualValue": 426.6,
+          "previousAnnualValue": 361.05
+        },
+        {
+          "geography": "Connecticut",
+          "annualValue": 477.53,
+          "previousAnnualValue": 426.85
+        },
+        {
+          "geography": "Delaware",
+          "annualValue": 422.8,
+          "previousAnnualValue": 365.31
+        },
+        {
+          "geography": "District of Columbia",
+          "annualValue": 663.87,
+          "previousAnnualValue": 585.93
+        },
+        {
+          "geography": "Florida",
+          "annualValue": 468.92,
+          "previousAnnualValue": 371.55
+        },
+        {
+          "geography": "Georgia",
+          "annualValue": 473.22,
+          "previousAnnualValue": 419.78
+        },
+        {
+          "geography": "Hawaii",
+          "annualValue": 416.92,
+          "previousAnnualValue": 390.93
+        },
+        {
+          "geography": "Idaho",
+          "annualValue": 324.41,
+          "previousAnnualValue": 283.31
+        },
+        {
+          "geography": "Illinois",
+          "annualValue": 439.9,
+          "previousAnnualValue": 384.29
+        },
+        {
+          "geography": "Indiana",
+          "annualValue": 357.31,
+          "previousAnnualValue": 306.35
+        },
+        {
+          "geography": "Iowa",
+          "annualValue": 312.87,
+          "previousAnnualValue": 278.05
+        },
+        {
+          "geography": "Kansas",
+          "annualValue": 349.16,
+          "previousAnnualValue": 301.65
+        },
+        {
+          "geography": "Kentucky",
+          "annualValue": 357.54,
+          "previousAnnualValue": 304.26
+        },
+        {
+          "geography": "Louisiana",
+          "annualValue": 581.47,
+          "previousAnnualValue": 471.33
+        },
+        {
+          "geography": "Maine",
+          "annualValue": 336.48,
+          "previousAnnualValue": 297.74
+        },
+        {
+          "geography": "Maryland",
+          "annualValue": 513.43,
+          "previousAnnualValue": 450.22
+        },
+        {
+          "geography": "Massachusetts",
+          "annualValue": 519.88,
+          "previousAnnualValue": 445.31
+        },
+        {
+          "geography": "Michigan",
+          "annualValue": 570.16,
+          "previousAnnualValue": 483.39
+        },
+        {
+          "geography": "Minnesota",
+          "annualValue": 360.33,
+          "previousAnnualValue": 305.79
+        },
+        {
+          "geography": "Mississippi",
+          "annualValue": 443.72,
+          "previousAnnualValue": 384.33
+        },
+        {
+          "geography": "Missouri",
+          "annualValue": 400.34,
+          "previousAnnualValue": 344.91
+        },
+        {
+          "geography": "Montana",
+          "annualValue": 346.36,
+          "previousAnnualValue": 310.14
+        },
+        {
+          "geography": "Nebraska",
+          "annualValue": 356.57,
+          "previousAnnualValue": 309
+        },
+        {
+          "geography": "Nevada",
+          "annualValue": 424.33,
+          "previousAnnualValue": 372.14
+        },
+        {
+          "geography": "New Hampshire",
+          "annualValue": 391.38,
+          "previousAnnualValue": 342.46
+        },
+        {
+          "geography": "New Jersey",
+          "annualValue": 490.55,
+          "previousAnnualValue": 441.6
+        },
+        {
+          "geography": "New Mexico",
+          "annualValue": 418.17,
+          "previousAnnualValue": 350.41
+        },
+        {
+          "geography": "New York",
+          "annualValue": 541.06,
+          "previousAnnualValue": 486.05
+        },
+        {
+          "geography": "North Carolina",
+          "annualValue": 440.9,
+          "previousAnnualValue": 385.82
+        },
+        {
+          "geography": "North Dakota",
+          "annualValue": 320.36,
+          "previousAnnualValue": 283.24
+        },
+        {
+          "geography": "Ohio",
+          "annualValue": 363.31,
+          "previousAnnualValue": 316.81
+        },
+        {
+          "geography": "Oklahoma",
+          "annualValue": 420.48,
+          "previousAnnualValue": 367.51
+        },
+        {
+          "geography": "Oregon",
+          "annualValue": 352.06,
+          "previousAnnualValue": 291.89
+        },
+        {
+          "geography": "Pennsylvania",
+          "annualValue": 465.3,
+          "previousAnnualValue": 393.88
+        },
+        {
+          "geography": "Rhode Island",
+          "annualValue": 539.91,
+          "previousAnnualValue": 489.59
+        },
+        {
+          "geography": "South Carolina",
+          "annualValue": 386.48,
+          "previousAnnualValue": 334.2
+        },
+        {
+          "geography": "South Dakota",
+          "annualValue": 306.78,
+          "previousAnnualValue": 272.46
+        },
+        {
+          "geography": "Tennessee",
+          "annualValue": 440.52,
+          "previousAnnualValue": 379.57
+        },
+        {
+          "geography": "Texas",
+          "annualValue": 529.05,
+          "previousAnnualValue": 458.14
+        },
+        {
+          "geography": "Utah",
+          "annualValue": 378.17,
+          "previousAnnualValue": 328.41
+        },
+        {
+          "geography": "Vermont",
+          "annualValue": 385.07,
+          "previousAnnualValue": 339.85
+        },
+        {
+          "geography": "Virginia",
+          "annualValue": 407.01,
+          "previousAnnualValue": 350.78
+        },
+        {
+          "geography": "Washington",
+          "annualValue": 372.69,
+          "previousAnnualValue": 327.22
+        },
+        {
+          "geography": "West Virginia",
+          "annualValue": 402.2,
+          "previousAnnualValue": 354.05
+        },
+        {
+          "geography": "Wisconsin",
+          "annualValue": 314.51,
+          "previousAnnualValue": 272.55
+        },
+        {
+          "geography": "Wyoming",
+          "annualValue": 337.83,
+          "previousAnnualValue": 303.07
+        },
+        {
+          "geography": "Countrywide",
+          "annualValue": 463.71,
+          "previousAnnualValue": 400.59
+        }
+      ]
+    },
+    "comprehensive": {
+      "table": "3C",
+      "pdfPage": 28,
+      "printedPage": 23,
+      "rows": [
+        {
+          "geography": "Alabama",
+          "annualValue": 241.16,
+          "previousAnnualValue": 201.66
+        },
+        {
+          "geography": "Alaska",
+          "annualValue": 180.15,
+          "previousAnnualValue": 161.18
+        },
+        {
+          "geography": "Arizona",
+          "annualValue": 275.26,
+          "previousAnnualValue": 239.47
+        },
+        {
+          "geography": "Arkansas",
+          "annualValue": 291.62,
+          "previousAnnualValue": 259.47
+        },
+        {
+          "geography": "California",
+          "annualValue": 150.04,
+          "previousAnnualValue": 104.31
+        },
+        {
+          "geography": "Colorado",
+          "annualValue": 446.8,
+          "previousAnnualValue": 371.87
+        },
+        {
+          "geography": "Connecticut",
+          "annualValue": 176.94,
+          "previousAnnualValue": 153.83
+        },
+        {
+          "geography": "Delaware",
+          "annualValue": 183.99,
+          "previousAnnualValue": 155.75
+        },
+        {
+          "geography": "District of Columbia",
+          "annualValue": 263.7,
+          "previousAnnualValue": 236.84
+        },
+        {
+          "geography": "Florida",
+          "annualValue": 230.32,
+          "previousAnnualValue": 179.97
+        },
+        {
+          "geography": "Georgia",
+          "annualValue": 226.8,
+          "previousAnnualValue": 198.87
+        },
+        {
+          "geography": "Hawaii",
+          "annualValue": 117.23,
+          "previousAnnualValue": 109.69
+        },
+        {
+          "geography": "Idaho",
+          "annualValue": 174.86,
+          "previousAnnualValue": 157.31
+        },
+        {
+          "geography": "Illinois",
+          "annualValue": 218.77,
+          "previousAnnualValue": 171.5
+        },
+        {
+          "geography": "Indiana",
+          "annualValue": 189.18,
+          "previousAnnualValue": 155.38
+        },
+        {
+          "geography": "Iowa",
+          "annualValue": 310.69,
+          "previousAnnualValue": 264.12
+        },
+        {
+          "geography": "Kansas",
+          "annualValue": 349.08,
+          "previousAnnualValue": 312.91
+        },
+        {
+          "geography": "Kentucky",
+          "annualValue": 218,
+          "previousAnnualValue": 182.69
+        },
+        {
+          "geography": "Louisiana",
+          "annualValue": 346.08,
+          "previousAnnualValue": 281.11
+        },
+        {
+          "geography": "Maine",
+          "annualValue": 164.61,
+          "previousAnnualValue": 138.91
+        },
+        {
+          "geography": "Maryland",
+          "annualValue": 219.52,
+          "previousAnnualValue": 184.26
+        },
+        {
+          "geography": "Massachusetts",
+          "annualValue": 183.42,
+          "previousAnnualValue": 158.34
+        },
+        {
+          "geography": "Michigan",
+          "annualValue": 236.9,
+          "previousAnnualValue": 191.56
+        },
+        {
+          "geography": "Minnesota",
+          "annualValue": 320.72,
+          "previousAnnualValue": 255.12
+        },
+        {
+          "geography": "Mississippi",
+          "annualValue": 314.13,
+          "previousAnnualValue": 273.83
+        },
+        {
+          "geography": "Missouri",
+          "annualValue": 307.96,
+          "previousAnnualValue": 253.57
+        },
+        {
+          "geography": "Montana",
+          "annualValue": 365.45,
+          "previousAnnualValue": 333.78
+        },
+        {
+          "geography": "Nebraska",
+          "annualValue": 343.62,
+          "previousAnnualValue": 307.04
+        },
+        {
+          "geography": "Nevada",
+          "annualValue": 135.76,
+          "previousAnnualValue": 121.55
+        },
+        {
+          "geography": "New Hampshire",
+          "annualValue": 158.2,
+          "previousAnnualValue": 134.84
+        },
+        {
+          "geography": "New Jersey",
+          "annualValue": 170.34,
+          "previousAnnualValue": 148.39
+        },
+        {
+          "geography": "New Mexico",
+          "annualValue": 259.13,
+          "previousAnnualValue": 226.57
+        },
+        {
+          "geography": "New York",
+          "annualValue": 238.96,
+          "previousAnnualValue": 200.91
+        },
+        {
+          "geography": "North Carolina",
+          "annualValue": 207.67,
+          "previousAnnualValue": 186.14
+        },
+        {
+          "geography": "North Dakota",
+          "annualValue": 309.43,
+          "previousAnnualValue": 279.62
+        },
+        {
+          "geography": "Ohio",
+          "annualValue": 189.24,
+          "previousAnnualValue": 150.78
+        },
+        {
+          "geography": "Oklahoma",
+          "annualValue": 337.76,
+          "previousAnnualValue": 297.92
+        },
+        {
+          "geography": "Oregon",
+          "annualValue": 165.24,
+          "previousAnnualValue": 125.65
+        },
+        {
+          "geography": "Pennsylvania",
+          "annualValue": 240.89,
+          "previousAnnualValue": 198.65
+        },
+        {
+          "geography": "Rhode Island",
+          "annualValue": 185.5,
+          "previousAnnualValue": 167.68
+        },
+        {
+          "geography": "South Carolina",
+          "annualValue": 250.82,
+          "previousAnnualValue": 225.47
+        },
+        {
+          "geography": "South Dakota",
+          "annualValue": 472.78,
+          "previousAnnualValue": 407.26
+        },
+        {
+          "geography": "Tennessee",
+          "annualValue": 229.22,
+          "previousAnnualValue": 192.97
+        },
+        {
+          "geography": "Texas",
+          "annualValue": 400.01,
+          "previousAnnualValue": 320.39
+        },
+        {
+          "geography": "Utah",
+          "annualValue": 160.01,
+          "previousAnnualValue": 138.88
+        },
+        {
+          "geography": "Vermont",
+          "annualValue": 191.41,
+          "previousAnnualValue": 160.58
+        },
+        {
+          "geography": "Virginia",
+          "annualValue": 204.49,
+          "previousAnnualValue": 172.21
+        },
+        {
+          "geography": "Washington",
+          "annualValue": 153.93,
+          "previousAnnualValue": 129.84
+        },
+        {
+          "geography": "West Virginia",
+          "annualValue": 302.12,
+          "previousAnnualValue": 251.79
+        },
+        {
+          "geography": "Wisconsin",
+          "annualValue": 238.68,
+          "previousAnnualValue": 191.87
+        },
+        {
+          "geography": "Wyoming",
+          "annualValue": 452.24,
+          "previousAnnualValue": 394.9
+        },
+        {
+          "geography": "Countrywide",
+          "annualValue": 238.24,
+          "previousAnnualValue": 196.12
+        }
+      ]
+    },
+    "combined": {
+      "table": "5",
+      "pdfPage": 30,
+      "printedPage": 25,
+      "rows": [
+        {
+          "geography": "Alabama",
+          "annualValue": 1268.71,
+          "previousAnnualValue": 1128.18
+        },
+        {
+          "geography": "Alaska",
+          "annualValue": 1262.49,
+          "previousAnnualValue": 1154.53
+        },
+        {
+          "geography": "Arizona",
+          "annualValue": 1504.59,
+          "previousAnnualValue": 1285.84
+        },
+        {
+          "geography": "Arkansas",
+          "annualValue": 1296.46,
+          "previousAnnualValue": 1133.16
+        },
+        {
+          "geography": "California",
+          "annualValue": 1417.94,
+          "previousAnnualValue": 1252.41
+        },
+        {
+          "geography": "Colorado",
+          "annualValue": 1655.3,
+          "previousAnnualValue": 1446.22
+        },
+        {
+          "geography": "Connecticut",
+          "annualValue": 1508.21,
+          "previousAnnualValue": 1377.39
+        },
+        {
+          "geography": "Delaware",
+          "annualValue": 1569.21,
+          "previousAnnualValue": 1388.8
+        },
+        {
+          "geography": "District of Columbia",
+          "annualValue": 1818.28,
+          "previousAnnualValue": 1628.4
+        },
+        {
+          "geography": "Florida",
+          "annualValue": 1993.81,
+          "previousAnnualValue": 1663.66
+        },
+        {
+          "geography": "Georgia",
+          "annualValue": 1746.32,
+          "previousAnnualValue": 1514.42
+        },
+        {
+          "geography": "Hawaii",
+          "annualValue": 998.04,
+          "previousAnnualValue": 951.75
+        },
+        {
+          "geography": "Idaho",
+          "annualValue": 981.01,
+          "previousAnnualValue": 880.16
+        },
+        {
+          "geography": "Illinois",
+          "annualValue": 1256.58,
+          "previousAnnualValue": 1080.34
+        },
+        {
+          "geography": "Indiana",
+          "annualValue": 1031.86,
+          "previousAnnualValue": 905.02
+        },
+        {
+          "geography": "Iowa",
+          "annualValue": 1010.4,
+          "previousAnnualValue": 898.06
+        },
+        {
+          "geography": "Kansas",
+          "annualValue": 1181.69,
+          "previousAnnualValue": 1052.06
+        },
+        {
+          "geography": "Kentucky",
+          "annualValue": 1208.29,
+          "previousAnnualValue": 1077.96
+        },
+        {
+          "geography": "Louisiana",
+          "annualValue": 1982.65,
+          "previousAnnualValue": 1743.25
+        },
+        {
+          "geography": "Maine",
+          "annualValue": 926.02,
+          "previousAnnualValue": 831.22
+        },
+        {
+          "geography": "Maryland",
+          "annualValue": 1601.63,
+          "previousAnnualValue": 1389.1
+        },
+        {
+          "geography": "Massachusetts",
+          "annualValue": 1413.49,
+          "previousAnnualValue": 1256.62
+        },
+        {
+          "geography": "Michigan",
+          "annualValue": 1572.77,
+          "previousAnnualValue": 1450.02
+        },
+        {
+          "geography": "Minnesota",
+          "annualValue": 1223.48,
+          "previousAnnualValue": 1062.68
+        },
+        {
+          "geography": "Mississippi",
+          "annualValue": 1394.52,
+          "previousAnnualValue": 1232.43
+        },
+        {
+          "geography": "Missouri",
+          "annualValue": 1322.55,
+          "previousAnnualValue": 1145.11
+        },
+        {
+          "geography": "Montana",
+          "annualValue": 1183.66,
+          "previousAnnualValue": 1079.36
+        },
+        {
+          "geography": "Nebraska",
+          "annualValue": 1183.88,
+          "previousAnnualValue": 1049.78
+        },
+        {
+          "geography": "Nevada",
+          "annualValue": 1600.12,
+          "previousAnnualValue": 1413.99
+        },
+        {
+          "geography": "New Hampshire",
+          "annualValue": 1032.01,
+          "previousAnnualValue": 921.8
+        },
+        {
+          "geography": "New Jersey",
+          "annualValue": 1693.39,
+          "previousAnnualValue": 1520.89
+        },
+        {
+          "geography": "New Mexico",
+          "annualValue": 1301.12,
+          "previousAnnualValue": 1148.99
+        },
+        {
+          "geography": "New York",
+          "annualValue": 1895.99,
+          "previousAnnualValue": 1676.16
+        },
+        {
+          "geography": "North Carolina",
+          "annualValue": 1096.56,
+          "previousAnnualValue": 990.66
+        },
+        {
+          "geography": "North Dakota",
+          "annualValue": 961.28,
+          "previousAnnualValue": 871.05
+        },
+        {
+          "geography": "Ohio",
+          "annualValue": 1037.61,
+          "previousAnnualValue": 912.86
+        },
+        {
+          "geography": "Oklahoma",
+          "annualValue": 1324.15,
+          "previousAnnualValue": 1171.76
+        },
+        {
+          "geography": "Oregon",
+          "annualValue": 1268.47,
+          "previousAnnualValue": 1087.61
+        },
+        {
+          "geography": "Pennsylvania",
+          "annualValue": 1273.46,
+          "previousAnnualValue": 1117.83
+        },
+        {
+          "geography": "Rhode Island",
+          "annualValue": 1709.69,
+          "previousAnnualValue": 1577.02
+        },
+        {
+          "geography": "South Carolina",
+          "annualValue": 1516.71,
+          "previousAnnualValue": 1332.24
+        },
+        {
+          "geography": "South Dakota",
+          "annualValue": 1157.7,
+          "previousAnnualValue": 1022.42
+        },
+        {
+          "geography": "Tennessee",
+          "annualValue": 1211.72,
+          "previousAnnualValue": 1061.27
+        },
+        {
+          "geography": "Texas",
+          "annualValue": 1726.91,
+          "previousAnnualValue": 1469.27
+        },
+        {
+          "geography": "Utah",
+          "annualValue": 1284.6,
+          "previousAnnualValue": 1127.57
+        },
+        {
+          "geography": "Vermont",
+          "annualValue": 957.8,
+          "previousAnnualValue": 854.38
+        },
+        {
+          "geography": "Virginia",
+          "annualValue": 1238.13,
+          "previousAnnualValue": 1055.56
+        },
+        {
+          "geography": "Washington",
+          "annualValue": 1234.68,
+          "previousAnnualValue": 1125.03
+        },
+        {
+          "geography": "West Virginia",
+          "annualValue": 1227.39,
+          "previousAnnualValue": 1098.61
+        },
+        {
+          "geography": "Wisconsin",
+          "annualValue": 999.99,
+          "previousAnnualValue": 876.11
+        },
+        {
+          "geography": "Wyoming",
+          "annualValue": 1180.01,
+          "previousAnnualValue": 1056.29
+        },
+        {
+          "geography": "Countrywide",
+          "annualValue": 1438.6,
+          "previousAnnualValue": 1257.31
+        }
+      ]
+    }
+  }
+}

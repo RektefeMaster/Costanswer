@@ -1,9 +1,35 @@
-import currentPerDiemJson from '@/data/gsa-perdiem/current.json';
-import { MONTH_KEYS, isDuplicateDcMetroRow, type GsaPerDiemSnapshot, type MieBreakdown, type MonthKey, type PerDiemDestination } from './gsa-perdiem';
-import { readVerifiedEnvelope } from './envelope';
+import gsaReleasesJson from '@/data/gsa-perdiem/releases.json';
+import { gsaPerDiemSnapshotDocuments } from './gsa-perdiem-catalog';
+import { MONTH_KEYS, isDuplicateDcMetroRow, resolveEffectivePerDiemRelease, resolveLatestPublishedPerDiemRelease, type GsaPerDiemSnapshot, type MieBreakdown, type MonthKey, type PerDiemDestination, type PerDiemRelease } from './gsa-perdiem';
+import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
-const envelope = readVerifiedEnvelope<GsaPerDiemSnapshot>(currentPerDiemJson);
-export const gsaPerDiemSnapshot = envelope.snapshot;
+export const gsaPerDiemReleases = (gsaReleasesJson as { releases: PerDiemRelease[] }).releases;
+
+/**
+ * Named fiscal-year files, like HUD. `current.json` is a pointer for ingest
+ * and verify — do not import it here or the Worker ships the tables twice.
+ * Ingest regenerates `gsa-perdiem-catalog.ts` when a new FY file lands.
+ */
+const snapshotsById = new Map<string, GsaPerDiemSnapshot>(
+  gsaPerDiemSnapshotDocuments.map((snapshot) => [snapshot.snapshotId, snapshot]),
+);
+
+export function getGsaPerDiemSnapshotById(snapshotId: string): GsaPerDiemSnapshot {
+  const snapshot = snapshotsById.get(snapshotId);
+  if (!snapshot) throw new Error(`Unknown GSA per diem snapshot ${snapshotId}.`);
+  return snapshot;
+}
+
+export function resolveGsaPerDiemSnapshot(asOf: string = PUBLISHING_SNAPSHOT_DATE): GsaPerDiemSnapshot {
+  return getGsaPerDiemSnapshotById(resolveEffectivePerDiemRelease(gsaPerDiemReleases, asOf).snapshotId);
+}
+
+export function latestPublishedGsaPerDiemSnapshot(): GsaPerDiemSnapshot {
+  return getGsaPerDiemSnapshotById(resolveLatestPublishedPerDiemRelease(gsaPerDiemReleases).snapshotId);
+}
+
+/** Calculator default: the rates effective on the publishing clock. Trip dates pick their own FY. */
+export const gsaPerDiemSnapshot = resolveGsaPerDiemSnapshot();
 
 const byKey = new Map(gsaPerDiemSnapshot.destinations.map((row) => [row.key, row]));
 const standardByState = new Map<string, PerDiemDestination>(

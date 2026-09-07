@@ -9,21 +9,41 @@ const SITE_CREATOR_PLACEHOLDER_DATABASE_ID =
 
 const { d1, r2 } = hostingConfig;
 
+/*
+ * The monetization database.
+ *
+ * Bound only when MONETIZATION_D1_DATABASE_ID is set. Its absence is not an
+ * error: every calculator works without it and the lead channel reports itself
+ * unavailable rather than collecting a phone number it cannot store a consent
+ * record for. Provision with:
+ *   wrangler d1 create costanswer-monetization
+ *   wrangler d1 execute costanswer-monetization \
+ *     --file lib/monetization/store/migrations/0001_monetization.sql
+ */
+const monetizationDatabaseId = process.env.MONETIZATION_D1_DATABASE_ID;
+
 // macOS Seatbelt blocks FSEvents, so Codex previews need polling for HMR.
 const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === 'seatbelt';
 
 const localBindingConfig = {
   main: 'vinext/server/app-router-entry',
   compatibility_flags: ['nodejs_compat'],
-  d1_databases: d1
-    ? [
-        {
+  d1_databases: [
+    ...(d1
+      ? [{
           binding: d1,
           database_name: 'site-creator-d1',
           database_id: SITE_CREATOR_PLACEHOLDER_DATABASE_ID,
-        },
-      ]
-    : [],
+        }]
+      : []),
+    ...(monetizationDatabaseId
+      ? [{
+          binding: 'MONETIZATION_DB',
+          database_name: 'costanswer-monetization',
+          database_id: monetizationDatabaseId,
+        }]
+      : []),
+  ],
   r2_buckets: r2
     ? [
         {

@@ -12,6 +12,10 @@ const toolPaths = [
   '/money/compound-interest',
   '/money/debt-payoff',
   '/money/home-affordability',
+  '/money/insurance-cost',
+  '/money/health-insurance',
+  '/money/marketplace-plans',
+  '/money/medicare-cost',
   '/money/cost-of-living',
   '/money/inflation',
   '/money/car-loan',
@@ -31,6 +35,7 @@ const toolPaths = [
   '/car/ev-vs-gas',
   '/car/road-trip-fuel',
   '/car/car-affordability',
+  '/car/auto-coverage',
     '/everyday/business-days',
     '/everyday/per-diem',
     '/everyday/tip',
@@ -75,8 +80,9 @@ test('salary after tax and paycheck use the tax snapshot and stay estimates', as
   await expect(page.locator('.result-audit')).toContainText('Method salary-after-tax-v1.0.0');
   await expect(page.locator('.result-audit')).toContainText('us-tax-2026-v1');
   await page.locator('#salary-state').selectOption('NY');
-  await expect(page.locator('.data-callout')).toContainText('federal and FICA only');
-  await expect(page.locator('.result-details')).toContainText('Omitted (unsupported state)');
+  await expect(page.locator('.data-callout')).not.toContainText('federal and FICA only');
+  await expect(page.locator('.result-details')).toContainText('New York');
+  await expect(page.locator('.result-details')).not.toContainText('Omitted (unsupported state)');
 
   await page.goto('/money/paycheck');
   await expect(page.getByRole('heading', { name: 'Paycheck Calculator' })).toBeVisible();
@@ -242,12 +248,25 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   for (const path of toolPaths) {
     const html = await (await request.get(path)).text();
     expect(html, path).not.toMatch(/<meta[^>]+name="robots"[^>]+content="noindex/i);
+    expect(html, path).toContain('editorial-section');
+    expect(html, path).toContain('Terms used here');
+
+    /*
+     * Health pages are `restricted` in the monetization policy and carry no ad
+     * slot at all, so the reservations are asserted per page rather than
+     * globally. BMI and body fat are pages people arrive at feeling bad about
+     * themselves; the site's answer to that should not be adjacent to something
+     * being sold, and that is a deliberate rule rather than an oversight.
+     */
+    const restricted = path.startsWith('/health/');
+    if (restricted) {
+      expect(html, path).not.toContain('data-ad-placement=');
+      continue;
+    }
     expect(html, path).toContain('data-ad-placement="desktop-rail"');
     expect(html, path).toContain('data-ad-placement="header-leaderboard"');
     expect(html, path).toContain('data-ad-placement="in-content"');
     expect(html, path).toContain('data-ad-status="empty"');
-    expect(html, path).toContain('editorial-section');
-    expect(html, path).toContain('Terms used here');
   }
   const search = await (await request.get('/search?q=concrete')).text();
   expect(search).toMatch(/<meta[^>]+name="robots"[^>]+content="noindex, follow"/i);
@@ -266,7 +285,7 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   const toolSitemap = await (await request.get('/sitemaps/tools/1.xml')).text();
   for (const path of toolPaths) expect(toolSitemap).toContain(path);
   expect(toolSitemap).not.toContain('/search');
-  expect(toolSitemap).toContain('<lastmod>2026-09-02T00:00:00.000Z</lastmod>');
+  expect(toolSitemap).toContain('<lastmod>2026-09-05T00:00:00.000Z</lastmod>');
 
   const manifest = await (await request.get('/manifest.webmanifest')).json();
   expect(manifest.icons).toContainEqual({ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' });
@@ -536,8 +555,11 @@ test('mobile skip link and recipe editor work without horizontal overflow', asyn
 test('small phones keep home, search, and calculators inside the viewport', async ({ page }) => {
   for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 720 });
-    for (const path of ['/', '/search', '/money/cost-of-living', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
+    // The insurance page carries the widest fixed layouts on the site: two
+    // side-by-side quote fieldsets and a three-column comparison table.
+    for (const path of ['/', '/search', '/money/cost-of-living', '/money/insurance-cost', '/money/health-insurance', '/topics/money', '/car/ev-vs-gas', '/health/bmi', '/math/scientific', '/everyday/time-card']) {
       await page.goto(path);
+      await page.evaluate(() => document.querySelectorAll('main details').forEach((node) => { (node as HTMLDetailsElement).open = true; }));
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
       expect(overflow, `${path} at ${width}px overflowed by ${overflow}px`).toBeLessThanOrEqual(1);
     }
@@ -546,7 +568,7 @@ test('small phones keep home, search, and calculators inside the viewport', asyn
 
 test('representative pages have no automated WCAG A/AA violations', async ({ page }) => {
   test.setTimeout(240_000);
-  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
+  for (const path of ['/', '/search', '/shopping/unit-price', '/food/recipe-scaler', '/everyday/business-days', '/topics/home', '/about', '/money/mortgage-payment', '/money/home-affordability', '/money/insurance-cost', '/money/health-insurance', '/money/marketplace-plans', '/money/medicare-cost', '/money/cost-of-living', '/money/inflation', '/money/loan', '/car/road-trip-fuel', '/car/car-affordability', '/car/auto-coverage', '/home/appliance-electricity-cost', '/health/bmi', '/math/scientific', '/math/unit-conversion', '/everyday/time-card', '/everyday/date', '/education/gpa', '/methodology', '/methodology/data', '/privacy', '/terms', '/contact', '/faq', '/education/grade', '/money/car-loan', '/money/investment', '/money/retirement', '/money/401k', '/money/mortgage-payoff', '/money/credit-card-payoff', '/money/amortization', '/home/square-footage']) {
     await page.goto(path);
     await page.addScriptTag({ content: axeSource });
     const violations = await page.evaluate(async () => {
@@ -687,4 +709,214 @@ test('per diem splits lodging and meals, maps a ZIP, and checks a room against t
   await page.locator('#perdiem-destination').fill('02138');
   await expect(page.getByText('COUNTY IS SPLIT', { exact: true })).toBeVisible();
   await expect(page.getByRole('button', { name: /Use Boston \/ Cambridge/ })).toBeVisible();
+});
+
+test('insurance budget uses the dated NAIC benchmark, switches to entered premiums, and compares deductibles', async ({ page }) => {
+  await page.goto('/money/insurance-cost');
+  await expect(page.getByRole('heading', { name: 'Insurance Cost Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+
+  // Texas HO-3 $2,864 + auto expenditure $1,428.94, both 2023 NAIC observations.
+  await expect(page.locator('.primary-result strong')).toHaveText('$357.74');
+  await expect(page.locator('.insurance-source-note')).toContainText('NAIC · 2023 observations');
+  await expect(page.locator('.calculation-output .result-audit')).toContainText('Method insurance-budget-v1.0.0');
+  await expect(page.locator('.calculation-output .result-audit')).toContainText('naic-insurance-2023-v1');
+
+  await page.locator('#insurance-state').selectOption('FL');
+  await expect(page.locator('.primary-result strong')).toHaveText('$386.97');
+  await expect(page.locator('.result-stat-grid')).toContainText('$2,779.00');
+
+  // Published expenditure is per insured vehicle, so the vehicle count multiplies it.
+  await page.locator('#insurance-vehicles').selectOption('2');
+  await expect(page.locator('.result-stat-grid')).toContainText('$3,729.26');
+
+  // Auto only drops the housing line and locks the auto toggle on.
+  await page.getByRole('button', { name: 'Auto only' }).click();
+  await expect(page.locator('.result-stat-grid')).toContainText('Not included');
+  await expect(page.locator('.insurance-auto-toggle input')).toBeDisabled();
+
+  // An entered premium is the household total: it is annualized, never multiplied
+  // by the vehicle count, and it retires the snapshot claim in the audit line.
+  await page.locator('.insurance-customize > summary').click();
+  await page.locator('#insurance-auto-basis').selectOption('custom');
+  await page.locator('#insurance-auto-premium').fill('900');
+  await page.locator('#insurance-auto-premium-frequency').selectOption('six-month');
+  await expect(page.locator('.primary-result strong')).toHaveText('$150.00');
+  await expect(page.locator('.insurance-source-note')).toContainText('Your entered premiums');
+  await expect(page.locator('.calculation-output .result-audit')).toContainText('Data Manual inputs / fixed rules');
+  await expect(page.locator('.calculation-output .result-audit')).not.toContainText('naic-insurance-2023-v1');
+
+  // The cushion is an explicit user scenario, so it never moves the headline number.
+  await page.locator('#insurance-buffer').fill('10');
+  await expect(page.locator('.primary-result strong')).toHaveText('$150.00');
+  await expect(page.locator('.insurance-cushion')).toContainText('$165.00');
+
+  // $1,800/$500 versus $1,500/$1,500 on a $5,000 covered loss: A wins the single
+  // claim, but B is the cheaper premium, so the verdict has to name both.
+  await page.locator('.insurance-deductibles > summary').click();
+  await expect(page.locator('.insurance-claim-results tbody')).toContainText('$2,300.00');
+  await expect(page.locator('.insurance-claim-results tbody')).toContainText('$3,000.00');
+  await expect(page.locator('.insurance-comparison-verdict')).toContainText('Policy A costs less');
+  await expect(page.locator('.insurance-comparison-verdict')).toContainText('Policy B has the lower premium');
+  await expect(page.locator('.insurance-comparison-verdict')).toContainText('3.33 claim-free years');
+});
+
+test('the subsidy calculator prices a real county and refuses to price what it cannot determine', async ({ page }) => {
+  await page.goto('/money/health-insurance');
+  await expect(page.getByRole('heading', { name: 'Health Insurance Subsidy Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.data-callout')).toContainText('HHS 2025 guidelines');
+  await expect(page.locator('.result-audit')).toContainText('Method aca-subsidy-v1.0.0');
+  // Both releases are named: the county filing and the federal rules.
+  await expect(page.locator('.result-audit')).toContainText('cms-marketplace-2026-v1');
+  await expect(page.locator('.result-audit')).toContainText('aca-subsidy-2026-');
+
+  // ZIP 77002 is Harris County, Texas. Nothing about the benchmark is typed in.
+  await expect(page.locator('.data-footnote').first()).toContainText('Harris County, Texas');
+  await expect(page.locator('.result-stat-grid')).toContainText('232.6%');
+  await expect(page.locator('.result-stat-grid')).toContainText('7.80% of household income');
+  await expect(page.locator('.primary-result strong')).toHaveText('$388.04');
+  // A fixed-dollar credit buys a cheap plan down to nothing but never pays out.
+  await expect(page.locator('.health-metal-table')).toContainText('Bronze');
+  await expect(page.locator('.health-metal-table tbody')).toContainText('$0.00');
+  // 232.6% of the guideline lands in the 73% cost-sharing band.
+  await expect(page.locator('.health-status').nth(1)).toContainText('73% variant');
+
+  // The fourth child is not billed, and the page says so rather than hiding it.
+  await page.locator('#health-ages').fill('40, 38, 12, 10, 8, 6');
+  await expect(page.locator('.data-footnote').nth(1)).toContainText('not charged a premium');
+
+  // A state that runs its own exchange is named, not shown as having no plans.
+  await page.locator('#health-zip').fill('90012');
+  await expect(page.locator('.health-status')).toContainText('Priced by a state exchange');
+  await expect(page.locator('.health-status')).toContainText('California');
+  await page.locator('#health-zip').fill('00000');
+  await expect(page.locator('.health-status')).toContainText('ZIP not recognised');
+
+  // Above the 2026 ceiling the credit is gone, and the headline stops claiming one.
+  await page.locator('#health-zip').fill('77002');
+  await page.locator('#health-ages').fill('40');
+  await page.locator('#health-household').fill('1');
+  await page.locator('#health-magi').fill('62601');
+  await expect(page.locator('.health-status')).toContainText('Above the 400% FPL ceiling');
+  await expect(page.locator('.primary-result p')).toHaveText('Your monthly premium, with no credit in this scenario');
+
+  // Unconfirmed eligibility must read as "not estimated", never as a zero credit.
+  await page.locator('#health-magi').fill('42000');
+  await page.locator('.health-advanced > summary').click();
+  await page.locator('#health-eligibility').selectOption('unknown');
+  await expect(page.locator('.health-status')).toContainText('Eligibility not confirmed');
+  await expect(page.locator('.primary-result p')).toHaveText('Full monthly premium, no credit estimated');
+  await expect(page.locator('.result-stat-grid')).toContainText('Not estimated');
+
+  // Below the income range the answer is Medicaid, not a dollar figure.
+  await page.locator('#health-eligibility').selectOption('assumed-eligible');
+  await page.locator('#health-magi').fill('12000');
+  await expect(page.locator('.health-status')).toContainText('Below the subsidy income range');
+  await expect(page.locator('.health-status')).toContainText('Medicaid');
+  await expect(page.locator('.result-stat-grid')).toContainText('Outside the table');
+});
+
+test('the plan cost calculator prices a county to the ceiling, not just the premium', async ({ page }) => {
+  await page.goto('/money/marketplace-plans');
+  await expect(page.getByRole('heading', { name: 'Marketplace Health Plan Cost Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.result-audit')).toContainText('Method marketplace-plan-cost-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('cms-marketplace-2026-v1');
+
+  // ZIP 77002 is Harris County, Texas, priced for one 40-year-old.
+  await expect(page.locator('.data-footnote')).toContainText('Harris County, Texas');
+  await expect(page.locator('.data-footnote')).toContainText('benchmark Silver');
+  await expect(page.locator('.primary-result p')).toContainText('a year with no claims');
+
+  // The cheapest premium and the highest maximum are not a single plan. Harris
+  // County at age 40 is the case: Bronze wins a healthy year, and the high-bound
+  // ceiling still names Bronze, but ranking by the lowest maximum would not.
+  await expect(page.locator('.health-status').first()).toContainText('depends on which plan you pick');
+  const rows = page.locator('.health-metal-table tbody tr');
+  await expect(rows).toHaveCount(3);
+  await expect(rows.nth(0)).toContainText('Bronze');
+  await expect(rows.nth(2)).toContainText('Gold');
+
+  // A fixed credit comes off every level and floors at that level's premium.
+  await page.locator('#plans-credit').fill('2000');
+  await expect(page.locator('.health-metal-table tbody')).toContainText('$0.00');
+
+  await page.locator('#plans-zip').fill('90012');
+  await expect(page.locator('.health-status')).toContainText('Priced by a state exchange');
+});
+
+test('the coverage calculator weighs a capped benefit against an uncapped premium', async ({ page }) => {
+  await page.goto('/car/auto-coverage');
+  await expect(page.getByRole('heading', { name: 'Collision and Comprehensive Worth-It Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.data-callout')).toContainText('NAIC 2023');
+  await expect(page.locator('.result-audit')).toContainText('Method auto-coverage-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('naic-insurance-2023-v1');
+
+  // A $6,000 car with a $500 comprehensive deductible carries $5,500 of cover.
+  await expect(page.locator('.result-stat-grid')).toContainText('$5,500');
+  await expect(page.locator('.primary-result p')).toContainText('Years of premium to equal');
+  // Liability is reported for context and kept out of the comparison.
+  await expect(page.locator('.health-range-note').first()).toContainText('liability alone averaged');
+
+  // Once both deductibles reach the car's value the cover cannot pay anything,
+  // and the page says that rather than showing a very small number. At $400 the
+  // car is below the $1,000 collision and $500 comprehensive deductibles alike.
+  await page.locator('#coverage-value').fill('400');
+  await expect(page.locator('.primary-result p')).toHaveText('This cover cannot pay out on a total loss');
+  await expect(page.locator('.primary-result strong')).toHaveText('None');
+  await expect(page.locator('.health-status')).toContainText('The deductible has overtaken the car');
+  await expect(page.locator('.health-status')).toContainText('Nothing here suggests dropping it');
+
+  // Entered premiums replace the benchmark and retire the snapshot claim.
+  await page.locator('#coverage-value').fill('6000');
+  await page.locator('.health-advanced > summary').click();
+  await page.locator('#coverage-basis').selectOption('custom');
+  await page.locator('#coverage-collision-premium').fill('400');
+  await page.locator('#coverage-comprehensive-premium').fill('200');
+  await expect(page.locator('.result-stat-grid')).toContainText('$600.00');
+  await expect(page.locator('.result-audit')).toContainText('Data Manual inputs / fixed rules');
+  await expect(page.locator('.result-audit')).not.toContainText('naic-insurance-2023-v1');
+});
+
+test('the Medicare calculator shows the income cliff, not just the premium', async ({ page }) => {
+  await page.goto('/money/medicare-cost');
+  await expect(page.getByRole('heading', { name: 'Medicare Cost Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.result-audit')).toContainText('Method medicare-cost-v1.0.0');
+  await expect(page.locator('.result-audit')).toContainText('medicare-2026-cms');
+
+  // $75,000 of 2024 income: standard $202.90 Part B plus the $40 drug plan.
+  await expect(page.locator('.primary-result strong')).toHaveText('$242.90');
+  await expect(page.locator('.health-status')).toContainText('No income adjustment');
+  // The cliff is the point of the tool and has to be visible without a claim.
+  await expect(page.locator('.health-status')).toContainText('this is a cliff, not a taper');
+  await expect(page.locator('.health-status')).toContainText('$1,148.40');
+  await expect(page.locator('.health-metal-table')).toContainText('$689.90');
+
+  // One dollar over the first threshold applies the whole step at once.
+  await page.locator('#medicare-magi').fill('109000');
+  await expect(page.locator('.health-status')).toContainText('No income adjustment');
+  await page.locator('#medicare-magi').fill('109001');
+  await expect(page.locator('.health-status')).toContainText('Income adjustment: rung 1 of 5');
+  await expect(page.locator('.result-stat-grid')).toContainText('$284.10');
+
+  // Filing separately skips the middle rungs entirely.
+  await page.locator('#medicare-filing').selectOption('married-separate');
+  await expect(page.locator('.health-status')).toContainText('rung 1 of 2');
+  await expect(page.locator('.result-stat-grid')).toContainText('$649.20');
+
+  // Part A is free only with 40 quarters of Medicare-taxed work.
+  await page.locator('#medicare-filing').selectOption('single');
+  await page.locator('#medicare-magi').fill('75000');
+  await expect(page.locator('.result-stat-grid')).toContainText('Free');
+  await page.locator('#medicare-quarters').selectOption('under-30');
+  await expect(page.locator('.result-stat-grid')).toContainText('$565.00');
+  await expect(page.locator('.primary-result strong')).toHaveText('$807.90');
+
+  // Part D IRMAA is not charged without a drug plan.
+  await page.locator('#medicare-quarters').selectOption('40-or-more');
+  await page.locator('#medicare-drug-coverage').selectOption('none');
+  await expect(page.locator('.primary-result strong')).toHaveText('$202.90');
 });

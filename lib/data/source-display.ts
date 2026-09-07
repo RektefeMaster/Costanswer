@@ -1,10 +1,10 @@
-import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 import { DATASET_POLICIES, type DatasetId, type DatasetPeriodKind } from './dataset-policy';
 import {
   evaluateFreshness,
   isPublicationSourceStatus,
   nextExpectedReleaseDate,
   observationPeriodEndDate,
+  utcCalendarDate,
   type FreshnessInput,
   type FreshnessStatus,
   type PublicationSourceStatus,
@@ -134,7 +134,8 @@ export function datasetSourceDisplay(input: {
     verifiedAt: input.verifiedAt,
     fetchedAt: input.fetchedAt,
   };
-  const freshness = evaluateFreshness(policy, freshnessInput, input.asOf ?? PUBLISHING_SNAPSHOT_DATE);
+  const asOf = input.asOf ?? utcCalendarDate();
+  const freshness = evaluateFreshness(policy, freshnessInput, asOf);
   const periodLabel = formatObservationPeriod(input.observationPeriod, policy.periodKind);
   const sourceStatus = isPublicationSourceStatus(input.sourceStatus) ? input.sourceStatus : input.sourceStatus;
   return {
@@ -149,7 +150,7 @@ export function datasetSourceDisplay(input: {
     releaseSchedule: policy.releaseSchedule,
     observationAge: describeAge(
       observationPeriodEndDate(input.observationPeriod, policy.expectedCadence),
-      input.asOf ?? PUBLISHING_SNAPSHOT_DATE,
+      asOf,
     ),
     lastCheckedOn: (input.verifiedAt ?? input.fetchedAt)?.slice(0, 10) ?? null,
     sourceStatus,

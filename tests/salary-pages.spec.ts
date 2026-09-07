@@ -78,14 +78,22 @@ describe('salary page addresses', () => {
 });
 
 describe('what the salary family submits to search', () => {
-  it('publishes every level that is open', () => {
+  it('publishes every level that is open, and nothing from a level that is not', () => {
+    /*
+     * Asserts the gate, not a particular setting of it. The leaves are staged
+     * while most states still have no 2026 tax schedule — their headline
+     * take-home would omit state income tax — so a test that hard-codes them as
+     * published would have to be edited every time that decision moves, which
+     * is how a gate quietly stops being one.
+     */
     const entries = getSitemapFamilies().salary;
     const paths = new Set(entries.map((entry) => entry.path));
-    expect(paths.has('/salary')).toBe(true);
-    expect(paths.has('/salary/states')).toBe(true);
-    expect(paths.has('/salary/states/texas')).toBe(true);
-    expect(paths.has('/salary/registered-nurse')).toBe(true);
-    expect(paths.has('/salary/registered-nurse/texas')).toBe(true);
+
+    expect(paths.has('/salary')).toBe(isSalaryLevelIndexable('familyHub'));
+    expect(paths.has('/salary/states')).toBe(isSalaryLevelIndexable('stateIndex'));
+    expect(paths.has('/salary/states/texas')).toBe(isSalaryLevelIndexable('stateHub'));
+    expect(paths.has('/salary/registered-nurse')).toBe(isSalaryLevelIndexable('occupation'));
+    expect(paths.has('/salary/registered-nurse/texas')).toBe(isSalaryLevelIndexable('occupationInState'));
   });
 
   it('submits exactly the pages that exist, and no more', () => {
@@ -96,10 +104,27 @@ describe('what the salary family submits to search', () => {
   });
 
   it('splits the family so no one sitemap file is unreasonably large', () => {
-    const pages = paginateSitemapEntries(getSitemapFamilies().salary, 10_000);
-    expect(pages.length).toBeGreaterThan(1);
+    const entries = getSitemapFamilies().salary;
+    const pages = paginateSitemapEntries(entries, 10_000);
+
+    // Whether it splits at all depends on how far the family is open; that no
+    // page exceeds the limit, and that the index lists exactly the pages that
+    // exist, has to hold either way.
+    expect(pages.length).toBe(Math.max(1, Math.ceil(entries.length / 10_000)));
     for (const page of pages) expect(page.length).toBeLessThanOrEqual(10_000);
     expect(sitemapPagePaths().filter(({ family }) => family === 'salary')).toHaveLength(pages.length);
+  });
+
+  it('withdraws the leaves from search without touching a route', () => {
+    // The staging decision has to be reversible in one edit, so this pins the
+    // property that makes it so: the pages still resolve, they are simply not
+    // submitted and not indexable.
+    const submitted = new Set(getSitemapFamilies().salary.map((entry) => entry.path));
+    if (!isSalaryLevelIndexable('occupationInState')) {
+      expect(submitted.has('/salary/registered-nurse/texas')).toBe(false);
+      // The address is still real: the family still builds it.
+      expect(oewsPageWorthyPairs().length).toBeGreaterThan(30_000);
+    }
   });
 
   it('can pull the leaves back out in one edit', () => {

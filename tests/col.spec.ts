@@ -219,7 +219,7 @@ describe('double-count protections', () => {
 });
 
 describe('unsupported state tax and no-car semantics', () => {
-  it('marks remaining income provisional when state income tax is omitted', () => {
+  it('computes New York state tax and names the omitted city tax', () => {
     const result = calculateCostOfLiving({
       locationId: 'place:3651000',
       bedrooms: 'br2',
@@ -234,9 +234,10 @@ describe('unsupported state tax and no-car semantics', () => {
       filingStatus: 'single',
       asOf: '2026-09-02',
     });
-    expect(result.value.income.stateTaxStatus).toBe('unsupported');
-    expect(result.value.income.completeness).toBe('provisional');
-    expect(result.value.incomplete).toBe(true);
+    expect(result.value.income.stateTaxStatus).toBe('supported');
+    expect(result.value.income.completeness).toBe('complete');
+    expect(result.value.incomplete).toBe(false);
+    expect(result.assumptions.join(' ')).toMatch(/New York City|Yonkers/i);
   });
 
   it('does not report remaining cash when housing is unmapped', () => {

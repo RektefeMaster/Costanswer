@@ -1,12 +1,21 @@
 /**
- * Lead-gen / affiliate offer architecture.
+ * Financial partner offers.
  *
- * Partner names below are examples of the kind of marketplace that might sit
- * next to a result (LendingTree, Rocket Mortgage, SoFi). They are not live
- * partnerships. Do not invent click-tracking IDs. A card only becomes a link
- * when its env URL is set and affiliates are enabled in integration-config.
+ * Every offer here is a mortgage, loan or debt marketplace, which makes this
+ * financial lead generation in substance whatever it is called. The monetization
+ * policy holds those to a higher bar than a bag of concrete: a separate
+ * `affiliate.financial.enabled` flag gates the whole file, it defaults off, and
+ * it stays off until the business model, the partner's own disclosure
+ * requirements and any licensing implications have been reviewed. Approved
+ * advertising and ordinary educational content on these pages are unaffected.
+ *
+ * Partner names are examples of the kind of marketplace that might sit next to
+ * a result. They are not live partnerships. Do not invent click-tracking IDs. A
+ * card only becomes a link when its env URL is set, affiliates are enabled, and
+ * the financial flag is explicitly on.
  */
 import { integrationConfig } from './integration-config';
+import { resolveFlag } from './monetization/flags';
 
 export const AFFILIATE_PLACEMENT = 'after-result' as const;
 
@@ -136,7 +145,9 @@ export type AffiliateSlotModel = {
 
 export function affiliateSlotForTool(toolId: string): AffiliateSlotModel {
   const eligible = isAffiliateEligible(toolId);
-  const enabled = integrationConfig.affiliatesEnabled && eligible;
+  const enabled = eligible
+    && integrationConfig.affiliatesEnabled
+    && resolveFlag('affiliate.financial.enabled');
   const offers = offersForTool(toolId).map((offer) => {
     const partner = AFFILIATE_PARTNERS[offer.partnerId];
     return {

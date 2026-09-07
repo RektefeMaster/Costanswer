@@ -1,8 +1,31 @@
 # CostAnswer implementation roadmap
 
+Status as of 2026-09-07. Execution detail lives in `docs/MASTER_PLAN.md` **v3
+(rebased after P2 closed)**. P2 acceptance is `docs/P2_STATE_TAX_FINAL.md`.
+
+Do not trust a historical HEAD SHA. Reconcile branch, commit, dirty files,
+`tools.length`, tests and `npm run verify:tax` before starting a phase.
+
+## Current
+
+| Track | State |
+| --- | --- |
+| Phases 0–3 (shell, engines, first tools, SEO plumbing) | **Shipped** |
+| Platform (MASTER_PLAN P1) | CI/lint/typecheck/bundle check **shipped**. Custom domain **open — public-launch blocker**. D1/secrets are a **monetization activation** blocker, not a public-launch blocker while providers stay off |
+| State wage tax (MASTER_PLAN P2) | **Closed — do not execute.** 51/51 supported, 0 unsupported. Authority: `docs/P2_STATE_TAX_FINAL.md` |
+| Registry | **58** calculators — confirm `tools.length` |
+| Salary corpus | 761 occupations, 51 state hubs, 30,807 leaves **staged** (`occupationInState: 'staged'`). Staging reason is **crawl/indexation**, not missing state tax |
+| Next work (MASTER_PLAN §L) | **0** clean checkpoint commit → **1** production deploy + GSC + Bing + analytics **the day the domain is live** → **2** P3 freshness → **3** P5 primitives → **4** P4 tax/high-value finance → **5** P7 Job Cost V1 → **6** remaining P4 → **7** P6/P8 after GSC signal |
+
+P2 leftover tax work is not a new phase: wait for published 2026 annual forms on mixed-year rows, or a separately scoped city/ZIP local-tax engine. Do not invent those numbers. Do not re-open P2.
+
+101 is a catalog **target**, not a sacred ship number. Job Cost Engine V1 outranks filling the remaining generic calculators.
+
+---
+
 ## Phase 0 — Repository and product baseline
 
-Acceptance criteria:
+**Shipped.**
 
 - Node 22.13+ runtime is documented and used.
 - Production-oriented App Router/Vinext project compiles.
@@ -11,7 +34,7 @@ Acceptance criteria:
 
 ## Phase 1 — Answer-engine foundation
 
-Acceptance criteria:
+**Shipped.**
 
 - Typed tool/category/relation registry exists.
 - Pure calculation engines expose versioned, explainable results.
@@ -21,9 +44,9 @@ Acceptance criteria:
 
 ## Phase 2 — Representative tools and authoritative data
 
-Acceptance criteria:
+**Shipped.**
 
-- Seven useful tools across six categories are live; no placeholder tool routes.
+- Seven useful tools across six categories are live; no placeholder tool routes. The live catalog is now 58 tools, not seven.
 - EIA electricity data is normalized into an immutable snapshot with provenance.
 - An ingestion adapter, validation report and failure fixtures exist.
 - Electricity and EV/gas tools reuse the same state-energy dataset.
@@ -31,23 +54,25 @@ Acceptance criteria:
 
 ## Phase 3 — Discovery, SEO and monetization readiness
 
-Acceptance criteria:
+**Shipped**, except connecting Search Console / Bing (needs the live domain).
 
 - Search resolves natural-language aliases from the registry.
 - Topic hubs and related links are generated from typed relationships.
 - Canonicals, metadata, breadcrumbs, valid JSON-LD, robots and sitemap are present.
 - Indexability evidence is explicit; transient tool state cannot create crawlable pages.
-- Empty, reserved ad slots and a privacy-conscious analytics boundary are available.
+- Empty, reserved ad slots and a privacy-conscious analytics boundary are available. Affiliate/lead-gen code exists; external providers stay off until approval.
 
 ## Phase 4 — Verification and launch
 
-Acceptance criteria:
+**Partially shipped.**
 
 - Typecheck, lint, unit/integration tests and production build pass.
-- Critical routes return 200 and expose the expected metadata.
 - Keyboard, touch and reduced-motion behavior are supported.
-- Adversarial scale/data/SEO/mobile review finds no unresolved material defect.
-- A versioned deployment is published.
+- Custom-domain deployment is still open (`MASTER_PLAN` P1). Search Console,
+  Bing, and analytics connect **the day the domain is live**, not as a final
+  P9 checklist item. D1 is not required to serve the public site.
+
+---
 
 ## Expansion wave 1 — Data-led traffic
 
@@ -56,22 +81,30 @@ Acceptance criteria:
 - Home affordability decision screen (this house vs. how much house) on take-home pay. **Shipped.**
 - BLS OEWS salary explorer plus national occupation pages. **Shipped** — 761 pages, one per detailed occupation OEWS publishes a national wage for, excluding the residual "All Other" buckets.
 - 51 state/DC salary hubs only after each page passes the quality gate. **Shipped** — each hub carries the state's own wage distribution, its most common and best-paid occupations, and the occupations most concentrated there.
-- Search Console import and opportunity scoring. **Next, and the gate on everything below.**
+- 2026 state wage-tax engine. **Shipped (P2 closed)** — salary-after-tax, paycheck, bonus, COL gross-salary, and occupation take-home use the same 51-jurisdiction snapshot. Local city/county tax is named, not computed.
+- Search Console import and opportunity scoring. **Open** — connect the day
+  `costanswer.com` is live. That feed gates salary-leaf waves and guide
+  expansion, not P3/P5/P4 tax tools.
 
-Occupation × state pages are open: 30,807 pages indexable and in the sitemap, published at the site owner's direction rather than after measurement. Reverting to a staged launch is one word — `occupationInState` in `SALARY_PUBLICATION` — and is the first thing to try if Search Console shows the corpus discovered but not indexed. Metro combinations remain unbuilt: the OEWS metro release is 40 MB and would not fit the Worker bundle the state release fits in, so it needs a storage decision first.
+Occupation × state pages are **staged** (`occupationInState: 'staged'`).
+State tax is a resolved prerequisite. They stay closed until GSC shows indexed
+ratio, impressions and canonical health on the 813 live salary URLs. Metro
+combinations remain unbuilt: the OEWS metro release is 40 MB and would not fit
+the Worker bundle the state release fits in, so it needs a storage decision first.
 
 ## Expansion wave 2 — Reuse-led tools
 
 - Road-trip fuel cost using supported EIA geographies plus manual override. **Shipped.**
-- IRS mileage reimbursement with effective-date rules.
-- Appliance running cost using the energy engine. **Shipped.**
 - Car affordability / true monthly vehicle cost composing the finance, tax and energy engines, with home charging covered by its EV mode. **Shipped.**
+- Auto coverage and household insurance cost. **Shipped** (this branch).
+- Appliance running cost using the energy engine. **Shipped.**
+- IRS mileage reimbursement with effective-date rules. **Not built.**
 - Additional concrete shapes and material estimators.
 - FoodData Central-backed ingredient density mappings.
 
 ## Expansion wave 3 — Local benchmarks
 
-- Census ACS normalization with estimates, margins of error and annotation handling.
+- Census ACS normalization with estimates, margins of error and annotation handling. **Not built.**
 - Location profiles for state/county/city only where genuinely distinct data supports the page.
 - Quality-gated local comparisons; no city-name substitution pages.
-
+- Local wage income tax by city/ZIP (NYC, Yonkers, PA EIT, MD county, OH municipal, IN county, …). **Not built.** State tax names the omission; it does not invent a typical rate.

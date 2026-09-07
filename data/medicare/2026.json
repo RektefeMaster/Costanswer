@@ -1,0 +1,51 @@
+{
+  "snapshotId": "medicare-2026-cms-2025-11-verified2026-09-05",
+  "coverageYear": 2026,
+  "irmaaIncomeTaxYear": 2024,
+  "verifiedAt": "2026-09-05",
+  "sourceStatus": "official-rules",
+  "partA": {
+    "inpatientDeductiblePerBenefitPeriod": 1736,
+    "coinsuranceDays61To90": 434,
+    "coinsuranceLifetimeReserveDay": 868,
+    "lifetimeReserveDays": 60,
+    "skilledNursingCoinsuranceDays21To100": 217,
+    "monthlyPremium30To39Quarters": 311,
+    "monthlyPremiumUnder30Quarters": 565
+  },
+  "partB": {
+    "standardMonthlyPremium": 202.90,
+    "annualDeductible": 283,
+    "coinsurancePercentAfterDeductible": 20
+  },
+  "irmaaBrackets": {
+    "single": [
+      { "threshold": null, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 0, "partDMonthlyAdjustment": 0 },
+      { "threshold": 109000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 81.20, "partDMonthlyAdjustment": 14.50 },
+      { "threshold": 137000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 202.90, "partDMonthlyAdjustment": 37.50 },
+      { "threshold": 171000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 324.60, "partDMonthlyAdjustment": 60.40 },
+      { "threshold": 205000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 446.30, "partDMonthlyAdjustment": 83.30 },
+      { "threshold": 500000, "thresholdIsInclusive": true, "partBMonthlyAdjustment": 487.00, "partDMonthlyAdjustment": 91.00 }
+    ],
+    "married-joint": [
+      { "threshold": null, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 0, "partDMonthlyAdjustment": 0 },
+      { "threshold": 218000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 81.20, "partDMonthlyAdjustment": 14.50 },
+      { "threshold": 274000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 202.90, "partDMonthlyAdjustment": 37.50 },
+      { "threshold": 342000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 324.60, "partDMonthlyAdjustment": 60.40 },
+      { "threshold": 410000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 446.30, "partDMonthlyAdjustment": 83.30 },
+      { "threshold": 750000, "thresholdIsInclusive": true, "partBMonthlyAdjustment": 487.00, "partDMonthlyAdjustment": 91.00 }
+    ],
+    "married-separate": [
+      { "threshold": null, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 0, "partDMonthlyAdjustment": 0 },
+      { "threshold": 109000, "thresholdIsInclusive": false, "partBMonthlyAdjustment": 446.30, "partDMonthlyAdjustment": 83.30 },
+      { "threshold": 391000, "thresholdIsInclusive": true, "partBMonthlyAdjustment": 487.00, "partDMonthlyAdjustment": 91.00 }
+    ]
+  },
+  "sources": [
+    { "id": "cms-part-a-b-2026", "name": "CMS · 2026 Medicare Parts A & B Premiums and Deductibles", "url": "https://www.cms.gov/newsroom/fact-sheets/2026-medicare-parts-b-premiums-deductibles", "publishedAt": "2025-11-14", "detail": "Standard Part B premium and deductible, the full Part B and Part D income-related adjustment tables by filing status, and every Part A deductible, coinsurance, and voluntary premium amount for 2026." },
+    { "id": "cms-rates-cy2026", "name": "CMS · Medicare Deductible, Coinsurance & Premium Rates: CY 2026 Update", "url": "https://www.cms.gov/files/document/mm14279-medicare-deductible-coinsurance-premium-rates-cy-2026-update.pdf", "publishedAt": "2025-11-20", "detail": "Medicare Learning Network article restating the same 2026 rates for claims processing." },
+    { "id": "ssa-irmaa-tables", "name": "SSA · POMS HI 01101.020, IRMAA sliding scale tables", "url": "https://secure.ssa.gov/poms.nsf/lnx/0601101020", "publishedAt": "2025-12-02", "detail": "The sliding-scale tables SSA applies, and the rule that MAGI is taken from the return two years before the premium year." },
+    { "id": "ssa-lower-irmaa", "name": "SSA · Request to lower an Income-Related Monthly Adjustment Amount", "url": "https://www.ssa.gov/medicare/lower-irmaa", "publishedAt": null, "detail": "Form SSA-44 and the life-changing events that allow a more recent year's income to be used instead." }
+  ],
+  "normalizedSha256": "86805ee508a4666bffa6d96e8b368ae61528b3cf157d05b9109183ff47a94ff5"
+}

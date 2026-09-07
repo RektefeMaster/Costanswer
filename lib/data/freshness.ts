@@ -30,6 +30,18 @@ export type FreshnessInput = {
 
 const UTC_DAY_MS = 24 * 60 * 60 * 1000;
 
+/**
+ * Calendar day for user-facing freshness labels.
+ *
+ * `PUBLISHING_SNAPSHOT_DATE` is a reviewed SEO/build clock and does not age
+ * after deploy. A six-month-old Worker would otherwise keep saying "current"
+ * because its asOf never moved. Calculators that need a stable asOf should
+ * pass one explicitly; chips and the data page call this.
+ */
+export function utcCalendarDate(now: Date = new Date()): string {
+  return now.toISOString().slice(0, 10);
+}
+
 function utcDate(isoDate: string): Date {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) throw new Error(`Invalid calendar date: ${isoDate}`);
   const [year, month, day] = isoDate.split('-').map(Number);
@@ -98,6 +110,7 @@ export function nextExpectedReleaseDate(policy: DatasetPolicy, input: FreshnessI
 export function evaluateFreshness(
   policy: DatasetPolicy,
   input: FreshnessInput,
+  /** Defaults to the publishing clock so engines stay reproducible. UI passes `utcCalendarDate()`. */
   asOf: string = PUBLISHING_SNAPSHOT_DATE,
 ): FreshnessStatus {
   const expectedRelease = nextExpectedReleaseDate(policy, input);

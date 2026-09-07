@@ -5,6 +5,7 @@ const POLICIES = [
   { href: '/faq', label: 'FAQ' },
   { href: '/terms', label: 'User agreement' },
   { href: '/privacy', label: 'Privacy' },
+  { href: '/disclosure', label: 'Disclosure' },
   { href: '/contact', label: 'Contact' },
   { href: '/methodology', label: 'Methodology' },
 ] as const;

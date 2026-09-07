@@ -1,8 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="#102a2a">
-  <path d="M68 34h126v88H68z"/>
-  <path fill-rule="evenodd" d="M10 62h58v68H4V96L22 62h10V50h24v12H10ZM26 76h30v28H26z"/>
-  <path d="M4 122h192v16H4z"/>
-  <path fill-rule="evenodd" d="M40 154a26 26 0 1 0 .1 0Zm0-14a14 14 0 1 1 0 28 14 14 0 0 1 0-28Z"/>
-  <path fill-rule="evenodd" d="M102 154a26 26 0 1 0 .1 0Zm0-14a14 14 0 1 1 0 28 14 14 0 0 1 0-28Z"/>
-  <path fill-rule="evenodd" d="M160 154a26 26 0 1 0 .1 0Zm0-14a14 14 0 1 1 0 28 14 14 0 0 1 0-28Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="#102a2a">
+  <path d="M17 55h121c5 0 9 4 9 9v85H8V64c0-5 4-9 9-9Z"/>
+  <path fill-rule="evenodd" d="M158 81h35c7 0 12 3 16 9l21 36c2 4 3 8 3 12v25h-19a30 30 0 0 0-48 0h-8V81Zm14 14v34h45l-18-30c-2-3-4-4-8-4Z"/>
+  <path d="M8 158h17a30 30 0 0 1 48 0h80v20H80a31 31 0 0 0-62 0H8Z"/>
+  <path fill-rule="evenodd" d="M73 182a24 24 0 1 1-48 0 24 24 0 0 1 48 0Zm-15 0a9 9 0 1 0-18 0 9 9 0 0 0 18 0Zm156 0a24 24 0 1 1-48 0 24 24 0 0 1 48 0Zm-15 0a9 9 0 1 0-18 0 9 9 0 0 0 18 0Z"/>
 </svg>

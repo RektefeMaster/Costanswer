@@ -7,12 +7,15 @@ export const refinanceInputSchema = z.object({
   currentBalance: finiteNumber('Current loan balance', 1, 100_000_000),
   currentRatePercent: finiteNumber('Current interest rate', 0, 25),
   currentTermYears: finiteNumber('Original term', 1, 50),
-  monthsAlreadyPaid: finiteNumber('Months already paid', 0, 600),
+  monthsAlreadyPaid: finiteNumber('Months already paid', 0, 600).refine(Number.isInteger, 'Payments already made must be a whole number of months.'),
   newRatePercent: finiteNumber('New interest rate', 0, 25),
   newTermYears: finiteNumber('New term', 1, 50),
   closingCosts: finiteNumber('Closing costs', 0, 1_000_000),
   /** Rolling costs into the loan means borrowing them, not avoiding them. */
   financeClosingCosts: z.boolean(),
+}).refine((input) => input.monthsAlreadyPaid < Math.round(input.currentTermYears * 12), {
+  message: 'Payments already made must be less than the original loan term.',
+  path: ['monthsAlreadyPaid'],
 });
 
 export type RefinanceInput = z.infer<typeof refinanceInputSchema>;
@@ -45,7 +48,7 @@ export type RefinanceValue = {
 export function calculateRefinance(rawInput: unknown): CalculationResult<RefinanceValue> {
   const input = refinanceInputSchema.parse(rawInput);
   const currentPaymentCount = Math.round(input.currentTermYears * 12);
-  const paid = Math.min(Math.round(input.monthsAlreadyPaid), currentPaymentCount - 1);
+  const paid = input.monthsAlreadyPaid;
   const monthsLeft = currentPaymentCount - paid;
 
   // The balance is what the reader typed; the payment is the one that amortizes

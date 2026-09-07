@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import Link from 'next/link';
 import {
   AFFORDABILITY_BANDS,
   calculateHomeAffordability,
@@ -99,6 +100,11 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
   const result = calculation.result?.value;
   const thisHouse = result?.mode === 'this-house' ? result : null;
   const howMuch = result?.mode === 'how-much-house' ? result : null;
+  const source = datasetSourceDisplay({
+    datasetId: 'freddie-mac-pmms',
+    observationPeriod: rates.observationPeriod,
+    sourceStatus: 'preliminary',
+  });
 
   // Property tax, insurance and HOA are optional inputs that go straight into
   // the monthly housing total. Leaving them blank does not make them zero, so
@@ -122,11 +128,9 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
         <span>FREDDIE MAC PMMS</span>
         <p>
           <strong>30-year {rates.thirtyYearFixedPercent.toFixed(2)}% · 15-year {rates.fifteenYearFixedPercent.toFixed(2)}%</strong>
-          <small>National weekly average · {datasetSourceDisplay({
-            datasetId: 'freddie-mac-pmms',
-            observationPeriod: rates.observationPeriod,
-            sourceStatus: 'preliminary',
-          }).periodLabel}</small>
+          <small>National weekly average · survey week of {source.periodLabel}
+            {source.freshness !== 'current' && ` · ${source.freshnessLabel}. Check Freddie Mac for the latest week before relying on it.`}
+          </small>
         </p>
       </div>
       <div className="mode-tabs" role="group" aria-label="Affordability question">
@@ -187,7 +191,7 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
             <input id="afford-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Yearly home insurance" htmlFor="afford-insurance" hint="Optional">
+        <Field label="Yearly home insurance" htmlFor="afford-insurance" hint="Enter an annual quote or planning estimate">
           <InputShell prefix="$">
             <input id="afford-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
           </InputShell>
@@ -208,6 +212,7 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
           </InputShell>
         </Field>
       </div>
+      <p className="decision-note">Use the <Link href="/money/insurance-cost">Insurance Cost Calculator</Link> to prepare an annual homeowners budget, then enter that amount above. Replace it with a carrier quote when available.</p>
       <div className="check-row">
         <label>
           <input type="checkbox" checked={includePmiEstimate} onChange={(event) => setIncludePmiEstimate(event.target.checked)} />
@@ -252,10 +257,10 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
               <p>Nothing has to change for the comfortable band.</p>
             )}
             {thisHouse.pathToComfortable.priceCut !== null && thisHouse.pathToComfortable.priceCut > 0 && (
-              <p>Cut the price by <strong>{approxMoney(thisHouse.pathToComfortable.priceCut)}</strong> to reach the comfortable band with this down payment.</p>
+              <p>Cut the price by <strong>{money(thisHouse.pathToComfortable.priceCut, 0)}</strong> to reach the comfortable band with this down payment.</p>
             )}
             {thisHouse.pathToComfortable.extraDownPayment !== null && thisHouse.pathToComfortable.extraDownPayment > 0 && (
-              <p>Or raise the down payment by <strong>{approxMoney(thisHouse.pathToComfortable.extraDownPayment)}</strong> and keep this price.</p>
+              <p>Or raise the down payment by <strong>{money(thisHouse.pathToComfortable.extraDownPayment, 0)}</strong> and keep this price.</p>
             )}
             {thisHouse.verdict !== 'comfortable' && thisHouse.pathToComfortable.extraDownPayment === null && (
               <p>Raising the down payment alone does not reach the comfortable band at this price.</p>
@@ -265,7 +270,7 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
             <summary>What if things go wrong?</summary>
             <ul>
               <li>
-                <span><strong>Rate +1 point</strong><small>Same loan, higher monthly P&I</small></span>
+                <span><strong>Rate +1 point</strong><small>A higher quote before closing; an existing fixed rate stays fixed</small></span>
                 <b>+{money(thisHouse.stress.rateBumpMonthly)}</b>
               </li>
               <li>
@@ -287,6 +292,12 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
       )}
       {calculation.result && howMuch && (
         <div className="calculation-output">
+          {missingHousingCosts.length > 0 && (
+            <div className="data-callout">
+              <span>INCOMPLETE</span>
+              <p><strong>No {missingHousingCosts.join(' or ')} entered</strong><small>These price limits leave those costs out. Enter them to get a more complete affordability estimate.</small></p>
+            </div>
+          )}
           <PrimaryResult
             label="Comfortable home price"
             value={howMuch.comfortableHomePrice > 0 ? roundedGuidelineMoney(howMuch.comfortableHomePrice) : 'None'}

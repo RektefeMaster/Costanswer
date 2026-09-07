@@ -13,6 +13,8 @@ export const DATASET_IDS = [
   'usda-food-plans',
   'irs-retirement-limits',
   'gsa-perdiem',
+  'naic-insurance',
+  'cms-marketplace',
 ] as const;
 
 export type DatasetId = (typeof DATASET_IDS)[number];
@@ -229,6 +231,45 @@ export const DATASET_POLICIES: Record<DatasetId, DatasetPolicy> = {
     releaseIntervalDays: 365,
     publicationLagDays: 0,
     releaseSchedule: 'Annual cost-of-living adjustments, published each autumn',
+  },
+  /*
+   * NAIC reports insurance experience two to three years after the fact: the
+   * 2023 figures were published in February and July 2026. Anchoring freshness
+   * on the observation period would call the newest report NAIC has ever
+   * released "stale" on the day it is promoted, so the anchor is the date a
+   * maintainer last confirmed against the NAIC publications catalog that no
+   * newer edition is downloadable. The reference year the numbers describe is
+   * carried separately, in `periodKind`, and shown next to every figure.
+   */
+  'naic-insurance': {
+    datasetId: 'naic-insurance',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 120,
+    refreshMode: 'manual',
+    providerShort: 'NAIC',
+    periodKind: 'reference-year',
+    freshnessAnchor: 'published-at',
+    releaseIntervalDays: 365,
+    publicationLagDays: 0,
+    releaseSchedule: 'Homeowners and Auto Insurance Database reports, roughly annual and two to three years behind the data year',
+  },
+  /*
+   * The landscape file describes a plan year, and it is published shortly before
+   * that year's open enrollment rather than after it. Anchoring on the release
+   * date keeps a 2026 file current through the year it prices, and the 120-day
+   * grace window covers the gap between one plan year's file and the next.
+   */
+  'cms-marketplace': {
+    datasetId: 'cms-marketplace',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 120,
+    refreshMode: 'manual',
+    providerShort: 'CMS',
+    periodKind: 'reference-year',
+    freshnessAnchor: 'published-at',
+    releaseIntervalDays: 365,
+    publicationLagDays: 0,
+    releaseSchedule: 'Individual Market Medical Landscape file, published for each plan year before open enrollment',
   },
 };
 

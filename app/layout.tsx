@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { AttributionCapture } from '@/components/monetization/AttributionCapture';
 import { siteConfig } from '@/lib/site-config';
 
 export const viewport = {
@@ -44,6 +45,12 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <a className="skip-link" href="#main-content">Skip to main content</a>
+        {/*
+          Captured once per tab, in the layout, so the landing page recorded is
+          the page the visit actually started on. Renders nothing, blocks
+          nothing, and stores nothing in a cookie.
+        */}
+        <AttributionCapture />
         {children}
       </body>
     </html>

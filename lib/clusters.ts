@@ -16,15 +16,17 @@ export const TOOL_CLUSTERS = {
     label: 'Pay and take-home',
     // A 401(k) deferral comes out of the same paycheck, and take-home pay is
     // what an affordability screen is built on, so both sit in this journey.
-    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'home-affordability'],
+    // Marketplace assistance is calculated from household income, so the
+    // subsidy check belongs to the same journey as after-tax pay.
+    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'home-affordability', 'health-insurance'],
   },
   retirement: {
     label: 'Saving and retirement',
-    toolIds: ['401k', 'roth-ira', 'retirement', 'investment', 'compound-interest', 'cd', 'interest'],
+    toolIds: ['401k', 'roth-ira', 'retirement', 'investment', 'compound-interest', 'cd', 'interest', 'medicare-cost'],
   },
   'home-buying': {
     label: 'Buying a home',
-    toolIds: ['mortgage-payment', 'home-affordability', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
+    toolIds: ['mortgage-payment', 'home-affordability', 'insurance-cost', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
   },
   debt: {
     label: 'Borrowing and paying off debt',
@@ -32,7 +34,7 @@ export const TOOL_CLUSTERS = {
   },
   vehicle: {
     label: 'Running a car',
-    toolIds: ['car-affordability', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
+    toolIds: ['car-affordability', 'insurance-cost', 'auto-coverage', 'car-loan', 'ev-vs-gas', 'road-trip-fuel'],
   },
   energy: {
     label: 'Energy at home',
@@ -40,7 +42,7 @@ export const TOOL_CLUSTERS = {
   },
   prices: {
     label: 'What things cost',
-    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living'],
+    toolIds: ['where-cheaper', 'unit-price', 'inflation', 'cost-of-living', 'health-insurance', 'marketplace-plans', 'medicare-cost'],
   },
   'home-project': {
     label: 'Measuring a home project',

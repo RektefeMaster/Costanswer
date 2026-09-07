@@ -3,6 +3,11 @@ import type { TaxBracket } from './types';
 /**
  * Progressive tax on a non-negative income using inclusive “not over” brackets.
  * Intermediate results are not rounded.
+ *
+ * A bracket carrying `baseTax` states the tax owed at its own floor, and that
+ * figure wins over the running total. That is not a convenience: a few states
+ * publish constants that do not reconcile with summing the bands beneath them,
+ * and the published constant is the one they charge.
  */
 export function calculateProgressiveTax(income: number, brackets: readonly TaxBracket[]): number {
   if (!Number.isFinite(income)) throw new Error('Income must be finite.');
@@ -19,6 +24,7 @@ export function calculateProgressiveTax(income: number, brackets: readonly TaxBr
     if (bracket.notOver !== null && !(cap > previousCap)) {
       throw new Error('Tax bracket thresholds must be strictly increasing.');
     }
+    if (income > previousCap && bracket.baseTax !== undefined) tax = bracket.baseTax;
     const slice = Math.min(income, cap) - previousCap;
     if (slice > 0) tax += slice * bracket.rate;
     previousCap = cap;

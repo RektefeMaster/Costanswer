@@ -195,10 +195,14 @@ function ResultDock({ label, value, tone }: ResultDockState) {
   useEffect(() => {
     const result = document.querySelector('.calculator-panel .primary-result');
     const panel = document.querySelector('.calculator-panel');
-    if (!result || !panel) {
-      setVisible(false);
-      return;
-    }
+    /*
+     * Nothing to observe means nothing to show, and nothing to reset either:
+     * the dock can only be visible because a previous run made it so, and that
+     * run's cleanup — below — has already hidden it by the time this line
+     * runs. Setting state here as well was a redundant synchronous update
+     * inside an effect, which is both a lint error and a wasted render.
+     */
+    if (!result || !panel) return;
 
     const sync = () => {
       const next = panelInView.current && !resultInView.current;
@@ -226,6 +230,7 @@ function ResultDock({ label, value, tone }: ResultDockState) {
       resultObserver.disconnect();
       panelObserver.disconnect();
       dock?.setDockVisible(false);
+      setVisible(false);
     };
   }, [dock, label, value]);
 

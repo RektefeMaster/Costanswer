@@ -13,6 +13,7 @@ export const salaryAfterTaxInputSchema = z.object({
   state: z.string().refine(isStateCode, 'Choose a U.S. state or D.C.'),
   filingStatus: z.enum(FILING_STATUSES),
   taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  dependents: finiteNumber('Dependents', 0, 20).optional(),
 });
 
 export type SalaryAfterTaxInput = z.infer<typeof salaryAfterTaxInputSchema>;
@@ -58,6 +59,15 @@ export function estimateAnnualTaxLiability(rawInput: unknown): AnnualTaxLiabilit
     state: input.state,
     filingStatus: input.filingStatus,
     taxableIncome: input.annualGrossSalary,
+    // A few states let federal income tax be deducted from state taxable
+    // income, so their answer genuinely depends on this figure. Federal is
+    // computed first for exactly that reason.
+    federalIncomeTax: federal.tax,
+    // Some states tax federal taxable income rather than gross wages, so they
+    // need the deduction that has already come out of that base.
+    federalStandardDeduction: federal.standardDeduction,
+    employeeFica: fica.socialSecurity + fica.medicare + fica.additionalMedicare,
+    dependents: input.dependents,
   });
   const totalTax = federal.tax + fica.total + stateTax.tax;
   const takeHome = input.annualGrossSalary - totalTax;
@@ -82,9 +92,8 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
     `This estimate uses tax year ${liability.taxYear}.`,
     `Federal filing status: ${FILING_STATUS_LABELS[liability.filingStatus]}.`,
     `Federal income tax uses the IRS standard deduction of ${formatMoney(liability.federal.standardDeduction)}. Itemized deductions are not used.`,
-    'Tax credits, dependents, capital gains, self-employment tax, and AMT are not included.',
+    'Tax credits, capital gains, self-employment tax, and AMT are not included. Dependent exemptions apply only where this snapshot carries a per-dependent amount for the state.',
     'Employer benefits and pre-tax payroll deductions are not included.',
-    'Local or city income taxes are not included.',
     'This is an estimate, not a tax return or employer withholding notice.',
     `Federal source: IRS Revenue Procedure for tax year ${liability.taxYear}.`,
   ];
@@ -98,6 +107,44 @@ function sharedAssumptions(liability: AnnualTaxLiability): string[] {
   } else {
     assumptions.push(
       `${stateName} tax uses ${liability.stateTax.provider} rules. Schedule year ${liability.stateTax.scheduleTaxYear}. State-specific credits and most subtractions are not modeled.`,
+    );
+  }
+
+  /*
+   * Name the local tax where one exists rather than a blanket "local taxes are
+   * not included" on every state. Most states have none, so the blanket line
+   * was noise on forty pages and an understatement on the ten where it mattered
+   * — and it never said by how much.
+   */
+  const local = liability.stateTax.omittedLocalTax;
+  if (local) {
+    const asPercent = (rate: number) => formatNumber(rate * 100, { maximumFractionDigits: 3 });
+    const base = local.appliesTo === 'taxable-income' ? 'taxable income' : 'state tax';
+    const where = local.basis.replace('-', ' ');
+    if (local.omissionNote) {
+      assumptions.push(`${local.label} is not included. ${local.omissionNote}`);
+    } else if (local.typicalRateRange) {
+      assumptions.push(`${local.label} is not included. It is set by your ${where} and typically runs `
+        + `${asPercent(local.typicalRateRange.low)}% to ${asPercent(local.typicalRateRange.high)}% of ${base}, `
+        + 'so your real take-home is lower than this.');
+    } else {
+      assumptions.push(`${local.label} is not included. It is set by your ${where} and applies to ${base}. `
+        + 'No state agency publishes a single rate for it, so its size is not estimated here — but your real take-home is lower than this.');
+    }
+  } else if (liability.stateTax.status === 'supported') {
+    assumptions.push('This state levies no local income tax on wages, so nothing is omitted on that account.');
+  }
+
+  if (liability.stateTax.federalTaxDeducted !== undefined) {
+    assumptions.push(
+      `${stateName} allows federal income tax to be deducted from state taxable income; `
+      + `${formatMoney(liability.stateTax.federalTaxDeducted)} was deducted here.`,
+    );
+  }
+  if (liability.stateTax.exemptionCredit !== undefined) {
+    assumptions.push(
+      `${stateName} gives an exemption as a credit against tax rather than a deduction from income; `
+      + `${formatMoney(liability.stateTax.exemptionCredit)} was applied.`,
     );
   }
   return assumptions;

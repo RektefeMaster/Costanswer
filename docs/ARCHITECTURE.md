@@ -124,7 +124,14 @@ Long-tail queries (loan type + year, “$400,000 30-year payment”) belong in t
 
 **Why the registry could not absorb it:** a tool is one page someone built and scored by hand on seven criteria. That is the right instrument for fifty tools and the wrong one for 34,250 pages. A family instead derives its pages from the data: a page exists where BLS published a detailed occupation with both an employment count and a wage, and nowhere else (`isPageWorthyEstimate`). Suppressed estimates produce no URL rather than a thin one, which is the same hard gate the registry applies, enforced by the data instead of by review.
 
-**Levels and publication:** `SALARY_PUBLICATION` records how far the family has been opened. Every level is currently open — the hub, the state index, 51 state hubs, 761 occupation pages and 30,807 occupation-in-state pages, 31,621 URLs across four `sitemaps/salary` files. That is the site owner's decision, taken over the recommendation to open the leaves only after the levels above them had been measured; publishing a corpus this size from a domain with no history is the profile most likely to be crawled slowly or left largely unindexed. The gate is kept because it makes the decision reversible: setting `occupationInState` back to `staged` withdraws those URLs from the sitemap and marks them `noindex` in one edit, without touching a route or a template.
+**Levels and publication:** `SALARY_PUBLICATION` in `lib/salary-pages.ts`
+records how far the family has been opened. Hubs and occupation pages are
+indexable; **`occupationInState` is `staged`** (30,807 leaves exist as routes
+but are `noindex` and out of the sitemap). State-tax correctness is no longer
+the reason — P2 closed. Leaves stay staged until Search Console shows indexed
+ratio, impressions and canonical health on the 813 live URLs that justify
+opening them. Setting the level back to `indexable` is one word; do not open
+them to hit a URL count.
 
 The salary family pages at 10,000 URLs per sitemap file rather than the protocol's 50,000. One file holding the whole family is about six megabytes the Worker rebuilds on every cache miss, and one file a crawler must re-fetch whole whenever any page in it changes.
 

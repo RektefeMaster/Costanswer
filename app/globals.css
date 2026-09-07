@@ -438,12 +438,27 @@ input, select { font-variant-numeric: tabular-nums; }
   transform: rotate(-11deg);
   transform-origin: center;
 }
-.salary-art-truck { width: 72%; max-width: 320px; bottom: -8%; right: -12%; }
-.salary-art-developer { width: 64%; max-width: 280px; bottom: -14%; right: -8%; }
-.salary-art-accountant { width: 52%; bottom: -16%; }
-.salary-art-admin { width: 56%; bottom: -12%; }
-.salary-art-aide { width: 62%; bottom: -10%; right: -10%; }
-.salary-art-electrician { width: 60%; bottom: -14%; }
+/* One ink, open cutouts and a shared optical scale for the occupation stencils. */
+.salary-promo .category-card .salary-art {
+  width: 57%;
+  max-width: 244px;
+  right: -3%;
+  bottom: -10%;
+  opacity: .17;
+  transform: rotate(-8deg);
+  transform-origin: center;
+}
+.salary-promo .category-card .salary-art-truck { width: 65%; max-width: 278px; right: -4%; bottom: -9%; }
+.salary-promo .category-card .salary-art-developer { width: 61%; max-width: 260px; bottom: -9%; }
+.salary-promo .category-card .salary-art-teacher { width: 53%; bottom: -9%; }
+.salary-promo .category-card .salary-art-electrician { width: 53%; bottom: -12%; }
+.salary-promo .category-card .salary-art-accountant { width: 51%; bottom: -13%; }
+@media (hover: hover) {
+  .salary-promo .category-card:hover .salary-art {
+    opacity: .22;
+    transform: rotate(-8deg) translate(-4px, -4px);
+  }
+}
 .category-topline, .category-copy { position: relative; z-index: 1; }
 .category-topline { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
 .category-number { font-size: 11px; font-weight: 800; }
@@ -908,6 +923,83 @@ input, select { font-variant-numeric: tabular-nums; }
   background: var(--cream);
   box-shadow: 8px 8px 0 var(--ink);
   contain: layout paint;
+}
+.insurance-modes { flex-wrap: wrap; }
+.insurance-auto-toggle { display: flex; align-items: center; gap: 9px; min-height: 24px; font-size: 12px; font-weight: 780; cursor: pointer; }
+.insurance-auto-toggle input { width: 18px; height: 18px; accent-color: #207767; }
+.insurance-customize { margin: 0 30px 20px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.insurance-customize > summary, .insurance-deductibles > summary { cursor: pointer; padding: 18px 20px; font-size: 14px; font-weight: 780; }
+.insurance-customize > summary span, .insurance-deductibles > summary span { display: block; margin-top: 6px; margin-left: 15px; color: var(--muted); font-size: 11px; font-weight: 400; }
+.insurance-customize .calc-form-grid { padding: 8px 20px 22px; }
+.insurance-field-note { align-self: center; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.insurance-source-note { display: flex; align-items: center; gap: 12px; padding: 0 30px 24px; }
+.insurance-source-dot { width: 8px; height: 8px; flex: none; background: #207767; border-radius: 50%; }
+.insurance-source-note p { margin: 0; flex: 1; min-width: 0; }
+.insurance-source-note strong, .insurance-source-note p span { display: block; font-size: 11px; line-height: 1.5; }
+.insurance-source-note p span { color: var(--muted); margin-top: 3px; }
+.insurance-source-note a { flex: none; color: #207767; font-size: 11px; text-decoration: underline; text-underline-offset: 3px; }
+.insurance-cushion { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; padding: 24px 30px; border-top: 1px solid var(--line); }
+.insurance-cushion p { margin: 0; }
+.insurance-cushion p > span { display: block; color: var(--muted); font-size: 11px; }
+.insurance-cushion p > strong { display: block; margin: 7px 0; font-size: 24px; font-variant-numeric: tabular-nums; }
+.insurance-cushion strong small { font-size: 11px; font-weight: 400; }
+.insurance-next-step { margin: 0; padding: 20px 30px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; }
+.insurance-next-step a { color: #207767; text-decoration: underline; text-underline-offset: 3px; }
+.insurance-deductibles { border-top: 1px solid var(--ink); }
+.insurance-deductibles > summary { padding: 24px 30px; }
+.insurance-section-intro { margin: 0; padding: 0 30px; font-size: 12px; color: var(--muted); line-height: 1.6; }
+.insurance-quote-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; padding: 24px 30px; }
+.insurance-quote-grid fieldset { display: grid; gap: 20px; min-width: 0; margin: 0; padding: 18px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.insurance-quote-grid legend { font-size: 14px; font-weight: 800; padding: 0 7px; }
+.insurance-claim-results table { width: calc(100% - 60px); margin: 0 30px; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.insurance-claim-results caption { text-align: left; font-weight: 780; padding: 0 0 15px; }
+.insurance-claim-results th, .insurance-claim-results td { padding: 14px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+.insurance-claim-results th:first-child { text-align: left; }
+.insurance-claim-results thead { background: rgba(32,119,103,.06); }
+.insurance-comparison-verdict { margin: 22px 30px; font-size: 13px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .insurance-customize { margin-left: 20px; margin-right: 20px; }
+  .insurance-source-note { padding-left: 20px; padding-right: 20px; flex-wrap: wrap; }
+  .insurance-source-note a { margin-left: 20px; }
+  .insurance-cushion, .insurance-quote-grid { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px; }
+  .insurance-cushion p { padding-top: 14px; border-top: 1px solid var(--line); }
+  .insurance-next-step, .insurance-deductibles > summary { padding: 20px; }
+  .insurance-section-intro { padding: 0 20px; }
+  .insurance-claim-results table { width: calc(100% - 40px); margin: 0 20px; font-size: 11px; }
+  .insurance-claim-results th, .insurance-claim-results td { padding: 12px 5px; overflow-wrap: anywhere; }
+  .insurance-comparison-verdict { margin: 20px; }
+}
+.health-premiums { margin: 26px 30px 0; padding: 20px 0 4px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.health-premiums h3 { margin: 0 20px; font-size: 14px; font-weight: 800; }
+.health-premiums .calc-form-grid { padding: 18px 20px 20px; }
+.health-advanced { margin: 20px 30px 0; border: 1px solid var(--line); border-radius: 10px; background: white; }
+.health-advanced > summary { cursor: pointer; padding: 18px 20px; font-size: 14px; font-weight: 780; }
+.health-advanced > summary span { display: block; margin-top: 6px; margin-left: 15px; color: var(--muted); font-size: 11px; font-weight: 400; }
+.health-advanced .calc-form-grid { padding: 8px 20px 22px; }
+.health-status { margin: 22px 30px; padding: 16px 18px; border-left: 3px solid #207767; border-radius: 0 8px 8px 0; background: rgba(32,119,103,.06); }
+.health-status-review { border-left-color: #9a6212; background: rgba(154,98,18,.08); }
+.health-status > span { display: block; font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; color: #207767; }
+.health-status-review > span { color: #7d4f0e; }
+.health-status ul { margin: 10px 0 0; padding-left: 18px; }
+.health-status li { font-size: 12px; line-height: 1.6; }
+.health-status li + li { margin-top: 7px; }
+.health-county-choice { margin: 0 30px 4px; }
+.health-county-choice p { margin: 0 0 12px; color: var(--muted); font-size: 12px; }
+.health-metal-table { margin: 22px 30px; }
+.health-metal-table table { width: 100%; border-collapse: collapse; font-size: 12px; font-variant-numeric: tabular-nums; }
+.health-metal-table caption { text-align: left; font-weight: 780; padding: 0 0 14px; }
+.health-metal-table th, .health-metal-table td { padding: 13px 8px; text-align: right; border-bottom: 1px solid var(--line); }
+.health-metal-table th:first-child { text-align: left; }
+.health-metal-table thead { background: rgba(32,119,103,.06); }
+.health-metal-table tr.is-current { background: rgba(32,119,103,.09); font-weight: 700; }
+.health-metal-table > p { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
+.health-range-note { margin: 0; padding: 20px 30px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; }
+@media (max-width: 600px) {
+  .health-premiums, .health-advanced { margin-left: 20px; margin-right: 20px; }
+  .health-status, .health-range-note, .health-metal-table, .health-county-choice { margin-left: 20px; margin-right: 20px; }
+  .health-range-note { padding-left: 0; padding-right: 0; }
+  .health-metal-table { font-size: 11px; }
+  .health-metal-table th, .health-metal-table td { padding: 11px 5px; overflow-wrap: anywhere; }
 }
 .calculator-heading { display: grid; grid-template-columns: .35fr 1fr; column-gap: 28px; padding: 26px 30px; border-bottom: 1px solid var(--line); }
 .calculator-heading > p { grid-row: 1 / 3; margin: 3px 0 0; color: #207767; font-size: 10px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
@@ -1426,7 +1518,17 @@ input, select { font-variant-numeric: tabular-nums; }
   font-size: 13px;
   font-weight: 750;
 }
-.policy-nav span[aria-current] { color: rgba(16, 42, 42, .45); }
+/*
+ * The current page in this nav has to be visibly the current page and still be
+ * readable. At .45 alpha it measured 2.67:1 against the page ground, which axe
+ * flags as a serious failure — so the distinction is carried by weight and a
+ * marker instead of by fading the text below the contrast floor.
+ */
+.policy-nav span[aria-current] {
+  color: rgba(16, 42, 42, .72);
+  font-weight: 800;
+}
+.policy-nav span[aria-current]::before { content: '· '; }
 .policy-nav-stacked {
   flex-direction: column;
   gap: 0;
@@ -2274,3 +2376,251 @@ input, select { font-variant-numeric: tabular-nums; }
 .salary-questions { padding-top: 4px; }
 .occupation-names { margin: 0; max-width: 40em; color: var(--muted); font-size: 13px; line-height: 1.6; }
 .occupation-names strong { color: var(--ink); font-weight: 700; }
+
+/* ── Monetization surfaces ──────────────────────────────────────────────────
+   The rule these styles exist to hold: a commercial module must never be
+   mistakable for the answer. Everything here reads as an aside — quieter
+   ground, no accent border shared with a result card, and a label above it. */
+
+.next-action {
+  display: grid;
+  gap: 1.25rem;
+  margin: 2rem 0;
+}
+
+.lead-cta,
+.affiliate-module {
+  border: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: color-mix(in srgb, canvas 96%, currentColor 4%);
+}
+
+.lead-cta h2,
+.affiliate-module h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.35rem;
+}
+
+.affiliate-kicker {
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.65;
+  margin: 0 0 0.5rem;
+}
+
+.commercial-disclosure,
+.affiliate-order-note {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin: 0.75rem 0 0;
+  line-height: 1.5;
+}
+
+.lead-cta-button,
+.lead-actions button,
+.affiliate-offer-link {
+  /* 44px minimum target on touch, per WCAG 2.5.5. */
+  min-height: 44px;
+  padding: 0.6rem 1.1rem;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: color-mix(in srgb, canvas 88%, currentColor 12%);
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.affiliate-offer-link { text-decoration: none; }
+
+.lead-cta-button:focus-visible,
+.lead-actions button:focus-visible,
+.affiliate-offer-link:focus-visible,
+.intent-option:focus-visible {
+  outline: 3px solid currentColor;
+  outline-offset: 2px;
+}
+
+.affiliate-offers {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.affiliate-offers li { display: grid; gap: 0.3rem; }
+.affiliate-category { font-size: 0.75rem; opacity: 0.7; margin: 0; }
+
+/* ── Lead form ──────────────────────────────────────────────────────────── */
+
+.lead-form { display: grid; gap: 1rem; margin-top: 1rem; }
+.lead-form fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 0.6rem; }
+.lead-form legend { font-weight: 600; padding: 0; margin-bottom: 0.3rem; }
+
+.lead-form label { font-size: 0.9rem; font-weight: 500; }
+
+.lead-form input[type='text'],
+.lead-form input[type='tel'],
+.lead-form input[type='email'],
+.lead-form select {
+  min-height: 44px;
+  padding: 0.55rem 0.7rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: canvas;
+  color: inherit;
+  font: inherit;
+  width: 100%;
+  max-width: 24rem;
+}
+
+.lead-form input[aria-invalid='true'] {
+  border-color: color-mix(in srgb, red 55%, currentColor);
+}
+
+.lead-hint, .lead-form small { font-size: 0.8rem; opacity: 0.75; line-height: 1.5; }
+
+.lead-consent ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.4rem; font-size: 0.9rem; }
+.lead-consent-check { display: flex; gap: 0.6rem; align-items: flex-start; margin-top: 0.5rem; }
+.lead-consent-check input { min-width: 22px; min-height: 22px; margin-top: 0.15rem; }
+.lead-consent-check label { font-weight: 400; line-height: 1.5; }
+
+.lead-error {
+  color: color-mix(in srgb, red 70%, currentColor);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.lead-actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+.lead-back-button { background: transparent; font-weight: 500; }
+
+/* Hidden from people and from assistive technology alike. Not display:none —
+   some bots skip those, and this one needs to look fillable. */
+.lead-honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.lead-success h3 { margin: 0 0 0.4rem; }
+.lead-success h4 { margin: 1rem 0 0.3rem; font-size: 0.95rem; }
+.lead-estimate-note { font-size: 0.85rem; opacity: 0.8; }
+
+/* ── Intent switch ──────────────────────────────────────────────────────── */
+
+.intent-switch { border: 0; padding: 0; margin: 0 0 1rem; }
+.intent-switch legend { font-weight: 600; margin-bottom: 0.5rem; padding: 0; }
+.intent-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+
+.intent-option {
+  min-height: 44px;
+  padding: 0.5rem 0.9rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+/* Selection is carried by the pressed state and a fill, never by colour alone. */
+.intent-option[aria-pressed='true'] {
+  background: color-mix(in srgb, canvas 80%, currentColor 20%);
+  font-weight: 600;
+}
+
+.intent-option[aria-pressed='true']::before { content: '✓ '; }
+
+/* ── Call CTA ───────────────────────────────────────────────────────────── */
+
+.call-cta { margin-top: 1rem; display: grid; gap: 0.25rem; }
+.call-cta-heading { font-weight: 600; margin: 0; }
+.call-cta-number { font-size: 1.25rem; font-weight: 700; min-height: 44px; display: inline-flex; align-items: center; }
+.call-cta-partner { font-size: 0.8rem; opacity: 0.7; margin: 0; }
+
+/* ── Ad slots ───────────────────────────────────────────────────────────── */
+
+/* An empty slot is quiet reserved height, never hatched "fake ad" chrome. */
+.ad-slot[data-ad-status='empty'] { background: transparent; }
+
+@media (max-width: 920px) {
+  .ad-slot-header-leaderboard { display: none; }
+}
+@media (max-width: 680px) {
+  .ad-slot-desktop-rail { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lead-cta-button, .intent-option, .affiliate-offer-link { transition: none; }
+}
+
+/* Review-before-consent block: what is about to be sent, in front of the
+   person agreeing to send it. */
+.lead-review {
+  border-left: 3px solid color-mix(in srgb, currentColor 20%, transparent);
+  padding: 0.5rem 0 0.5rem 0.9rem;
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+}
+.lead-review-title { font-weight: 600; margin: 0; font-size: 0.9rem; }
+.lead-review ul { list-style: none; margin: 0; padding: 0; font-size: 0.9rem; display: grid; gap: 0.15rem; }
+.lead-review .lead-back-button { min-height: 36px; padding: 0.3rem 0.7rem; font-size: 0.85rem; }
+
+/* Zero-size anchor for the impression observer. */
+.impression-anchor { display: block; height: 1px; width: 1px; }
+
+/* Advertising choices on the privacy page. */
+.privacy-choices { margin: 1.5rem 0; display: grid; gap: 0.5rem; }
+.privacy-choice { display: flex; gap: 0.6rem; align-items: flex-start; }
+.privacy-choice input { min-width: 22px; min-height: 22px; margin-top: 0.15rem; }
+.privacy-choice label { line-height: 1.5; }
+.privacy-choices-note { font-size: 0.85rem; opacity: 0.78; margin: 0 0 0.5rem 2.2rem; }
+.privacy-choice input:disabled + label { opacity: 0.6; }
+
+/* ── Monetization admin ─────────────────────────────────────────────────────
+   Operator surface, not a public page: plain, dense, and legible over pretty. */
+
+.admin-shell { max-width: 1100px; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+.admin-gate { display: grid; gap: 0.6rem; max-width: 24rem; }
+.admin-gate input, .admin-dashboard input {
+  min-height: 44px; padding: 0.5rem 0.7rem; border-radius: 8px;
+  border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: canvas; color: inherit; font: inherit;
+}
+.admin-gate button, .admin-dashboard button {
+  min-height: 44px; padding: 0.5rem 1rem; border-radius: 8px; font: inherit;
+  cursor: pointer; border: 1px solid color-mix(in srgb, currentColor 25%, transparent);
+  background: color-mix(in srgb, canvas 88%, currentColor 12%); color: inherit;
+}
+.admin-dashboard section { margin: 2rem 0; }
+.admin-dashboard h2 { font-size: 1.05rem; margin: 0 0 0.6rem; }
+.admin-dashboard table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.admin-dashboard th, .admin-dashboard td {
+  text-align: left; padding: 0.4rem 0.6rem;
+  border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+.admin-totals { display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 0; }
+.admin-totals div { display: grid; gap: 0.1rem; }
+.admin-totals dt { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; }
+.admin-totals dd { margin: 0; font-size: 1.15rem; font-weight: 700; }
+/* Realized is the only figure that may be called revenue, so it is the only
+   one weighted like a headline. */
+.admin-headline dd { font-size: 1.6rem; }
+.admin-note, .admin-warning { font-size: 0.85rem; opacity: 0.8; }
+.admin-warning { font-weight: 600; opacity: 1; }
+.admin-flags { list-style: none; padding: 0; display: grid; gap: 0.35rem; }
+.admin-flags li { display: flex; gap: 0.75rem; align-items: center; font-size: 0.9rem; }
+.admin-on { font-weight: 700; }
+.admin-off { opacity: 0.6; }
+.admin-funnel { list-style: none; padding: 0; display: grid; gap: 0.3rem; font-size: 0.9rem; }
+.admin-funnel li { display: grid; grid-template-columns: 1fr auto 4rem; gap: 0.75rem; }
+.admin-audit { list-style: none; padding: 0; display: grid; gap: 0.3rem; font-size: 0.85rem; }

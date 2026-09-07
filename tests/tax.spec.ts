@@ -12,6 +12,7 @@ import { calculateBonusTax } from '@/lib/calculations/tax/bonus';
 import { validateTaxYearSnapshot } from '@/lib/data/verify';
 import { taxYearSnapshotSchema } from '@/lib/data/tax/schema';
 import type { TaxBracket } from '@/lib/calculations/tax/types';
+import type { StateCode } from '@/lib/location/states';
 import { describe, expect, it } from 'vitest';
 
 /** IRS Rev. Proc. 2025-32, tax year 2026, single taxable-income schedule. */
@@ -159,13 +160,37 @@ describe('state income tax', () => {
   });
 
   it('applies Pennsylvania’s statutory 3.07% flat compensation tax', () => {
-    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 100_000 }).tax).toBe(3_070);
+    const pa = calculateStateIncomeTax({ taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 100_000 });
+    expect(pa.tax).toBe(3_070);
+    expect(pa.omittedLocalTax?.typicalRateRange).toEqual({ low: 0.01, high: 0.03735 });
+    expect(pa.omittedLocalTax?.omissionNote).toMatch(/3\.735%/);
     expect(calculateStateIncomeTax({ taxYear: 2026, state: 'PA', filingStatus: 'single', taxableIncome: 0 }).tax).toBe(0);
   });
 
-  it('applies the 2026 Massachusetts 5% wage tax and 4% surtax over $1,107,750', () => {
-    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MA', filingStatus: 'single', taxableIncome: 80_000 }).tax).toBe(4_000);
-    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MA', filingStatus: 'single', taxableIncome: 2_000_000 }).tax).toBe(2_000_000 * 0.05 + (2_000_000 - 1_107_750) * 0.04);
+  it('applies the 2026 Massachusetts 5% wage tax after the exemption and FICA cap, and the 4% surtax over $1,107,750', () => {
+    const snapshot = getTaxYearSnapshot(2026);
+    const fica80k = calculateFica({
+      taxYear: 2026, filingStatus: 'single', grossIncome: 80_000, fica: snapshot.fica,
+    });
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MA', filingStatus: 'single', taxableIncome: 80_000,
+      employeeFica: fica80k.socialSecurity + fica80k.medicare + fica80k.additionalMedicare,
+    }).tax).toBe((80_000 - 2_000 - 4_400) * 0.05);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MA', filingStatus: 'single', taxableIncome: 80_000, dependents: 1,
+      employeeFica: fica80k.socialSecurity + fica80k.medicare + fica80k.additionalMedicare,
+    }).tax).toBe((80_000 - 2_000 - 5_400) * 0.05);
+    const fica2m = calculateFica({
+      taxYear: 2026, filingStatus: 'single', grossIncome: 2_000_000, fica: snapshot.fica,
+    });
+    const taxable = 2_000_000 - 2_000 - 4_400;
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MA', filingStatus: 'single', taxableIncome: 2_000_000,
+      employeeFica: fica2m.socialSecurity + fica2m.medicare + fica2m.additionalMedicare,
+    }).tax).toBe(taxable * 0.05 + (taxable - 1_107_750) * 0.04);
+    expect(() => calculateStateIncomeTax({
+      taxYear: 2026, state: 'MA', filingStatus: 'single', taxableIncome: 80_000,
+    })).toThrow(/employeeFica/);
   });
 
   it('uses official 2025 FTB Schedule X amounts for California', () => {
@@ -175,19 +200,351 @@ describe('state income tax', () => {
     expect(high.tax).toBe(0);
   });
 
-  it('uses 2025 New Jersey Table A at the $20,000 single bound', () => {
-    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'NJ', filingStatus: 'single', taxableIncome: 20_000 }).tax).toBe(280);
-    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'NJ', filingStatus: 'single', taxableIncome: 100_000 }).tax).toBe(2_651.25 + 25_000 * 0.0637);
+  it('uses 2025 New Jersey Table A after the regular exemption, and charges nothing at the filing threshold', () => {
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'NJ', filingStatus: 'single', taxableIncome: 10_000 }).tax).toBe(0);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'NJ', filingStatus: 'single', taxableIncome: 20_000 }).tax).toBe(266);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'NJ', filingStatus: 'single', taxableIncome: 100_000 }).tax).toBe(2_651.25 + 24_000 * 0.0637);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NJ', filingStatus: 'single', taxableIncome: 60_000, dependents: 1,
+    }).tax).toBe(1_684.375);
   });
 
-  it('omits unsupported states instead of inventing a rate', () => {
+  it('names Wilmington as Delaware’s only local wage tax rather than claiming the state has none', () => {
+    const de = calculateStateIncomeTax({ taxYear: 2026, state: 'DE', filingStatus: 'single', taxableIncome: 50_000 });
+    expect(de.omittedLocalTax?.label).toMatch(/Wilmington/i);
+    expect(de.omittedLocalTax?.omissionNote).toMatch(/1\.25%/);
+  });
+
+  it('uses North Carolina’s 2026 3.99% rate with the G.S. 105-153.5 standard deduction', () => {
+    const nc = calculateStateIncomeTax({ taxYear: 2026, state: 'NC', filingStatus: 'single', taxableIncome: 60_000 });
+    expect(nc.scheduleTaxYear).toBe(2026);
+    expect(nc.tax).toBeCloseTo((60_000 - 12_750) * 0.0399, 2);
+  });
+
+  it('reduces Minnesota’s standard deduction above the 2026 limitation thresholds, never by more than 80%', () => {
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MN', filingStatus: 'single', taxableIncome: 150_000 }).tax)
+      .toBeCloseTo(8_941.94, 2);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MN', filingStatus: 'single', taxableIncome: 250_000 }).tax)
+      .toBeCloseTo(17_439.488, 2);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MN', filingStatus: 'single', taxableIncome: 1_200_000 }).tax)
+      .toBeCloseTo(112_203.58, 2);
+  });
+
+  it('uses Ohio’s 2026 H.B. 96 flat 2.75% schedule and the $500,000 MAGI exemption cutoff', () => {
+    const base = { taxYear: 2026, state: 'OH' as const, filingStatus: 'single' as const };
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 70_200 }).scheduleTaxYear).toBe(2026);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 70_200 }).tax).toBeCloseTo(1_487, 2);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 28_450 }).tax).toBe(0);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 28_451 }).tax).toBeCloseTo(332.0275, 4);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 500_000 }).tax)
+      .toBeCloseTo(13_365.625, 2);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 499_999 }).tax)
+      .toBeLessThan(calculateStateIncomeTax({ ...base, taxableIncome: 500_000 }).tax);
+  });
+
+  it('computes New York from the 2026 IT-2105-I schedules, including recapture', () => {
     const ny = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 100_000 });
-    expect(ny.status).toBe('unsupported');
-    expect(ny.tax).toBe(0);
-    expect(ny.reason).toMatch(/IT-201/i);
-    const co = calculateStateIncomeTax({ taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 90_000 });
-    expect(co.status).toBe('unsupported');
-    expect(co.tax).toBe(0);
+    expect(ny.status).toBe('supported');
+    expect(ny.scheduleTaxYear).toBe(2026);
+    expect(ny.tax).toBeCloseTo(4_860.65, 2);
+    expect(ny.omittedLocalTax?.label).toMatch(/New York City|Yonkers/i);
+
+    const recapture = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 150_000 });
+    expect(recapture.tax).toBeCloseTo(8_291.20, 2);
+
+    // Worksheet 8: taxable income above $215,400, recapture base $567 + fraction of $2,047.
+    const secondBand = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 250_000 });
+    const secondTi = 250_000 - 8_000;
+    const secondMain = 12_141 + (secondTi - 215_400) * 0.0685;
+    const secondFraction = Math.round(((250_000 - 215_400) / 50_000) * 10_000) / 10_000;
+    expect(secondBand.tax).toBeCloseTo(secondMain + 567 + secondFraction * 2_047, 4);
+
+    const justUnderRecapture = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 107_650 });
+    const justOverRecapture = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 107_651 });
+    expect(justOverRecapture.tax).toBeGreaterThan(justUnderRecapture.tax);
+
+    const withDependent = calculateStateIncomeTax({
+      taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 100_000, dependents: 2,
+    });
+    expect(withDependent.tax).toBeLessThan(
+      calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 100_000 }).tax,
+    );
+
+    const mfs = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'marriedFilingSeparately', taxableIncome: 100_000 });
+    expect(mfs.tax).toBeCloseTo(4_860.65, 2);
+
+    const top = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 26_000_000 });
+    expect(top.tax).toBeCloseTo((26_000_000 - 8_000) * 0.109, 2);
+
+    const unsupported = getTaxYearSnapshot(2026).states.filter((row) => row.status === 'unsupported');
+    expect(unsupported).toEqual([]);
+  });
+
+  it('uses Hawaii’s 2026 Act 46 standard deduction with the 2025 N-11 brackets', () => {
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'HI', filingStatus: 'single', taxableIncome: 9_144 }).tax).toBe(0);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'HI', filingStatus: 'single', taxableIncome: 33_144 }).tax)
+      .toBeCloseTo(859.2, 4);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'HI', filingStatus: 'single', taxableIncome: 134_144 }).tax)
+      .toBe(8_391);
+  });
+
+  it('uses Montana’s 2026 Publication 1 ordinary-income rates', () => {
+    const mt = calculateStateIncomeTax({
+      taxYear: 2026, state: 'MT', filingStatus: 'single', taxableIncome: 66_100, federalStandardDeduction: 16_100,
+    });
+    expect(mt.scheduleTaxYear).toBe(2026);
+    expect(mt.tax).toBeCloseTo(2_373.75, 2);
+  });
+
+  it('uses Oklahoma’s 2026 68 O.S. 2355(D) rates, including the 0% first band', () => {
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'OK', filingStatus: 'single', taxableIncome: 11_100 }).tax).toBe(0);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'OK', filingStatus: 'single', taxableIncome: 22_125 }).tax)
+      .toBeCloseTo(450.125, 3);
+  });
+
+  it('taxes Colorado on federal taxable income, not on gross wages', () => {
+    // The 2025 DR 0104 table gives $1,014 for Colorado taxable income in the
+    // $23,000-$23,100 band; $39,150 of wages less the $16,100 federal standard
+    // deduction lands at $23,050.
+    const co = calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 39_150, federalStandardDeduction: 16_100,
+    });
+    expect(co.status).toBe('supported');
+    expect(co.tax).toBeCloseTo(1_014.20, 2);
+
+    // Without the federal figure the answer would silently tax the standard
+    // deduction a second time, so the engine refuses instead.
+    expect(() => calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 39_150,
+    })).toThrow(/federalStandardDeduction/);
+
+    // Above $300,000 AGI Colorado adds back federal standard deduction over $12,000.
+    const addBack = calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 350_000, federalStandardDeduction: 16_100,
+    });
+    expect(addBack.tax).toBeCloseTo(14_872, 2);
+    const justUnder = calculateStateIncomeTax({
+      taxYear: 2026, state: 'CO', filingStatus: 'single', taxableIncome: 300_000, federalStandardDeduction: 16_100,
+    });
+    expect(justUnder.tax).toBeCloseTo((300_000 - 16_100) * 0.044, 2);
+  });
+
+  it('gives Mississippi its zero band and charges nothing at the state filing threshold', () => {
+    // MS DOR publishes the filing threshold as $8,300 single, which is exactly
+    // the $2,300 standard deduction plus the $6,000 exemption.
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MS', filingStatus: 'single', taxableIncome: 8_300 }).tax).toBe(0);
+    // $60,000 less $8,300 is $51,700; the first $10,000 is free and the rest is at 4%.
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'MS', filingStatus: 'single', taxableIncome: 60_000 }).tax)
+      .toBeCloseTo(41_700 * 0.04, 2);
+  });
+
+  it('phases out the Utah taxpayer credit and never turns it into a refund', () => {
+    const base = { taxYear: 2026, state: 'UT' as const, filingStatus: 'single' as const, federalStandardDeduction: 16_100 };
+    // 6% of the federal standard deduction, less 1.3% of income over $18,213.
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 90_000 }).tax).toBeCloseTo(4_017.23, 2);
+    // Below the phase-out base the credit is larger than the tax, and Utah's
+    // TC-40 line 22 says enter zero rather than pay the difference out.
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 20_000 }).tax).toBe(0);
+  });
+
+  it('gives New Mexico the 2025 brackets and phases the low-income exemption on AGI', () => {
+    // 7-2-7 prints $2,716.50 of tax at $66,500 of taxable income, single.
+    // $82,250 of wages less the 2025 federal standard deduction of $15,750
+    // lands exactly there, with the exemption already gone.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'single', taxableIncome: 82_250,
+    }).tax).toBeCloseTo(2_716.50, 2);
+    // $30,000 of AGI is inside the exemption phase-out: $2,500 less 15¢ on
+    // each of the $10,000 over $20,000 leaves $1,000, so taxable income is
+    // $13,250 and tax is $82.50 + 3.2% of $7,750.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'single', taxableIncome: 30_000,
+    }).tax).toBeCloseTo(330.50, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'single', taxableIncome: 15_750,
+    }).tax).toBe(0);
+    // PIT packet table: $25,300–$25,400 MFJ is $679.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NM', filingStatus: 'marriedFilingJointly', taxableIncome: 56_850,
+    }).tax).toBeCloseTo(679, 0);
+  });
+
+  it('reproduces Vermont\'s published joint example and Rhode Island\'s tax table', () => {
+    // IN-111 works $85,000 of Vermont taxable income, married filing jointly,
+    // to $2,929. $110,900 of wages less the deduction and two exemptions lands
+    // there.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'VT', filingStatus: 'marriedFilingJointly', taxableIncome: 110_900,
+    }).tax).toBeCloseTo(2_929, 2);
+    // IN-111 table: $50,000–$50,100 of Vermont taxable income, single, is $1,698.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'VT', filingStatus: 'single', taxableIncome: 63_000,
+    }).tax).toBeCloseTo(1_698, 0);
+    // RI-1040 example: $25,300–$25,350 of taxable income is $950 of tax.
+    // $41,325 of wages less the $10,900 deduction and $5,100 exemption is the
+    // $25,325 midpoint of that row.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'RI', filingStatus: 'single', taxableIncome: 41_325,
+    }).tax).toBeCloseTo(950, 0);
+    // Table row $50,000–$50,050 prints $1,876.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'RI', filingStatus: 'single', taxableIncome: 66_025,
+    }).tax).toBeCloseTo(1_876, 0);
+  });
+
+  it('uses Michigan’s 2026 $5,900 exemption and Louisiana’s 2026 withholding deduction', () => {
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MI', filingStatus: 'single', taxableIncome: 60_000,
+    }).tax).toBeCloseTo(2_299.25, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'LA', filingStatus: 'single', taxableIncome: 60_000,
+    }).tax).toBeCloseTo(1_413.75, 2);
+  });
+
+  it('reproduces Missouri\'s published tax-chart examples and Alabama\'s Brown table row', () => {
+    // MO-1040 worksheet example A: $3,090 of Missouri taxable income → $38.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MO', filingStatus: 'single', taxableIncome: 18_840, federalIncomeTax: 0,
+    }).tax).toBeCloseTo(38, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MO', filingStatus: 'single', taxableIncome: 27_750, federalIncomeTax: 0,
+    }).tax).toBeCloseTo(388, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MO', filingStatus: 'marriedFilingJointly', taxableIncome: 120_000, federalIncomeTax: 0,
+    }).tax).toBeCloseTo(3_984, 0);
+    // Line 12 example 1: $22,450 of Missouri AGI takes 35% of a $2,000 federal tax.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MO', filingStatus: 'single', taxableIncome: 22_450, federalIncomeTax: 2_000,
+    }).federalTaxDeducted).toBe(700);
+
+    // Form 40A Brown example: $23,360 of taxable income, married filing jointly, is $1,088.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'AL', filingStatus: 'marriedFilingJointly', taxableIncome: 40_000, federalIncomeTax: 8_640,
+    }).tax).toBeCloseTo(1_088, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'AL', filingStatus: 'single', taxableIncome: 40_000, federalIncomeTax: 12_640,
+    }).tax).toBeCloseTo(1_128, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'AL', filingStatus: 'headOfHousehold', taxableIncome: 40_000, federalIncomeTax: 11_140,
+    }).tax).toBeCloseTo(1_128, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'AL', filingStatus: 'marriedFilingSeparately', taxableIncome: 13_500, federalIncomeTax: 0,
+    }).tax).toBeCloseTo(360.70, 2);
+  });
+
+  it('reproduces Kansas tax-table rows and Virginia\'s published $90,000 example', () => {
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'KS', filingStatus: 'single', taxableIncome: 72_740,
+    }).tax).toBeCloseTo(3_259, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'KS', filingStatus: 'marriedFilingJointly', taxableIncome: 86_535,
+    }).tax).toBeCloseTo(3_172, 0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'KS', filingStatus: 'headOfHousehold', taxableIncome: 40_000,
+    }).tax).toBeCloseTo(1_161.68, 2);
+
+    // Form 760: $90,000 of Virginia taxable income → $4,917.50, printed as $4,918.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'VA', filingStatus: 'single', taxableIncome: 99_680,
+    }).tax).toBeCloseTo(4_917.50, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'VA', filingStatus: 'single', taxableIncome: 11_949,
+    }).tax).toBe(0);
+  });
+
+  it('reproduces Wisconsin two-stage head-of-household deduction and Idaho, Nebraska, Georgia and Arizona official floors', () => {
+    // Form 1-ES: $15,110 of Wisconsin taxable income is $528.85.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'single', taxableIncome: 28_736.07,
+    }).tax).toBeCloseTo(528.85, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'marriedFilingJointly', taxableIncome: 44_360.18,
+    }).tax).toBeCloseTo(705.25, 1);
+    // HOH at the top of the $18,030 band, not the single $13,960 band.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'headOfHousehold', taxableIncome: 20_119,
+    }).tax).toBeCloseTo(48.615, 2);
+    // Inside the 22.515% stage, head of household keeps a larger deduction.
+    const hohMid = calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'headOfHousehold', taxableIncome: 40_000,
+    }).tax;
+    const singleMid = calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'single', taxableIncome: 40_000,
+    }).tax;
+    expect(hohMid).toBeLessThan(singleMid);
+    // Second stage reuses the single 12% formula, so the two statuses meet.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'headOfHousehold', taxableIncome: 80_000,
+    }).tax).toBeCloseTo(3_240.32, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'WI', filingStatus: 'single', taxableIncome: 80_000,
+    }).tax).toBeCloseTo(3_240.32, 2);
+
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'ID', filingStatus: 'single', taxableIncome: 20_561,
+    }).tax).toBe(0);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'ID', filingStatus: 'single', taxableIncome: 30_561,
+    }).tax).toBeCloseTo(530, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'ID', filingStatus: 'headOfHousehold', taxableIncome: 33_247,
+    }).tax).toBe(0);
+
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'NE', filingStatus: 'single', taxableIncome: 33_610,
+    }).tax).toBeCloseTo(649.71, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'GA', filingStatus: 'single', taxableIncome: 50_000,
+    }).tax).toBeCloseTo(1_746.50, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'GA', filingStatus: 'marriedFilingJointly', taxableIncome: 50_000,
+    }).tax).toBeCloseTo(998, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'AZ', filingStatus: 'single', taxableIncome: 40_000,
+    }).tax).toBeCloseTo(606.25, 2);
+
+    // Connecticut: $13,000 taxable is $335 on Table B; at $28,000 AGI the
+    // 15% personal credit leaves $284.75. Recapture is $0 at $105,000 and $25
+    // the next dollar.
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'CT', filingStatus: 'single', taxableIncome: 28_000,
+    }).tax).toBeCloseTo(284.75, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'CT', filingStatus: 'single', taxableIncome: 105_000,
+    }).tax).toBe(5_300);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'CT', filingStatus: 'single', taxableIncome: 105_001,
+    }).tax).toBeCloseTo(5_325.06, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'CT', filingStatus: 'marriedFilingJointly', taxableIncome: 46_500,
+    }).tax).toBeCloseTo(435.63, 2);
+
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'CT', filingStatus: 'single', taxableIncome: 28_000, dependents: 2,
+    }).tax).toBeCloseTo(284.75, 2);
+
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'IL', filingStatus: 'single', taxableIncome: 60_000, dependents: 1,
+    }).tax).toBeCloseTo(2_680.425, 3);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MI', filingStatus: 'single', taxableIncome: 60_000, dependents: 1,
+    }).tax).toBeCloseTo(2_048.50, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'OH', filingStatus: 'single', taxableIncome: 40_000, dependents: 1,
+    }).tax).toBeCloseTo(583.625, 3);
+
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'IN', filingStatus: 'single', taxableIncome: 101_000,
+    }).tax).toBeCloseTo(2_950, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'IN', filingStatus: 'single', taxableIncome: 1_000,
+    }).tax).toBe(0);
+  });
+
+  it('refuses to invent a federal figure the state calculation depends on', () => {
+    expect(() => calculateStateIncomeTax({
+      taxYear: 2026, state: 'MO', filingStatus: 'single', taxableIncome: 40_000,
+    })).toThrow(/federalIncomeTax/);
   });
 });
 
@@ -213,6 +570,36 @@ describe('salary after tax', () => {
     expect(result.assumptions.some((line) => /credits/i.test(line))).toBe(true);
   });
 
+  it('computes Massachusetts take-home after the exemption and FICA cap, and lowers it for a dependent', () => {
+    const none = calculateSalaryAfterTax({ annualGrossSalary: 80_000, state: 'MA', filingStatus: 'single', taxYear: 2026 });
+    const one = calculateSalaryAfterTax({
+      annualGrossSalary: 80_000, state: 'MA', filingStatus: 'single', taxYear: 2026, dependents: 1,
+    });
+    expect(none.value.stateIncomeTax).toBe((80_000 - 2_000 - 4_400) * 0.05);
+    expect(one.value.stateIncomeTax).toBe((80_000 - 2_000 - 5_400) * 0.05);
+  });
+
+  it('does not multiply Connecticut Table A by dependents, and does apply Illinois and Michigan dependent exemptions', () => {
+    const ctNone = calculateSalaryAfterTax({ annualGrossSalary: 28_000, state: 'CT', filingStatus: 'single', taxYear: 2026 });
+    const ctTwo = calculateSalaryAfterTax({
+      annualGrossSalary: 28_000, state: 'CT', filingStatus: 'single', taxYear: 2026, dependents: 2,
+    });
+    expect(ctTwo.value.stateIncomeTax).toBe(ctNone.value.stateIncomeTax);
+
+    const ilNone = calculateSalaryAfterTax({ annualGrossSalary: 60_000, state: 'IL', filingStatus: 'single', taxYear: 2026 });
+    const ilOne = calculateSalaryAfterTax({
+      annualGrossSalary: 60_000, state: 'IL', filingStatus: 'single', taxYear: 2026, dependents: 1,
+    });
+    expect(ilNone.value.stateIncomeTax).toBeCloseTo(2_825.21, 2);
+    expect(ilOne.value.stateIncomeTax).toBeCloseTo(2_680.43, 2);
+  });
+
+  it('does not tell a Delaware reader there is no local income tax', () => {
+    const de = calculateSalaryAfterTax({ annualGrossSalary: 80_000, state: 'DE', filingStatus: 'single', taxYear: 2026 });
+    expect(de.assumptions.some((line) => /Wilmington/i.test(line))).toBe(true);
+    expect(de.assumptions.some((line) => /no local income tax/i.test(line))).toBe(false);
+  });
+
   it('changes with filing status and progressive state tax', () => {
     const singleCa = calculateSalaryAfterTax({ annualGrossSalary: 100_000, state: 'CA', filingStatus: 'single', taxYear: 2026 });
     const jointCa = calculateSalaryAfterTax({ annualGrossSalary: 100_000, state: 'CA', filingStatus: 'marriedFilingJointly', taxYear: 2026 });
@@ -231,11 +618,11 @@ describe('salary after tax', () => {
     expect(high.value.socialSecurity).toBe(11_439);
   });
 
-  it('marks New York as federal-only', () => {
+  it('computes New York state tax from the 2026 estimated-tax schedules', () => {
     const result = calculateSalaryAfterTax({ annualGrossSalary: 120_000, state: 'NY', filingStatus: 'single', taxYear: 2026 });
-    expect(result.value.stateTaxStatus).toBe('unsupported');
-    expect(result.value.stateIncomeTax).toBe(0);
-    expect(result.assumptions.some((line) => /omitted/i.test(line))).toBe(true);
+    expect(result.value.stateTaxStatus).toBe('supported');
+    expect(result.value.stateIncomeTax).toBeGreaterThan(0);
+    expect(result.assumptions.some((line) => /Schedule year 2026/i.test(line))).toBe(true);
   });
 });
 
@@ -294,8 +681,8 @@ describe('paycheck', () => {
       filingStatus: 'single',
       taxYear: 2026,
     });
-    expect(nyPaycheck.value.stateTaxStatus).toBe('unsupported');
-    expect(nyPaycheck.value.stateTax).toBe(0);
+    expect(nyPaycheck.value.stateTaxStatus).toBe('supported');
+    expect(nyPaycheck.value.stateTax).toBeGreaterThan(0);
   });
 });
 
@@ -348,7 +735,7 @@ describe('bonus withholding', () => {
     expect(straddling.socialSecurity).toBe(round(4_000 * fica.socialSecurityRate));
   });
 
-  it('says so instead of silently dropping an unmodelled state', () => {
+  it('applies New York state withholding now that the 2026 schedule is modeled', () => {
     const modelled = calculateBonusTax({
       bonusAmount: 10_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 60_000,
       state: 'CA', filingStatus: 'single',
@@ -356,13 +743,12 @@ describe('bonus withholding', () => {
     expect(modelled.stateTaxStatus).toBe('supported');
     expect(modelled.stateWithholding).toBeGreaterThan(0);
 
-    const notModelled = calculateBonusTax({
+    const ny = calculateBonusTax({
       bonusAmount: 10_000, priorSupplementalWagesThisYear: 0, regularWagesToDate: 60_000,
       state: 'NY', filingStatus: 'single',
     }).value;
-    expect(notModelled.stateTaxStatus).toBe('unsupported');
-    expect(notModelled.stateWithholding).toBe(0);
-    expect(notModelled.stateNote).toMatch(/not modeled/i);
+    expect(ny.stateTaxStatus).toBe('supported');
+    expect(ny.stateWithholding).toBeGreaterThan(0);
   });
 
   it('cites the tax snapshot and calls the result withholding, not tax', () => {

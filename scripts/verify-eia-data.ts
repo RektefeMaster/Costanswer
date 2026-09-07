@@ -17,8 +17,11 @@ import {
   validateHudEnvelope,
   validateIrsRetirementEnvelope,
   validateMortgageRateEnvelope,
+  validateCmsMarketplace,
+  validateNaicInsuranceEnvelope,
   validateTaxYearSnapshot,
   validateUsdaFoodEnvelope,
+  verifyBundledSnapshots,
 } from '../lib/data/verify';
 import { DATASET_IDS, DATASET_POLICIES } from '../lib/data/dataset-policy';
 import { geographySnapshotSchema } from '../lib/data/geography';
@@ -27,6 +30,7 @@ import { resolveHudFmrSnapshot } from '../lib/data/hud-fmr-snapshot';
 import { beaRppSnapshotSchema } from '../lib/data/bea-rpp';
 import { usdaFoodSnapshotSchema } from '../lib/data/usda-food';
 import { irsRetirementSnapshotSchema } from '../lib/data/irs-retirement';
+import { naicInsuranceSnapshotSchema } from '../lib/data/naic-insurance';
 import { geographySnapshot } from '../lib/data/geography-snapshot';
 import { PUBLISHING_SNAPSHOT_DATE } from '../lib/publishing';
 
@@ -211,6 +215,49 @@ async function verifyIrsRetirement(): Promise<string> {
   return snapshotId;
 }
 
+/**
+ * NAIC ships two reports whose figures describe a data year years earlier, so
+ * the checks that matter are that the promoted snapshot still names that
+ * reference year and that the policy has not quietly been re-anchored onto the
+ * observation period, which would label the newest available report stale.
+ */
+async function verifyNaicInsurance(): Promise<string> {
+  const snapshotId = await verifyEnvelope(
+    path.join(process.cwd(), 'data', 'naic-insurance'),
+    'insurance.normalized.json',
+    validateNaicInsuranceEnvelope,
+    naicInsuranceSnapshotSchema.parse,
+    '2023.json',
+  );
+  const policy = DATASET_POLICIES['naic-insurance'];
+  if (policy.periodKind !== 'reference-year' || policy.freshnessAnchor !== 'published-at' || policy.refreshMode !== 'manual') {
+    throw new Error('NAIC insurance must stay a manually promoted reference-year dataset anchored on the provider release date.');
+  }
+  return snapshotId;
+}
+
+/**
+ * CMS travels as an index plus packed columns rather than an envelope, so the
+ * checks are that the two files name the same release and that the recorded
+ * source digest still matches. The 56 MB archive itself is not in the
+ * repository; `npm run data:cms -- --verify` replays it when it is present.
+ */
+async function verifyCmsMarketplace(): Promise<string> {
+  const directory = path.join(process.cwd(), 'data', 'cms-marketplace');
+  const indexDocument = JSON.parse(await readFile(path.join(directory, 'index.json'), 'utf8')) as unknown;
+  const premiums = JSON.parse(await readFile(path.join(directory, 'premiums.json'), 'utf8')) as unknown;
+  const index = validateCmsMarketplace(indexDocument, premiums);
+  const recordedDigest = (await readFile(path.join(directory, 'raw', '2026-medical.sha256'), 'utf8')).trim();
+  if (recordedDigest !== index.rawSha256) throw new Error('Recorded CMS source digest does not match the promoted index.');
+  const immutable = await readFile(path.join(directory, 'snapshots', `${index.snapshotId}.json`), 'utf8');
+  if (immutable !== await readFile(path.join(directory, 'index.json'), 'utf8')) throw new Error('CMS immutable index differs from index.json.');
+  const policy = DATASET_POLICIES['cms-marketplace'];
+  if (policy.periodKind !== 'reference-year' || policy.freshnessAnchor !== 'published-at') {
+    throw new Error('CMS marketplace must stay a reference-year dataset anchored on the provider release date.');
+  }
+  return index.snapshotId;
+}
+
 const ids = [
   await verifyElectricity(),
   await verifyGasoline(),
@@ -219,6 +266,9 @@ const ids = [
   await verifyCpi(),
   await verifyTax(),
   await verifyIrsRetirement(),
+  await verifyNaicInsurance(),
+  await verifyCmsMarketplace(),
   ...(await verifyLocationDatasets()),
 ];
+verifyBundledSnapshots();
 console.log(`Verified ${ids.join(', ')}: raw hash, normalized hash, semantics and promotion envelope passed.`);

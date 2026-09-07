@@ -34,22 +34,28 @@ export type SalaryLevel = 'familyHub' | 'stateIndex' | 'stateHub' | 'occupation'
 /**
  * How far the family has been opened to search engines.
  *
- * Every level is open. The whole corpus goes to Google at once rather than in
- * waves, which is the site owner's call and the riskier of the two: a young
- * domain publishing 31,000 pages in one go is the profile most likely to be
- * crawled slowly or left largely unindexed, and recovering from that takes
- * months rather than days.
+ * The leaves are staged. Two facts decided it, and the second is the one that
+ * matters: the take-home figure these pages headline omits state income tax in
+ * every state whose 2026 schedule is not yet transcribed, which is most of
+ * them. Publishing 30,807 pages whose central number is knowingly incomplete
+ * is worse than publishing none of them, and a young domain releasing a corpus
+ * that size in one go is also the profile most likely to be crawled slowly and
+ * left largely unindexed.
  *
- * Staging exists here precisely so the decision stays reversible. Setting
- * `occupationInState` back to `staged` pulls 30,807 URLs out of the sitemap and
- * marks them `noindex` in one edit, without touching a route or a template.
+ * The 813 pages above the leaves are open, which is already a substantial
+ * corpus and carries no such defect: a hub reports the distribution rather than
+ * one person's take-home.
+ *
+ * Opening the leaves is one word, once two things are true — every state has a
+ * verified schedule, and Search Console shows the levels above indexing. Then
+ * in waves, measuring between them, not all at once.
  */
 export const SALARY_PUBLICATION: Record<SalaryLevel, 'indexable' | 'staged'> = {
   familyHub: 'indexable',
   stateIndex: 'indexable',
   stateHub: 'indexable',
   occupation: 'indexable',
-  occupationInState: 'indexable',
+  occupationInState: 'staged',
 };
 
 export function isSalaryLevelIndexable(level: SalaryLevel): boolean {
