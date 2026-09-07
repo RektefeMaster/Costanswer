@@ -129,11 +129,23 @@ local tax exists, the assumption text states that real take-home is lower.
 | --- | --- |
 | State DOR publications, statutes, estimated-tax forms, employer guides | Production transcription |
 | IRS Rev. Proc. / Pub 15 | Federal production |
-| PolicyEngine-US (AGPL-3.0) | Discovery / official-source index only |
+| PolicyEngine-US (AGPL-3.0) | Discovery / official-source index; one figure taken directly and labelled |
 | GitHub construction / tax datasets | Not copied into production |
 | CWICR (CC BY-NC 4.0 data) | Rejected — licence and non-US geography |
 
-**Production data copied from third-party repositories: no.**
+**Production data copied from third-party repositories: one figure.** Arizona's
+$125 dependent tax credit for 2026 was read from the PolicyEngine-US parameter
+set citing HB 4168, because the Department of Revenue's own site was not
+reachable at verification. Its golden vectors carry the `secondary-source`
+basis so the difference from a transcribed figure is visible in the gate rather
+than lost. What was taken is a dollar amount fixed by Arizona statute — a fact
+about the law rather than the repository's expression of it — so the AGPL does
+not reach it, and no file, structure or wording came with it.
+
+That the rest is transcribed from the states is not a formality. The same
+repository had Maine's dependent-credit phase-out at $20 for each $1,000 where
+Maine's own instructions say $500, a factor of two on the reduction for every
+affected filer. See `DATA_SOURCE_REGISTRY.md`.
 
 ## Architecture
 
