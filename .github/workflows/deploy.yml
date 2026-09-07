@@ -1,0 +1,37 @@
+name: Deploy
+
+# Production Worker. Custom-domain binding waits until costanswer.com is a
+# Cloudflare zone on this account. Until then wrangler.jsonc ships workers_dev.
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Check Cloudflare token
+        id: creds
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "has_token=false" >> "$GITHUB_OUTPUT"
+            echo "CLOUDFLARE_API_TOKEN is not set. Skipping deploy. Add the Edit Cloudflare Workers token as a repository secret, then re-run."
+          else
+            echo "has_token=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.creds.outputs.has_token == 'true'
+        env:
+          NEXT_PUBLIC_SITE_URL: https://costanswer.com
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: d1a5f19dd2081a3862da14682c9d76e0
+        run: npm run deploy

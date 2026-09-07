@@ -150,9 +150,7 @@ Do not reopen those as current bugs. Evidence is in the P1 and P2 cards.
 1. **Reference-data size discipline.** Job recipes, material tables and any
    medical files go to **tier 2** (Worker static assets), not the JS bundle.
    Policy: client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB
-   gzip**. `scripts/check-bundle-budget.mjs` currently measures client chunks as
-   **raw 200 KiB** and the Worker as gzip 2.8 MiB — **align the script to the
-   gzip policy** before treating the numbers as the same gate.
+   gzip**. `scripts/check-bundle-budget.mjs` measures both sides in gzip.
 2. **No money primitive / property tests.** No integer-cents type, no
    `fast-check`. Each engine defines its own valid properties — do **not**
    assert global “tax is monotonic in income” once credits exist.
@@ -287,10 +285,8 @@ gzip only:
 - client **route-specific** JS chunk ≤ **150 KiB gzip**
 - total Worker JS ≤ **2.8 MiB gzip**
 
-Do not mix raw bytes with gzipped bytes in the same comparison. As of
-2026-09-07 the script still uses **200 KiB raw** for client chunks and gzip
-only for the Worker. Aligning the script to this policy is remaining P1 work;
-until then, do not cite the script output as if it already measured 150 KiB gzip.
+`scripts/check-bundle-budget.mjs` measures **both** sides in gzip. Do not
+reintroduce a raw-byte client comparison.
 
 ### B.4 Deployment
 
@@ -1087,7 +1083,7 @@ the fake-expertise failure §25 forbids.
 | Route smoke | `tests/e2e/routes.ts` | 200 + metadata on critical routes | ✅ |
 | Browser journeys | Playwright | real inputs, keyboard, axe WCAG A/AA | in CI after P1 |
 | **Lighthouse regression** | Lighthouse CI | **NEW:** perf ≥90 mobile on the tool template, LCP < 2.5s, CLS < 0.1, TBT < 200ms | after domain is live |
-| **Bundle budget** | `scripts/check-bundle-budget.mjs` | **Policy:** client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB gzip**. Script today: 200 KiB **raw** client, gzip Worker — align before citing them as one gate | P1 remaining |
+| **Bundle budget** | `scripts/check-bundle-budget.mjs` | Client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB gzip**. Both sides gzip | P1 |
 
 **P1 CI items (closed):** `lint` and `test:e2e` in `verify.yml`; nvm path
 removed from `playwright.config.ts`. Do not re-do them.
@@ -1115,28 +1111,33 @@ P2” as current work.
 
 | Step | Work | Why this order |
 | --- | --- | --- |
-| **0** | **Clean checkpoint.** Commit the dirty working tree (CT Table A, IL/MI/NM/VT/RI dependents, snapshot, tests, this rebase). Record branch, SHA, dirty files, `tools.length`, test count, `npm run verify:tax` vector count | P2 close must have a clean baseline before any new phase |
-| **1** | **Production deploy + measurement.** Custom domain, TLS, `www` redirect. The day the domain is live: analytics, **Google Search Console**, Bing Webmaster Tools. Lighthouse/smoke as available | GSC is the data source for later expansion, not a last-day checklist item. D1 + monetization secrets are an **activation** blocker, not a public-launch blocker while providers stay off |
+| **0** | **Clean checkpoint.** **Done 2026-09-07** after PA/CO/DC/KY dependents. Re-record branch, SHA, dirty files, `registryTools.length`, test count, `npm run verify:tax` vector count before any later phase | P2 close needed a clean baseline |
+| **1** | **Production deploy + measurement.** `npm run deploy` publishes the `costanswer` Worker. Register `costanswer.com` on this Cloudflare account, bind apex + `www`, TLS. The day that hostname is live: analytics, **Google Search Console**, Bing Webmaster Tools. Lighthouse/smoke on the live origin | GSC gates later expansion. Worker can be live on `workers.dev` before the apex exists. D1 is an **activation** blocker, not a public-launch blocker while providers stay off |
 | **2** | ~~P3 Freshness SLA~~ **closed** | Runtime clock and per-cadence refresh shipped |
 | **3** | ~~P5 shared primitives~~ **closed** | Done. P4 is now unblocked |
-| **4** | **P4 tax / high-value finance tools** — two landed (`effective-tax-rate`, `federal-tax-bracket`); remaining W-4, refund, EITC, CTC, quarterly, capital gains, plus adjacent high-intent finance | Unblocked by P2 and P5 |
+| **4** | **P4 tax / high-value finance tools** — two landed (`effective-tax-rate`, `federal-tax-bracket`); remaining W-4, refund, self-employment, EITC, CTC, quarterly, capital gains | Unblocked by P2 and P5. One agent per tool |
+| **4b** | **P1c tier-2 storage** (`lib/data/store/`) | Hard dependency of P7. Job/medical files cannot enter the JS bundle |
 | **5** | **P7 Job Cost Engine V1** | The product moat. Do not wait for 43 generic calculators. Field-level `SourcedValue`, `profitMarkupRate`, critical materials, no RPP-on-materials — §D |
-| **6** | **Remaining P4 catalogue** | Fill toward 101 only after Job V1 exists. 60 → ~67 quality tools + Job Engine can outrank 101 generic tools |
-| **7** | **P6 Spanish slice / P8 guides** | After some GSC signal exists. Dual-root-layout PoC before P6 copy. Similarity is a review signal, not a hard 0.85 CI gate |
-| **—** | **Launch / expansion gates** | Salary leaves, more guides, `/cost/:job/:state`, catalog to 101 — all gated on GSC indexed ratio, impressions, duplication/canonical health |
+| **6** | **Remaining P4 catalogue** including IRS mileage (expansion wave 2, still unbuilt) | Fill toward 101 only after Job V1 exists |
+| **7** | **P6 Spanish slice / P8 guides** | After some GSC signal exists. Dual-root-layout PoC before P6 copy |
+| **8** | **Local / payroll tax engine** | Own engine, own snapshots. Do not reopen P2. Official city/county/ZIP sources only; no invented typical rate |
+| **—** | **Launch / expansion gates** | Salary leaves, more guides, `/cost/:job/:state`, catalog to 101 — gated on GSC indexed ratio, impressions, canonical health |
+| **↻** | **Mixed-year 2026 forms** | Not a phase. Every `npm run verify:tax` lists declared mixed-year rows. When an agency publishes a 2026 annual form, update that row only |
 
 ### L.2 Dependency arrows
 
 ```
-0 checkpoint ──► 1 deploy
+0 checkpoint ──► 1 deploy (Worker, then apex when registered)
 1 deploy ──► GSC + Bing + analytics (same day as live DNS, not “P9”)
-P1c tier-2 ──► P7 (job data has no bundle room otherwise)
+4 P4 tax ──► 4b P1c tier-2 ──► 5 P7
 P2 closed ──► P4 tax tools (refund / W-4 / EITC / CTC)   [resolved]
 P2 closed ──► J.1 as a tax prerequisite                  [resolved; crawl budget remains]
 P5 ──► P4 (any new calculator)
 P5 ──► P7 UI
 P6 dual-root-layout PoC ──► P6 Spanish copy
 P7 types (§D.2) ──► P7 recipes
+5 P7 ZIP/ZCTA ──► 8 local tax engine
+verify:tax mixed-year list ──► row update when a 2026 form exists
 ```
 
 ### L.3 Parallelism
@@ -1151,19 +1152,22 @@ not.
 **Rule: one agent per tool, one commit per tool** — after the registry is no
 longer a single append-only file.
 
-### L.4 Still out of the first sequence, and why
+### L.4 Sequenced leftovers — not skipped
 
-**Medical Cost pilot → wave 2.** Hospital MRF files are the least standardized
-public dataset in this plan. A rushed medical-price page is the highest-liability
-surface on the site.
+These used to read as “out of the first sequence.” They still have a **trigger**
+and a **step**. Do not invent data to pull them forward.
 
-**Full ES-US parity → waves 2–4.** Architecture + a complete ~60-page slice
-first. Machine-translating to hit a count produces thin duplicates.
-
-**Permit / DOT-bid calibration → wave 2.** V1 is engineering-first. The
-calibration seam ships in V1; the evidence does not.
-
-**Local / payroll tax → its own engine.** Do not reopen P2 for city rates.
+| Leftover | Step / wave | Trigger | What not to do |
+| --- | --- | --- | --- |
+| Mixed-year 2026 annual forms | ↻ on every `verify:tax` | Agency publishes the 2026 packet | Do not reopen P2 as a coverage project; do not forward-fill |
+| `costanswer.com` apex + GSC/Bing/analytics | **1** (remaining) | Domain registered and NS at Cloudflare | Do not point canonicals at `workers.dev` |
+| P1c `lib/data/store/` | **4b** | Before P7 recipes | Do not put job/medical files in the JS bundle |
+| IRS mileage reimbursement | **6** | After Job V1; IRS rate snapshot | Do not hardcode an undated rate in a component |
+| Local / payroll tax | **8** | After P7 ZIP/ZCTA + official city datasets | Do not invent a typicalRate; do not fold into P2 |
+| Medical Cost pilot | wave 2 | GSC has weeks of data | Do not scrape messy MRF files for launch |
+| Full ES-US parity | waves 2–4 | P6 dual-root PoC + authored slice | Do not machine-translate to hit a page count |
+| Permit / DOT-bid calibration | wave 2 | P7 V1 seam already ships | Do not fake calibration evidence in V1 |
+| Salary leaves indexation | expansion gate | GSC indexed ratio on 813 live salary URLs | Do not unstage for crawl budget guesses |
 
 ### L.5 Later waves
 
@@ -1180,13 +1184,13 @@ calibration seam ships in V1; the evidence does not.
 **P1 — Platform and blockers** — met except custom-domain deploy
 - ✅ `npm run verify` exits 0; lint has zero errors.
 - ✅ `verify.yml` runs `lint`, the bundle budget and `test:e2e`; no absolute local path in `playwright.config.ts`.
-- ✅ Bundle budget **script exists** in CI. **Policy:** client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB gzip**. Script still measures client as **200 KiB raw** — aligning it is remaining P1 work. No dataset chunk in client JS.
+- ✅ Bundle budget **script exists** in CI. Client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB gzip**. Both sides gzip. No dataset chunk in client JS.
 - ✅ Worker JS ≤ **2.8 MiB gzip** — **our** budget, not a platform ceiling.
 - ✅ The three conflict copies are deleted.
 - ✅ Typecheck under 30s.
 - ⬜ `https://costanswer.com` serves the production build over TLS; `www` redirects. **This is the public-launch blocker.**
-- ⬜ Analytics + Search Console + Bing connected **the day the domain is live**.
-- ⬜ `/money/marketplace-plans` and `/money/health-insurance` re-verified in a browser after the tier move.
+- ⬜ Analytics + Search Console + Bing connected **the day the custom domain is live**.
+- ✅ `/money/marketplace-plans` and `/money/health-insurance` re-verified on the deployed Worker (2026-09-07). CMS county pricing still loads; they are not a dataset-in-the-browser page.
 - D1 provisioned, migrated, and `MONETIZATION_*` secrets set — **monetization activation blocker**, not a public-launch blocker while every provider stays off.
 
 **P2 — State tax — CLOSED 2026-09-07. Do not execute.**
@@ -1377,7 +1381,7 @@ browser.
 
 | # | Was | Now |
 | --- | --- | --- |
-| 1 | 3,842,883-byte CMS chunk shipped to every visitor of two YMYL pages | **0.** Priced server-side via `app/api/marketplace/quote`. Script exists; **align it** to 150 KiB gzip client / 2.8 MiB gzip Worker (today: 200 KiB raw client) |
+| 1 | 3,842,883-byte CMS chunk shipped to every visitor of two YMYL pages | **0.** Priced server-side via `app/api/marketplace/quote`. Gate is 150 KiB gzip client / 2.8 MiB gzip Worker |
 | 2 | 2 lint errors, so `npm run verify` was red while CI was green | **0 errors.** Both were state synced in an effect; both are now derived, which also fixed a one-frame stale suggestion list |
 | 3 | 3 committed iCloud conflict copies, one a stale dataset verifier | Deleted |
 | 4 | CI ran neither `lint` nor `test:e2e`; Playwright carried a developer's own nvm path | Both run; the path is gone |
@@ -1396,9 +1400,10 @@ release gate is a gate people skip, and every phase below pays for it.
 
 **Still open.**
 
-**Public-launch blocker (credentials, not engineering):**
-- `wrangler deploy`; bind `costanswer.com`; verify TLS and the apex/www redirect
-- The day DNS is live: analytics, Search Console, Bing
+**Public-launch blocker (domain, not missing code):**
+- `npm run deploy` / `.github/workflows/deploy.yml` publish the `costanswer` Worker
+- Register `costanswer.com` on the Cloudflare account (`d1a5f19dd2081a3862da14682c9d76e0`), bind apex + `www`, verify TLS
+- The day that hostname is live: analytics, Search Console, Bing
 
 **Monetization activation (not required to serve pages):**
 - `wrangler d1 create costanswer-monetization`, then `npm run monetization:migrate`

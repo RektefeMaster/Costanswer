@@ -9,6 +9,9 @@
  * A budget with room in it is a budget that gets used, and the whole point is
  * that the next dataset someone imports into a client island fails here rather
  * than on a phone.
+ *
+ * One unit for both sides: gzip. Do not compare raw client bytes to a gzip
+ * Worker budget — that is how a 150 KiB policy silently became 200 KiB raw.
  */
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
@@ -24,8 +27,8 @@ import { join } from 'node:path';
  * have caught arrives on somebody's phone instead.
  */
 const BUDGETS = {
-  /** Any single chunk a browser downloads. */
-  clientChunkBytes: 200 * 1024,
+  /** Any single route-specific JS chunk a browser downloads, gzipped. */
+  clientChunkGzipBytes: 150 * 1024,
   /** Everything the Worker holds, gzipped. Ours, for cold-start and deploy time. */
   workerGzipBytes: 2.8 * 1024 * 1024,
 };
@@ -63,13 +66,13 @@ if (clientFiles.length === 0) {
 
 let worstChunk = 0;
 for (const file of clientFiles) {
-  const size = statSync(file).size;
+  const gzipSize = gzipSync(readFileSync(file)).length;
   const name = file.split('/').pop();
-  worstChunk = Math.max(worstChunk, size);
-  if (size <= BUDGETS.clientChunkBytes) continue;
+  worstChunk = Math.max(worstChunk, gzipSize);
+  if (gzipSize <= BUDGETS.clientChunkGzipBytes) continue;
   if (ALLOWED.some((entry) => entry.pattern.test(name))) continue;
   fail(
-    `${name} is ${(size / 1024).toFixed(0)} KB, over the ${(BUDGETS.clientChunkBytes / 1024).toFixed(0)} KB per-chunk budget. `
+    `${name} is ${(gzipSize / 1024).toFixed(0)} KB gzipped, over the ${(BUDGETS.clientChunkGzipBytes / 1024).toFixed(0)} KB gzip per-chunk budget. `
     + 'If this is a dataset, it belongs on the server: give the page a route to ask, not a copy to carry.',
   );
 }
@@ -85,8 +88,8 @@ if (workerGzip > BUDGETS.workerGzipBytes) {
 }
 
 console.log(
-  `Largest client chunk ${(worstChunk / 1024).toFixed(0)} KB `
-  + `(budget ${(BUDGETS.clientChunkBytes / 1024).toFixed(0)} KB) · `
+  `Largest client chunk ${(worstChunk / 1024).toFixed(0)} KB gzipped `
+  + `(budget ${(BUDGETS.clientChunkGzipBytes / 1024).toFixed(0)} KB gzip) · `
   + `Worker ${(workerGzip / 1024 / 1024).toFixed(2)} MB gzipped `
   + `(budget ${(BUDGETS.workerGzipBytes / 1024 / 1024).toFixed(2)} MB)`,
 );

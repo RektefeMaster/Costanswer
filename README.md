@@ -34,6 +34,23 @@ Production builds also require the public canonical origin, for example
 `NEXT_PUBLIC_SITE_URL=https://costanswer.com npm run build`. The build fails
 closed when that value is missing so localhost canonicals cannot be published.
 
+## Deploy
+
+Cloudflare Workers is the launch host. Vercel output remains an escape hatch.
+
+```text
+npm run deploy
+```
+
+That builds with `NEXT_PUBLIC_SITE_URL=https://costanswer.com` and runs
+`wrangler deploy` using `wrangler.jsonc` (Worker name `costanswer`). Until
+`costanswer.com` is a zone on this Cloudflare account the Worker is reachable
+on `workers.dev`. After the domain is registered here, uncomment the custom
+domain routes in `wrangler.jsonc` and redeploy. GitHub Actions
+(`.github/workflows/deploy.yml`) needs repository secret `CLOUDFLARE_API_TOKEN`
+(Edit Cloudflare Workers). D1 / monetization secrets are not required to serve
+pages.
+
 ## Data refresh
 
 Create a free EIA key, keep it outside source control, then run:

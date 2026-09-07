@@ -53,8 +53,13 @@ if (errors.length > 0 || failures.length > 0) {
 }
 
 const vectorStates = new Set(STATE_GOLDEN_VECTORS.map((vector) => vector.stateCode));
+const mixedYear = snapshot.states.flatMap((row) => {
+  if (!('scheduleTaxYear' in row) || row.scheduleTaxYear === snapshot.taxYear) return [];
+  return [`${row.stateCode}:${row.scheduleTaxYear}`];
+}).sort();
 console.log(
   `Tax snapshot ${snapshot.snapshotId} passed validation: `
   + `${withSchedule.length} states with a schedule, ${STATE_GOLDEN_VECTORS.length} golden vectors across ${vectorStates.size} states, `
-  + `${warnings.length} warnings.`,
+  + `${warnings.length} warnings. `
+  + `${mixedYear.length} mixed-year rows (${mixedYear.join(', ')}). Re-check those agencies when a ${snapshot.taxYear} annual form is published; do not invent the figures.`,
 );

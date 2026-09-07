@@ -1,0 +1,33 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  // Worker name `costanswer`. costanswer.com is not a zone on this account yet
+  // (unregistered as of 2026-09-07). After it is, add:
+  // "routes": [
+  //   { "pattern": "costanswer.com", "custom_domain": true },
+  //   { "pattern": "www.costanswer.com", "custom_domain": true }
+  // ]
+  "name": "costanswer",
+  "account_id": "d1a5f19dd2081a3862da14682c9d76e0",
+  "compatibility_date": "2026-09-07",
+  "compatibility_flags": ["nodejs_compat"],
+  // Must match vite.config.ts (`vinext/server/app-router-entry`).
+  "main": "vinext/server/app-router-entry",
+  "workers_dev": true,
+  "assets": {
+    "directory": "dist/client",
+    "not_found_handling": "none",
+    "binding": "ASSETS"
+  },
+  // Salary occupation/state/leaf pages rely on s-maxage. Without this the
+  // Worker Cache API is not exposed and those headers are a no-op.
+  "cache": {
+    "enabled": true
+  },
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "invocation_logs": true,
+      "head_sampling_rate": 1
+    }
+  }
+}

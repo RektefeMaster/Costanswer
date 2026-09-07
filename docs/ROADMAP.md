@@ -11,13 +11,13 @@ Do not trust a historical HEAD SHA. Reconcile branch, commit, dirty files,
 | Track | State |
 | --- | --- |
 | Phases 0–3 (shell, engines, first tools, SEO plumbing) | **Shipped** |
-| Platform (MASTER_PLAN P1) | CI/lint/typecheck/bundle check **shipped**. Custom domain **open — public-launch blocker**. D1/secrets are a **monetization activation** blocker, not a public-launch blocker while providers stay off |
-| State wage tax (MASTER_PLAN P2) | **Closed — do not execute.** 51/51 supported, 0 unsupported. Authority: `docs/P2_STATE_TAX_FINAL.md` |
-| Registry | **60** calculators — confirm `tools.length` |
+| Platform (MASTER_PLAN P1) | CI/lint/typecheck **shipped**. Client bundle gate is **150 KiB gzip**. Worker `costanswer` deploys with `npm run deploy`. Custom domain `costanswer.com` **open — public-launch blocker** (name was unregistered 2026-09-07). D1/secrets are a **monetization activation** blocker, not a public-launch blocker while providers stay off |
+| State wage tax (MASTER_PLAN P2) | **Closed — do not execute.** 51/51 supported, 0 unsupported. Authority: `docs/P2_STATE_TAX_FINAL.md`. Dependents leftover (PA/CO/DC/KY) closed. Mixed-year rows are listed on every `npm run verify:tax` run |
+| Registry | **60** calculators — confirm `registryTools.length` |
 | Salary corpus | 761 occupations, 51 state hubs, 30,807 leaves **staged** (`occupationInState: 'staged'`). Staging reason is **crawl/indexation**, not missing state tax |
-| Next work (MASTER_PLAN §L) | **1** production deploy + GSC + Bing + analytics **the day the domain is live** → **2** remaining P4 tax/high-value finance → **3** P7 Job Cost V1 → **4** remaining P4 → **5** P6/P8 after GSC signal. P3 and P5 are **closed**. |
+| Next work (MASTER_PLAN §L) | **1** finish public launch (`costanswer.com` zone + TLS + `www` + GSC + Bing + analytics) → **4** remaining P4 tax/high-value finance → **4b** P1c tier-2 storage → **5** P7 Job Cost V1 → **6** remaining P4 (including IRS mileage) → **7** P6/P8 after GSC → **8** local/payroll tax engine. P3 and P5 are **closed**. |
 
-P2 leftover tax work is not a new phase: wait for published 2026 annual forms on mixed-year rows, or a separately scoped city/ZIP local-tax engine. Do not invent those numbers. Do not re-open P2.
+Nothing in §L.4 is abandoned. Medical, full ES-US, and permit calibration stay in later waves because they have a trigger (GSC + Job V1), not because they are optional. Mixed-year 2026 forms are a **re-check on each tax refresh**, not a phase. Local tax is **step 8**, its own engine, official sources only.
 
 101 is a catalog **target**, not a sacred ship number. Job Cost Engine V1 outranks filling the remaining generic calculators.
 
@@ -68,9 +68,11 @@ P2 leftover tax work is not a new phase: wait for published 2026 annual forms on
 
 - Typecheck, lint, unit/integration tests and production build pass.
 - Keyboard, touch and reduced-motion behavior are supported.
-- Custom-domain deployment is still open (`MASTER_PLAN` P1). Search Console,
-  Bing, and analytics connect **the day the domain is live**, not as a final
-  P9 checklist item. D1 is not required to serve the public site.
+- `npm run deploy` builds with `NEXT_PUBLIC_SITE_URL=https://costanswer.com`
+  and publishes the `costanswer` Worker (`workers.dev` until the apex is a
+  zone). Search Console, Bing, and analytics connect **the day the custom
+  domain is live**, not as a final P9 checklist item. D1 is not required to
+  serve the public site.
 
 ---
 

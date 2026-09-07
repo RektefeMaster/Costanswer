@@ -26,6 +26,8 @@ jobs:
       # archives and fails if it does not hash to the promoted manifest.
       - run: npm run verify:oews
       - run: npm run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://costanswer.com
       # The 3.8 MB CMS chunk shipped to browsers for months because nothing
       # measured the bundle. This is what would have caught it on the first PR.
       - run: node scripts/check-bundle-budget.mjs

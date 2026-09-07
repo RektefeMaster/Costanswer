@@ -45,7 +45,8 @@
     "monetization:migrate:local": "wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
     "monetization:migrate": "wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
     "monetization:drain": "tsx scripts/monetization-drain.ts",
-    "verify:bundle": "node scripts/check-bundle-budget.mjs"
+    "verify:bundle": "node scripts/check-bundle-budget.mjs",
+    "deploy": "NEXT_PUBLIC_SITE_URL=https://costanswer.com npm run build && wrangler deploy"
   },
   "dependencies": {
     "next": "16.3.4",
