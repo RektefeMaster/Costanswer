@@ -1,4 +1,4 @@
-import { BusinessDaysCalculator } from '@/components/calculators/BusinessDaysCalculator';
+import { BusinessDaysCalculator } from '@/components/calculators/everyday/BusinessDaysCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

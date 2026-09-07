@@ -1,4 +1,4 @@
-import { HourlySalaryCalculator } from '@/components/calculators/HourlySalaryCalculator';
+import { HourlySalaryCalculator } from '@/components/calculators/money/HourlySalaryCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

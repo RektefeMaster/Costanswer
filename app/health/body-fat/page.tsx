@@ -1,4 +1,4 @@
-import { BodyFatCalculator } from '@/components/calculators/BodyFatCalculator';
+import { BodyFatCalculator } from '@/components/calculators/health/BodyFatCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

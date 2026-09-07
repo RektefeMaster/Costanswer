@@ -1,4 +1,4 @@
-import { RandomNumberCalculator } from '@/components/calculators/EverydayCalculators';
+import { RandomNumberCalculator } from '@/components/calculators/everyday/EverydayCalculators';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

@@ -1,4 +1,4 @@
-import { MortgageCalculator } from '@/components/calculators/MortgageCalculator';
+import { MortgageCalculator } from '@/components/calculators/money/MortgageCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { mortgageRateSnapshot } from '@/lib/data/mortgage-rate-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

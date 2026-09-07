@@ -1,4 +1,4 @@
-import { BonusTaxCalculator } from '@/components/calculators/BonusTaxCalculator';
+import { BonusTaxCalculator } from '@/components/calculators/money/BonusTaxCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

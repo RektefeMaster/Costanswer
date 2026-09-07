@@ -1,4 +1,4 @@
-import { BmiCalculator } from '@/components/calculators/BmiCalculator';
+import { BmiCalculator } from '@/components/calculators/health/BmiCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

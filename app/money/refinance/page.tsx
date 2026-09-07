@@ -1,4 +1,4 @@
-import { RefinanceCalculator } from '@/components/calculators/RefinanceCalculator';
+import { RefinanceCalculator } from '@/components/calculators/money/RefinanceCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { mortgageRateSnapshot } from '@/lib/data/mortgage-rate-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

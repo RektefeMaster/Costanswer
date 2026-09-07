@@ -1,4 +1,4 @@
-import { RothIraCalculator } from '@/components/calculators/RothIraCalculator';
+import { RothIraCalculator } from '@/components/calculators/money/RothIraCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { irsRetirementLimits, irsRetirementPublishedLabel, irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { formatMoney } from '@/lib/calculations/contracts';

@@ -1,4 +1,4 @@
-import { MedicareCalculator } from '@/components/calculators/MedicareCalculator';
+import { MedicareCalculator } from '@/components/calculators/money/MedicareCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { medicareSnapshot } from '@/lib/data/medicare';
 import { getTool } from '@/lib/tool-registry';

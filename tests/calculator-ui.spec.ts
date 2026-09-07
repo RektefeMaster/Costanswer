@@ -240,8 +240,18 @@ describe('analytics boundary', () => {
 describe('depth primitives are actually used', () => {
   const directory = path.join(process.cwd(), 'components', 'calculators');
 
-  const panels = readdirSync(directory)
-    .filter((file) => file.endsWith('.tsx') && file !== 'CalculatorUI.tsx')
+  // Calculators sit in per-category folders, so this walks rather than lists.
+  // A flat read would silently find nothing and pass, which is the failure mode
+  // this whole check exists to prevent.
+  const calculatorFiles = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) return calculatorFiles(full);
+      return entry.isFile() && entry.name.endsWith('.tsx') && entry.name !== 'CalculatorUI.tsx' ? [full] : [];
+    });
+
+  const panels = calculatorFiles(directory)
+    .map((full) => path.relative(directory, full))
     .flatMap((file) => {
       const source = readFileSync(path.join(directory, file), 'utf8');
       const starts = [...source.matchAll(/<CalculatorPanel[\s>]/g)].map((match) => match.index ?? 0);
@@ -269,7 +279,7 @@ describe('depth primitives are actually used', () => {
    * which is worse than showing all six. If a second entry ever wants to join
    * this list, that is the argument it has to make.
    */
-  const GROUPED_INPUT_PANELS = new Set(['EverydayCalculators.tsx:1']);
+  const GROUPED_INPUT_PANELS = new Set(['everyday/EverydayCalculators.tsx:1']);
 
   it('folds every tool with more than five inputs behind an advanced section', () => {
     const crowded = panels

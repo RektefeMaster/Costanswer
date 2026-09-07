@@ -1,4 +1,4 @@
-import { TdeeCalculator } from '@/components/calculators/EnergyCalculators';
+import { TdeeCalculator } from '@/components/calculators/health/EnergyCalculators';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

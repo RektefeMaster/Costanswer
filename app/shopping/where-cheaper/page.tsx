@@ -1,4 +1,4 @@
-import { WhereCheaperCalculator } from '@/components/calculators/WhereCheaperCalculator';
+import { WhereCheaperCalculator } from '@/components/calculators/shopping/WhereCheaperCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import { gasolineSnapshot } from '@/lib/data/gasoline-snapshot';

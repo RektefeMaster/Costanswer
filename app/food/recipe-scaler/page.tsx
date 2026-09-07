@@ -1,4 +1,4 @@
-import { RecipeScaler } from '@/components/calculators/RecipeScaler';
+import { RecipeScaler } from '@/components/calculators/food/RecipeScaler';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

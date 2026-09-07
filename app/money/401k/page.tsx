@@ -1,4 +1,4 @@
-import { K401Calculator } from '@/components/calculators/K401Calculator';
+import { K401Calculator } from '@/components/calculators/money/K401Calculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { irsRetirementLimits, irsRetirementPublishedLabel, irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { formatMoney } from '@/lib/calculations/contracts';

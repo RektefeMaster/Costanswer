@@ -1,4 +1,4 @@
-import { CarLoanCalculator } from '@/components/calculators/CarLoanCalculator';
+import { CarLoanCalculator } from '@/components/calculators/money/CarLoanCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

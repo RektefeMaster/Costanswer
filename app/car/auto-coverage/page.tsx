@@ -1,4 +1,4 @@
-import { AutoCoverageCalculator } from '@/components/calculators/AutoCoverageCalculator';
+import { AutoCoverageCalculator } from '@/components/calculators/car/AutoCoverageCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { getTool } from '@/lib/tool-registry';

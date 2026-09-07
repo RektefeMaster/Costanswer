@@ -1,4 +1,4 @@
-import { HealthInsuranceCalculator } from '@/components/calculators/HealthInsuranceCalculator';
+import { HealthInsuranceCalculator } from '@/components/calculators/money/HealthInsuranceCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
 import { cmsMarketplaceIndex, cmsReleaseSummary } from '@/lib/data/cms-marketplace-snapshot';

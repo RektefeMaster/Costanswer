@@ -1,4 +1,4 @@
-import { PerDiemCalculator } from '@/components/calculators/PerDiemCalculator';
+import { PerDiemCalculator } from '@/components/calculators/everyday/PerDiemCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { gsaPerDiemSnapshot, listPerDiemDestinations } from '@/lib/data/gsa-perdiem-snapshot';
 import { zctaCountySnapshot } from '@/lib/data/zcta-county-snapshot';

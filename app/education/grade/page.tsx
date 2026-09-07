@@ -1,4 +1,4 @@
-import { GradeCalculator } from '@/components/calculators/EducationHomeCalculators';
+import { GradeCalculator } from '@/components/calculators/education/EducationHomeCalculators';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

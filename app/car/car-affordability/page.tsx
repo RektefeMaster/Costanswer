@@ -1,4 +1,4 @@
-import { CarAffordabilityCalculator } from '@/components/calculators/CarAffordabilityCalculator';
+import { CarAffordabilityCalculator } from '@/components/calculators/car/CarAffordabilityCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { DEFAULT_TAX_YEAR } from '@/lib/calculations/tax/version';
 import { VEHICLE_AFFORDABILITY_BANDS } from '@/lib/calculations/vehicle';

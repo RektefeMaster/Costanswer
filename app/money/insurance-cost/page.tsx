@@ -1,4 +1,4 @@
-import { InsuranceCalculator } from '@/components/calculators/InsuranceCalculator';
+import { InsuranceCalculator } from '@/components/calculators/money/InsuranceCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { getTool } from '@/lib/tool-registry';

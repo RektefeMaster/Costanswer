@@ -1,4 +1,4 @@
-import { AgeCalculator } from '@/components/calculators/AgeCalculator';
+import { AgeCalculator } from '@/components/calculators/everyday/AgeCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

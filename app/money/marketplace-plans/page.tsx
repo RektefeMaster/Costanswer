@@ -1,4 +1,4 @@
-import { MarketplacePlansCalculator } from '@/components/calculators/MarketplacePlansCalculator';
+import { MarketplacePlansCalculator } from '@/components/calculators/money/MarketplacePlansCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { cmsMarketplaceIndex, cmsReleaseSummary } from '@/lib/data/cms-marketplace-snapshot';
 import { getTool } from '@/lib/tool-registry';

@@ -1,4 +1,4 @@
-import { SimpleInterestCalculator } from '@/components/calculators/SimpleInterestCalculator';
+import { SimpleInterestCalculator } from '@/components/calculators/money/SimpleInterestCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

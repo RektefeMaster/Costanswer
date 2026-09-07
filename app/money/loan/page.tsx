@@ -1,4 +1,4 @@
-import { LoanCalculator } from '@/components/calculators/LoanCalculator';
+import { LoanCalculator } from '@/components/calculators/money/LoanCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

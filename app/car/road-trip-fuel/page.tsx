@@ -1,4 +1,4 @@
-import { RoadTripFuelCalculator } from '@/components/calculators/RoadTripFuelCalculator';
+import { RoadTripFuelCalculator } from '@/components/calculators/car/RoadTripFuelCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { gasolineSnapshot, getGasolinePriceForState } from '@/lib/data/gasoline-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

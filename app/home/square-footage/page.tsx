@@ -1,4 +1,4 @@
-import { SquareFootageCalculator } from '@/components/calculators/SquareFootageCalculator';
+import { SquareFootageCalculator } from '@/components/calculators/home/SquareFootageCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

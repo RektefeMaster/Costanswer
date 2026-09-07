@@ -1,4 +1,4 @@
-import { EvVsGasCalculator } from '@/components/calculators/EvVsGasCalculator';
+import { EvVsGasCalculator } from '@/components/calculators/car/EvVsGasCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import { gasolineSnapshot, getGasolinePriceForState } from '@/lib/data/gasoline-snapshot';

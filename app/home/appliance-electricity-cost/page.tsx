@@ -1,4 +1,4 @@
-import { ApplianceElectricityCalculator } from '@/components/calculators/ApplianceElectricityCalculator';
+import { ApplianceElectricityCalculator } from '@/components/calculators/home/ApplianceElectricityCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

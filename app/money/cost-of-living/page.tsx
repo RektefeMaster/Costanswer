@@ -1,4 +1,4 @@
-import { CostOfLivingCalculator } from '@/components/calculators/CostOfLivingCalculator';
+import { CostOfLivingCalculator } from '@/components/calculators/money/CostOfLivingCalculator';
 import { resolveCostOfLivingCoverage } from '@/lib/calculations/col/coverage';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { acsSnapshot } from '@/lib/data/acs-snapshot';

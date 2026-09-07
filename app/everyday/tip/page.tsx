@@ -1,4 +1,4 @@
-import { TipCalculator } from '@/components/calculators/TipCalculator';
+import { TipCalculator } from '@/components/calculators/everyday/TipCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

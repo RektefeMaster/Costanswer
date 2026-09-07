@@ -1,4 +1,4 @@
-import { CalorieCalculator } from '@/components/calculators/EnergyCalculators';
+import { CalorieCalculator } from '@/components/calculators/health/EnergyCalculators';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

@@ -1,4 +1,4 @@
-import { SalaryAfterTaxCalculator } from '@/components/calculators/SalaryAfterTaxCalculator';
+import { SalaryAfterTaxCalculator } from '@/components/calculators/money/SalaryAfterTaxCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

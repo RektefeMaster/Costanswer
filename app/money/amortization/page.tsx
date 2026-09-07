@@ -1,4 +1,4 @@
-import { AmortizationCalculator } from '@/components/calculators/AmortizationCalculator';
+import { AmortizationCalculator } from '@/components/calculators/money/AmortizationCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

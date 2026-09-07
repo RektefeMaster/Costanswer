@@ -1,4 +1,4 @@
-import { PaycheckCalculator } from '@/components/calculators/PaycheckCalculator';
+import { PaycheckCalculator } from '@/components/calculators/money/PaycheckCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

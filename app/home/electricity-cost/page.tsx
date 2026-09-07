@@ -1,4 +1,4 @@
-import { ElectricityCostCalculator } from '@/components/calculators/ElectricityCostCalculator';
+import { ElectricityCostCalculator } from '@/components/calculators/home/ElectricityCostCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

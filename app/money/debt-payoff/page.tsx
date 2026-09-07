@@ -1,4 +1,4 @@
-import { DebtPayoffCalculator } from '@/components/calculators/DebtPayoffCalculator';
+import { DebtPayoffCalculator } from '@/components/calculators/money/DebtPayoffCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

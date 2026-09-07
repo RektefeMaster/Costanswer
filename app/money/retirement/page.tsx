@@ -1,4 +1,4 @@
-import { RetirementCalculator } from '@/components/calculators/RetirementCalculator';
+import { RetirementCalculator } from '@/components/calculators/money/RetirementCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

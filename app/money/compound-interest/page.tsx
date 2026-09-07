@@ -1,4 +1,4 @@
-import { CompoundInterestCalculator } from '@/components/calculators/CompoundInterestCalculator';
+import { CompoundInterestCalculator } from '@/components/calculators/money/CompoundInterestCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

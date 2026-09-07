@@ -1,4 +1,4 @@
-import { InvestmentCalculator } from '@/components/calculators/InvestmentCalculator';
+import { InvestmentCalculator } from '@/components/calculators/money/InvestmentCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

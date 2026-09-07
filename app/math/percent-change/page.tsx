@@ -1,4 +1,4 @@
-import { PercentChangeCalculator } from '@/components/calculators/MathCalculators';
+import { PercentChangeCalculator } from '@/components/calculators/math/MathCalculators';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

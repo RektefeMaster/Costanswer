@@ -1,4 +1,4 @@
-import { InflationCalculator } from '@/components/calculators/InflationCalculator';
+import { InflationCalculator } from '@/components/calculators/money/InflationCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { cpiSnapshot } from '@/lib/data/cpi-snapshot';
 import { cpiPeriodBounds } from '@/lib/data/bls-cpi';

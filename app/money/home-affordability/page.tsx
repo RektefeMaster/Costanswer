@@ -1,4 +1,4 @@
-import { HomeAffordabilityCalculator } from '@/components/calculators/HomeAffordabilityCalculator';
+import { HomeAffordabilityCalculator } from '@/components/calculators/money/HomeAffordabilityCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { mortgageRateSnapshot } from '@/lib/data/mortgage-rate-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';

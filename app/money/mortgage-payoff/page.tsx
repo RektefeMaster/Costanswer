@@ -1,4 +1,4 @@
-import { MortgagePayoffCalculator } from '@/components/calculators/MortgagePayoffCalculator';
+import { MortgagePayoffCalculator } from '@/components/calculators/money/MortgagePayoffCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';

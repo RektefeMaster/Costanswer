@@ -1,4 +1,4 @@
-import { UnitPriceCalculator } from '@/components/calculators/UnitPriceCalculator';
+import { UnitPriceCalculator } from '@/components/calculators/shopping/UnitPriceCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { toolMetadata } from '@/lib/seo';
