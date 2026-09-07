@@ -341,4 +341,79 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       'Where a state has not published its current schedule, the page uses the latest one it did publish and says which year that is.',
     ],
   },
+  {
+    toolId: 'federal-tax-bracket',
+    guide: {
+      heading: 'What being "in the 22% bracket" actually means',
+      lede: 'A bracket is a rate charged on a slice of your income, not on all of it. This page shows which slice you are in, what every band below it costs, and how much room is left before the next one starts.',
+      sections: [
+        {
+          heading: 'Income is taxed in bands, not all at one rate',
+          paragraphs: [
+            'The standard deduction comes off first and is taxed at nothing. What is left is cut into bands, and each band is charged at its own rate — the lowest slice at the lowest rate, and so on upward.',
+            'Your bracket is the rate on the final slice. Someone with $100,000 of pay is in the 22% band, but the 22% applies only to the part of their taxable income above the threshold. Everything below is charged less, and the deduction is charged nothing.',
+          ],
+        },
+        {
+          heading: 'Crossing into a higher bracket never costs you money',
+          paragraphs: [
+            'This is the fear behind most bracket questions: that a raise pushes all of your income to a higher rate and leaves you worse off. It does not. Only the amount above the threshold takes the higher rate.',
+            'The room shown on this page is the practical version of that. It tells you how much more taxable income you can have before any of it is charged at the next rate — which is the number worth having when weighing overtime or a bonus.',
+          ],
+        },
+        {
+          heading: 'Which "income" you are entering',
+          paragraphs: [
+            'People mean two different things by income and the two land in different brackets. Pay before deductions is what an offer letter says; taxable income is what line 15 of Form 1040 says, after the deduction has already come out.',
+            'The page asks which one you have rather than guessing, because guessing wrong moves the answer by a whole band for a lot of people.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'What tax bracket am I in?',
+        answer: [
+          'The one your last dollar of taxable income falls in. Enter your income above and the band is shown, along with how much of your income sits in each of the bands below it.',
+          'If your figure lands exactly on a threshold you are in the lower band — the dollar at the edge is charged at the lower rate.',
+        ],
+      },
+      {
+        question: 'Does moving into a higher bracket mean I take home less?',
+        answer: [
+          'No. Only the income above the threshold is taxed at the higher rate. A raise always leaves you with more after tax, even when it crosses a band.',
+          'What can genuinely fall at a threshold is a credit or a benefit with an income cliff, but that is not the bracket doing it.',
+        ],
+      },
+      {
+        question: 'Why is my tax so much less than my bracket times my income?',
+        answer: [
+          'Because the bracket only applies to the top slice. The standard deduction is taxed at nothing and every lower band is charged at its own lower rate.',
+          'The band-by-band table on this page shows exactly where the difference comes from.',
+        ],
+      },
+      {
+        question: 'Does this include Social Security, Medicare or state tax?',
+        answer: [
+          'No. This page is federal income tax only, so the brackets shown are the federal ones. For the share of a whole salary that goes to tax across all of those, use the effective tax rate calculator.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Tax bracket', definition: 'A band of taxable income and the rate charged on the part of your income inside it.' },
+      { term: 'Taxable income', definition: 'What is left after the standard or itemised deduction. The figure the brackets are applied to.' },
+      { term: 'Standard deduction', definition: 'A flat amount subtracted from income before the brackets apply. It is taxed at nothing.' },
+      { term: 'Threshold', definition: 'The income at which one band ends and the next begins. Income exactly on it stays in the lower band.' },
+    ],
+    tips: [
+      'If you are weighing extra work, the room left in your bracket is the number to look at, not the rate itself.',
+      'A traditional 401(k) contribution reduces taxable income, so it comes off at the top band first.',
+      'Filing jointly widens every band, which is why the same income can sit in a lower bracket on a joint return.',
+    ],
+    caveats: [
+      'Federal income tax only, and ordinary income only. Long-term capital gains use a separate rate schedule.',
+      'Credits, the alternative minimum tax and itemised deductions are not modelled.',
+      'This is not tax advice and not a filed return.',
+    ],
+  },
 ];

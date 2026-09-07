@@ -997,6 +997,11 @@ input, select { font-variant-numeric: tabular-nums; }
 .scenario-compare thead th:first-child { text-align: left; }
 /* Direction is carried by the sign in the text as well as the colour, so the
    table still reads correctly to anyone who cannot separate the two hues. */
+.scenario-compare tr.is-current { background: rgba(32,119,103,.09); }
+.scenario-compare tr.is-current th[scope='row'] { font-weight: 800; }
+/* The current band is marked in words as well as colour, so the table still
+   says which row is yours when the tint is not perceivable. */
+.band-flag { display: block; margin-top: 3px; color: #207767; font-size: 10px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
 .scenario-compare .delta { font-weight: 700; }
 .scenario-compare .delta-up { color: #9a3412; }
 .scenario-compare .delta-down { color: #207767; }

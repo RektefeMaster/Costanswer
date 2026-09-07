@@ -211,7 +211,7 @@ describe('bundled snapshot integrity', () => {
  * The number of tools already shipped. Raise it as tools land; never lower it.
  * It exists so an accidental removal fails without a count blocking additions.
  */
-const SHIPPED_TOOL_BASELINE = 59;
+const SHIPPED_TOOL_BASELINE = 60;
 
 /** §M P4's acceptance figure. The catalogue is done when it reaches this. */
 const P4_TARGET_TOOL_COUNT = 101;
