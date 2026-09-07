@@ -64,6 +64,9 @@ export type StateGoldenVector = {
   readonly toleranceDollars?: number;
 };
 
+/** Bases that are the state's own printed figure, rather than our arithmetic or someone else's dataset. */
+const PUBLISHED_BASES: readonly GoldenVectorBasis[] = ['published-table', 'published-example', 'published-threshold'];
+
 const DEFAULT_TOLERANCE = 1;
 
 /**
@@ -238,11 +241,25 @@ export function assertVectorCoverage(
      * state's own published figure can. That is a warning rather than an error
      * because several states publish no table at all.
      */
-    if (progressiveStates.includes(stateCode) && own.every((v) => v.basis === 'worked-from-schedule')) {
+    if (progressiveStates.includes(stateCode) && !own.some((v) => PUBLISHED_BASES.includes(v.basis))) {
       issues.push({
         stateCode,
         severity: 'warning',
-        message: `${stateCode} has brackets but every vector is worked from the schedule this row was transcribed from. Add one figure the state itself published.`,
+        message: `${stateCode} has brackets but no vector carries a figure the state itself published. Add one.`,
+      });
+    }
+    /*
+     * Weaker still, and worth saying whatever the rate structure is: a state
+     * resting entirely on somebody else's dataset. Flat states are exempt from
+     * the rule above because a rate is hard to misread, but that reasoning
+     * assumes we read the rate off the state. If nobody has, the exemption does
+     * not apply.
+     */
+    if (own.length > 0 && own.every((v) => v.basis === 'secondary-source')) {
+      issues.push({
+        stateCode,
+        severity: 'warning',
+        message: `${stateCode} rests entirely on secondary sources. No figure here has been read off the state's own material.`,
       });
     }
   }

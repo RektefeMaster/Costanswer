@@ -516,18 +516,22 @@ const flatStateSchema = stateMetadataSchema.extend({
    * What this state does about dependents, where the dependents input still
    * changes nothing.
    *
-   * There are three of these and they are not the same fact. `none` is Idaho,
+   * There are four of these and they are not the same fact. `none` is Idaho,
    * whose $205 child tax credit sunset by its own terms — no figure exists to
    * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
    * which do give something but through a mechanism this engine has no input
    * for: an income-tested forgiveness schedule, a credit gated on a child's
-   * age. Absent is the third, and means nobody has checked yet.
+   * age. `assumption` is a state whose figure is modelled but on terms the
+   * reader should know — Arizona's credit is $125 for a dependent under 17 and
+   * $25 for an older one, and there is no age input here. Absent is the
+   * fourth, and means nobody has checked yet.
    *
    * Saying "this snapshot has no figure" about Idaho invents a gap on our
-   * side; saying it about Pennsylvania hides one. Hence the discriminator.
+   * side; saying it about Pennsylvania hides one; saying nothing at all about
+   * Arizona lets a reader with grown dependents take a number that is too low.
    */
   dependentAllowanceStatus: z.object({
-    kind: z.enum(['none', 'not-modelled']),
+    kind: z.enum(['none', 'not-modelled', 'assumption']),
     reason: z.string().min(1),
     verifiedAt: z.string().datetime(),
   }).strict().optional(),
@@ -550,18 +554,22 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
    * What this state does about dependents, where the dependents input still
    * changes nothing.
    *
-   * There are three of these and they are not the same fact. `none` is Idaho,
+   * There are four of these and they are not the same fact. `none` is Idaho,
    * whose $205 child tax credit sunset by its own terms — no figure exists to
    * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
    * which do give something but through a mechanism this engine has no input
    * for: an income-tested forgiveness schedule, a credit gated on a child's
-   * age. Absent is the third, and means nobody has checked yet.
+   * age. `assumption` is a state whose figure is modelled but on terms the
+   * reader should know — Arizona's credit is $125 for a dependent under 17 and
+   * $25 for an older one, and there is no age input here. Absent is the
+   * fourth, and means nobody has checked yet.
    *
    * Saying "this snapshot has no figure" about Idaho invents a gap on our
-   * side; saying it about Pennsylvania hides one. Hence the discriminator.
+   * side; saying it about Pennsylvania hides one; saying nothing at all about
+   * Arizona lets a reader with grown dependents take a number that is too low.
    */
   dependentAllowanceStatus: z.object({
-    kind: z.enum(['none', 'not-modelled']),
+    kind: z.enum(['none', 'not-modelled', 'assumption']),
     reason: z.string().min(1),
     verifiedAt: z.string().datetime(),
   }).strict().optional(),
@@ -687,18 +695,22 @@ const progressiveStateSchema = stateMetadataSchema.extend({
    * What this state does about dependents, where the dependents input still
    * changes nothing.
    *
-   * There are three of these and they are not the same fact. `none` is Idaho,
+   * There are four of these and they are not the same fact. `none` is Idaho,
    * whose $205 child tax credit sunset by its own terms — no figure exists to
    * transcribe. `not-modelled` is Pennsylvania and the District of Columbia,
    * which do give something but through a mechanism this engine has no input
    * for: an income-tested forgiveness schedule, a credit gated on a child's
-   * age. Absent is the third, and means nobody has checked yet.
+   * age. `assumption` is a state whose figure is modelled but on terms the
+   * reader should know — Arizona's credit is $125 for a dependent under 17 and
+   * $25 for an older one, and there is no age input here. Absent is the
+   * fourth, and means nobody has checked yet.
    *
    * Saying "this snapshot has no figure" about Idaho invents a gap on our
-   * side; saying it about Pennsylvania hides one. Hence the discriminator.
+   * side; saying it about Pennsylvania hides one; saying nothing at all about
+   * Arizona lets a reader with grown dependents take a number that is too low.
    */
   dependentAllowanceStatus: z.object({
-    kind: z.enum(['none', 'not-modelled']),
+    kind: z.enum(['none', 'not-modelled', 'assumption']),
     reason: z.string().min(1),
     verifiedAt: z.string().datetime(),
   }).strict().optional(),

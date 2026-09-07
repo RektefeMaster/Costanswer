@@ -31,8 +31,15 @@ export function dependentsNote(policy: StateTaxPolicy | undefined): string | nul
   if (policy.kind === 'none') {
     return `${state} has no state income tax, and federal credits for dependents are not modelled here, so this does not change the result.`;
   }
-  if (stateUsesDependents(policy)) return null;
   const status = 'dependentAllowanceStatus' in policy ? policy.dependentAllowanceStatus : undefined;
+  if (stateUsesDependents(policy)) {
+    /*
+     * Modelled, but on terms worth stating. Silence here is not neutral: a
+     * reader whose dependents are grown would take Arizona's $125 figure and
+     * never learn the state pays $25 for them.
+     */
+    return status?.kind === 'assumption' ? status.reason : null;
+  }
   if (status) {
     return `${status.reason} Federal credits for dependents are not modelled here either.`;
   }

@@ -1625,10 +1625,17 @@
           "rateOfCreditPerIncrement": 0.05
         }
       },
+      "dependentAllowanceStatus": {
+        "kind": "assumption",
+        "reason": "Arizona pays $125 for a dependent under 17 and $25 for an older one. This estimate has no age input and uses the higher figure for every dependent, so a filer whose dependents are grown is shown less tax than they owe.",
+        "verifiedAt": "2026-09-07T00:00:00.000Z"
+      },
       "notes": [
         "Arizona taxes Arizona taxable income at a flat 2.5% (A.R.S. 43-1011(A)(9); Arizona DOR 2025 Individual Income Tax Highlights). 2026 Form 140 was not published at verification.",
         "The 2025 standard deduction is $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household (DOR 2025 Highlights; A.R.S. 43-1041 inflation-adjusted). The extra standard-deduction increase for charitable contributions (34% for 2025) is not modeled.",
-        "Arizona credits and other Form 140 adjustments are not modeled. The starting point is gross wages."
+        "The dependent tax credit is modeled at $125 for each dependent, with 5% of it removed for each $1,000 of adjusted gross income above $200,000 single or $400,000 filing jointly, so it reaches zero at $220,000 and $420,000 (A.R.S. 43-1073.01(B) as amended by HB 4168 of 2026).",
+        "Two cautions on that credit. Arizona pays $125 only for a dependent under 17 and $25 for an older one; this estimate has no age input and applies the higher figure to every dependent, so it understates tax for a filer whose dependents are grown. And the $125 was read from the PolicyEngine-US parameter set citing the bill, not from a Department of Revenue form, which is a weaker source than the rest of this row.",
+        "Other Arizona credits and Form 140 adjustments are not modeled. The starting point is gross wages."
       ]
     },
     {
@@ -5220,13 +5227,19 @@
           "appliesTo": "total"
         }
       },
+      "dependentAllowanceStatus": {
+        "kind": "assumption",
+        "reason": "Maine doubles this credit for a dependent under six, and refunds it to residents even when it exceeds their tax. This estimate has no age input and never takes state tax below zero, so it shows more tax than such a filer owes.",
+        "verifiedAt": "2026-09-07T00:00:00.000Z"
+      },
       "notes": [
         "Maine income tax rates for tax year 2026 are 5.8%, 6.75% and 7.15% (36 M.R.S. 5111 as inflation-adjusted under 36 M.R.S. 5403; Maine Revenue Services, 2026 Individual Income Tax Rates, revised May 20, 2026).",
         "Standard deduction for 2026: $15,700 single and married filing separately, $31,400 married filing jointly, $23,550 head of household. Personal exemption is $5,300 for the taxpayer, doubled on a joint return.",
         "Both are phased out in proportion to income above $102,250 single, $153,400 head of household and $204,550 filing jointly, reaching zero $75,000, $112,500 and $150,000 further up. That band starts inside ordinary salaries, so it is modeled rather than noted.",
         "A 2% surcharge applies to Maine taxable income above $1,000,000 single, $750,000 married filing separately and $1,500,000 filing jointly or head of household, for tax years beginning on or after January 1, 2026.",
         "The rate schedule states that it must not be used to compute withholding from wages; this model estimates annual liability, not withholding.",
-        "Maine credits, itemized deductions and the additional deduction for age or blindness are not modeled. The $300 dependent exemption tax credit (36 M.R.S. § 5219-SS) is a separate credit with its own phase-out and is not modeled. The starting point is gross wages."
+        "Maine credits, itemized deductions and the additional deduction for age or blindness are not modeled. The dependent exemption tax credit (36 M.R.S. 5219-SS) is modeled at $305 for each dependent, reduced by $20 for each $500, or fraction thereof, of Maine adjusted gross income above $100,000 single, $125,000 head of household, $150,000 filing jointly and $75,000 filing separately (2025 Form 1040ME instructions). Those are the 2025 figures, the latest Maine has published for the credit, applied alongside the 2026 rate schedule.",
+        "Maine doubles that credit for a dependent under six and makes it refundable for residents. This estimate has no age input and never lets a credit take state tax below zero, so it understates the benefit for a filer with young children or with little Maine tax to offset. The starting point is gross wages."
       ]
     },
     {
@@ -5993,6 +6006,11 @@
           ]
         },
         "countedAs": "qualifying-child"
+      },
+      "dependentAllowanceStatus": {
+        "kind": "assumption",
+        "reason": "North Carolina allows this only for a child claimed for the federal child tax credit. This estimate counts every dependent, so a filer whose dependents are not qualifying children is shown less tax than they owe.",
+        "verifiedAt": "2026-09-07T00:00:00.000Z"
       },
       "notes": [
         "North Carolina taxes individual income at a flat 3.99% for taxable years after 2025 (NCDOR Tax Rate Schedules; Session Law 2023-134; G.S. 105-153.7).",
@@ -7612,11 +7630,18 @@
         "roundReductionDownToMultipleOf": 10
       },
       "perDependentExemption": 4930,
+      "dependentAllowanceStatus": {
+        "kind": "assumption",
+        "reason": "South Carolina allows a second deduction of the same amount for each dependent under six. This estimate has no age input, so it leaves that out and shows more tax than a filer with young children owes.",
+        "verifiedAt": "2026-09-07T00:00:00.000Z"
+      },
       "notes": [
         "South Carolina has two brackets for tax year 2026: 1.99% below $30,000 of taxable income and 5.21% above it, which the state writes as 5.21% minus $966 (SCDOR Information Letter #26-20; S.C. Code 12-6-510).",
         "For 2026 South Carolina decoupled from the federal deductions in IRC 63(b)-(g), so its starting point is federal adjusted gross income rather than federal taxable income. For a wage-only filer that is gross pay.",
         "The South Carolina Income Adjusted Deduction replaces the federal standard deduction: $15,000 single and married filing separately, $22,500 head of household, $30,000 married filing jointly. It falls to zero across AGI of $40,000-$95,000, $60,000-$142,500 and $80,000-$190,000 respectively, and the reduction is rounded down to the next lowest $10.",
-        "The dependent exemption, the 125% earned income credit capped at $200, and other South Carolina credits are not modeled. The starting point is gross wages.",
+        "The dependent exemption is $4,930 for each dependent claimed on the federal return, subtracted from South Carolina taxable income with no phase-out (2025 SC1040 instructions, worksheet for line w; S.C. Code 12-6-1140(13)). That is the 2025 indexed figure, the latest South Carolina has published; the amount is indexed annually and the 2026 one was not available at verification.",
+        "South Carolina allows a second deduction of the same amount for each dependent who had not reached age six (S.C. Code 12-6-1160). This estimate has no age input, so it does not apply that doubling and understates the deduction for a filer with young children.",
+        "The 125% earned income credit capped at $200 and other South Carolina credits are not modeled. The starting point is gross wages.",
         "The 5.21% top rate is scheduled to fall in later years when revenue triggers are met; this row is the 2026 schedule as published."
       ]
     },
@@ -8324,5 +8349,5 @@
       ]
     }
   ],
-  "normalizedSha256": "de0a166b5332fe7d948d348f7c24400051bad7701fd23b2ee8b360a0ba035eea"
+  "normalizedSha256": "25472d5c44661807d613f884b5dff6a74a8c4bd10358a87fcddd73b2f3d39382"
 }

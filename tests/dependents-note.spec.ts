@@ -32,10 +32,30 @@ describe('the dependents note', () => {
     }
   });
 
-  it('says nothing where the number does change the answer', () => {
+  it('says nothing where the number changes the answer on no special terms', () => {
     for (const policy of wageTaxing) {
       if (!stateUsesDependents(policy)) continue;
+      const status = 'dependentAllowanceStatus' in policy ? policy.dependentAllowanceStatus : undefined;
+      if (status?.kind === 'assumption') continue;
       expect(dependentsNote(policy), policy.stateCode).toBeNull();
+    }
+  });
+
+  it('states the terms where a modelled figure rests on an assumption', () => {
+    /*
+     * Silence is not neutral here. Arizona pays $125 for a dependent under 17
+     * and $25 for an older one, and there is no age input, so a reader with
+     * grown dependents is being shown too little tax. Saying nothing would let
+     * them take that number as if it were unconditional.
+     */
+    for (const code of ['AZ', 'SC', 'ME', 'NC']) {
+      const policy = snapshot.states.find((row) => row.stateCode === code)!;
+      expect(stateUsesDependents(policy), code).toBe(true);
+      const note = dependentsNote(policy);
+      expect(note, code).toBeTruthy();
+      // Every one of them says which way the estimate is wrong, not just that
+      // it is approximate.
+      expect(note, code).toMatch(/less tax than they owe|more tax than/i);
     }
   });
 
@@ -74,6 +94,8 @@ describe('the dependents note', () => {
     // engine has no input for. Calling that "none" would be false.
     expect(kindOf('PA')).toBe('not-modelled');
     expect(kindOf('CO')).toBe('not-modelled');
+    // Arizona is modelled; what it carries is a caveat, not an absence.
+    expect(kindOf('AZ')).toBe('assumption');
   });
 
   it('gives a state with no wage tax its own reason rather than the snapshot one', () => {
@@ -95,7 +117,7 @@ describe('the dependents note', () => {
   });
 
   it('says nothing for the states whose dependent figures are transcribed', () => {
-    for (const code of ['AL', 'NC', 'CA', 'SC', 'ME', 'AZ']) {
+    for (const code of ['AL', 'CA']) {
       const policy = snapshot.states.find((row) => row.stateCode === code);
       expect(stateUsesDependents(policy!), code).toBe(true);
       expect(dependentsNote(policy), code).toBeNull();

@@ -41,7 +41,7 @@ we do not re-research from scratch what good open infrastructure already indexes
 | BEA RPP | Geographic price adjustment | State · metro | 2024, annual | Public domain | Yes | primary | Salary, Cost of living |
 | IRS Rev. Proc. / Pub 15 | Federal tax | National | TY2026 | Public domain | Yes | primary | Tax |
 | State DOR publications | State tax | 51 jurisdictions | TY2026 where published | State works | Yes | primary | Tax, Salary |
-| **PolicyEngine-US** | **Finding the official state-tax document** | 51 jurisdictions | Continuous | **AGPL-3.0** | **No — nothing copied** | **discovery** | Tax (as an index) |
+| **PolicyEngine-US** | **Finding the official state-tax document; one figure taken directly** | 51 jurisdictions | Continuous | **AGPL-3.0** | **Index yes; one value, labelled** | **discovery + secondary** | Tax (as an index) |
 | **CWICR** | — | **No US data** | 2026-08 | **CC BY-NC 4.0 (data)** | **No** | **rejected** | — |
 | FEMA equipment rates | Equipment hourly cost | National | ~Annual | Public domain | Yes | primary | Job Cost (equipment) |
 | Davis-Bacon determinations | Trade wages by county | County × trade | Continuous | Public domain | Yes | primary | Job Cost (labour) |
@@ -93,6 +93,33 @@ PolicyEngine reference[]  →  official PDF or statute  →  transcribe
 If the repository and the official source disagree, the official source wins and
 the repository entry is treated as out of date. The verification standard does
 not drop because a candidate value was available.
+
+#### That disagreement is not hypothetical
+
+Maine reduces its dependent exemption tax credit by $20 for each **$500** of
+Maine adjusted gross income over the threshold, "or fraction thereof". The
+repository had the increment at $1,000. At $104,000 of income with two
+dependents that is $450 of surviving credit against $530 — a factor of two on
+the reduction, for every affected Maine filer. The official 2025 Form 1040ME
+instructions settled it. Nothing here is a criticism of the repository, which
+is maintained openly and covers ground no official source consolidates; it is
+the reason the pointer is what gets taken and not the number.
+
+#### One value has been taken directly, and it is labelled
+
+Arizona's dependent tax credit is $125 for 2026 under HB 4168. That figure was
+read from the repository's parameter set citing the bill, not from a Department
+of Revenue form this project has opened, because the Department's own site was
+not reachable at verification. It ships, and it carries the
+`secondary-source` basis on its golden vectors so that the difference from a
+transcribed figure is visible in the gate rather than lost.
+
+The AGPL does not reach it. What was taken is a dollar amount fixed by Arizona
+statute — a fact about the law, not the repository's expression of it — and no
+file, structure or wording came with it. The registry row says "one value,
+labelled" rather than "nothing copied" because the second is no longer true and
+a registry that overstates its own cleanliness is worth less than one that does
+not.
 
 ### CWICR is rejected twice over
 
