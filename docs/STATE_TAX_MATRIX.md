@@ -6,7 +6,9 @@ Working document for P2. Status as of 2026-09-07.
 
 Every supported state carries at least three golden vectors and passes
 `npm run verify:tax`, which is now a gate that can fail rather than a module
-nobody called. The current golden set is 188 vectors.
+nobody called. Golden-vector **count is informational** — record it from
+`npm run verify:tax` at execution time; do not treat a number in this file as
+the required total.
 
 ## How sources are obtained
 
@@ -158,7 +160,7 @@ number that was wrong in a specific, checkable way.
 
 New York is supported from 2026 Form IT-2105-I (annual rate schedules, standard deduction, $1,000 dependent exemption, and recapture worksheets). NYC and Yonkers remain omitted local tax, named with the official city schedule and 16.75% Yonkers surcharge.
 
-Twenty-two income-tax states still use a 2025 official annual schedule inside the 2026 snapshot, declared on the row. That is not the same as “no 2026 data”: several of those 2025 figures remain the 2026 law (unchanged statutory rates). See `P2_STATE_TAX_FINAL.md`.
+Twenty-one income-tax states still use a 2025 official annual schedule inside the 2026 snapshot, declared on the row. That is not the same as “no 2026 data”: several of those 2025 figures remain the 2026 law (unchanged statutory rates). See `P2_STATE_TAX_FINAL.md`.
 
 ## Local income taxes
 

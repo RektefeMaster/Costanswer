@@ -194,11 +194,20 @@ function computeSupportedStateTax(
       const exemptions = stepped
         ? steppedExemptionAt(stepped, income, filingStatus, input.dependents ?? 0)
         : afterPhaseOut(
-          policy.personalExemptionByFilingStatus?.[filingStatus] ?? 0,
+          /*
+           * Dependents are inside the amount that phases, not added after it.
+           * New Mexico's worksheet reduces the $2,500 per person first, then
+           * multiplies by taxpayer, spouse and dependents — the same curve as
+           * phasing the combined figure. Adding the dependent amount after the
+           * phase-out would leave it unreduced in the band where the worksheet
+           * is shrinking it.
+           */
+          (policy.personalExemptionByFilingStatus?.[filingStatus] ?? 0)
+            + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0),
           policy.personalExemptionPhaseOut,
           income,
           filingStatus,
-        ) + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
+        );
       const taxableIncome = Math.max(0, income - deduction - exemptions);
       taxBeforeCredits = calculateProgressiveTax(taxableIncome, policy.bracketsByFilingStatus[filingStatus])
         + (policy.additionalTax
@@ -329,13 +338,15 @@ function steppedExemptionAt(
   spec: {
     amountStepsByFilingStatus: Record<FilingStatus, ReadonlyArray<{ notOver: number | null; amount: number }>>;
     countByFilingStatus: Record<FilingStatus, number>;
+    includeDependents?: boolean;
   },
   income: number,
   filingStatus: FilingStatus,
   dependents: number,
 ): number {
   const amount = amountAtIncomeStep(spec.amountStepsByFilingStatus[filingStatus], income);
-  return amount * (spec.countByFilingStatus[filingStatus] + dependents);
+  const dependentCount = spec.includeDependents === false ? 0 : dependents;
+  return amount * (spec.countByFilingStatus[filingStatus] + dependentCount);
 }
 
 function boundedPercentageDeduction(

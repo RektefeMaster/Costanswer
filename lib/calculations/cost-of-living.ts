@@ -398,6 +398,7 @@ export function composeCostOfLivingFromCoverage(
   let stateTaxStatus: 'supported' | 'unsupported' | 'not-used' = 'not-used';
   let incomeLabel = 'Income not entered';
   let completeness: 'complete' | 'provisional' | 'omitted' = 'omitted';
+  let taxLocalOmission: string | undefined;
   if (input.incomeMode === 'take-home') {
     monthlyTakeHome = dollars(input.monthlyTakeHome);
     incomeLabel = 'Manual monthly take-home';
@@ -422,6 +423,12 @@ export function composeCostOfLivingFromCoverage(
       completeness = liability.stateTax.status === 'unsupported' ? 'provisional' : 'complete';
       if (liability.stateTax.status === 'unsupported') {
         incompleteReasons.push(`${coverage.state} state income tax is omitted. Remaining-income figures are provisional. Enter take-home pay for a complete result.`);
+      }
+      const local = liability.stateTax.omittedLocalTax;
+      if (local) {
+        taxLocalOmission = local.omissionNote
+          ? `${local.label} is not included. ${local.omissionNote}`
+          : `${local.label} is not included. It is set by your ${local.basis.replace('-', ' ')} and is not estimated here, so real take-home is lower than this.`;
       }
     }
   }
@@ -542,6 +549,7 @@ export function composeCostOfLivingFromCoverage(
       'This is an estimated modeled monthly living cost, not everything it costs to live here.',
       'Healthcare, childcare, debt, restaurants, and most discretionary spending are omitted.',
       'Income tax is not added as a living-cost category after take-home is known.',
+      taxLocalOmission ?? '',
       value.regionalPriceContext.notInflation ? 'BEA RPP compares regional price levels in 2024. It is not a measure of inflation over time.' : '',
     ].filter(Boolean),
   };

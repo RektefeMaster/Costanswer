@@ -255,9 +255,9 @@ const alternativeLowIncomeScheduleSchema = z.object({
  * A per-person exemption that steps down as income rises.
  *
  * Ohio's is $2,400 up to $40,000 of modified adjusted gross income, $2,150 to
- * $80,000, $1,900 to $749,999 and nothing above — a staircase, not a taper, so
- * the proportional phase-out shape would give the wrong figure everywhere
- * except at the step edges.
+ * $80,000, $1,900 below $500,000 of MAGI in 2026, and nothing at or above
+ * $500,000 — a staircase, not a taper, so the proportional phase-out shape
+ * would give the wrong figure everywhere except at the step edges.
  */
 const steppedExemptionSchema = z.object({
   /**
@@ -275,6 +275,15 @@ const steppedExemptionSchema = z.object({
   }).strict(),
   /** Exemptions a filer claims before dependents: one, or two filing jointly. */
   countByFilingStatus: filingStatusNumberSchema,
+  /**
+   * Whether the dependents input adds to that count.
+   *
+   * Ohio and Maryland grant the same per-person amount to dependents, so the
+   * default is to include them. Connecticut Table A is one return-level amount
+   * looked up on AGI — multiplying it by dependents would invent a deduction
+   * Connecticut does not give.
+   */
+  includeDependents: z.boolean().optional(),
 }).strict();
 
 /**

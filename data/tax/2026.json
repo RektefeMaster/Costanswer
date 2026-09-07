@@ -641,7 +641,7 @@
       "notes": [
         "Alabama taxes taxable income at 2%, 4% and 5% (Alabama Department of Revenue FAQ; 2025 Form 40 booklet tax tables). Single, head of family and married filing separately: 2% of the first $500, 4% of the next $2,500, 5% over $3,000. Married filing jointly: 2% of the first $1,000, 4% of the next $5,000, 5% over $6,000. 2026 Form 40 was not published at verification.",
         "The standard deduction is the 21-row chart on pages 8–9 of the 2025 Form 40 booklet, looked up on Alabama AGI (line 10), not a single figure and not a linear phase-out. Married filing jointly: $8,500 at or below $25,999, then $175 less in each $500 band to $5,000 at $35,500 and above. Head of family: $5,200 down $135 per $500 to $2,500. Single: $3,000 down $25 per $500 to $2,500, on the same $26,000–$35,500 income bands. Married filing separately: $4,250 at or below $12,999, then $88 less in each $250 band to $2,500 at $17,750 and above.",
-        "The personal exemption is $1,500 single or married filing separately and $3,000 married filing jointly or head of family (Form 40 lines 1–4). Dependent exemptions ($1,000 / $500 / $300 by AGI) are not modeled; the calculator has no dependents input on this path.",
+        "The personal exemption is $1,500 single or married filing separately and $3,000 married filing jointly or head of family (Form 40 lines 1–4). Dependent exemptions ($1,000 / $500 / $300 by AGI) are not modeled.",
         "Alabama subtracts federal income tax in full (Form 40 line 12 worksheet: Form 1040 line 22 plus NIIT, minus refundable credits, not below zero). For a wage-only filer with none of those extras, that is the federal income tax this engine computes.",
         "Alabama cities levy occupational taxes that are not included. No statewide rate is published, so the page names the omission without inventing its size.",
         "Alabama itemized deductions, credits and other Form 40 adjustments are not modeled. The starting point is gross wages."
@@ -2222,7 +2222,8 @@
           "marriedFilingJointly": 1,
           "marriedFilingSeparately": 1,
           "headOfHousehold": 1
-        }
+        },
+        "includeDependents": false
       },
       "taxAddOnSteps": [
         {
@@ -3696,7 +3697,7 @@
         }
       },
       "notes": [
-        "Connecticut computes 2025 income tax from Connecticut AGI on Form CT-1040 TCS: a personal exemption (Table A), initial tax on taxable income (Table B), a 2% rate phase-out add-back (Table C), tax recapture (Table D), then a personal tax credit that is a percentage of that tax (Table E). 2026 CT-1040 was not published at verification.",
+        "Connecticut computes 2025 income tax from Connecticut AGI on Form CT-1040 TCS: a personal exemption (Table A), initial tax on taxable income (Table B), a 2% rate phase-out add-back (Table C), tax recapture (Table D), then a personal tax credit that is a percentage of that tax (Table E). 2026 CT-1040 was not published at verification. Table A is one amount for the return, looked up on filing status and Connecticut AGI; dependents do not multiply it.",
         "Table B rates are 2%, 4.5%, 5.5%, 6%, 6.5%, 6.9% and 6.99%. Single and married filing separately share one width; joint and head of household have their own. The TCS worked examples ($13,000 taxable → $335; $22,500 joint → $513; $20,000 head of household → $500) are the initial tax only, before add-backs and the credit.",
         "Table C and Table D are dollar staircases looked up on Connecticut AGI, not a single surcharge rate. Recapture begins above $105,000 single / $210,000 joint / $168,000 head of household and caps at $3,400 / $6,800 / $5,320.",
         "The personal tax credit is a published decimal of the tax itself, 75% at low AGI stepping to zero, not a dollar exemption. Connecticut has no standard deduction.",
@@ -4082,47 +4083,58 @@
           },
           {
             "notOver": 14400,
-            "rate": 0.032
+            "rate": 0.032,
+            "baseTax": 134
           },
           {
             "notOver": 19200,
-            "rate": 0.055
+            "rate": 0.055,
+            "baseTax": 288
           },
           {
             "notOver": 24000,
-            "rate": 0.064
+            "rate": 0.064,
+            "baseTax": 552
           },
           {
             "notOver": 36000,
-            "rate": 0.068
+            "rate": 0.068,
+            "baseTax": 859
           },
           {
             "notOver": 48000,
-            "rate": 0.072
+            "rate": 0.072,
+            "baseTax": 1675
           },
           {
             "notOver": 125000,
-            "rate": 0.076
+            "rate": 0.076,
+            "baseTax": 2539
           },
           {
             "notOver": 175000,
-            "rate": 0.079
+            "rate": 0.079,
+            "baseTax": 8391
           },
           {
             "notOver": 225000,
-            "rate": 0.0825
+            "rate": 0.0825,
+            "baseTax": 12341
           },
           {
             "notOver": 275000,
-            "rate": 0.09
+            "rate": 0.09,
+            "baseTax": 16466
           },
           {
             "notOver": 325000,
-            "rate": 0.1
+            "rate": 0.1,
+            "baseTax": 20966
           },
           {
             "notOver": null,
-            "rate": 0.11
+            "rate": 0.11,
+            "baseTax": 25966
           }
         ],
         "marriedFilingSeparately": [
@@ -4132,47 +4144,58 @@
           },
           {
             "notOver": 14400,
-            "rate": 0.032
+            "rate": 0.032,
+            "baseTax": 134
           },
           {
             "notOver": 19200,
-            "rate": 0.055
+            "rate": 0.055,
+            "baseTax": 288
           },
           {
             "notOver": 24000,
-            "rate": 0.064
+            "rate": 0.064,
+            "baseTax": 552
           },
           {
             "notOver": 36000,
-            "rate": 0.068
+            "rate": 0.068,
+            "baseTax": 859
           },
           {
             "notOver": 48000,
-            "rate": 0.072
+            "rate": 0.072,
+            "baseTax": 1675
           },
           {
             "notOver": 125000,
-            "rate": 0.076
+            "rate": 0.076,
+            "baseTax": 2539
           },
           {
             "notOver": 175000,
-            "rate": 0.079
+            "rate": 0.079,
+            "baseTax": 8391
           },
           {
             "notOver": 225000,
-            "rate": 0.0825
+            "rate": 0.0825,
+            "baseTax": 12341
           },
           {
             "notOver": 275000,
-            "rate": 0.09
+            "rate": 0.09,
+            "baseTax": 16466
           },
           {
             "notOver": 325000,
-            "rate": 0.1
+            "rate": 0.1,
+            "baseTax": 20966
           },
           {
             "notOver": null,
-            "rate": 0.11
+            "rate": 0.11,
+            "baseTax": 25966
           }
         ],
         "marriedFilingJointly": [
@@ -4182,47 +4205,58 @@
           },
           {
             "notOver": 28800,
-            "rate": 0.032
+            "rate": 0.032,
+            "baseTax": 269
           },
           {
             "notOver": 38400,
-            "rate": 0.055
+            "rate": 0.055,
+            "baseTax": 576
           },
           {
             "notOver": 48000,
-            "rate": 0.064
+            "rate": 0.064,
+            "baseTax": 1104
           },
           {
             "notOver": 72000,
-            "rate": 0.068
+            "rate": 0.068,
+            "baseTax": 1718
           },
           {
             "notOver": 96000,
-            "rate": 0.072
+            "rate": 0.072,
+            "baseTax": 3350
           },
           {
             "notOver": 250000,
-            "rate": 0.076
+            "rate": 0.076,
+            "baseTax": 5078
           },
           {
             "notOver": 350000,
-            "rate": 0.079
+            "rate": 0.079,
+            "baseTax": 16782
           },
           {
             "notOver": 450000,
-            "rate": 0.0825
+            "rate": 0.0825,
+            "baseTax": 24682
           },
           {
             "notOver": 550000,
-            "rate": 0.09
+            "rate": 0.09,
+            "baseTax": 32932
           },
           {
             "notOver": 650000,
-            "rate": 0.1
+            "rate": 0.1,
+            "baseTax": 41932
           },
           {
             "notOver": null,
-            "rate": 0.11
+            "rate": 0.11,
+            "baseTax": 51932
           }
         ],
         "headOfHousehold": [
@@ -4232,47 +4266,58 @@
           },
           {
             "notOver": 21600,
-            "rate": 0.032
+            "rate": 0.032,
+            "baseTax": 202
           },
           {
             "notOver": 28800,
-            "rate": 0.055
+            "rate": 0.055,
+            "baseTax": 432
           },
           {
             "notOver": 36000,
-            "rate": 0.064
+            "rate": 0.064,
+            "baseTax": 828
           },
           {
             "notOver": 54000,
-            "rate": 0.068
+            "rate": 0.068,
+            "baseTax": 1289
           },
           {
             "notOver": 72000,
-            "rate": 0.072
+            "rate": 0.072,
+            "baseTax": 2513
           },
           {
             "notOver": 187500,
-            "rate": 0.076
+            "rate": 0.076,
+            "baseTax": 3809
           },
           {
             "notOver": 262500,
-            "rate": 0.079
+            "rate": 0.079,
+            "baseTax": 12587
           },
           {
             "notOver": 337500,
-            "rate": 0.0825
+            "rate": 0.0825,
+            "baseTax": 18512
           },
           {
             "notOver": 412500,
-            "rate": 0.09
+            "rate": 0.09,
+            "baseTax": 24699
           },
           {
             "notOver": 487500,
-            "rate": 0.1
+            "rate": 0.1,
+            "baseTax": 31449
           },
           {
             "notOver": null,
-            "rate": 0.11
+            "rate": 0.11,
+            "baseTax": 38949
           }
         ]
       },
@@ -4392,9 +4437,11 @@
         "marriedFilingSeparately": 2925,
         "headOfHousehold": 2925
       },
+      "perDependentExemption": 2925,
       "notes": [
         "Illinois individual income tax is 4.95% of net income (IDOR; rate effective July 1, 2017).",
-        "Tax year 2026 personal exemption is $2,925 per taxpayer (IDOR FY 2026-15). Joint returns use two taxpayer exemptions. Dependents are not modeled.",
+        "Tax year 2026 personal exemption is $2,925 per taxpayer (IDOR FY 2026-15). Joint returns use two taxpayer exemptions. Each dependent is another $2,925 (35 ILCS 5/204(c); Schedule IL-E/EITC dependent exemption allowance).",
+        "The exemption allowance is not allowed if adjusted gross income exceeds $500,000 on a joint return or $250,000 on any other return (FY 2026-15). That high-income cliff is not modeled, which understates tax for those filers.",
         "Illinois additions, subtractions, and credits are not modeled. The starting point is gross wages minus the personal exemption."
       ]
     },
@@ -4874,7 +4921,7 @@
         "Maryland taxes taxable net income in ten bands from 2% to 6.5% (Comptroller of Maryland, 2025 Maryland Income Tax Rates and Brackets; Md. Code, Tax-Gen. 10-105).",
         "Joint filers and heads of household get wider bands from $3,000 upward; below that the schedule is the same for everyone.",
         "Standard deduction for 2025 is a flat $3,350 single, married filing separately or dependent, and $6,700 filing jointly, head of household or qualifying surviving spouse.",
-        "The personal exemption is $3,200, halved above $100,000 of federal adjusted gross income and halved again above $125,000, reaching zero above $150,000. Those thresholds are $150,000, $175,000 and $200,000 on a joint return.",
+        "The personal exemption is $3,200, halved above $100,000 of federal adjusted gross income and halved again above $125,000, reaching zero above $150,000. Those thresholds are $150,000, $175,000 and $200,000 on a joint return. Each dependent is another exemption at the same amount.",
         "Maryland’s 23 counties and Baltimore City levy a local income tax between 2.25% and 3.30% of taxable income, collected on the same return. It depends on where you live and is not included here, and for many Marylanders it is comparable to the state tax itself.",
         "The 2% additional tax on net capital gain income, the poverty level credit, itemized deductions and the two-income subtraction are not modeled. The starting point is gross wages."
       ]
@@ -5005,7 +5052,7 @@
         "Both are phased out in proportion to income above $102,250 single, $153,400 head of household and $204,550 filing jointly, reaching zero $75,000, $112,500 and $150,000 further up. That band starts inside ordinary salaries, so it is modeled rather than noted.",
         "A 2% surcharge applies to Maine taxable income above $1,000,000 single, $750,000 married filing separately and $1,500,000 filing jointly or head of household, for tax years beginning on or after January 1, 2026.",
         "The rate schedule states that it must not be used to compute withholding from wages; this model estimates annual liability, not withholding.",
-        "Maine credits, itemized deductions and the additional deduction for age or blindness are not modeled. The starting point is gross wages."
+        "Maine credits, itemized deductions and the additional deduction for age or blindness are not modeled. The $300 dependent exemption tax credit (36 M.R.S. § 5219-SS) is a separate credit with its own phase-out and is not modeled. The starting point is gross wages."
       ]
     },
     {
@@ -5027,6 +5074,7 @@
         "marriedFilingSeparately": 5900,
         "headOfHousehold": 5900
       },
+      "perDependentExemption": 5900,
       "localAddOn": {
         "label": "Michigan city income tax",
         "basis": "municipality",
@@ -5034,7 +5082,7 @@
       },
       "notes": [
         "Michigan taxes income at a flat 4.25% for tax year 2026 (Treasury taxpayer notice, April 15, 2026; MCL 206.51). The FY 2025 ACFR did not trigger the statutory rate-reduction formula.",
-        "The personal exemption is $5,900 a person for 2026 (Treasury withholding calendar and 2026 Form 446). A joint return claims two. Michigan has no standard deduction of its own. Dependents also receive this exemption on a return; they are not an input here.",
+        "The personal exemption is $5,900 a person for 2026 (Treasury withholding calendar and 2026 Form 446). A joint return claims two. Michigan has no standard deduction of its own. Each dependent is another $5,900 (Form 446: personal and dependency exemptions).",
         "Twenty-four Michigan cities levy their own income tax, Detroit’s administered by Treasury and the rest by the cities themselves. Treasury publishes the list but no statewide rate, so that tax is named here without a size.",
         "The special exemption for disability, the qualified disabled veteran deduction, retirement and pension subtractions, the homestead property tax credit and the home heating credit are not modeled. The starting point is gross wages."
       ]
@@ -6162,6 +6210,7 @@
         "marriedFilingSeparately": 2500,
         "headOfHousehold": 2500
       },
+      "perDependentExemption": 2500,
       "personalExemptionPhaseOut": {
         "startIncomeByFilingStatus": {
           "single": 20000,
@@ -6179,7 +6228,7 @@
       "notes": [
         "New Mexico taxes New Mexico taxable income at 1.5%, 3.2%, 4.3%, 4.7%, 4.9% and 5.9% for tax years beginning on or after January 1, 2025 (7-2-7 NMSA 1978 as amended by Laws 2024, Chapter 67 (H.B. 252)).",
         "The starting point is federal adjusted gross income. PIT-1 line 12 then subtracts the federal standard deduction — $15,750 single or married filing separately, $31,500 married filing jointly, $23,625 head of household, from the 2025 Form 1040 instructions.",
-        "A low- and middle-income exemption of $2,500 a person applies at or below $36,667 of federal AGI single, $27,500 married filing separately, and $55,000 filing jointly or head of household. It is the full $2,500 below $20,000 / $15,000 / $30,000 and then falls by 15¢, 20¢ or 10¢ per dollar (2025 PIT-1 instructions, line 14 worksheet). A joint return claims two. The worksheet then multiplies that remaining $2,500 by PIT-1 line 5 (taxpayer, spouse and dependents). This row models taxpayer and spouse only; dependents are not counted, which overstates tax for a return that claims them.",
+        "A low- and middle-income exemption of $2,500 a person applies at or below $36,667 of federal AGI single, $27,500 married filing separately, and $55,000 filing jointly or head of household. It is the full $2,500 below $20,000 / $15,000 / $30,000 and then falls by 15¢, 20¢ or 10¢ per dollar (2025 PIT-1 instructions, line 14 worksheet). A joint return claims two. The worksheet then multiplies that remaining $2,500 by PIT-1 line 5 (taxpayer, spouse and dependents); each dependent is another $2,500 of that same phased amount.",
         "The 2025 PIT packet prints a Tax Rate Table on taxable income in $100 bands. NMAC 3.3.7.9 says to use 7-2-7 itself when taxable income is outside that table. These bands are the statute. The table is midpoint-based, so a printed figure can differ from 7-2-7 by about a dollar at a band edge. The packet’s own example is $679 of tax at $25,300–$25,400 of taxable income, married filing jointly.",
         "The $4,000 deduction for certain dependents on a joint or head-of-household return, the Working Families Tax Credit, the child income tax credit, the low-income comprehensive tax rebate and other PIT-ADJ / PIT-RC items are not modeled. New Mexico does not levy a local wage income tax.",
         "The department had published the 2025 PIT-1 and not a 2026 schedule at verification, so this row declares the 2025 schedule."
@@ -6684,7 +6733,7 @@
       },
       "notes": [
         "Ohio taxes nonbusiness income for 2026 at 0% on a balance of $26,050 or less, then $332 plus 2.75% of the excess (R.C. 5747.02(A)(3)(c) as amended by H.B. 96, effective 30 September 2025). The 2025 $100,000 / 3.125% band is gone. The department’s annual-rate page still listed only 2025 at verification; the enacted statute is the 2026 annual computation.",
-        "H.B. 96 suspends inflation indexing of the $26,050 floor and the personal-exemption dollar amounts for 2025 and 2026, so those stay at the 2025 figures: $2,400 / $2,150 / $1,900 by MAGI band (R.C. 5747.025; 2025 IT 1040). Eligibility for the exemption ends below $500,000 of MAGI in 2026, down from $750,000 in 2025.",
+        "H.B. 96 suspends inflation indexing of the $26,050 floor and the personal-exemption dollar amounts for 2025 and 2026, so those stay at the 2025 figures: $2,400 / $2,150 / $1,900 by MAGI band (R.C. 5747.025; 2025 IT 1040). Eligibility for the exemption ends below $500,000 of MAGI in 2026, down from $750,000 in 2025. The exemption is per person, including dependents.",
         "The same schedule applies to every filing status. Ohio gives no standard deduction.",
         "Ohio municipalities and school districts levy their own income taxes on top of this, set locally and not included here.",
         "The exemption credit, joint filing credit, retirement and senior credits, and the separate 3% rate on business income are not modeled. The starting point is gross wages."
@@ -7157,9 +7206,10 @@
         "marriedFilingSeparately": 5100,
         "headOfHousehold": 5100
       },
+      "perDependentExemption": 5100,
       "notes": [
         "Rhode Island taxes Rhode Island taxable income at 3.75%, 4.75% and 5.99% for tax year 2025, the same bands for every filing status (2025 Rhode Island Tax Tables, page T-1 computation worksheet).",
-        "Standard deduction for 2025 is $10,900 single or married filing separately, $21,800 married filing jointly, $16,350 head of household. The personal exemption is $5,100 a person, doubled on a joint return. Dependents are not modeled. Rhode Island does not allow federal itemized deductions.",
+        "Standard deduction for 2025 is $10,900 single or married filing separately, $21,800 married filing jointly, $16,350 head of household. The personal exemption is $5,100 a person, doubled on a joint return, and $5,100 for each dependent (2025 RI-1040 line 6; Schedule E). Rhode Island does not allow federal itemized deductions.",
         "Both the deduction and the exemption phase out above $254,250 of modified federal AGI. That band is well above ordinary wages, so it is noted rather than modelled; this overstates the deduction for those filers.",
         "The 2025 table is midpoint-based over $50 income bands, so its printed figure can differ from the exact 3.75% by up to about a dollar. The booklet’s own example is $950 of tax at $25,300–$25,350 of taxable income.",
         "The percentage of allowable federal credits, the earned income credit at 16% of the federal credit, and other Rhode Island credits are not modeled. The starting point is gross wages.",
@@ -7338,7 +7388,7 @@
         "Utah taxes income at a flat 4.5% from January 1, 2025 (Utah State Tax Commission, Tax Rates; Utah Code 59-10-104).",
         "Utah gives no deduction. Instead TC-40 line 16 grants a credit of 6% of the federal standard deduction plus Utah personal exemptions, reduced by 1.3% of income above a base of $18,213 single, $36,426 filing jointly, $18,213 filing separately and $27,320 head of household, and never below zero.",
         "That credit is read from the federal standard deduction in this same snapshot rather than copied as a dollar figure, so it moves when the IRS indexes the deduction instead of going stale.",
-        "The Utah personal exemption is $2,111 per dependent for 2025. Dependents are not an input to this calculation, so only the federal share of the credit applies here.",
+        "The Utah personal exemption is $2,111 per dependent for 2025. That amount is credited at 6% when dependents are supplied.",
         "Utah had not published 2026 amounts at verification, so this row declares the 2025 schedule. Utah’s other credits and its additions and subtractions are not modeled."
       ]
     },
@@ -7613,9 +7663,10 @@
         "marriedFilingSeparately": 5300,
         "headOfHousehold": 5300
       },
+      "perDependentExemption": 5300,
       "notes": [
         "Vermont taxes Vermont taxable income at 3.35%, 6.60%, 7.60% and 8.75% for tax year 2025 (2025 IN-111 instructions, tax rate schedules X, Y-1, Y-2 and Z).",
-        "Standard deduction for 2025 is $7,650 single or married filing separately, $15,300 married filing jointly, $11,450 head of household. The personal exemption is $5,300 a person (IN-111 line 5e), including other dependents on line 5c. This row models taxpayer and spouse only.",
+        "Standard deduction for 2025 is $7,650 single or married filing separately, $15,300 married filing jointly, $11,450 head of household. The personal exemption is $5,300 a person (IN-111 line 5e), including other dependents on line 5c.",
         "The booklet works a married filing jointly example: $85,000 of Vermont taxable income is $2,929 of tax, which is the $2,764 printed at $82,500 plus 6.60% of the $2,500 excess.",
         "Above $150,000 of federal adjusted gross income Vermont charges the greater of the schedule and 3% of that AGI. On a wage-only return with these deductions the schedule is already higher, so the floor is noted rather than modelled.",
         "The additional standard deduction for age or blindness, the charitable contribution credit and Vermont school district taxes are not modeled. The starting point is gross wages.",
@@ -7952,5 +8003,5 @@
       ]
     }
   ],
-  "normalizedSha256": "4818910a5fa82d519354a72c2cd08dc5b50ee10eb6b53562d777630ef451e6ac"
+  "normalizedSha256": "170bf209322ee707c3a9e7ac3e520a9389ce520e3936d92e71a4cf57518bc1c7"
 }

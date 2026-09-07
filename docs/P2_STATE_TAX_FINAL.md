@@ -24,21 +24,23 @@ local tax, named with the official city schedule and 16.75% Yonkers surcharge.
 
 | Gate | Result |
 | --- | --- |
-| `npm run verify:tax` | PASS — 42 schedules, 188 golden vectors, 7 warnings |
+| `npm run verify:tax` | PASS at close — 42 schedules, 194 golden vectors, 7 warnings. **Count is a close-date snapshot.** Live count comes from `npm run verify:tax`; do not treat 194 as a forever total. |
 | `npx vitest run tests/tax.spec.ts` | PASS |
 | Schema validation | PASS (embedded in `verify:tax`) |
 | Source / provenance | PASS — production figures from government documents only |
 | Boundary tests | PASS — rule-shape boundaries covered where the shape creates them |
 | Existing 38-state regression | PASS (superseded by the 41-state golden set) |
 
-### Golden vectors (188)
+### Golden vectors (close-date snapshot: 194)
+
+Informational. Re-run `npm run verify:tax` for the current count.
 
 | Basis | Count | Meaning |
 | --- | ---: | --- |
 | published-table | 43 | Official tax-table row |
 | published-example | 21 | Official worked example |
 | published-threshold | 22 | Official breakpoint / lump / first-taxable-dollar figure |
-| worked-from-schedule | 102 | Arithmetic from the transcribed official schedule |
+| worked-from-schedule | 108 | Arithmetic from the transcribed official schedule |
 
 Warnings (not failures): AL, MO, OR require `federalIncomeTax`; MA requires `employeeFica` (fail-fast reminders). CA, MT and ND have brackets but every vector is worked from the schedule; no official published table row was transcribed for those three.
 
@@ -58,6 +60,8 @@ These were silent errors in an earlier 50/51 row, not new coverage:
 - **OK** H.B. 2764 / 68 O.S. 2355(D) (0 / 2.5 / 3.5 / 4.5%); 2025 0.25%–4.75% table overstated 2026 tax.
 - **OH** H.B. 96 / R.C. 5747.02(A)(3)(c): 2026 is $332 + 2.75% above $26,050; the 2025 $100,000 / 3.125% band overstated high-income tax. Exemption MAGI cutoff is $500,000, not $750,000.
 - **NY** 2026 IT-2105-I annual schedules and recapture worksheets; previously unsupported.
+- **CT** Table A personal exemption is one return-level amount. The engine had multiplied it by dependents, understating tax whenever the salary/paycheck dependents field was non-zero and Table A was still positive.
+- **IL / MI / NM / VT / RI** grant a per-person exemption to dependents. The salary and paycheck calculators collect dependents; those five rows omitted them and overstated tax.
 
 ## Tax year
 
@@ -144,7 +148,7 @@ Reusable shapes added during P2 (no state-named hacks):
 | `exemptionCredit.rateStepsByFilingStatus` | CT | Table E credit = tax × AGI-looked-up rate |
 | `perDependentExemption` on flat policies | GA, IN | Dependent deduction on a flat state |
 | `localAddOn` without a typical rate | KY, OH, MI, AL, MO, IN, DE | Name the levy; do not invent a band |
-| `nySupplementalTax` | NY | IT-2105-I recapture worksheets; a single extra rate cannot follow them |
+| `steppedPersonalExemption.includeDependents` | CT | Table A is one return-level amount; OH/MD still count dependents |
 | `standardDeductionLimitation` | MN | 3% then 10% of AGI, 80% cap, forced above $1,107,750 |
 | `federalStandardDeductionAddBack` | CO | Above $300,000 AGI, add back federal SD over $12,000 / $16,000 joint |
 | `localAddOn.omissionNote` | PA, DE | A range that would hide Philadelphia 3.735% or Wilmington 1.25% |
@@ -188,11 +192,17 @@ Real remaining gaps, not polish items:
    engine does not.
 8. **CA, MT and ND** lack a published-table golden vector.
 9. Itemized deductions, most credits, capital gains, AMT, and age/blindness
-    extras are out of scope. Dependent exemptions apply only where this snapshot
-    carries a per-dependent amount.
+    extras are out of scope. Dependent exemptions apply where the snapshot
+    carries a per-person amount (including IL, MI, NM, VT, RI, OH, MD).
+    Alabama’s AGI-stepped dependent exemption, Maine’s $300 dependent credit,
+    and South Carolina’s 2026 dependent exemption after Act 110 are not modeled.
 10. **MA** 2026 Form 1 was not published; the exemption and $2,000 FICA cap are
     the current Mass.gov / 2025 Form 1 amounts, declared in the row notes.
 11. **NY** household credit (below $28,000 / $32,000 FAGI) is not modeled.
+12. **CA SDI, NJ TDI/FLI, WA Cares**, and similar payroll levies are outside
+    the income-tax engine. Take-home is federal + FICA + state income tax only.
+13. Cost-of-living gross-salary conversion does not pass `children` as tax
+    dependents. Salary-after-tax and paycheck do.
 
 ## Production readiness
 

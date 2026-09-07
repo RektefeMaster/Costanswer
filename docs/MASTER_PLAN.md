@@ -1,18 +1,24 @@
 # CostAnswer master plan
 
-Status: **v2, reconciled against HEAD** · drafted 2026-09-06 · revised 2026-09-06
+Status: **v3, rebased 2026-09-07 after P2 closed** · drafted 2026-09-06
+(state tax: `docs/P2_STATE_TAX_FINAL.md`; living sequence: §L and `docs/ROADMAP.md`)
 owner: site owner · executor: coding agents
 
-> **Read this first.** v1's audit described the repository *before* the
-> monetization layer existed. Handing that version to an agent risked it
-> reverting work that is now shipped. This version is reconciled against the
-> current HEAD (`14e4d0e`), and §A.0 lists what must be preserved.
+> **Read this first.** Do not trust a historical HEAD SHA recorded in this
+> document. Reconcile against repository state **at execution time**. Before
+> starting a phase, record: current branch, commit SHA, dirty files, registry
+> tool count (`tools.length`), unit-test count, and dataset snapshot status
+> (`npm run verify:tax` for tax). A SHA in an older paragraph is an audit
+> artifact, not a baseline to restore against.
 
-This plan is written to be executed sequentially by coding agents. Each phase
-states its goal, the files it touches, the work, its data dependencies, its
-tests, objective acceptance criteria, its risks and its rollback. Nothing in it
-is a new product idea; where it differs from the brief it says so explicitly and
-gives the measurement that forced the change.
+v1's audit described the repository *before* the monetization layer existed.
+Handing that version to an agent risked it reverting shipped work. §A.0 lists
+what must be preserved.
+
+This plan is written to be executed sequentially by coding agents. Each **open**
+phase states its goal, files, work, data dependencies, tests, acceptance,
+risks and rollback. Closed phases are historical: do not re-execute them.
+Nothing in it is a new product idea; where it differs from the brief it says so.
 
 Read `docs/ARCHITECTURE.md` first. It is accurate and still governs. This plan
 extends it; it does not replace it.
@@ -22,29 +28,23 @@ extends it; it does not replace it.
 ## 0. Three corrections to the brief, up front
 
 **0.1 There are 58 calculators, not ~53.** `lib/tool-registry.ts` holds 58
-entries. The catalog therefore needs **43** more to reach 101, not 48. The
-proposed 48-item list in the brief contains five tools that duplicate intent
-with something already shipped or with each other; §C removes exactly those five
-and the arithmetic lands on 101 without adding filler.
+entries at the last inventory. Confirm the live count before adding tools.
+§C still lists 43 candidate ids that would land on 101 without duplicate
+intent. **101 is a catalog target, not a sacred product number.** A smaller
+set of high-value tools plus Job Cost Engine V1 outranks filling the list.
+Confirm `tools.length` at execution time.
 
-**0.2 The 10-day window does not hold all of the frozen scope.** Summed at the
-phase level below, the frozen scope is roughly 30 engineer-days of work. Ten
-calendar days with three parallel lanes is 30 lane-days with zero slack, zero
-rework and no verification time. Section L therefore draws an explicit cut line:
-what ships on day 10, and what ships in waves 2–4 on dated commitments. The two
-items moved out of the launch window are the **Medical Cost pilot** and **full
-ES-US parity**; §L.4 gives the reasoning and the alternative if the owner
-disagrees. Nothing is dropped — everything in the brief has a phase and a date.
+**0.2 The v2 ten-day day-map is archived.** It assumed P2 was the live Lane A
+work. P2 is closed. §L is now the 2026-09-07 execution sequence, not a
+calendar of ten days. Medical Cost remains wave 2. Full ES-US parity remains
+waves 2–4. Nothing in the brief is dropped.
 
-**0.3 The single largest correctness defect is the state tax engine, and it
-poisons the largest page family.** `data/tax/2026.json` marks 37 of 51
-jurisdictions `unsupported`. Nine of the 14 "supported" rows are no-income-tax
-states, so exactly **five** states have a real 2026 wage schedule: CA, IL, MA,
-NJ, PA. Every one of the 30,807 `/salary/:occupation/:state` pages sells
-take-home pay as a headline figure, and on ~72% of them that figure silently
-omits state income tax. New York, Ohio, Georgia, North Carolina, Virginia,
-Michigan, Maryland, Minnesota, Colorado, Arizona are all in the omitted set.
-This is fixed before launch or the salary corpus does not go to search.
+**0.3 The state tax engine was the largest correctness defect; P2 closed it.**
+`data/tax/2026.json` is 51/51 `supported` (42 income-tax schedules + 9 no
+wage tax). Mixed-year 2025 annual packets stay declared where 2026 forms are
+unpublished. Local city/county tax is named, not computed. Further state-tax
+work waits on newly published 2026 forms or a city/ZIP local-tax engine
+(`docs/P2_STATE_TAX_FINAL.md`).
 
 ---
 
@@ -95,99 +95,92 @@ until traffic justifies them". Correct statement:
 | Numeric quality | Solid | `finance/loan.ts` uses `log1p`/`expm1` for rate stability; OEWS packing proved lossless value-by-value |
 | Data provenance | Strong | 16 datasets under `lib/data/`, envelope with provider/period/hashes/validation, atomic promotion, quarantine on suspicious revision |
 | Freshness model | Strong design | `lib/data/freshness.ts` models each provider's own release calendar; `current` / `update-due` / `stale` is the right three-state answer |
-| Salary family | Shipped | 761 occupations, 51 state hubs, 30,807 leaves, 31,621 sitemap URLs, curated naming layer, residual buckets suppressed |
+| Salary family | Shipped | 761 occupations, 51 state hubs, 30,807 leaves exist; **leaves are staged** (`occupationInState: 'staged'`) so the live sitemap is the 813 hubs/occupation pages until GSC is measured |
 | Editorial depth | Shipped | Every tool has guide + FAQ + glossary + tips + caveats; registry asserts coverage |
 | Calculation Receipt | Shipped (unnamed) | `ResultDetails` renders "How we got this" / "What we assumed" / method version + snapshot ids |
 | SEO plumbing | Shipped | Self-canonicals, sitemap index + family partitioning, JSON-LD (`WebApplication`, `Article`, `BreadcrumbList`, `FAQPage`, `Occupation`, `Dataset`), robots |
 | Tests | Good | 36 spec files, 683 unit tests, all green; Playwright journey suites for tools and monetization |
 | Security headers | Shipped | CSP, HSTS, COOP, frame-deny, permissions-policy in `next.config.ts` |
 
-**Measured at HEAD (`14e4d0e` + P1) on Node 22.23.1:**
+**Last inventory in this document (2026-09-07).** Re-measure before a phase;
+do not treat these as HEAD.
 
-| | v1 audit | Now |
+| | v1 audit | 2026-09-07 inventory |
 | --- | --- | --- |
-| Registry tools | 58 | 58 |
-| Unit tests | 496 | **683**, 36 files |
-| Browser tests | 34 (6 failing) | **42 (3 failing, all pre-existing)** |
-| Lint | 2 errors, 14 warnings | **0 errors**, 14 warnings |
-| Typecheck | 538s | **8s** |
-| Largest client chunk | 3.84 MB | **186 KB** |
-| Worker, gzipped | 2.35 MB | 2.26 MB |
-| Supported state tax schedules | 14/51 | 14/51 — **still P2** |
-| Salary URLs indexable | 31,621 | **813** (leaves staged) |
+| Registry tools | 58 | 58 — confirm `tools.length` |
+| Unit tests | 496 | hundreds, green — confirm `npx vitest run` |
+| Lint | 2 errors | **0 errors** (P1 closed this) |
+| Typecheck | 538s | **~8s** (P1 closed this) |
+| Largest client chunk | 3.84 MB raw CMS dump | React-sized; measure gzip via `scripts/check-bundle-budget.mjs` |
+| Worker JS | — | **budget: ≤ 2.8 MiB gzip** (ours, not Cloudflare's ceiling) |
+| Client route chunk | — | **budget: ≤ 150 KiB gzip** |
+| State wage tax | 14/51 | **51/51 — P2 closed** |
+| Salary leaves | 31,621 indexable in v1 code | **staged** in current code — crawl/indexation, not tax (§J.1) |
 
 ### A.2 What is incomplete
 
 | Gap | Detail | Blocks |
 | --- | --- | --- |
-| **State tax coverage** | 37/51 unsupported; only CA/IL/MA/NJ/PA have real schedules | Salary corpus, paycheck, salary-after-tax, cost-of-living, every new tax tool |
-| **Tax schema expressiveness** | `lib/data/tax/schema.ts` supports `none`/`flat`/`flatWithSurtax`/`progressive` only. It cannot express exemption *credits*, federal-tax deductibility (AL, LA, MO, MT, OR), local/municipal tax (OH, MD, PA-EIT, NY-NYC, MI, IN, KY), or percentage-of-income standard deductions | Completing the 37 states |
-| **Localization** | Zero. `app/layout.tsx` hardcodes `<html lang="en">`. No `/es/`, no `hreflang`, no `alternates` | The entire ES-US half of the product |
-| **Content engine** | No `/guides` surface exists. Per-tool editorial in `lib/tool-content/` is the only long-form content | Content Engine, event-driven content |
-| **Job Cost Engine** | Does not exist. No recipe model, no labor/material/equipment data, no route | The vertical the brief calls major |
-| **Medical Cost Engine** | Does not exist. `lib/calculations/medicare.ts` is a Medicare *premium* calculator, not hospital pricing | Medical vertical |
-| **Analytics sink** | `lib/analytics.ts` is a provider-neutral local `CustomEvent` bus with no destination, and `analyticsEnabled` is off | All launch KPIs |
-| **Search Console / Bing** | Not connected. `docs/ROADMAP.md` names this "the gate on everything below" and it is still open | Indexation measurement, the staging decision |
-| **Missing analytics events** | Registry lacks `advanced_opened`, `compare_used`, `reverse_used`, `quote_checked`, `source_clicked`, `guide_to_calculator`, `language_switched` | KPI reporting |
-| **Basic/Advanced pattern** | Not standardized. Eight components hand-roll `<details>`; `CalculatorUI.tsx` exports no advanced-section primitive | The §4 calculator standard applied consistently across 101 tools |
-| **Scenario compare / reverse solve / confidence** | Ad hoc where present (`home-affordability` has an inverse; `concrete` has ranges). No shared contract | §4 depth promise |
-| **GSA per diem refresh** | Policy says `refreshMode: 'scheduled'` but the script is in neither `scripts/refresh-snapshots.ts` nor `scripts/ingest-location-official.ts`. It never refreshes | FY2027 per diem (effective 2026-10-01) |
-| **GSA published-vs-effective** | HUD does this correctly via `data/hud-fmr/releases.json`. GSA has a single snapshot and derives `publishedAt` as `${fy-1}-10-01`, which is wrong twice over: GSA announces a fiscal year and publishes its dataset on two different earlier dates | Per diem correctness across the 1 Oct boundary |
-| **Freshness enforcement** | `evaluateFreshness` is computed and displayed but no CI gate fails on `stale`, and nothing alerts on a missed release | Data-freshness SLA |
-| **Frozen freshness clock** | `evaluateFreshness(..., asOf = PUBLISHING_SNAPSHOT_DATE)`. A deployed build that is never rebuilt keeps claiming `current` forever | Freshness honesty between deploys |
-| **Custom domain** | Not deployed. `.openai/hosting.json` has `d1: null, r2: null`; `.wrangler/deploy/config.json` points at a local build | Launch |
+| **State tax** | **P2 closed.** Do not re-open. Local/payroll tax is a separate engine | — |
+| **Localization** | Zero. Root `app/layout.tsx` hardcodes `<html lang="en">`. Nested `/es` cannot change it — P6 needs dual root layouts (§G.2) | ES-US slice |
+| **Content engine** | No `/guides` surface. Per-tool editorial in `lib/tool-content/` is the only long-form | P8 |
+| **Job Cost Engine** | Does not exist | P7 — the product moat; do not bury it behind 43 generic tools |
+| **Medical Cost Engine** | Medicare *premium* calculator only | wave 2 |
+| **Analytics sink** | Local `CustomEvent` bus; `analyticsEnabled` off | Connect **as soon as the custom domain is live**, not on a final launch day |
+| **Search Console / Bing** | Not connected | Same: the day the domain is live, not P9 |
+| **Missing analytics events** | No `advanced_opened`, `compare_used`, `reverse_used`, `quote_checked`, `source_clicked`, `guide_to_calculator`, `language_switched` | P5 |
+| **Basic/Advanced / compare / reverse / confidence** | Ad hoc; no shared primitives | **P5 before P4** |
+| **GSA per diem refresh + published-vs-effective** | Policy says scheduled; not in the refresh script; no `releases.json` | P3 |
+| **Freshness enforcement + clock** | Displayed, not gated; `asOf` frozen at publish/build time so labels do not age on a long-lived deploy | P3 — user-facing labels need a **runtime clock** or a daily freshness manifest |
+| **Custom domain** | Not deployed | **Launch blocker** (P1 deploy). D1 is not. |
 
-### A.3 Architectural debt — ranked
+### A.3 Architectural debt
 
-1. **A 3.84 MB client chunk on two YMYL pages.** `components/calculators/HealthInsuranceCalculator.tsx:11` and
-   `components/calculators/MarketplacePlansCalculator.tsx:12` import
-   `@/lib/data/cms-marketplace-snapshot` from a `'use client'` module. The build
-   emits `dist/client/_next/static/chunks/cms-marketplace-snapshot-D1lfB0p4.js`
-   at **3,842,883 bytes raw / 425,580 bytes gzipped**, lazily fetched whenever
-   either island hydrates. This is 2,055 counties of premium columns shipped to
-   a phone. It directly contradicts the rule the OEWS module states about itself
-   ("the wage columns never leave the server"). **Launch blocker.**
-2. **Two lint errors fail `npm run verify`.** `components/calculators/CalculatorUI.tsx:199`
-   and `components/calculators/CostOfLivingCalculator.tsx:85` trip
-   `react-hooks/set-state-in-effect`. `verify` chains lint, so the repo's own
-   release gate is currently red even though CI (`verify.yml`) does not run lint
-   and therefore passes. CI and the documented gate disagree.
-3. **Three iCloud conflict copies are committed:** `lib/plural 2.ts`,
-   `lib/data/verify 2.ts`, `lib/calculations/col/coverage 2.ts`. Unimported, but
-   `verify 2.ts` is a *stale* copy of the dataset verifier missing eight
-   snapshots — exactly the file someone would edit by mistake.
-4. **Worker bundle headroom.** Measured **2.35 MB gzipped**. Cloudflare's free
-   Worker ceiling is 3 MB gzipped and the paid ceiling is 10 MB. The Job Engine
-   material basket, recipes and any medical data cannot be bundled the way OEWS
-   and CMS were. A storage decision is required before the Job Engine ships
-   data, not after.
-5. **Edge caching is incomplete.** `next.config.ts` sets
-   `s-maxage=86400, stale-while-revalidate=604800` on `/salary/:occupation/:state`
-   only. `/salary/:occupation` (761 pages) and `/salary/states/:state` (51) are
-   dynamic with no cache header, so the Worker executes on every hit for pages
-   whose figures change once a year.
-6. **Playwright cannot run in CI.** `playwright.config.ts` hardcodes
-   `PATH="$HOME/.nvm/versions/node/v22.23.1/bin:$PATH"` in `webServer.command`,
-   and `verify.yml` never invokes `test:e2e`. The browser suite is local-only.
-7. **No property-based tests and no money primitive.** No `fast-check`, no
-   integer-cents type. The finance math is careful, but nothing proves invariants
-   (a payment schedule always amortizes to zero; extra payments never lengthen a
-   term) across generated inputs.
-8. **`components/calculators/` is flat and getting crowded** — 52 files today,
-   ~95 after the 43 new tools. Needs subfolders by cluster before, not after.
+#### Historical defects — closed (do not re-fix)
 
-### A.4 Blockers to launch, in order
+P1 closed: CMS marketplace snapshot no longer ships in a client chunk; lint
+errors that made `verify` disagree with CI; three iCloud conflict copies;
+nine-minute typecheck; salary hub/state edge cache; Playwright nvm path and
+CI `lint` / `test:e2e`. P2 closed: 51/51 state wage tax.
 
-| # | Blocker | Phase | Status |
+Do not reopen those as current bugs. Evidence is in the P1 and P2 cards.
+
+#### Current architectural debt
+
+1. **Reference-data size discipline.** Job recipes, material tables and any
+   medical files go to **tier 2** (Worker static assets), not the JS bundle.
+   Policy: client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB
+   gzip**. `scripts/check-bundle-budget.mjs` currently measures client chunks as
+   **raw 200 KiB** and the Worker as gzip 2.8 MiB — **align the script to the
+   gzip policy** before treating the numbers as the same gate.
+2. **No money primitive / property tests.** No integer-cents type, no
+   `fast-check`. Each engine defines its own valid properties — do **not**
+   assert global “tax is monotonic in income” once credits exist.
+3. **`components/calculators/` is still a flat directory.** Cluster subfolders
+   before adding a large tool wave (P5/P4).
+4. **Freshness SLA and runtime clock** (P3).
+5. **Custom-domain deploy** (P1 remaining). Launch blocker.
+6. **Analytics + Search Console + Bing** the day the domain is live, not at
+   the end of the catalog.
+7. **Localization architecture** (P6) — dual root layouts for `<html lang>`.
+8. **Job Cost Engine** (P7) — the product moat; data model rules in §D.
+9. **Monolithic `lib/tool-registry.ts`.** Ten agents appending to one file will
+   conflict. Split into `lib/tools/registry/*.ts` + generated index **before**
+   a parallel P4 wave.
+
+### A.4 Blockers, in order
+
+| # | Item | Phase | Status |
 | --- | --- | --- | --- |
 | B1 | CMS snapshot in the client bundle | P1 | **closed** |
-| B2 | 37 states have no income tax schedule | P2 | open — the launch blocker |
-| B3 | No production deployment on a custom domain | P1 | open — needs credentials |
-| B4 | No analytics sink, no Search Console, no Bing | P9 | open |
-| B5 | `verify` red (lint), CI green — the gates disagree | P1 | **closed** |
-| B6 | Mortgage rate `update-due`; cron is Tuesday for a Thursday release | P3 | open |
-| B7 | 30,807 leaf URLs with a federal-only take-home, published at once | P2 / P9 | **staged** — reopens only after B2 |
-| B8 | Nine-minute typecheck, so the release gate gets skipped | P1 | **closed** (538s → 8s) |
+| B2 | Missing state income-tax schedules | P2 | **closed** |
+| B3 | Production deploy on `costanswer.com` | P1 | **open — launch blocker** |
+| B4 | Analytics, Search Console, Bing | P1 deploy day | **open — start the day B3 ships, not P9** |
+| B5 | `verify` vs CI lint mismatch | P1 | **closed** |
+| B6 | Mortgage cron weekday vs PMMS Thursday | P3 | open |
+| B7 | 30,807 salary leaves | J.1 | Tax defect **closed**. Leaves stay staged for **new-domain crawl/indexation**, not because state tax is missing |
+| B8 | Nine-minute typecheck | P1 | **closed** |
+| B9 | D1 + monetization secrets | Monetization activation | **not a public-launch blocker** while providers stay off |
 
 ---
 
@@ -237,12 +230,12 @@ is corrected.
 
 | Addition | Where | Why |
 | --- | --- | --- |
-| **Storage tiering** | `lib/data/store/` | The bundle cannot hold Job + Medical data (A.3-4) |
-| **Locale layer** | `lib/i18n/`, `app/es/` | ES-US is half the product |
+| **Storage tiering** | `lib/data/store/` | Job + Medical data cannot live in the JS bundle (§B.3) |
+| **Locale layer** | `lib/i18n/`, dual root layouts `app/(en)/`, `app/(es)/es/` | ES-US is half the product; nested `/es` cannot set `<html lang>` |
 | **Content family** | `lib/content/`, `app/guides/` | Guides are a family like salary, not registry tools |
-| **Job engine** | `lib/job/` | New vertical |
+| **Job engine** | `lib/job/` | Product moat — sequence step 5, not after 43 generic tools |
 | **Medical engine** | `lib/medical/` | New vertical (wave 2) |
-| **Shared depth primitives** | `components/calculators/CalculatorUI.tsx` | `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceBadge`, `CalculationReceipt` — so §4 is a contract, not 101 hand-rolled variants |
+| **Shared depth primitives** | `components/calculators/CalculatorUI.tsx` | `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt` — **before P4** |
 
 ### B.3 Storage tiering — reference data and transactional data are different problems
 
@@ -280,17 +273,25 @@ requests separately from Worker invocations, with a 25 MiB per-file ceiling and
 tens of thousands of files per version. Packed wage and premium columns belong
 there rather than inside the Worker's JavaScript.
 
-**On the Worker size budget.** v1 justified a 2.8 MB gzipped budget as a
+**On the Worker size budget.** v1 justified a 2.8 MiB gzipped budget as a
 platform ceiling. That justification was wrong — Cloudflare's own Worker size
 limit is far above it. The budget stays, with the honest reason:
 
-> 2.8 MB gzipped is **our** budget, not the platform's. It protects cold-start
+> 2.8 MiB gzip is **our** budget, not the platform's. It protects cold-start
 > and deploy time, and it is the thing that stops a dataset drifting into the
 > bundle. A budget set at the platform limit never fires, and the failure it
 > would have caught arrives on somebody's phone instead.
 
-Enforced by `scripts/check-bundle-budget.mjs` in CI, alongside a 200 KB
-per-chunk client budget.
+Enforced by `scripts/check-bundle-budget.mjs` in CI. One **policy** standard,
+gzip only:
+
+- client **route-specific** JS chunk ≤ **150 KiB gzip**
+- total Worker JS ≤ **2.8 MiB gzip**
+
+Do not mix raw bytes with gzipped bytes in the same comparison. As of
+2026-09-07 the script still uses **200 KiB raw** for client chunks and gzip
+only for the Worker. Aligning the script to this policy is remaining P1 work;
+until then, do not cite the script output as if it already measured 150 KiB gzip.
 
 ### B.4 Deployment
 
@@ -318,7 +319,8 @@ of cache semantics to reason about.
 | **Traditional IRA** | Three IRA pages (`roth-ira` shipped, `Roth vs Traditional`, `Traditional`) is duplicate intent. `roth-ira` covers growth; `roth-vs-traditional` covers the choice. |
 | **LTV** | One division. Folded into **Down Payment** and **PMI**, both of which already have to compute and display LTV. |
 
-48 − 5 = **43 new tools.** 58 + 43 = **101.** Exactly.
+48 − 5 = **43 candidate tools.** 58 + 43 = **101 catalog target.** 101 is not a
+sacred ship number (§0.1, §L). Job Cost Engine V1 outranks filling this list.
 
 ### C.2 The 43 new tools
 
@@ -351,7 +353,7 @@ lives under `/money` and *decision screens* live in their domain hub.
 | # | id | path | Data dependency |
 | --- | --- | --- | --- |
 | 12 | `federal-tax-bracket` | `/money/federal-tax-bracket` | `us-tax` federal brackets (have) |
-| 13 | `effective-tax-rate` | `/money/effective-tax-rate` | `us-tax` federal + state (needs P2) |
+| 13 | `effective-tax-rate` | `/money/effective-tax-rate` | `us-tax` federal + state (**P2 closed**) |
 | 14 | `tax-refund` | `/money/tax-refund` | `us-tax` + withholding (needs Pub 15-T) |
 | 15 | `w4-withholding` | `/money/w4-withholding` | **NEW:** IRS Pub 15-T percentage-method tables |
 | 16 | `self-employment-tax` | `/money/self-employment-tax` | `us-tax` FICA (have) + 92.35% factor |
@@ -421,7 +423,7 @@ lives under `/money` and *decision screens* live in their domain hub.
 | shopping | 2 | 0 | **2** |
 | education | 2 | 0 | **2** |
 | food | 1 | 0 | **1** |
-| **Total** | **58** | **43** | **101** |
+| **Total** | **58** | **43 candidates** | **101 target** |
 
 68 tools under one hub is unusable as a flat list. `/topics/money` gains
 cluster sub-sections (Pay · Taxes · Debt · Mortgage · Retirement · Auto ·
@@ -449,74 +451,107 @@ points over the same engine:
 - `/cost/check-quote` — "Is this quote fair?"
 
 Plus one indexable page per job type: `/cost/:job` (e.g. `/cost/roof-replacement`).
-Location pages (`/cost/:job/:state`) are **not** opened at launch — see §J.
+Location pages (`/cost/:job/:state`) are **not** opened at first public launch —
+see §J. **Sequence: Job Cost V1 is step 5**, after P5 primitives and P4 tax
+tools, before remaining catalogue expansion. Do not bury it behind 43 generic
+calculators.
 
 ### D.2 Data model
 
 `lib/job/types.ts`
 
+Every numeric field that enters an estimate **names its source**. A bag of
+`sources[]` next to a bag of numbers is not a mapping. Use field-level
+provenance:
+
 ```ts
-type JobRecipe = {
-  jobId: string;                  // 'roof-replacement'
-  version: string;                // 'roof-replacement-v1'
-  unit: JobUnit;                  // 'roof-square' | 'sq-ft' | 'linear-ft' | 'each' | 'ton'
-  trade: TradeId;                 // maps to SOC codes for OEWS labor
-  crew: CrewMember[];             // { socCode, count, productivityShare }
-  laborHoursPerUnit: number;      // crew-hours per unit
-  materials: MaterialLine[];      // { componentId, quantityPerUnit, wastePercent }
-  equipment: EquipmentLine[];     // { rateId, hoursPerUnit }
-  permit: PermitRule;             // 'none' | { basis: 'flat'|'valuation', ... }
-  disposal: DisposalRule;         // { unitsPerJob, ratePerUnit, sourceId }
-  modifiers: ModifierSpec[];      // pitch, stories, tear-off layers, access, complexity
-  overheadRate: number;           // fraction of direct cost
-  profitRate: number;             // fraction of (direct + overhead)
-  contingencyRate: number;
-  baseConfidence: Confidence;     // 'high' | 'medium' | 'low'
-  sources: RecipeSource[];        // every number above cites where it came from
+type SourcedValue<T> = {
+  value: T;
+  sourceId: string;
 };
-```
 
-Every scalar in a recipe carries a `RecipeSource`, and a recipe with an uncited
-number fails its own validation test. But "cite everything" collapses the
-moment a number has no source to cite — `overheadRate`, `profitRate` and
-`contingencyRate` are the obvious cases, and a rule that demands a citation for
-them produces a fabricated one. So a source declares which kind it is:
-
-```ts
 type RecipeSource =
   | { kind: 'official_data'; provider: string; url: string; retrievedAt: string }
   | { kind: 'published_specification'; publisher: string; document: string; retrievedAt: string }
   | { kind: 'observed_market'; dataset: string; observations: number; window: string }
+  | { kind: 'model_transformation';
+      inputs: string[];           // sourceIds this number is derived from
+      method: string;             // one sentence
+      rationale: string;
+      confidenceImpact: 'none' | 'lowers_to_medium' | 'lowers_to_low';
+      reviewedBy: string; reviewedAt: string }
   | { kind: 'model_assumption';
-      rationale: string;          // why this value, in a sentence
+      rationale: string;
       confidenceImpact: 'none' | 'lowers_to_medium' | 'lowers_to_low';
       reviewedBy: string; reviewedAt: string };
+
+type JobRecipe = {
+  jobId: string;
+  version: string;
+  unit: JobUnit;
+  trade: TradeId;
+  crew: CrewMember[];
+  laborHoursPerUnit: SourcedValue<number>;
+  materials: MaterialLine[];      // each line: componentId, quantity, waste, critical
+  equipment: EquipmentLine[];
+  permit: PermitRule;
+  disposal: DisposalRule;
+  modifiers: ModifierSpec[];
+  /** Business overhead on direct cost. Must not re-include ECEC labor burden. */
+  overheadRate: SourcedValue<number>;
+  /**
+   * Markup on (direct + overhead), not a profit *margin*.
+   * expected = subtotal × (1 + profitMarkupRate).
+   * A 20% *margin* would be sellingPrice = subtotal / (1 - targetMargin).
+   * V1 uses markup and says so on the page.
+   */
+  profitMarkupRate: SourcedValue<number>;
+  contingencyRate: SourcedValue<number>;
+  baseConfidence: Confidence;
+  sources: Record<string, RecipeSource>;
+};
 ```
 
-A `model_assumption` is a legitimate, honest input — an overhead rate is a
-business assumption and always will be. What it must not do is masquerade as a
-measurement, so it lowers the estimate's confidence by its own declaration and
-the page can say which numbers are modelled rather than sourced.
+A recipe fails validation if any `sourceId` is missing from `sources`, or if a
+`SourcedValue` has no id. `model_assumption` is legitimate for overhead and
+markup; it must not masquerade as a measurement, and it lowers confidence by
+its own declaration.
 
 ### D.3 Calculation model
 
 ```
-labor   = Σ(crew.count × laborHoursPerUnit × units × loadedHourlyRate(soc, area))
-        loadedHourlyRate = OEWS(soc, area).hourly × ECEC loading factor
-material = Σ(qtyPerUnit × units × (1+waste) × componentPrice(componentId, area, asOf))
-equipment= Σ(hoursPerUnit × units × equipmentRate(rateId))
+directLaborBurden = OEWS(soc, area).hourly × ECEC_loading_factor
+  ECEC is a modelled national/regional compensation loading, not “this city's
+  contractor loaded wage for this SOC”. Source kind: model_transformation
+  over OEWS + ECEC. Do not also put benefits / payroll tax into overheadRate.
+
+labor    = Σ(crew.count × laborHoursPerUnit × units × directLaborBurden)
+material = Σ(qtyPerUnit × units × (1+waste) × componentPrice(componentId, asOf))
+           componentPrice = baseline × (PPI_now / PPI_baseline)
+           NO BEA RPP multiplier on materials in V1.
+equipment= Σ(hoursPerUnit × units × equipmentProxyRate(rateId))
+           FEMA Schedule of Equipment Rates is a public *cost proxy*,
+           not a contractor market rental price. Label it that way.
 permit, disposal per rule
 ────────────────────────────────────────────────────────
 direct   = labor + material + equipment + permit + disposal
 subtotal = direct × (1 + overheadRate)
-expected = subtotal × (1 + profitRate) × (1 + contingencyRate) × Π(modifiers)
+expected = subtotal × (1 + profitMarkupRate) × (1 + contingencyRate) × Π(modifiers)
 low/high = expected × confidenceBand(confidence, modifierSpread)
 ```
 
+**Critical missing material.** If any `critical: true` material line is
+unpriced, **do not produce a complete LOW/EXPECTED/HIGH**. Return an incomplete
+result: labor and known lines may be shown, with an explicit statement that
+verified material data is insufficient for a full price range. Quote Checker
+returns `outside what we can assess`. A non-critical unpriced line may drop
+out and lower confidence.
+
 The result is a `CalculationResult<JobEstimate>` — same contract as every other
-engine — so the Calculation Receipt, breakdown and assumptions come for free.
-Every modifier appears as its own `BreakdownStep` with its own dollar delta.
-**No adjustment is applied that the breakdown does not name** (§16).
+engine. Every modifier is its own `BreakdownStep`. **No unnamed adjustment.**
+
+The band is **CostAnswer estimated range**, never “normal range” or a market
+quantile. After permit/bid calibration (wave 2) the vocabulary can change.
 
 ### D.4 Initial job inventory — 10 recipes, V1
 
@@ -540,11 +575,11 @@ Chosen for search volume × recipe tractability, from the brief's own priority l
 | Dataset | Role | Status |
 | --- | --- | --- |
 | **BLS OEWS** | trade wage by SOC × state | **already ingested** — this is the single biggest head start |
-| **BLS ECEC** | wages→loaded-labor factor (benefits, taxes, insurance) | NEW |
-| **BLS PPI** | material price escalation from a dated baseline | NEW |
-| **FEMA Schedule of Equipment Rates** | equipment hourly rates | NEW |
-| **BEA RPP** | secondary location signal where OEWS suppresses a trade | **already ingested** |
-| **HUD crosswalks** | ZIP → county → CBSA | **already ingested** (`zcta-county`) |
+| **BLS ECEC** | modelled labor-burden factor on OEWS hourly (not a local contractor loaded wage) | NEW |
+| **BLS PPI** | material price escalation from a dated national baseline | NEW |
+| **FEMA Schedule of Equipment Rates** | equipment *cost proxy*, labelled as such — not market rental | NEW |
+| **BEA RPP** | labor-location fallback / confidence context where OEWS suppresses a trade. **Not a material price multiplier in V1** | **already ingested** |
+| **HUD / ZIP geography** | user ZIP → county. Prefer HUD USPS ZIP crosswalk if available; shipped `zcta-county` is an **approximate ZIP/ZCTA match** and must be labelled that way | **already ingested** |
 | **CostAnswer Material Basket** | 300–500 components, baseline price + PPI series mapping | NEW — CostAnswer IP |
 
 **Explicitly excluded from V1** (§19): CWICR cost data (CC BY-NC 4.0 — not usable
@@ -557,47 +592,60 @@ commercially), RSMeans (no scraping, no dependency). Permit and DOT bid data are
 
 ```ts
 type MaterialComponent = {
-  componentId: string;        // 'asphalt-shingle-architectural-3tab'
-  unit: MaterialUnit;         // 'square' | 'sheet' | 'linear-ft' | 'gallon' | 'cu-yd' | 'each'
+  componentId: string;
+  unit: MaterialUnit;
   qualityTier: 'builder' | 'mid' | 'premium';
   baselinePrice: number;      // integer cents
-  baselineDate: string;       // the date the baseline was observed
-  baselineSource: SourceRef;  // must be a public/licensed source
-  ppiSeriesId: string;        // BLS series that escalates it
-  regionalAdjustment: 'rpp' | 'none';
+  baselineDate: string;
+  baselineSource: SourceRef;
+  ppiSeriesId: string;
+  /** V1 is always 'none'. RPP is not a construction-material index. */
+  regionalAdjustment: 'none';
+  critical: boolean;          // missing + critical → no complete estimate
   confidence: Confidence;
+};
+
+type MaterialLine = {
+  componentId: string;
+  quantityPerUnit: SourcedValue<number>;
+  wastePercent: SourcedValue<number>;
+  critical: boolean;
 };
 ```
 
-Current price = `baselinePrice × (PPI_now / PPI_baseline) × regionalFactor`.
-The baseline date and the escalation factor are both shown on the page.
+Current price = `baselinePrice × (PPI_now / PPI_baseline)`. Geography in V1
+enters mainly through **labor** (OEWS area). RPP may appear as a confidence
+or context signal, not as a silent material multiplier.
 
 **Where a baseline may come from:** public procurement and bid data,
 manufacturer-published prices, licensed or permitted price feeds, open
 commercial catalogue data. **Never scraped from a retailer.**
 
-**Where it may not come from:** a guess. A component with no usable source is
-`unsupported` — it drops out of the recipe, the recipe says a material is
-unpriced, and the estimate's confidence falls. Filling 120 rows with plausible
-numbers to make the basket look complete is the failure this state exists to
-prevent, because an invented material price is invisible inside a total.
+**Where it may not come from:** a guess. An unpriced **critical** component
+blocks a complete range. An unpriced **non-critical** component may drop out
+and lower confidence. Filling rows with plausible numbers is the failure this
+state exists to prevent.
 
 V1 target: **as many of ~120 components as have real sources**, covering the 10
-recipes; a recipe with unpriced components ships saying so. 300–500 is the
-wave-2 target once more recipes need them.
+recipes. 300–500 is the wave-2 target.
 
 ### D.7 Confidence
 
-Three levels, derived — never asserted:
+Three levels, derived — never asserted. Do **not** use “≥80% of material cost
+sourced” as the sole test: an unpriced expensive line is absent from the
+denominator and can fake a high percentage.
 
-| Level | Condition |
+| Level | Condition (all that apply are named on the page) |
 | --- | --- |
-| `high` | OEWS publishes the trade wage for the state, ≥80% of the recipe's material cost is from components with a baseline < 12 months old, and no modifier is at an extreme |
-| `medium` | state wage falls back to national, OR material baselines are 12–24 months old, OR one modifier is extreme |
-| `low` | trade wage suppressed at state level, OR any material baseline > 24 months, OR the recipe is composite (`bathroom-remodel`) |
+| `high` | OEWS publishes the trade wage for the state; every **critical** material line is priced from a baseline < 12 months old; required material-line coverage is complete; no modifier at an extreme; no heavy model_assumption |
+| `medium` | state wage falls back to national, OR material baselines 12–24 months, OR one extreme modifier, OR non-critical lines missing, OR labor burden is the ECEC model_transformation |
+| `low` | trade wage suppressed, OR any critical baseline > 24 months, OR composite recipe, OR incomplete required-line coverage |
 
-The page states *which* condition set the level, in one sentence. Ranges are
-never presented to the dollar: `$7,900–$9,300`, not `$7,873–$9,341`.
+If any critical line is unpriced, skip the three-level chip and return
+**incomplete** instead of `high` with a hole in the total.
+
+Ranges are never presented to the dollar: `$7,900–$9,300`. Call it
+**CostAnswer estimated range**.
 
 ### D.8 Calibration — wave 2, architected for now
 
@@ -618,15 +666,18 @@ silent multiplier. Building the seam now costs one file and prevents the rewrite
 Same engine. Input: job + location + scope + the contractor's number.
 
 ```
-Contractor quote     $14,800
-CostAnswer expected  $11,900
-Normal range         $10,600 – $13,700
-Verdict              Above the normal range
+Contractor quote              $14,800
+CostAnswer expected           $11,900
+CostAnswer estimated range    $10,600 – $13,700
+Verdict                       Above our estimated range
 ```
 
 Verdict vocabulary is fixed and never accusatory:
-`below the normal range` · `at the low end` · `in the normal range` ·
-`at the high end` · `above the normal range` · `outside what we can assess`.
+`below our estimated range` · `at the low end` · `within our estimated range` ·
+`at the high end` · `above our estimated range` · `outside what we can assess`.
+
+If any critical material is unpriced, the only legal verdict is
+`outside what we can assess`.
 
 Every "above" verdict is followed by the *reasons a higher quote can be correct*
 (emergency service, premium materials, difficult access, permit and disposal
@@ -636,11 +687,12 @@ any synonym do not appear in the codebase. This is asserted by a test.
 ### D.10 UX flow
 
 1. What job? (10 cards, searchable)
-2. Where? (ZIP → county via the shipped `zcta-county` crosswalk)
+2. Where? (ZIP → county. Prefer HUD USPS ZIP crosswalk; otherwise the shipped
+   ZCTA match, disclosed as approximate)
 3. Scope (1–3 numeric inputs; the unit is named in plain words: "roof squares — about 1 per 100 sq ft")
 4. Key modifiers (max 4, each with a plain-language option list, defaults pre-selected)
-5. Result: LOW / **EXPECTED** / HIGH, confidence chip
-6. Breakdown: labor · materials · equipment · permit · disposal · overhead · profit
+5. Result: LOW / **EXPECTED** / HIGH as **CostAnswer estimated range**, plus confidence — or an incomplete result
+6. Breakdown: direct labor (with burden) · materials · equipment (FEMA proxy) · permit · disposal · overhead · profit markup
 7. "Why this amount" — the modifier deltas, named
 8. Compare a quote / refine
 
@@ -653,9 +705,9 @@ step 4 and step 5.
 lib/job/
   types.ts          recipe, estimate, modifier, confidence types
   recipes/          one file per job; 10 files
-  labor.ts          OEWS + ECEC → loaded hourly rate by SOC × area
-  materials.ts      basket + PPI escalation + RPP regional factor
-  equipment.ts      FEMA rates
+  labor.ts          OEWS hourly × ECEC modelled burden (not a local loaded wage)
+  materials.ts      basket + PPI escalation; no RPP material multiplier
+  equipment.ts      FEMA schedule as cost proxy, labelled as such
   permits.ts        permit + disposal rules
   modifiers.ts      modifier application, always as named deltas
   estimate.ts       the composition; returns CalculationResult<JobEstimate>
@@ -684,11 +736,11 @@ Existing 16 (all already ingested, validated and shown with provenance):
 | `bls-cpi` | CPI-U | monthly | national | US Gov PD | flat file + API | last snapshot | inflation |
 | `bls-oews` | wages | yearly | national/state | US Gov PD | archive + rebuild | none (suppress page) | salary, **job labor** |
 | `freddie-mac-pmms` | mortgage rate | weekly | national | Freddie ToU (attributed) | HTML | manual override | mortgage family |
-| `us-tax` | fed/state/FICA | yearly | state | US Gov PD + state | hand-transcribed | `unsupported` status | tax family, salary |
+| `us-tax` | fed/state/FICA | yearly | state | US Gov PD + state | hand-transcribed | mixed-year packet or named local omission — **no `unsupported` wage-tax row remains** | tax family, salary |
 | `census-omb-geography` | place identity | irregular | all | US Gov PD | file | last snapshot | location |
 | `census-acs5` | median income | yearly | state/county | US Gov PD | API | last snapshot | salary |
 | `hud-fmr` | rents | yearly (FY) | metro/county | US Gov PD | file + `releases.json` | prior FY | COL |
-| `bea-rpp` | price parity | yearly | state/metro | US Gov PD | API | national | salary, COL, **job region** |
+| `bea-rpp` | price parity | yearly | state/metro | US Gov PD | API | national | salary, COL; Job V1 **context/confidence only**, not a material multiplier |
 | `usda-food-plans` | food cost | monthly | national | US Gov PD | file | last snapshot | COL |
 | `irs-retirement-limits` | 401k/IRA caps | yearly | national | US Gov PD | hand-transcribed | prior year + label | retirement family |
 | `gsa-perdiem` | per diem | yearly (FY) | ZIP/county | US Gov PD | API | CONUS standard | travel |
@@ -699,7 +751,7 @@ New for this plan:
 
 | Dataset | Use | Cadence | Geo | License | Ingestion | Validation | Fallback | Phase |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `us-tax` **states** | 37 missing schedules | yearly | state | state agencies, PD | hand-transcribed + hash | golden vectors per state vs the state's own tax table | keep `unsupported` per state | P2 |
+| `us-tax` **states** | 51/51 supported (P2 closed) | yearly | state | state agencies, PD | hand-transcribed + hash | golden vectors vs the state's own table | named local omission; mixed-year 2025 packets stay declared | P2 closed |
 | `irs-pub15t` | W-4 withholding | yearly | national | US Gov PD | PDF → table | reproduce IRS worked examples | none | P4 |
 | `irs-credits` | EITC, CTC, LTCG, NIIT | yearly | national | US Gov PD | Rev. Proc. transcription | published table match | none | P4 |
 | `irs-rmd` | Uniform Lifetime Table | rare | national | US Gov PD | Pub 590-B transcription | full-table checksum | none | P4 |
@@ -710,7 +762,7 @@ New for this plan:
 | `bls-ecec` | labor loading factor | quarterly | national/region | US Gov PD | API | ratio in 1.25–1.65 | 1.40 documented default | P7 |
 | `bls-ppi` | material escalation | monthly | national | US Gov PD | API | index continuity | freeze + label | P7 |
 | `fema-equipment` | equipment rates | ~yearly | national | US Gov PD | file | rate > 0, unit known | last schedule | P7 |
-| `material-basket` | component prices | quarterly | national + RPP | CostAnswer IP over cited sources | manual + PPI | every component cites a source | none — component drops out | P7 |
+| `material-basket` | component prices | quarterly | national | CostAnswer IP over cited sources | manual + PPI | every component cites a source | critical unpriced → no complete estimate | P7 |
 | `cms-hospital-prices` | procedure prices | ~yearly | facility | US Gov PD mandate | MRF fetch + normalize | payer/plan/code schema | pilot states only | wave 2 |
 
 **Universal ingestion contract** (unchanged from `docs/ARCHITECTURE.md`):
@@ -773,11 +825,31 @@ Spanish page — never a fallback to English content at a Spanish URL.
 - **Self-canonical** per locale. `/es/dinero/pago-hipoteca` canonicals to itself.
 - **Separate sitemap families**: `sitemaps/pages-es`, `sitemaps/tools-es`, etc.
   A Spanish URL never appears in an English sitemap file.
-- **`<html lang>` is per-locale.** `app/layout.tsx:43` currently hardcodes `en`.
-- **Input preservation across the switch.** The switcher carries calculator
-  state via the URL query where a tool already supports it; where it does not,
-  the switcher is still shown and inputs reset — a reset is acceptable, a
-  silently wrong value is not.
+- **`<html lang>` is per-locale, via two root layouts.** Nested `app/es/**`
+  cannot override the root `<html>`. App Router proof-of-concept **before**
+  writing Spanish copy:
+
+  ```
+  app/
+    (en)/
+      layout.tsx          <html lang="en">
+      …english routes…
+    (es)/
+      es/
+        layout.tsx        <html lang="es">
+        …spanish routes…
+  ```
+
+  Do not start P6 content until this PoC renders the correct `lang` on both
+  `/` and `/es`.
+- **Input preservation across the switch is privacy-scoped.** Non-sensitive
+  UI state (locale, unit, filing-status *label*, selected tool) may travel in
+  the query string. **Salary, household income, debt, insurance, health, and
+  other calculation inputs must not.** Those go in `sessionStorage` on the
+  client, or they reset. Putting them in the URL leaks them into history,
+  server logs, referrers and analytics — which would void the “we do not send
+  calculator inputs” policy. A reset is acceptable; a silently wrong or
+  leaked value is not.
 
 ### G.3 Translation is not translation
 
@@ -796,7 +868,9 @@ lib/i18n/
   routes.ts        slug map en↔es, both directions, asserted bijective
   strings/         en-US.ts, es-US.ts — UI chrome only, never calculator copy
   alternates.ts    hreflang + canonical builder used by every metadata function
-app/es/…           mirrors app/ for localized surfaces
+app/(en)/layout.tsx   English root: <html lang="en">
+app/(es)/es/layout.tsx  Spanish root: <html lang="es">
+app/(es)/es/…           Spanish surfaces
 ```
 
 `lib/i18n/routes.ts` asserts at module load that the slug map is a bijection and
@@ -804,8 +878,8 @@ that no Spanish slug collides with an English one. A collision is a build failur
 
 ### G.5 Launch scope
 
-Full parity across 101 tools + 31,621 salary pages + guides is **not** a 10-day
-deliverable and would be unwise before English traffic is measured. Launch ships
+Full parity across 101 tools + 31,621 salary pages + guides is **not** a first
+sequence deliverable and would be unwise before English traffic is measured. Launch ships
 the **architecture complete** plus a **complete, non-partial Spanish slice**:
 
 - `/es` home, `/es/temas/*` hubs, `/es/buscar`
@@ -841,7 +915,7 @@ search intent
  → draft
  → editorial pass             (voice, no spintax, no number-swapped variants)
  → financial fact check       (numbers reproduced from the cited source)
- → citation check             (every URL resolves; every date is real)
+ → citation check             (schema/path/date on the record are valid)
  → semantic similarity check  (review signal — see below)
  → quality score              (same 100-point rubric as the tool gate; ≥75 to publish)
  → publish | reject
@@ -860,8 +934,15 @@ So similarity is a **review signal** first. It flags, a human decides, and the
 decision is recorded. After the first 500–1,000 published guides the
 distribution is known — the score where genuine near-duplicates actually sit —
 and only then does it become a hard gate at a calibrated value. Until then the
-hard gates are the ones that do not need calibration: intent duplication,
-citation resolution, and the quality score.
+hard gates are intent duplication, **citation schema/path/date correctness**,
+and the quality score.
+
+**Live URL resolution is not a deploy blocker.** Government sites 403, time
+out, and rotate bot protection. Schema and path checks run in normal CI.
+Fetching the live URL belongs in a **scheduled** job that opens an issue or
+warning. A broken official URL is a content/ops ticket, not a reason to hold
+a CostAnswer deploy. Critical source *replacement* is a separate editorial
+decision.
 
 ### H.3 Guide page contract
 
@@ -877,7 +958,7 @@ The brief's 50K + 50K target is a **destination, not a launch state**. Publishin
 
 | Window | EN guides live | ES guides live |
 | --- | --- | --- |
-| Launch (day 10) | 30 | 10 |
+| First public launch (after GSC is collecting) | 30 | 10 |
 | +30 days | 150 | 60 |
 | +90 days | 600 | 250 |
 | +180 days | 2,000 | 900 |
@@ -902,7 +983,8 @@ mortgage/auto/savings sections.
 
 ## I. Medical Cost pilot
 
-**Moved out of the 10-day launch window.** Reasoning in §L.4.
+**Moved to wave 2.** Reasoning in §L. Medical stays out of the first execution
+sequence. Local tax stays out of P2.
 
 Wave 2, weeks 3–5:
 
@@ -925,36 +1007,36 @@ Wave 2, weeks 3–5:
 
 ## J. SEO and indexation
 
-### J.1 The salary staging decision — a recommendation the owner must rule on
+### J.1 The salary staging decision
 
-`SALARY_PUBLICATION` in `lib/salary-pages.ts:47` has every level `indexable`:
-31,621 URLs. `docs/ARCHITECTURE.md:127` records that this was taken *against* the
-architect's recommendation, and the code comment says so plainly.
+`SALARY_PUBLICATION` in `lib/salary-pages.ts` currently has
+`occupationInState: 'staged'`. The site ships 813 salary URLs — family hub,
+state index, 51 state hubs, 761 occupation pages. The 30,807 occupation×state
+leaves exist as routes but are `noindex` and out of the sitemap.
 
-Two facts have changed since that decision:
+**State-tax correctness is no longer the staging blocker.** P2 is a resolved
+prerequisite: those leaves would compute 51-jurisdiction wage tax. They stay
+staged solely because a **new domain should not expose 30,807 programmatic
+URLs before indexation behavior is measured.**
 
-1. **72% of those leaf pages currently omit state income tax** from their
-   headline take-home figure (§0.3). Publishing them now publishes the defect.
-2. The domain still has **zero** Search Console history, and Search Console is
-   still not connected.
+Open the leaves when Search Console shows, on the levels already live:
 
-**Decided: `occupationInState: 'staged'`.** Applied at HEAD. The site ships 813
-salary URLs — hub, state index, 51 state hubs, 761 occupation pages — which is
-already a substantial corpus and carries no such defect, because a hub reports a
-distribution rather than one person's take-home.
+- indexed ratio worth expanding
+- impressions on hubs/occupation pages
+- duplication / canonical health (no mass soft-404 or near-duplicate clusters)
 
-The leaves open when **both** are true, in waves, measuring between them:
+Then open in waves, measuring between them:
 
 ```text
-51 verified state schedules (P2)
-+ Search Console showing the levels above indexing
+P2 closed (resolved)
++ Search Console: indexed ratio + impressions + canonical health on 813 URLs
         ↓
     10k leaves → measure → next wave → measure → 30,807
 ```
 
-Reversing this is one word. Opening it before P2 is not on the table: publishing
-22,000 pages whose headline figure knowingly omits state income tax is worse
-than publishing none of them.
+Reversing this is still one word in `SALARY_PUBLICATION`. Opening them because
+“the tax engine is done” is the wrong reason. Opening them because GSC says
+the domain can absorb them is the right one.
 
 ### J.2 Launch indexation budget
 
@@ -996,180 +1078,202 @@ the fake-expertise failure §25 forbids.
 
 | Layer | Tool | Gate | Status |
 | --- | --- | --- | --- |
-| Unit — engines | vitest | every pure engine, boundaries, invariants | ✅ 496 tests |
+| Unit — engines | vitest | every pure engine, boundaries, invariants | confirm count at execution |
 | Schema | zod + vitest | missing / malformed / non-finite / out-of-range | ✅ |
-| **Golden vectors** | vitest fixtures | **NEW:** every tax tool reproduces the IRS's or the state's own published worked example, value for value | P2/P4 |
-| **Property tests** | fast-check | **NEW:** amortization terminates at zero; extra payments never lengthen a term; tax is monotonic in income; `round()` is stable; every `CalculationResult` has ≥1 breakdown step | P5 |
-| Cross-source validation | vitest | **NEW:** OEWS median vs ACS median within tolerance; state tax vs an independent published effective rate at 3 incomes | P2 |
+| **Golden vectors** | `npm run verify:tax` + vitest | tax tools reproduce official worked examples. **Count is informational** — record the current vector count in the phase report; do not freeze a number in this document | P2 closed; P4 tax tools add theirs |
+| **Property tests** | fast-check | **NEW, per engine:** amortization terminates at zero; extra payments never lengthen a term; `round()` is stable; every `CalculationResult` has ≥1 breakdown step. **Not** a global “tax is monotonic in income” — EITC, refundable credits and phase-outs make net tax non-monotonic | P5 |
+| Cross-source validation | vitest | OEWS median vs ACS median is a **warning / investigation signal**, not a CI hard-fail (different populations and taxonomies). State tax vs an independent published effective rate at 3 incomes is a review check | P2/P4 |
 | Data quality | ingest scripts | schema · units · geography · uniqueness · completeness · finiteness · domain invariants · previous-period diff · secret scrubbing | ✅ |
-| **Freshness** | CI job | **NEW:** build fails if any dataset is `stale`; warns on `update-due` | P3 |
+| **Freshness** | CI job + runtime or daily manifest | **NEW:** build fails if any dataset is `stale`; warns on `update-due`. User-facing current/update-due/stale uses **runtime `new Date()`** or a daily `freshness-status.json`, not a frozen build timestamp | P3 |
 | Route smoke | `tests/e2e/routes.ts` | 200 + metadata on critical routes | ✅ |
-| Browser journeys | Playwright | real inputs, keyboard, axe WCAG A/AA | ✅ 908 lines, **but not in CI** |
-| **Lighthouse regression** | Lighthouse CI | **NEW:** perf ≥90 mobile on the tool template, LCP < 2.5s, CLS < 0.1, TBT < 200ms | P9 |
-| **Bundle budget** | CI assertion | **NEW:** no client chunk > 150 KB gz; Worker ≤ 2.8 MB gz | P1 |
+| Browser journeys | Playwright | real inputs, keyboard, axe WCAG A/AA | in CI after P1 |
+| **Lighthouse regression** | Lighthouse CI | **NEW:** perf ≥90 mobile on the tool template, LCP < 2.5s, CLS < 0.1, TBT < 200ms | after domain is live |
+| **Bundle budget** | `scripts/check-bundle-budget.mjs` | **Policy:** client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB gzip**. Script today: 200 KiB **raw** client, gzip Worker — align before citing them as one gate | P1 remaining |
 
-**Immediate CI corrections (P1):** add `lint` and `test:e2e` to `verify.yml`;
-remove the hardcoded nvm path from `playwright.config.ts`.
+**P1 CI items (closed):** `lint` and `test:e2e` in `verify.yml`; nvm path
+removed from `playwright.config.ts`. Do not re-do them.
 
 ---
 
-## L. Ten-day execution plan
+## L. Execution sequence (rebased 2026-09-07)
 
-> **Day 10 is a go/no-go checkpoint, not an unconditional launch date.**
+> This is a **priority sequence**, not a ten-day calendar. The v2 three-lane
+> day-map assumed P2 was live Lane A work. That map is **historical** and must
+> not be executed. Quality gates in §M still decide what ships; a gate that
+> has not passed is a reason to hold, not a reason to lower the gate.
 >
-> The scope below is roughly 30 engineer-days. Three strong parallel agents make
-> it reachable; nothing makes it certain. The quality gates in §M decide whether
-> day 10 ships, and a gate that has not passed is a reason to hold, not a reason
-> to lower the gate. Specifically: launching with fewer than 51 verified state
-> tax schedules, or with the salary leaves open while any are missing, is a
-> no-go regardless of the date.
+> Medical Cost remains wave 2. Local/payroll tax remains a separate engine.
+> Full ES-US parity remains waves 2–4.
 
-Three lanes. **Lane A** = data and correctness. **Lane B** = calculators and UI.
-**Lane C** = platform, i18n, job engine. Phases inside a lane are sequential;
-lanes are parallel except where an arrow marks a dependency.
+### L.0 Historical launch cut v2 — do not execute
 
-### L.1 Day map
+The 10-day table (Lane A = P2 days 1–4, Lane B = 43 calculators, Lane C =
+platform, Day 10 = Search Console) is archived. It is useful only as a record
+of what the pre-P2 plan believed. Coding agents must not treat “Day 1–4 =
+P2” as current work.
 
-| Day | Lane A — Data & correctness | Lane B — Calculators & UI | Lane C — Platform |
-| --- | --- | --- | --- |
-| 1 | **P2a** tax schema extension (credits, federal deductibility, local tax) | **P1b** fix CMS client-bundle leak; fix 2 lint errors; delete 3 conflict copies | **P1a** wrangler deploy → costanswer.com; DNS; TLS; CI adds lint + e2e |
-| 2 | **P2b** 12 largest states by population (NY OH GA NC VA MI MD MN CO AZ IN MO) | **P5a** shared depth primitives: `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt` | **P1c** tier-2 asset store; move OEWS + CMS columns off the bundle; bundle budget assertion in CI |
-| 3 | **P2c** next 13 states | **P4a** tax tools 1–5 (bracket, effective rate, SE tax, quarterly, capital gains) | **P3** freshness SLA: per-dataset cron matched to provider calendar; PMMS moves to Thursday-evening; GSA added to refresh; GSA `releases.json`; stale gate in CI |
-| 4 | **P2d** final 12 states + cross-source validation + golden vectors | **P4b** tax tools 6–9 (refund, W-4, EITC, CTC) ← needs P2 | **P6a** i18n architecture: locales, route map, alternates, `<html lang>`, ES sitemaps |
-| 5 | **P4-data** new rule datasets: Pub 15-T, credits, RMD, SSA, HSA, FHA/VA, SOFR | **P4c** retirement 7 + education 1 | **P7a** job engine types, labor (OEWS+ECEC), equipment (FEMA), permits |
-| 6 | **P7-data** ECEC, PPI, FEMA ingest + material basket v0 (120 components) | **P4d** mortgage 9 | **P7b** job estimate composition, modifiers, confidence, calibration seam |
-| 7 | **P8-data** guide source research for the first 30 | **P4e** home equity 2 + auto 4 + personal finance 7 | **P7c** 10 recipes, each fully cited |
-| 8 | freshness verification pass across all 26 datasets | **P4f** debt 4 + remaining; **101 reached** | **P7d** `/cost` routes, `/cost/estimate`, `/cost/check-quote`, 10 job pages, quote-check verdicts |
-| 9 | data page + methodology updated for every new dataset | **P8** 30 EN guides + `/guides` family + gate | **P6b** ES slice: 20 tools + 10 guides + chrome |
-| 10 | **P9** launch checklist · Lighthouse · Search Console · Bing · analytics live · smoke tests · go/no-go | | |
+### L.1 Current sequence
+
+| Step | Work | Why this order |
+| --- | --- | --- |
+| **0** | **Clean checkpoint.** Commit the dirty working tree (CT Table A, IL/MI/NM/VT/RI dependents, snapshot, tests, this rebase). Record branch, SHA, dirty files, `tools.length`, test count, `npm run verify:tax` vector count | P2 close must have a clean baseline before any new phase |
+| **1** | **Production deploy + measurement.** Custom domain, TLS, `www` redirect. The day the domain is live: analytics, **Google Search Console**, Bing Webmaster Tools. Lighthouse/smoke as available | GSC is the data source for later expansion, not a last-day checklist item. D1 + monetization secrets are an **activation** blocker, not a public-launch blocker while providers stay off |
+| **2** | **P3 Freshness SLA** including runtime clock or daily `freshness-status.json` | Next infrastructure job after a working tax engine |
+| **3** | **P5 shared primitives** (`AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt`) | Must exist before a tool wave; P4 numbers after P5 in the sequence even though the phase id is “P4” |
+| **4** | **P4 tax / high-value finance tools** — W-4, refund, EITC, CTC, effective tax, quarterly, capital gains, plus adjacent high-intent finance | Unblocked by P2; high YMYL value; uses P5 |
+| **5** | **P7 Job Cost Engine V1** | The product moat. Do not wait for 43 generic calculators. Field-level `SourcedValue`, `profitMarkupRate`, critical materials, no RPP-on-materials — §D |
+| **6** | **Remaining P4 catalogue** | Fill toward 101 only after Job V1 exists. 58 → ~67 quality tools + Job Engine can outrank 101 generic tools |
+| **7** | **P6 Spanish slice / P8 guides** | After some GSC signal exists. Dual-root-layout PoC before P6 copy. Similarity is a review signal, not a hard 0.85 CI gate |
+| **—** | **Launch / expansion gates** | Salary leaves, more guides, `/cost/:job/:state`, catalog to 101 — all gated on GSC indexed ratio, impressions, duplication/canonical health |
 
 ### L.2 Dependency arrows
 
 ```
-P1a (deploy) ──► P9 (Search Console needs a live domain)
-P1c (tier 2) ──► P7 (job data has no bundle room otherwise)
-P2  (states) ──► P4b (tax refund/W-4/EITC/CTC need state tax)
-P2  (states) ──► J.1 (leaf-page staging decision)
-P5a (primitives) ──► P4a–P4f (43 tools must not each invent an advanced panel)
-P6a (i18n arch) ──► P6b (ES content)
-P7a+P7b ──► P7c ──► P7d
+0 checkpoint ──► 1 deploy
+1 deploy ──► GSC + Bing + analytics (same day as live DNS, not “P9”)
+P1c tier-2 ──► P7 (job data has no bundle room otherwise)
+P2 closed ──► P4 tax tools (refund / W-4 / EITC / CTC)   [resolved]
+P2 closed ──► J.1 as a tax prerequisite                  [resolved; crawl budget remains]
+P5 ──► P4 (any new calculator)
+P5 ──► P7 UI
+P6 dual-root-layout PoC ──► P6 Spanish copy
+P7 types (§D.2) ──► P7 recipes
 ```
 
-### L.3 What can run fully in parallel
+### L.3 Parallelism
 
-P1b, P1c and P2a on day 1. P4a–P4f are internally parallel across as many
-agents as are available — each tool is one engine + one component + one page +
-one editorial record + one test file, touching no shared file except the
-registry, which is append-only. **Rule: one agent per tool, one commit per tool.**
+P3 can overlap late P1 deploy work. After P5, P4 tax tools can run as one
+agent per tool **if** the registry is fragmented (`lib/tools/registry/*.ts` +
+generated index). A monolithic `lib/tool-registry.ts` **will** conflict when
+ten agents append to the same file. Job Engine data ingest can overlap P4 tax
+tools once types exist. P6 architecture PoC can overlap P4/P7; P6 copy should
+not.
 
-### L.4 What I moved out of the 10 days, and why
+**Rule: one agent per tool, one commit per tool** — after the registry is no
+longer a single append-only file.
 
-**Medical Cost pilot → wave 2 (weeks 3–5).** Hospital MRF files are the least
-standardized public dataset in this plan: hundreds of megabytes per hospital,
-inconsistent code systems, inconsistent payer naming, and genuine ambiguity
-about what a "price" means. A rushed pilot on medical pricing is the single
-highest-liability page type on the site. Reserving the URLs now costs nothing;
-shipping a wrong MRI price costs trust that a new domain has none of to spend.
+### L.4 Still out of the first sequence, and why
 
-**Full ES-US parity → waves 2–4.** 101 calculators + 31,621 salary pages +
-guides in authored (not machine-translated) US Spanish is a multi-week writing
-project. The launch ships the complete architecture and a complete 60-page
-slice; the slice grows on a schedule. Machine-translating to hit a date would
-produce exactly the thin, duplicated pages §7 forbids, in a second language.
+**Medical Cost pilot → wave 2.** Hospital MRF files are the least standardized
+public dataset in this plan. A rushed medical-price page is the highest-liability
+surface on the site.
 
-**Permit / DOT-bid calibration → wave 2.** V1 is engineering-first, which is what
-§15 prescribes. The calibration seam ships in V1; the evidence does not.
+**Full ES-US parity → waves 2–4.** Architecture + a complete ~60-page slice
+first. Machine-translating to hit a count produces thin duplicates.
 
-If the owner would rather hold the launch than move these, the alternative is a
-**17-day plan**: the same phases, with medical at days 11–14 and the ES slice
-doubled at days 15–17. Say the word and I will re-cut the day map.
+**Permit / DOT-bid calibration → wave 2.** V1 is engineering-first. The
+calibration seam ships in V1; the evidence does not.
 
-### L.5 Post-10-day waves
+**Local / payroll tax → its own engine.** Do not reopen P2 for city rates.
+
+### L.5 Later waves
 
 | Wave | Window | Contents |
 | --- | --- | --- |
-| 2 | weeks 3–5 | Medical pilot (TX, 15 procedures) · permit + DOT-bid calibration · salary leaves wave 1 (10k URLs) · guides to 150 EN / 60 ES · material basket to 300 |
-| 3 | weeks 6–9 | Event-driven content · job recipes 11–20 · `/cost/:job/:state` where data moves the answer · salary leaves waves 2–3 · ES slice to 60 tools |
-| 4 | weeks 10–16 | Medical expansion beyond TX · guides to 600/250 · Real Quote Dataset collection (optional, anonymous) · ES full parity on tools |
+| 2 | after GSC has a few weeks of data | Medical pilot (TX, 15 procedures) · permit + DOT-bid calibration · salary leaves wave 1 only if indexed-ratio/impressions/canonicals look healthy · guides to 150 EN / 60 ES · material basket to 300 |
+| 3 | following | Event-driven content · job recipes 11–20 · `/cost/:job/:state` where data moves the answer · further salary-leaf waves · ES slice to 60 tools |
+| 4 | following | Medical expansion beyond TX · guides to 600/250 · Real Quote Dataset (optional) · ES full parity on tools |
 
 ---
 
 ## M. Acceptance criteria by phase
 
-**P1 — Platform and blockers** — met except deployment
+**P1 — Platform and blockers** — met except custom-domain deploy
 - ✅ `npm run verify` exits 0; lint has zero errors.
 - ✅ `verify.yml` runs `lint`, the bundle budget and `test:e2e`; no absolute local path in `playwright.config.ts`.
-- ✅ No client chunk over **200 KB**; no dataset chunk at all. Asserted in CI.
-- ✅ Worker ≤ 2.8 MB gzipped — **our** budget for cold-start and deploy time, not a platform ceiling.
+- ✅ Bundle budget **script exists** in CI. **Policy:** client route-specific chunk ≤ **150 KiB gzip**; Worker JS ≤ **2.8 MiB gzip**. Script still measures client as **200 KiB raw** — aligning it is remaining P1 work. No dataset chunk in client JS.
+- ✅ Worker JS ≤ **2.8 MiB gzip** — **our** budget, not a platform ceiling.
 - ✅ The three conflict copies are deleted.
 - ✅ Typecheck under 30s.
-- ⬜ `https://costanswer.com` serves the production build over TLS; `www` redirects.
-- ⬜ D1 provisioned and migrated; `MONETIZATION_*` secrets set.
+- ⬜ `https://costanswer.com` serves the production build over TLS; `www` redirects. **This is the public-launch blocker.**
+- ⬜ Analytics + Search Console + Bing connected **the day the domain is live**.
 - ⬜ `/money/marketplace-plans` and `/money/health-insurance` re-verified in a browser after the tier move.
+- D1 provisioned, migrated, and `MONETIZATION_*` secrets set — **monetization activation blocker**, not a public-launch blocker while every provider stays off.
 
-**P2 — State tax**
+**P2 — State tax — CLOSED 2026-09-07. Do not execute.**
 - `data/tax/2026.json` has **51 supported** rows; zero `unsupported`.
 - Every state carries `sourceUrl`, `publishedAt`, `verifiedAt` and `scheduleTaxYear`.
-- A golden vector per state reproduces that state's own published tax-table value at $40k, $75k and $150k single, within $1.
-- Cross-source check: computed effective rate is within 1.5pp of an independent published figure for all 51.
-- No `/salary/**` page renders "Not modelled".
-- `npm run verify:tax` passes.
+- `npm run verify:tax` **must pass**. Golden-vector count is informational; record the current count in any report. Do not treat a number written here as the required total.
+- Acceptance record: `docs/P2_STATE_TAX_FINAL.md`. Remaining mixed-year rows and named local omissions are stated limitations, not open P2 work.
 
 **P3 — Freshness SLA**
 - Every `scheduled` dataset has a cron whose day-of-week matches the provider's own release day (PMMS Thursday, EIA gasoline Monday, BLS mid-month).
 - `gsa-perdiem` is in `scripts/refresh-snapshots.ts`.
 - `data/gsa-perdiem/releases.json` exists and `resolveEffectivePerDiemRelease` mirrors the HUD implementation; a test proves FY2027 is *published* and *not effective* on 2026-09-30, and effective on 2026-10-01.
 - CI fails when any dataset evaluates `stale`; warns on `update-due`.
-- No dataset is `stale` at launch.
+- User-facing current / update-due / stale uses **runtime `evaluateFreshness(dataset, new Date())`** or a daily-deployed `freshness-status.json`. A build timestamp is **not** sufficient: it does not age on a long-lived deploy. SEO publication decisions may still use the build snapshot.
+- No dataset is `stale` at public launch.
 
-**P4 — Calculators to 101**
-- `tools.length === 101`, asserted by a test.
-- Every tool has: engine with `calculationVersion` + `datasetSnapshotIds` + `breakdown` + `assumptions`; a unique `ToolEditorial`; a self-canonical page; valid JSON-LD; regression tests.
+**P4 — Calculators (after P5)**
+- **Execution dependency: P5 must be completed first.**
+- Catalog target is 101; it is not a sacred ship number. High-value tax/finance tools + Job Engine outrank filling the list.
+- Every **shipped** tool has: engine with `calculationVersion` + `datasetSnapshotIds` + `breakdown` + `assumptions`; a unique `ToolEditorial`; a self-canonical page; valid JSON-LD; regression tests.
 - No two tools share a `searchTerms` primary phrase (duplicate-intent guard, asserted).
 - Every tax tool has a golden vector against the IRS's own published example.
-- `/topics/money` renders 68 tools grouped by cluster, and no group has more than 12 items.
+- Registry fragments under `lib/tools/registry/` (or equivalent) so parallel agents do not share one append-only file.
 
-**P5 — Depth primitives**
+**P5 — Depth primitives (before P4)**
 - `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt` exported from `CalculatorUI.tsx`, each with a test.
 - Every tool with more than 5 inputs uses `AdvancedSection`; asserted by a lint rule or a test over the component set.
 - No tool renders a confidence claim without a derived reason string.
 - Zero ad slots between an input and a primary result; asserted by the Playwright suite.
 
 **P6 — Localization**
+- Dual root layouts: `/` serves `<html lang="en">`, `/es` serves `<html lang="es">`. PoC before copy.
 - `lib/i18n/routes.ts` slug map is a proven bijection; build fails on collision.
 - Every localized page emits reciprocal `hreflang` (`en-US`, `es-US`, `x-default`) and a self-canonical.
-- `<html lang>` matches the locale on every route.
 - Spanish sitemaps are separate files; no Spanish URL appears in an English sitemap.
 - No IP-based redirect exists anywhere in the codebase (asserted by grep test).
 - All 60 slice pages have authored Spanish copy; zero pages mix languages.
+- Language switcher never puts salary/income/debt/insurance/health inputs in the query string.
 
 **P7 — Job Cost Engine**
-- 10 recipes validate; every numeric field in every recipe has a `RecipeSource`, asserted.
-- `/cost/estimate` returns LOW / EXPECTED / HIGH + confidence + a breakdown whose lines sum to the expected value within $1.
-- Every applied modifier appears as a named breakdown step with its own dollar delta; a test asserts no unnamed adjustment can change the total.
+- 10 recipes validate; every numeric field is a `SourcedValue` whose `sourceId` exists in `sources: Record<string, RecipeSource>`.
+- Field is named `profitMarkupRate` (markup, not margin). `expected = subtotal × (1 + profitMarkupRate)`.
+- Direct labor burden (OEWS × ECEC model_transformation) is separate from business `overheadRate`; benefits are not double-counted.
+- Materials: national baseline × PPI. No BEA RPP material multiplier in V1.
+- FEMA equipment output is labelled a **cost proxy**, not a market rental rate.
+- ZIP geography provenance names HUD USPS crosswalk or **approximate ZIP/ZCTA match**.
+- A `critical: true` unpriced material line yields **no complete estimate**; Quote Checker returns `outside what we can assess`.
+- UI copy: **CostAnswer estimated range** / **Within our estimated range** — not “normal range”.
+- Confidence uses required/critical line coverage, labor geography, baseline age, assumption weight, calibration evidence — not “% of priced material dollars” alone.
+- `/cost/estimate` returns LOW / EXPECTED / HIGH + confidence + a breakdown whose lines sum to the expected value within $1 — or an incomplete result.
+- Every applied modifier appears as a named breakdown step; a test asserts no unnamed adjustment can change the total.
 - `/cost/check-quote` returns one of the six fixed verdicts and, for any "above" verdict, at least three legitimate reasons.
 - A test asserts the strings "rip off", "ripoff", "overcharge", "scam" appear nowhere in `lib/job/` or `components/job/`.
-- Confidence level is derived from the stated conditions, never hardcoded per recipe.
 - Job data lives in tier 2, not the bundle; Worker budget still met.
 
 **P8 — Content engine**
 - 30 EN + 10 ES guides live under `/guides` and `/es/guias`.
 - Every guide names ≥1 calculator, ≥1 dataset, its sources with dates, and a last-reviewed date.
-- Semantic similarity of every published guide against the corpus is < 0.85; the check is in CI.
+- Similarity score is **calculated and recorded**; flagged documents require review. **No hard <0.85 CI gate** until 500–1,000 guides exist to calibrate against (§H.2).
+- Citation schema/path/date correctness is in normal CI. Live URL fetch is scheduled; a 403/timeout does not fail deploy.
 - `lib/content/publication.ts` can withdraw a cluster in one edit.
 
-**P9 — Launch**
-- Every item in §N checked and evidenced.
+**P9 — Go/no-go (not “connect GSC”)**
+- Custom domain already live; GSC/Bing/analytics already collecting (step 1).
+- Every remaining item in §N checked and evidenced.
+- Expansion (salary leaves, more tools, more guides) uses GSC indexed ratio + impressions + canonical health.
 
 ---
 
 ## N. Launch checklist
 
-**Domain and delivery**
+**Public-launch blockers**
 - [ ] `costanswer.com` resolves; TLS valid; `www` → apex 301
 - [ ] `NEXT_PUBLIC_SITE_URL=https://costanswer.com` at build; no localhost canonical anywhere in the output
 - [ ] Security headers present in production response (CSP, HSTS, COOP, X-CTO, frame-deny, permissions-policy)
 - [ ] Edge cache headers on `/salary/:occupation` and `/salary/states/:state`, not just the leaves
+
+**Measurement — same day the custom domain is live, not a last-day item**
+- [ ] Analytics enabled with no calculator input values in any payload (asserted by the event boundary test)
+- [ ] Cookie/consent posture matches what analytics actually sets
+- [ ] Google Search Console verified; sitemap submitted
+- [ ] Bing Webmaster Tools verified; sitemap submitted
+
+**Monetization activation (not required to serve the public site)**
+- [ ] D1 provisioned and migrated; `MONETIZATION_*` secrets set — only when a provider is being turned on
+- [ ] Lead capture stays disabled if D1 is absent
 
 **Crawl and index**
 - [ ] `/robots.txt` correct; sitemap absolute URL
@@ -1178,12 +1282,10 @@ doubled at days 15–17. Say the word and I will re-cut the day map.
 - [ ] `hreflang` reciprocal and `x-default` present on all localized pairs
 - [ ] `noindex` on staged families verified by fetching three sampled URLs
 - [ ] Structured data validates in the Rich Results Test for each page type
-- [ ] Google Search Console verified; sitemap submitted
-- [ ] Bing Webmaster Tools verified; sitemap submitted
 
 **Correctness**
 - [ ] `npm run verify` green
-- [ ] All 51 states supported in the tax snapshot
+- [ ] All 51 states supported in the tax snapshot (`npm run verify:tax` passes; record the vector count)
 - [ ] No dataset `stale`; none `update-due` without a scheduled job about to fix it
 - [ ] Every calculator's golden vectors pass
 - [ ] Data page (`/methodology/data`) lists all datasets with observation period, publication date and freshness status
@@ -1191,7 +1293,7 @@ doubled at days 15–17. Say the word and I will re-cut the day map.
 **Experience**
 - [ ] Lighthouse mobile: performance ≥90, a11y ≥95, best practices ≥95, SEO 100 on the tool template, home, a salary page and a job page
 - [ ] LCP < 2.5s, CLS < 0.1, TBT < 200ms on 4G throttle
-- [ ] No client chunk > 150 KB gz
+- [ ] Client route-specific chunk ≤ 150 KiB gzip; Worker JS ≤ 2.8 MiB gzip
 - [ ] Playwright suite green including axe WCAG A/AA
 - [ ] Keyboard-only pass on one tool per category
 - [ ] 375px-wide pass on the ten highest-traffic pages
@@ -1201,19 +1303,18 @@ doubled at days 15–17. Say the word and I will re-cut the day map.
 - [ ] Zero broken internal links (crawl)
 - [ ] 404 page useful and returns HTTP 404
 - [ ] Every redirect in `next.config.ts` resolves in one hop
+- [ ] External citation URLs: schema/path checked in CI; live fetch is scheduled (a 403 does not block deploy)
 
 **Legal and trust**
 - [ ] Privacy policy live with effective date and version
 - [ ] Terms live
 - [ ] Contact route works and reaches a monitored inbox
 - [ ] Attribution present for NAIC and Freddie Mac
-- [ ] Analytics enabled with no calculator input values in any payload (asserted by the event boundary test)
-- [ ] Cookie/consent posture matches what analytics actually sets
 
 **Smoke**
 - [ ] Production smoke: one calculation per category returns a correct known value
-- [ ] `/cost/estimate` and `/cost/check-quote` return a result in production
-- [ ] One Spanish page renders fully in Spanish with correct `hreflang`
+- [ ] `/cost/estimate` and `/cost/check-quote` return a result in production (once P7 ships)
+- [ ] One Spanish page renders fully in Spanish with correct `hreflang` (once P6 ships)
 
 ---
 
@@ -1246,6 +1347,8 @@ construction:
   genuinely outstanding — not because the code is missing.
 - **Launch does not depend on activating any provider.** Turning one on is
   credentials plus a configuration change, staged per `docs/MONETIZATION.md` §12.
+  D1 + secrets + migrations are the **activation** prerequisite for that change,
+  not a reason to hold the public site.
 - Financial, insurance and health lead generation stay off by policy, and
   health calculators are `restricted`: no ads, no affiliate, no leads, whatever
   the flags say.
@@ -1261,7 +1364,8 @@ launch, not built now.
 
 ## Phase cards
 
-Each card is executable as written.
+Open cards are executable as written. **Closed cards are historical — do not
+re-execute them.** Reconcile repository state before starting any open phase.
 
 ---
 
@@ -1274,7 +1378,7 @@ browser.
 
 | # | Was | Now |
 | --- | --- | --- |
-| 1 | 3,842,883-byte CMS chunk shipped to every visitor of two YMYL pages | **0.** Priced server-side via `app/api/marketplace/quote`; largest client chunk is 186 KB, which is React |
+| 1 | 3,842,883-byte CMS chunk shipped to every visitor of two YMYL pages | **0.** Priced server-side via `app/api/marketplace/quote`. Script exists; **align it** to 150 KiB gzip client / 2.8 MiB gzip Worker (today: 200 KiB raw client) |
 | 2 | 2 lint errors, so `npm run verify` was red while CI was green | **0 errors.** Both were state synced in an effect; both are now derived, which also fixed a one-frame stale suggestion list |
 | 3 | 3 committed iCloud conflict copies, one a stale dataset verifier | Deleted |
 | 4 | CI ran neither `lint` nor `test:e2e`; Playwright carried a developer's own nvm path | Both run; the path is gone |
@@ -1291,84 +1395,44 @@ release gate is a gate people skip, and every phase below pays for it.
 `types/data-json.d.ts` · `scripts/check-bundle-budget.mjs` ·
 `next.config.ts` · `.github/workflows/verify.yml` · `playwright.config.ts`
 
-**Still open — needs credentials, not engineering.**
+**Still open.**
 
+**Public-launch blocker (credentials, not engineering):**
+- `wrangler deploy`; bind `costanswer.com`; verify TLS and the apex/www redirect
+- The day DNS is live: analytics, Search Console, Bing
+
+**Monetization activation (not required to serve pages):**
 - `wrangler d1 create costanswer-monetization`, then `npm run monetization:migrate`
 - Set `MONETIZATION_D1_DATABASE_ID`, `MONETIZATION_HASH_PEPPER`, `MONETIZATION_ADMIN_TOKEN`
-- `wrangler deploy`; bind `costanswer.com`; verify TLS and the apex/www redirect
 
-**Acceptance.** §M P1 — met except the deployment items above.
+**Acceptance.** §M P1 — met except the public-launch items above.
 
 **Rollback.** The tier boundary is one route and one hook; reverting restores
 the bundled imports and the budget check is the only thing that then fails.
 
-### P2 — Complete the 2026 state tax engine
+### P2 — CLOSED. Historical phase. Do not execute.
 
-**Goal.** 51 supported jurisdictions. No page says "not modelled".
+**Closed 2026-09-07.** 51/51 supported. Authoritative record:
+`docs/P2_STATE_TAX_FINAL.md`.
 
-**Files.** `lib/data/tax/schema.ts` · `lib/calculations/tax/state.ts` ·
-`scripts/update-tax-snapshot.ts` · `scripts/validate-tax-data.ts` ·
-`data/tax/2026.json` · `tests/tax.spec.ts` · **new** `tests/tax-golden.spec.ts`.
+Do **not** transcribe schedules, extend the policy union, leave states
+unsupported, or treat New York as 2025-only. Those instructions described the
+pre-close world and will make an agent re-open finished work.
 
-**Work.**
-1. Extend the policy union with the three shapes the current schema cannot
-   express:
-   - `exemptionCredit` — a per-filer/per-dependent credit subtracted after tax
-     (most states that use credits rather than deductions).
-   - `federalDeductible` — states allowing a federal income tax deduction,
-     capped where applicable (AL, LA, MO, MT, OR).
-   - `localAddOn` — an optional jurisdiction-level rate applied on top
-     (OH municipal, MD county, PA local EIT, NY/NYC, MI cities, IN counties, KY).
-     V1 models this as an **optional, explicitly-labeled** add-on that defaults
-     to off, because the site does not know the user's municipality. A state page
-     shows the state figure and names the local tax as an omission; the paycheck
-     calculator offers it as an advanced input.
-2. Transcribe 37 schedules from each state's own 2026 (or latest published)
-   tables, recording `scheduleTaxYear` honestly where a state has not yet
-   published 2026 — the existing CA/NJ precedent.
-3. Extend `calculateSupportedStateTax` for the three new kinds; keep the
-   exhaustive `never` check so a new kind cannot be silently unhandled.
-4. Write `tests/tax-golden.spec.ts`: 51 states × 3 incomes × the state's own
-   published table value.
-5. Cross-source check against an independent published effective-rate figure.
+What actually shipped (summary only — do not re-implement): NY 2026 production
+with recapture/supplemental computation; Wisconsin piecewise standard
+deduction; stepped deductions; exemption credits; federal-tax deduction; FTI
+basis; bracket base-tax; dependent rules; local omission metadata; and more
+shapes than the original three-member union. Mixed-year 2025 annual packets
+remain **declared** where 2026 forms are unpublished.
 
-**Data dependencies.** State revenue department publications. Where a state has
-not published 2026, use the latest schedule and set `scheduleTaxYear` — the
-existing honest fallback.
+State tax may be reopened only when:
 
-**Access constraint, measured 2026-09-06.** Most state revenue sites cannot be
-read programmatically. Of eleven probed: NCDOR and Minnesota Revenue returned
-usable content; Colorado, Arizona, Utah and Michigan returned HTTP 403;
-Wisconsin and Virginia failed DNS resolution; Ohio 404'd on its published path;
-New York publishes only through 2025 on its rate-schedule index; and
-Minnesota's deduction page sits behind bot detection. Roughly one state in
-three is machine-readable.
+- an official 2026 annual source supersedes a declared mixed-year parameter,
+- a verified tax-law change is discovered,
+- or a separately scoped local/payroll tax engine is approved.
 
-This does not change what the data has to be — it changes who fetches it.
-Transcribing a bracket table from a search summary is exactly the unverifiable
-input `verify-states.ts` exists to reject, so the remaining states need their
-figures supplied from the primary source by someone who can open it. The
-engineering is done and waiting: each state is one entry in
-`scripts/update-tax-snapshot.ts` plus three golden vectors.
-
-**Sequence, therefore:** do the reachable states as they are reached; leave the
-rest `unsupported`, which the site already renders honestly, until their
-figures arrive. **Do not** open the salary leaves on a partial transcription —
-that is the failure this whole phase exists to prevent.
-
-**Tests.** As above, plus: monotonicity in income for all 51; no state returns a
-tax exceeding income; `unsupported` count is 0 (asserted).
-
-**Acceptance.** §M P2.
-
-**Risks.** Transcription error is the real risk and golden vectors are the
-mitigation — a wrong digit fails the vector, exactly as the ACA rules file is
-guarded by a hash. Local income taxes are genuinely hard; V1 names them as an
-omission rather than modelling them wrong, which is the same posture the site
-already takes with `unsupported`.
-
-**Rollback.** Per state: flip that one row back to `unsupported`. The engine
-already renders that state correctly.
+Anything else is out of scope for this card.
 
 ---
 
@@ -1435,11 +1499,21 @@ current when the provider has published a newer one.
    are the two functions, mirroring `lib/data/hud-fmr.ts:126-138`.
 4. New `freshness.yml`, daily: evaluate every dataset, fail on `stale`, open an
    issue on `update-due` that persists past its grace window.
-5. Address the frozen clock: `evaluateFreshness` defaults `asOf` to
-   `PUBLISHING_SNAPSHOT_DATE`. Add a `deployedAsOf` that reads the build
-   timestamp so a long-lived deploy degrades its own labels honestly, while
-   build-time SEO decisions keep using the frozen date (which is correct and
-   deliberate — do not change that).
+5. Address the frozen clock. `evaluateFreshness` must not treat a **build
+   timestamp** as “now”. A build timestamp is fixed for the life of that
+   deploy: six months later the label still says the build date, so it does
+   not age.
+
+   Pick **one** of:
+
+   - **A.** Server/runtime: `evaluateFreshness(dataset, new Date())` for
+     user-facing current / update-due / stale chips.
+   - **B.** A daily workflow writes `freshness-status.json` (or equivalent)
+     and deploys it as a static asset; the UI reads that manifest.
+
+   SEO publication decisions (index vs noindex, sitemap inclusion) may keep
+   using the build snapshot. User-visible freshness must use a runtime clock
+   or a regularly updated manifest.
 
 **Data dependencies.** None new.
 
@@ -1456,15 +1530,22 @@ PRs that pass `verify` and change only `data/**`.
 
 ---
 
-### P4 — 43 calculators to reach 101
+### P4 — High-value calculators, then catalogue expansion
 
-**Goal.** Exactly 101 tools, each meeting the §4 standard.
+**Execution dependency: P5 must be completed first.** Do not start this card
+until the shared primitives exist. Sequence inside this card: tax / high-value
+finance tools first (step 4), remaining catalogue after Job Cost V1 (step 6).
+101 is a target, not a ship requirement.
+
+**Goal.** Each new tool meets the §4 standard. Prefer W-4, refund, EITC, CTC,
+effective tax, quarterly estimated tax, and capital gains before generic
+catalogue fillers.
 
 **Files.** Per tool: `lib/calculations/<domain>/<tool>.ts` ·
 `components/calculators/<cluster>/<Tool>Calculator.tsx` ·
 `app/money/<slug>/page.tsx` · a `ToolEditorial` in the matching
-`lib/tool-content/` file · `tests/<tool>.spec.ts` · one append to
-`lib/tool-registry.ts`. Plus new datasets per §E.
+`lib/tool-content/` file · `tests/<tool>.spec.ts` · one module under
+`lib/tools/registry/<tool-id>.ts`. Plus new datasets per §E.
 
 **Work.** Follow `docs/ADDING_A_TOOL.md` unchanged — it is a good checklist —
 with four additions:
@@ -1478,12 +1559,15 @@ with four additions:
    need.
 3. Reorganize `components/calculators/` into `money/`, `home/`, `car/`,
    `everyday/`, `health/`, `math/`, `education/`, `shopping/`, `food/` **before**
-   adding the 43 — a 95-file flat directory is not navigable.
-4. One agent per tool, one commit per tool. The registry is append-only so
-   parallel agents do not conflict on it.
+   adding a large wave — a 95-file flat directory is not navigable.
+4. One agent per tool, one commit per tool. **Do not append to a single
+   `lib/tool-registry.ts`.** Git will conflict. Split into
+   `lib/tools/registry/*.ts` with a generated or globbed `index.ts` (or
+   build-time fragments). That is the parallel-agent model.
 
 **Data dependencies.** §E new rows: `irs-pub15t`, `irs-credits`, `irs-rmd`,
-`ssa-benefits`, `irs-hsa`, `fha-va`, `sofr-index`. P2 for anything state-aware.
+`ssa-benefits`, `irs-hsa`, `fha-va`, `sofr-index`. State-aware tools use the
+closed P2 snapshot.
 
 **Rule-dependent tools do not ship to hit a count.** Nine of the 43 compute a
 statutory entitlement rather than applying arithmetic to what someone typed:
@@ -1506,23 +1590,28 @@ reaching 101 is a target, not a deadline, and a wrong entitlement figure on a
 YMYL page costs more than a missing calculator.
 
 **Tests.** Per tool: boundary, invariant, regression fixture. Per tax tool: a
-golden vector against the IRS's own published example. Registry-wide:
-`tools.length === 101`, no duplicate primary search phrase, editorial coverage
-(already asserted).
+golden vector against the IRS's own published example. Per engine: only that
+engine's mathematically valid properties — **not** global tax-monotonicity.
+Registry-wide: no duplicate primary search phrase, editorial coverage
+(already asserted). Do not assert `tools.length === 101` as a release gate
+until the owner decides the catalogue is the priority over Job Engine quality.
 
 **Acceptance.** §M P4.
 
 **Risks.** Volume. The mitigation is engine reuse — 28 of the 43 are
 re-parameterizations of `finance/loan`, `finance/interest`, `finance/credit-card`
 or `tax/annual`, all shipped and tested. The 15 that need new rule data are the
-schedule risk, which is why their datasets land on day 5.
+schedule risk.
 
-**Rollback.** Per tool: remove its registry entry. The route 404s; nothing else
-breaks. The registry is the single switch.
+**Rollback.** Per tool: remove its registry fragment. The route 404s; nothing else
+breaks.
 
 ---
 
 ### P5 — Shared depth primitives
+
+**Runs before P4.** Sequence step 3. P4's phase number is historical; this card
+is the dependency.
 
 **Goal.** The §4 standard is a contract, not 101 hand-rolled variants.
 
@@ -1559,13 +1648,15 @@ rejects unknown and extra fields, as the existing ones do.
 
 **Goal.** The architecture is complete and a 60-page Spanish slice is real.
 
-**Files.** `lib/i18n/*` · `app/layout.tsx` · `app/es/**` · `lib/seo.ts` ·
-`lib/seo/sitemaps.ts` · `components/site/SiteHeader.tsx` ·
-`lib/tool-registry.ts` (adds `slugEs?`).
+**Files.** `lib/i18n/*` · `app/(en)/layout.tsx` · `app/(es)/es/layout.tsx` ·
+`app/(es)/es/**` · `lib/seo.ts` · `lib/seo/sitemaps.ts` ·
+`components/site/SiteHeader.tsx` · registry `slugEs?`.
 
-**Work.** §G in full. Order: locale types → route map with bijection assert →
-`alternates.ts` → `<html lang>` → sitemap families → header switcher → the
-60-page slice.
+**Work.** §G in full. Order: **dual-root-layout PoC that proves `<html lang>`**
+→ locale types → route map with bijection assert → `alternates.ts` → sitemap
+families → header switcher (non-sensitive query; sensitive inputs in
+sessionStorage or reset) → the 60-page slice. Do not write Spanish copy until
+the PoC is green.
 
 **Data dependencies.** None. Number and currency formatting uses `Intl` with
 `es-US`.
@@ -1592,17 +1683,25 @@ checker that is never accusatory.
 
 **Files.** §D.11 in full.
 
-**Work.** Order: types → labor → materials → equipment → permits → modifiers →
-estimate → confidence → calibration seam → recipes → routes → quote check → UI.
+**Work.** Order: **types with `SourcedValue` and `profitMarkupRate`** → labor
+(OEWS hourly × ECEC modelled burden, not a local loaded wage; burden ≠
+overhead) → materials (national + PPI; **no RPP multiplier**) → equipment
+(FEMA as cost proxy) → permits → modifiers → estimate (critical unpriced →
+incomplete) → confidence (coverage, not priced-dollar %) → calibration seam →
+recipes → routes → quote check (estimated-range copy; incomplete → outside
+what we can assess) → UI.
 
-**Data dependencies.** OEWS (shipped) · ECEC, PPI, FEMA (P7-data, day 6) ·
-material basket v0 (day 6) · `zcta-county` (shipped) · BEA RPP (shipped). All
-job data goes to tier 2, which is why P1c is a hard dependency.
+**Data dependencies.** OEWS (shipped) · ECEC, PPI, FEMA · material basket v0 ·
+geography: prefer HUD USPS ZIP crosswalk; otherwise shipped `zcta-county`
+labelled as approximate ZIP/ZCTA. BEA RPP is **context/confidence only** in
+V1. All job data goes to tier 2, which is why P1c is a hard dependency.
 
-**Tests.** Recipe validation (every number cited) · breakdown sums to expected
-within $1 · every modifier is a named step · unnamed adjustments are impossible ·
-confidence is derived · the six fixed verdicts · the forbidden-vocabulary
-assertion · one golden estimate per recipe pinned against a hand-computed value.
+**Tests.** Recipe validation (every `SourcedValue.sourceId` resolves) ·
+breakdown sums to expected within $1 · every modifier is a named step · unnamed
+adjustments are impossible · critical missing material blocks a complete range
+· confidence cannot go high when a required/critical line is unpriced · the
+six fixed verdicts · the forbidden-vocabulary assertion · one golden estimate
+per recipe pinned against a hand-computed value.
 
 **Acceptance.** §M P7.
 
@@ -1623,18 +1722,20 @@ withdraws it from the sitemap and marks it `noindex` in one edit.
 **Goal.** A guide family with a gate, and 30 EN + 10 ES guides that each bind to
 a calculator and a dataset.
 
-**Files.** `lib/content/*` · `app/guides/**` · `app/es/guias/**` ·
+**Files.** `lib/content/*` · `app/guides/**` · `app/(es)/es/guias/**` ·
 `lib/seo/sitemaps.ts` · `data/guides/`.
 
 **Work.** §H. The pipeline is code where it can be (duplication check,
-similarity check, citation resolution, quality score) and review where it must
-be (editorial pass, financial fact check).
+similarity *score*, citation schema/path, quality score) and review where it must
+be (editorial pass, financial fact check, flagged-similarity decisions). Live
+URL fetch is scheduled, not part of deploy CI.
 
 **Data dependencies.** Whatever each guide cites; no new dataset.
 
-**Tests.** Every guide binds ≥1 tool and ≥1 dataset · every citation URL resolves ·
-similarity < 0.85 against the corpus · quality score ≥75 · `FAQPage` markup only
-where the questions are visible text.
+**Tests.** Every guide binds ≥1 tool and ≥1 dataset · citation schema/path/date
+are valid in normal CI · **live URL fetch is scheduled, not a deploy gate** ·
+similarity score recorded; flagged docs require review (**no hard <0.85**) ·
+quality score ≥75 · `FAQPage` markup only where the questions are visible text.
 
 **Acceptance.** §M P8.
 
@@ -1646,21 +1747,22 @@ rather than a drift.
 
 ---
 
-### P9 — Launch
+### P9 — Go / no-go
 
-**Goal.** Ship it.
+**Goal.** Confirm the public site is safe to keep live and that expansion
+gates have data. **Do not wait until this card to connect Search Console.**
+That happens in sequence step 1, the day the custom domain is live.
 
 **Files.** `.env` production values · `app/robots.ts` · analytics provider wiring ·
 `docs/ROADMAP.md` update.
 
-**Work.** §N end to end. Enable analytics with the privacy date, contact email
-and policy version that `lib/integration-config.ts` requires. Verify Search
-Console and Bing. Run Lighthouse CI and Unlighthouse. Full smoke pass. Go/no-go
-against §M.
+**Work.** Remaining §N boxes. Lighthouse CI and Unlighthouse. Full smoke pass.
+Record GSC indexed ratio, impressions, and canonical health as the input to
+salary-leaf and guide expansion.
 
-**Acceptance.** Every §N box checked, with evidence recorded in the launch issue.
+**Acceptance.** Every §N box that applies to what has actually shipped.
 
-**Risks.** Search Console verification needs live DNS, which is why P1a is day 1.
+**Risks.** Treating this card as “the measurement day” repeats the v2 mistake.
 
 **Rollback.** The Worker keeps its previous version; `wrangler rollback` restores
 it. Data snapshots are immutable and versioned, so a rollback cannot lose data.

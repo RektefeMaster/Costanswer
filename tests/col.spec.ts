@@ -237,6 +237,7 @@ describe('unsupported state tax and no-car semantics', () => {
     expect(result.value.income.stateTaxStatus).toBe('supported');
     expect(result.value.income.completeness).toBe('complete');
     expect(result.value.incomplete).toBe(false);
+    expect(result.assumptions.join(' ')).toMatch(/New York City|Yonkers/i);
   });
 
   it('does not report remaining cash when housing is unmapped', () => {

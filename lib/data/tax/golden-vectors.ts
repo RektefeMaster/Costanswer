@@ -380,12 +380,14 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   // IN-111 tax tables: $50,000–$50,100 of Vermont taxable income, single, is $1,698.
   // $63,000 of wages less the $7,650 deduction and $5,300 exemption is the $50,050 midpoint.
   vector('VT', 'single', 63_000, 1_698, 'published-table', VT_SOURCE),
+  vector('VT', 'single', 63_000, 1_499.125, 'worked-from-schedule', VT_SOURCE, { dependents: 1 }),
   vector('VT', 'single', 12_950, 0, 'worked-from-schedule', VT_SOURCE),
 
   vector('RI', 'single', 41_325, 950, 'published-table', RI_SOURCE),
   // Table row $50,000–$50,050 prints $1,876, not the exact 3.75% of $50,000 ($1,875).
   // $66,025 of wages less the $10,900 deduction and $5,100 exemption is the $50,025 midpoint.
   vector('RI', 'single', 66_025, 1_876, 'published-table', RI_SOURCE),
+  vector('RI', 'single', 66_025, 1_684.6875, 'worked-from-schedule', RI_SOURCE, { dependents: 1 }),
   vector('RI', 'single', 116_000, 3_951, 'worked-from-schedule', RI_SOURCE),
   vector('RI', 'marriedFilingJointly', 100_000, 2_550, 'worked-from-schedule', RI_SOURCE),
 
@@ -397,9 +399,11 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   // Inside the low- and middle-income exemption phase-out, which the bracket
   // edges never reach: $30,000 of AGI keeps $1,000 of the $2,500.
   vector('NM', 'single', 30_000, 330.50, 'worked-from-schedule', NM_SOURCE),
+  vector('NM', 'single', 30_000, 298.50, 'worked-from-schedule', NM_SOURCE, { dependents: 1 }),
   vector('NM', 'single', 15_750, 0, 'worked-from-schedule', NM_SOURCE),
 
   vector('MI', 'single', 60_000, 2_299.25, 'worked-from-schedule', MI_SOURCE),
+  vector('MI', 'single', 60_000, 2_048.50, 'worked-from-schedule', MI_SOURCE, { dependents: 1 }),
   vector('MI', 'marriedFilingJointly', 120_000, 4_598.50, 'worked-from-schedule', MI_SOURCE),
   vector('MI', 'single', 5_900, 0, 'worked-from-schedule', MI_SOURCE),
 
@@ -492,6 +496,7 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('ME', 'single', 120_000, 6_824.47, 'worked-from-schedule', ME_SOURCE),
 
   vector('IL', 'single', 60_000, 2_825.21, 'worked-from-schedule', IL_SOURCE),
+  vector('IL', 'single', 60_000, 2_680.425, 'worked-from-schedule', IL_SOURCE, { dependents: 1 }),
   vector('IL', 'single', 120_000, 5_795.21, 'worked-from-schedule', IL_SOURCE),
   vector('IL', 'marriedFilingJointly', 150_000, 7_135.43, 'worked-from-schedule', IL_SOURCE),
 
@@ -648,6 +653,7 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
    */
   vector('CT', 'single', 15_000, 0, 'published-threshold', CT_SOURCE),
   vector('CT', 'single', 28_000, 284.75, 'worked-from-schedule', CT_SOURCE),
+  vector('CT', 'single', 28_000, 284.75, 'worked-from-schedule', CT_SOURCE, { dependents: 2 }),
   vector('CT', 'single', 105_000, 5_300, 'published-threshold', CT_SOURCE),
   vector('CT', 'single', 105_001, 5_325.06, 'published-threshold', CT_SOURCE),
   vector('CT', 'single', 110_000, 5_625, 'worked-from-schedule', CT_SOURCE),

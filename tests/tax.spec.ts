@@ -234,6 +234,8 @@ describe('state income tax', () => {
     const base = { taxYear: 2026, state: 'OH' as const, filingStatus: 'single' as const };
     expect(calculateStateIncomeTax({ ...base, taxableIncome: 70_200 }).scheduleTaxYear).toBe(2026);
     expect(calculateStateIncomeTax({ ...base, taxableIncome: 70_200 }).tax).toBeCloseTo(1_487, 2);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 28_450 }).tax).toBe(0);
+    expect(calculateStateIncomeTax({ ...base, taxableIncome: 28_451 }).tax).toBeCloseTo(332.0275, 4);
     expect(calculateStateIncomeTax({ ...base, taxableIncome: 500_000 }).tax)
       .toBeCloseTo(13_365.625, 2);
     expect(calculateStateIncomeTax({ ...base, taxableIncome: 499_999 }).tax)
@@ -250,6 +252,27 @@ describe('state income tax', () => {
     const recapture = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 150_000 });
     expect(recapture.tax).toBeCloseTo(8_291.20, 2);
 
+    // Worksheet 8: taxable income above $215,400, recapture base $567 + fraction of $2,047.
+    const secondBand = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 250_000 });
+    const secondTi = 250_000 - 8_000;
+    const secondMain = 12_141 + (secondTi - 215_400) * 0.0685;
+    const secondFraction = Math.round(((250_000 - 215_400) / 50_000) * 10_000) / 10_000;
+    expect(secondBand.tax).toBeCloseTo(secondMain + 567 + secondFraction * 2_047, 4);
+
+    const justUnderRecapture = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 107_650 });
+    const justOverRecapture = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 107_651 });
+    expect(justOverRecapture.tax).toBeGreaterThan(justUnderRecapture.tax);
+
+    const withDependent = calculateStateIncomeTax({
+      taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 100_000, dependents: 2,
+    });
+    expect(withDependent.tax).toBeLessThan(
+      calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 100_000 }).tax,
+    );
+
+    const mfs = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'marriedFilingSeparately', taxableIncome: 100_000 });
+    expect(mfs.tax).toBeCloseTo(4_860.65, 2);
+
     const top = calculateStateIncomeTax({ taxYear: 2026, state: 'NY', filingStatus: 'single', taxableIncome: 26_000_000 });
     expect(top.tax).toBeCloseTo((26_000_000 - 8_000) * 0.109, 2);
 
@@ -260,7 +283,9 @@ describe('state income tax', () => {
   it('uses Hawaii’s 2026 Act 46 standard deduction with the 2025 N-11 brackets', () => {
     expect(calculateStateIncomeTax({ taxYear: 2026, state: 'HI', filingStatus: 'single', taxableIncome: 9_144 }).tax).toBe(0);
     expect(calculateStateIncomeTax({ taxYear: 2026, state: 'HI', filingStatus: 'single', taxableIncome: 33_144 }).tax)
-      .toBeCloseTo(859, 0);
+      .toBeCloseTo(859.2, 4);
+    expect(calculateStateIncomeTax({ taxYear: 2026, state: 'HI', filingStatus: 'single', taxableIncome: 134_144 }).tax)
+      .toBe(8_391);
   });
 
   it('uses Montana’s 2026 Publication 1 ordinary-income rates', () => {
@@ -495,6 +520,20 @@ describe('state income tax', () => {
     }).tax).toBeCloseTo(435.63, 2);
 
     expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'CT', filingStatus: 'single', taxableIncome: 28_000, dependents: 2,
+    }).tax).toBeCloseTo(284.75, 2);
+
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'IL', filingStatus: 'single', taxableIncome: 60_000, dependents: 1,
+    }).tax).toBeCloseTo(2_680.425, 3);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'MI', filingStatus: 'single', taxableIncome: 60_000, dependents: 1,
+    }).tax).toBeCloseTo(2_048.50, 2);
+    expect(calculateStateIncomeTax({
+      taxYear: 2026, state: 'OH', filingStatus: 'single', taxableIncome: 40_000, dependents: 1,
+    }).tax).toBeCloseTo(583.625, 3);
+
+    expect(calculateStateIncomeTax({
       taxYear: 2026, state: 'IN', filingStatus: 'single', taxableIncome: 101_000,
     }).tax).toBeCloseTo(2_950, 2);
     expect(calculateStateIncomeTax({
@@ -538,6 +577,21 @@ describe('salary after tax', () => {
     });
     expect(none.value.stateIncomeTax).toBe((80_000 - 2_000 - 4_400) * 0.05);
     expect(one.value.stateIncomeTax).toBe((80_000 - 2_000 - 5_400) * 0.05);
+  });
+
+  it('does not multiply Connecticut Table A by dependents, and does apply Illinois and Michigan dependent exemptions', () => {
+    const ctNone = calculateSalaryAfterTax({ annualGrossSalary: 28_000, state: 'CT', filingStatus: 'single', taxYear: 2026 });
+    const ctTwo = calculateSalaryAfterTax({
+      annualGrossSalary: 28_000, state: 'CT', filingStatus: 'single', taxYear: 2026, dependents: 2,
+    });
+    expect(ctTwo.value.stateIncomeTax).toBe(ctNone.value.stateIncomeTax);
+
+    const ilNone = calculateSalaryAfterTax({ annualGrossSalary: 60_000, state: 'IL', filingStatus: 'single', taxYear: 2026 });
+    const ilOne = calculateSalaryAfterTax({
+      annualGrossSalary: 60_000, state: 'IL', filingStatus: 'single', taxYear: 2026, dependents: 1,
+    });
+    expect(ilNone.value.stateIncomeTax).toBeCloseTo(2_825.21, 2);
+    expect(ilOne.value.stateIncomeTax).toBeCloseTo(2_680.43, 2);
   });
 
   it('does not tell a Delaware reader there is no local income tax', () => {
