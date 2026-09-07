@@ -8,7 +8,13 @@
   // ]
   "name": "costanswer",
   "account_id": "d1a5f19dd2081a3862da14682c9d76e0",
-  "compatibility_date": "2026-09-07",
+  // The newest date the installed workerd supports. Set it to today and the
+  // runtime refuses to start at all — "requires compatibility date 2026-09-07,
+  // but the newest date supported by this server binary is 2026-09-04" — which
+  // takes the dev server and the whole browser suite with it. A compatibility
+  // date is meant to be one the code has actually run against, so it moves when
+  // the runtime is upgraded and not before.
+  "compatibility_date": "2026-09-04",
   "compatibility_flags": ["nodejs_compat"],
   // Must match vite.config.ts (`vinext/server/app-router-entry`).
   "main": "vinext/server/app-router-entry",
