@@ -27,12 +27,12 @@ extends it; it does not replace it.
 
 ## 0. Three corrections to the brief, up front
 
-**0.1 There are 58 calculators, not ~53.** `lib/tool-registry.ts` holds 58
-entries at the last inventory. Confirm the live count before adding tools.
-§C still lists 43 candidate ids that would land on 101 without duplicate
-intent. **101 is a catalog target, not a sacred product number.** A smaller
-set of high-value tools plus Job Cost Engine V1 outranks filling the list.
-Confirm `tools.length` at execution time.
+**0.1 There are 60 calculators, not ~53.** The last inventory in this file
+said 58; two P4 tax tools (`effective-tax-rate`, `federal-tax-bracket`) have
+landed. Confirm `tools.length` at execution time. §C still lists 43 candidate
+ids that would land on 101 without duplicate intent. **101 is a catalog target,
+not a sacred product number.** A smaller set of high-value tools plus Job Cost
+Engine V1 outranks filling the list.
 
 **0.2 The v2 ten-day day-map is archived.** It assumed P2 was the live Lane A
 work. P2 is closed. §L is now the 2026-09-07 execution sequence, not a
@@ -90,7 +90,7 @@ until traffic justifies them". Correct statement:
 | Area | State | Evidence |
 | --- | --- | --- |
 | Application shell | Solid | Vinext/Vite + React Server Components, Cloudflare Worker output, `npm run build` green |
-| Tool registry contract | Solid | 58 typed entries, indexability evidence, typed relationship edges, cluster graph |
+| Tool registry contract | Solid | 60 typed entries, indexability evidence, typed relationship edges, cluster graph |
 | Calculation engines | Solid | 44 modules under `lib/calculations/`, pure, versioned, `CalculationResult<T>` with `breakdown`/`assumptions`/`datasetSnapshotIds` |
 | Numeric quality | Solid | `finance/loan.ts` uses `log1p`/`expm1` for rate stability; OEWS packing proved lossless value-by-value |
 | Data provenance | Strong | 16 datasets under `lib/data/`, envelope with provider/period/hashes/validation, atomic promotion, quarantine on suspicious revision |
@@ -107,7 +107,7 @@ do not treat these as HEAD.
 
 | | v1 audit | 2026-09-07 inventory |
 | --- | --- | --- |
-| Registry tools | 58 | 58 — confirm `tools.length` |
+| Registry tools | 58 | **60** — confirm `tools.length` |
 | Unit tests | 496 | hundreds, green — confirm `npx vitest run` |
 | Lint | 2 errors | **0 errors** (P1 closed this) |
 | Typecheck | 538s | **~8s** (P1 closed this) |
@@ -130,8 +130,8 @@ do not treat these as HEAD.
 | **Search Console / Bing** | Not connected | Same: the day the domain is live, not P9 |
 | ~~Missing analytics events~~ | **P5 closed.** All seven added to `lib/analytics.ts` behind the strict field allowlist. `related_calculator_clicked` was deliberately not added: `related_tool_click` already carries it | — |
 | ~~Basic/Advanced / compare / reverse / confidence~~ | **P5 closed.** `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt` in `CalculatorUI.tsx`, logic in `lib/calculators/depth.ts`, 24 tests | — |
-| **GSA per diem refresh + published-vs-effective** | Policy says scheduled; not in the refresh script; no `releases.json` | P3 |
-| **Freshness enforcement + clock** | Displayed, not gated; `asOf` frozen at publish/build time so labels do not age on a long-lived deploy | P3 — user-facing labels need a **runtime clock** or a daily freshness manifest |
+| ~~GSA per diem refresh + published-vs-effective~~ | **P3 closed.** In the refresh script; `data/gsa-perdiem/releases.json` exists | — |
+| ~~Freshness enforcement + clock~~ | **P3 closed.** Runtime clock via `utcCalendarDate()`; CI `verify:freshness` | — |
 | **Custom domain** | Not deployed | **Launch blocker** (P1 deploy). D1 is not. |
 
 ### A.3 Architectural debt
@@ -156,17 +156,16 @@ Do not reopen those as current bugs. Evidence is in the P1 and P2 cards.
 2. **No money primitive / property tests.** No integer-cents type, no
    `fast-check`. Each engine defines its own valid properties — do **not**
    assert global “tax is monotonic in income” once credits exist.
-3. **`components/calculators/` is still a flat directory.** Cluster subfolders
-   before adding a large tool wave (P5/P4).
-4. **Freshness SLA and runtime clock** (P3).
+3. ~~`components/calculators/` is still a flat directory.~~ **Closed.** Cluster
+   subfolders (`money/`, `home/`, `car/`, …) shipped before the P4 wave.
+4. ~~Freshness SLA and runtime clock (P3).~~ **Closed.**
 5. **Custom-domain deploy** (P1 remaining). Launch blocker.
 6. **Analytics + Search Console + Bing** the day the domain is live, not at
    the end of the catalog.
 7. **Localization architecture** (P6) — dual root layouts for `<html lang>`.
 8. **Job Cost Engine** (P7) — the product moat; data model rules in §D.
-9. **Monolithic `lib/tool-registry.ts`.** Ten agents appending to one file will
-   conflict. Split into `lib/tools/registry/*.ts` + generated index **before**
-   a parallel P4 wave.
+9. ~~Monolithic `lib/tool-registry.ts`.~~ **Closed.** Fragments live under
+   `lib/tools/registry/` with a generated index.
 
 ### A.4 Blockers, in order
 
@@ -177,7 +176,7 @@ Do not reopen those as current bugs. Evidence is in the P1 and P2 cards.
 | B3 | Production deploy on `costanswer.com` | P1 | **open — launch blocker** |
 | B4 | Analytics, Search Console, Bing | P1 deploy day | **open — start the day B3 ships, not P9** |
 | B5 | `verify` vs CI lint mismatch | P1 | **closed** |
-| B6 | Mortgage cron weekday vs PMMS Thursday | P3 | open |
+| B6 | Mortgage cron weekday vs PMMS Thursday | P3 | **closed** |
 | B7 | 30,807 salary leaves | J.1 | Tax defect **closed**. Leaves stay staged for **new-domain crawl/indexation**, not because state tax is missing |
 | B8 | Nine-minute typecheck | P1 | **closed** |
 | B9 | D1 + monetization secrets | Monetization activation | **not a public-launch blocker** while providers stay off |
@@ -1118,11 +1117,11 @@ P2” as current work.
 | --- | --- | --- |
 | **0** | **Clean checkpoint.** Commit the dirty working tree (CT Table A, IL/MI/NM/VT/RI dependents, snapshot, tests, this rebase). Record branch, SHA, dirty files, `tools.length`, test count, `npm run verify:tax` vector count | P2 close must have a clean baseline before any new phase |
 | **1** | **Production deploy + measurement.** Custom domain, TLS, `www` redirect. The day the domain is live: analytics, **Google Search Console**, Bing Webmaster Tools. Lighthouse/smoke as available | GSC is the data source for later expansion, not a last-day checklist item. D1 + monetization secrets are an **activation** blocker, not a public-launch blocker while providers stay off |
-| **2** | **P3 Freshness SLA** including runtime clock or daily `freshness-status.json` | Next infrastructure job after a working tax engine |
+| **2** | ~~P3 Freshness SLA~~ **closed** | Runtime clock and per-cadence refresh shipped |
 | **3** | ~~P5 shared primitives~~ **closed** | Done. P4 is now unblocked |
-| **4** | **P4 tax / high-value finance tools** — W-4, refund, EITC, CTC, effective tax, quarterly, capital gains, plus adjacent high-intent finance | Unblocked by P2; high YMYL value; uses P5 |
+| **4** | **P4 tax / high-value finance tools** — two landed (`effective-tax-rate`, `federal-tax-bracket`); remaining W-4, refund, EITC, CTC, quarterly, capital gains, plus adjacent high-intent finance | Unblocked by P2 and P5 |
 | **5** | **P7 Job Cost Engine V1** | The product moat. Do not wait for 43 generic calculators. Field-level `SourcedValue`, `profitMarkupRate`, critical materials, no RPP-on-materials — §D |
-| **6** | **Remaining P4 catalogue** | Fill toward 101 only after Job V1 exists. 58 → ~67 quality tools + Job Engine can outrank 101 generic tools |
+| **6** | **Remaining P4 catalogue** | Fill toward 101 only after Job V1 exists. 60 → ~67 quality tools + Job Engine can outrank 101 generic tools |
 | **7** | **P6 Spanish slice / P8 guides** | After some GSC signal exists. Dual-root-layout PoC before P6 copy. Similarity is a review signal, not a hard 0.85 CI gate |
 | **—** | **Launch / expansion gates** | Salary leaves, more guides, `/cost/:job/:state`, catalog to 101 — all gated on GSC indexed ratio, impressions, duplication/canonical health |
 
@@ -1196,7 +1195,7 @@ calibration seam ships in V1; the evidence does not.
 - `npm run verify:tax` **must pass**. Golden-vector count is informational; record the current count in any report. Do not treat a number written here as the required total.
 - Acceptance record: `docs/P2_STATE_TAX_FINAL.md`. Remaining mixed-year rows and named local omissions are stated limitations, not open P2 work.
 
-**P3 — Freshness SLA**
+**P3 — Freshness SLA — CLOSED 2026-09-07. Do not execute.**
 - Every `scheduled` dataset has a cron whose day-of-week matches the provider's own release day (PMMS Thursday, EIA gasoline Monday, BLS mid-month).
 - `gsa-perdiem` is in `scripts/refresh-snapshots.ts`.
 - `data/gsa-perdiem/releases.json` exists and `resolveEffectivePerDiemRelease` mirrors the HUD implementation; a test proves FY2027 is *published* and *not effective* on 2026-09-30, and effective on 2026-10-01.
@@ -1436,7 +1435,7 @@ Anything else is out of scope for this card.
 
 ---
 
-### P3 — Data freshness SLA and missed-release monitoring
+### P3 — Data freshness SLA and missed-release monitoring — **CLOSED 2026-09-07**
 
 **Goal.** No dataset is silently behind, and the site never claims a figure is
 current when the provider has published a newer one.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { calculateFederalBracket } from '@/lib/calculations/tax/federal-bracket';
+import { currentBracketRate } from '@/lib/calculations/tax/brackets';
 import { calculateFederalIncomeTax } from '@/lib/calculations/tax/federal';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { FEDERAL_BRACKET_ENGINE_ID } from '@/lib/calculations/tax/version';
@@ -65,7 +66,11 @@ describe('federal tax bracket', () => {
     expect(value.taxableIncome).toBe(0);
     expect(value.federalIncomeTax).toBe(0);
     expect(value.effectiveFederalRate).toBe(0);
+    expect(value.currentBracketRate).toBeNull();
+    expect(value.roomInCurrentBracket).toBeNull();
+    expect(value.nextBracketRate).toBe(10);
     expect(value.bands.every((band) => band.incomeInBand === 0)).toBe(true);
+    expect(value.bands.every((band) => !band.isCurrent)).toBe(true);
   });
 
   it('widens the bands for a joint return', () => {
@@ -73,7 +78,9 @@ describe('federal tax bracket', () => {
     const joint = calculateFederalBracket({
       income: 200_000, filingStatus: 'marriedFilingJointly', taxYear: 2026, incomeBasis: 'taxable',
     }).value;
-    expect(joint.currentBracketRate).toBeLessThan(single.currentBracketRate);
+    expect(joint.currentBracketRate).not.toBeNull();
+    expect(single.currentBracketRate).not.toBeNull();
+    expect(joint.currentBracketRate!).toBeLessThan(single.currentBracketRate!);
     expect(joint.federalIncomeTax).toBeLessThan(single.federalIncomeTax);
   });
 
@@ -83,7 +90,10 @@ describe('federal tax bracket', () => {
       expect(value.bands.filter((band) => band.isCurrent), `${taxable}`).toHaveLength(1);
     }
     // At zero there is no band in play at all, and none is claimed.
-    expect(run(0, 'taxable').value.bands.filter((band) => band.isCurrent)).toHaveLength(0);
+    const zero = run(0, 'taxable').value;
+    expect(zero.bands.filter((band) => band.isCurrent)).toHaveLength(0);
+    expect(zero.currentBracketRate).toBeNull();
+    expect(zero.nextBracketRate).toBe(10);
   });
 
   it('never reports a band holding more income than it spans', () => {
@@ -100,6 +110,15 @@ describe('federal tax bracket', () => {
     expect(result.datasetSnapshotIds).toContain(snapshot.snapshotId);
     expect(result.assumptions.some((line) => /Social Security, Medicare and state/i.test(line))).toBe(true);
     expect(result.assumptions.some((line) => /never lowers take-home/i.test(line))).toBe(true);
+  });
+
+  it('agrees with the shared band helper on which rate is in play', () => {
+    const schedule = snapshot.federal.bracketsByFilingStatus.single;
+    for (const taxable of [0, 1, 12_400, 12_401, 83_900, 2_000_000]) {
+      const { value } = run(taxable, 'taxable');
+      const helper = currentBracketRate(taxable, schedule);
+      expect(value.currentBracketRate, `${taxable}`).toBe(helper === null ? null : helper * 100);
+    }
   });
 
   it('refuses input it cannot compute', () => {

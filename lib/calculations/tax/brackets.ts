@@ -1,6 +1,28 @@
 import type { TaxBracket } from './types';
 
 /**
+ * The rate charged on the last dollar of taxable income, or null when there
+ * is no last dollar.
+ *
+ * Inclusive “not over” brackets: income exactly at a threshold sits in the
+ * lower band. Zero taxable income is in no band — the first dollar would
+ * open the first one. Returning the first band's 10% at zero is how a
+ * calculator ends up telling someone who owes nothing that they are in the
+ * 10% bracket.
+ */
+export function currentBracketRate(taxableIncome: number, brackets: readonly TaxBracket[]): number | null {
+  if (!(taxableIncome > 0) || brackets.length === 0) return null;
+  let floor = 0;
+  for (const bracket of brackets) {
+    const ceiling = bracket.notOver;
+    if (taxableIncome > floor && (ceiling === null || taxableIncome <= ceiling)) return bracket.rate;
+    if (ceiling === null) return null;
+    floor = ceiling;
+  }
+  return null;
+}
+
+/**
  * Progressive tax on a non-negative income using inclusive “not over” brackets.
  * Intermediate results are not rounded.
  *

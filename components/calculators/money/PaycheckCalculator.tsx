@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculatePaycheck } from '@/lib/calculations/paycheck';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import { dependentsNote } from '@/lib/calculations/tax/dependents';
 import { DEFAULT_TAX_YEAR, FILING_STATUSES, FILING_STATUS_LABELS, PAY_FREQUENCIES, type PayFrequency } from '@/lib/calculations/tax';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { STATE_CODES, getStateName, type StateCode } from '@/lib/location/states';
@@ -130,7 +131,7 @@ export function PaycheckCalculator() {
               </select>
             </span>
           </Field>
-          <Field label="Dependents" htmlFor="paycheck-dependents">
+          <Field label="Dependents" htmlFor="paycheck-dependents" hint={dependentsNote(snapshot.states.find((row) => row.stateCode === stateCode)) ?? undefined}>
             <InputShell>
               <input id="paycheck-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
             </InputShell>

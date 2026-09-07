@@ -12,8 +12,8 @@ import {
   normalizeSalaryQuery,
   type SalaryHubGroup,
   type SalaryHubSort,
-} from '@/lib/salary-hub';
-import { salaryStateIndexPath } from '@/lib/salary-pages';
+} from '@/lib/salary-hub-view';
+import { SALARY_STATE_INDEX_PATH } from '@/lib/salary-routes';
 
 const SORT_OPTIONS: ReadonlyArray<{ id: SalaryHubSort; label: string }> = [
   { id: 'field', label: 'By field' },
@@ -181,7 +181,7 @@ export function SalaryDirectory({
           <p>
             The same job can leave more in a low-tax state even when the median is lower.
             {' '}
-            <Link href={salaryStateIndexPath()}>Browse salaries by state →</Link>
+            <Link href={SALARY_STATE_INDEX_PATH}>Browse salaries by state →</Link>
           </p>
         </div>
         <div className="rail-card">

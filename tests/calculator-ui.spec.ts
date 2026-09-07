@@ -297,4 +297,11 @@ describe('depth primitives are actually used', () => {
       expect(panel!.fields, `${entry} no longer needs an exemption`).toBeGreaterThan(5);
     }
   });
+
+  it('does not keep a one-off advanced disclosure beside AdvancedSection', () => {
+    const offenders = calculatorFiles(directory)
+      .filter((file) => /className="[^"]*(health-advanced|insurance-customize)/.test(readFileSync(file, 'utf8')))
+      .map((file) => path.relative(directory, file));
+    expect(offenders).toEqual([]);
+  });
 });

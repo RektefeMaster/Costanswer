@@ -32,6 +32,7 @@ export const tool: ToolDefinition = {
   relationships: [
     { toolId: 'salary-after-tax', type: 'uses-dataset' },
     { toolId: 'paycheck', type: 'sibling' },
+    { toolId: 'effective-tax-rate', type: 'sibling' },
     { toolId: 'hourly-to-salary', type: 'sibling' },
     { toolId: '401k', type: 'next-decision' },
   ],

@@ -13,9 +13,9 @@ Do not trust a historical HEAD SHA. Reconcile branch, commit, dirty files,
 | Phases 0–3 (shell, engines, first tools, SEO plumbing) | **Shipped** |
 | Platform (MASTER_PLAN P1) | CI/lint/typecheck/bundle check **shipped**. Custom domain **open — public-launch blocker**. D1/secrets are a **monetization activation** blocker, not a public-launch blocker while providers stay off |
 | State wage tax (MASTER_PLAN P2) | **Closed — do not execute.** 51/51 supported, 0 unsupported. Authority: `docs/P2_STATE_TAX_FINAL.md` |
-| Registry | **58** calculators — confirm `tools.length` |
+| Registry | **60** calculators — confirm `tools.length` |
 | Salary corpus | 761 occupations, 51 state hubs, 30,807 leaves **staged** (`occupationInState: 'staged'`). Staging reason is **crawl/indexation**, not missing state tax |
-| Next work (MASTER_PLAN §L) | **0** clean checkpoint commit → **1** production deploy + GSC + Bing + analytics **the day the domain is live** → **2** P3 freshness → **3** P5 primitives → **4** P4 tax/high-value finance → **5** P7 Job Cost V1 → **6** remaining P4 → **7** P6/P8 after GSC signal |
+| Next work (MASTER_PLAN §L) | **1** production deploy + GSC + Bing + analytics **the day the domain is live** → **2** remaining P4 tax/high-value finance → **3** P7 Job Cost V1 → **4** remaining P4 → **5** P6/P8 after GSC signal. P3 and P5 are **closed**. |
 
 P2 leftover tax work is not a new phase: wait for published 2026 annual forms on mixed-year rows, or a separately scoped city/ZIP local-tax engine. Do not invent those numbers. Do not re-open P2.
 

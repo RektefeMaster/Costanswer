@@ -18,8 +18,9 @@ import {
   occupationSingular,
 } from '@/lib/salary-content';
 import { getStateName, STATE_CODES, type StateCode } from '@/lib/location/states';
+import { SALARY_ROOT, SALARY_STATE_INDEX_PATH } from '@/lib/salary-routes';
 
-export const SALARY_ROOT = '/salary';
+export { SALARY_ROOT };
 
 /**
  * Path segments the family owns, which no occupation slug may take.
@@ -34,21 +35,14 @@ export type SalaryLevel = 'familyHub' | 'stateIndex' | 'stateHub' | 'occupation'
 /**
  * How far the family has been opened to search engines.
  *
- * The leaves are staged. Two facts decided it, and the second is the one that
- * matters: the take-home figure these pages headline omits state income tax in
- * every state whose 2026 schedule is not yet transcribed, which is most of
- * them. Publishing 30,807 pages whose central number is knowingly incomplete
- * is worse than publishing none of them, and a young domain releasing a corpus
- * that size in one go is also the profile most likely to be crawled slowly and
- * left largely unindexed.
+ * The leaves are staged. State wage tax is no longer the reason — P2 closed
+ * 51/51 — but publishing 30,807 pages on a young domain in one go is the
+ * profile most likely to be crawled slowly and left largely unindexed. The
+ * 813 pages above the leaves are open: a hub reports the distribution rather
+ * than one person's take-home.
  *
- * The 813 pages above the leaves are open, which is already a substantial
- * corpus and carries no such defect: a hub reports the distribution rather than
- * one person's take-home.
- *
- * Opening the leaves is one word, once two things are true — every state has a
- * verified schedule, and Search Console shows the levels above indexing. Then
- * in waves, measuring between them, not all at once.
+ * Opening the leaves is one word, once Search Console shows the levels above
+ * indexing. Then in waves, measuring between them, not all at once.
  */
 export const SALARY_PUBLICATION: Record<SalaryLevel, 'indexable' | 'staged'> = {
   familyHub: 'indexable',
@@ -114,7 +108,7 @@ export function salaryFamilyPath(): '/salary' {
 }
 
 export function salaryStateIndexPath(): `/${string}` {
-  return `${SALARY_ROOT}/states`;
+  return SALARY_STATE_INDEX_PATH;
 }
 
 export function salaryStatePath(state: StateCode): `/${string}` {

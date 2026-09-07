@@ -18,6 +18,7 @@ import {
 
 const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const percent = (value: number) => `${value.toFixed(value % 1 === 0 ? 0 : 2)}%`;
+const bracketLabel = (rate: number | null) => (rate === null ? 'None' : percent(rate));
 
 export function FederalTaxBracketCalculator() {
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
@@ -88,19 +89,27 @@ export function FederalTaxBracketCalculator() {
         <div className="calculation-output">
           <PrimaryResult
             label="Your federal bracket"
-            value={percent(value.currentBracketRate)}
+            value={bracketLabel(value.currentBracketRate)}
             note={value.taxableIncome === 0
-              ? 'The standard deduction covers all of it, so no federal income tax is due'
+              ? (value.incomeBasis === 'gross'
+                ? 'The standard deduction covers all of it, so no federal income tax is due'
+                : 'No taxable income, so no federal income tax is due')
               : `On ${money(value.taxableIncome)} of taxable income · ${money(value.federalIncomeTax)} of federal income tax`}
             tone="mint"
           />
           <StatGrid items={[
             {
               label: 'Room in this bracket',
-              value: value.roomInCurrentBracket === null ? 'Top bracket' : money(value.roomInCurrentBracket),
-              note: value.nextBracketRate === null
-                ? 'Nothing above this band'
-                : `Before any of it is taxed at ${percent(value.nextBracketRate)}`,
+              value: value.currentBracketRate === null
+                ? 'None'
+                : value.roomInCurrentBracket === null ? 'Top bracket' : money(value.roomInCurrentBracket),
+              note: value.currentBracketRate === null
+                ? (value.nextBracketRate === null
+                  ? 'No federal income tax is due'
+                  : `The first taxable dollar is taxed at ${percent(value.nextBracketRate)}`)
+                : value.nextBracketRate === null
+                  ? 'Nothing above this band'
+                  : `Before any of it is taxed at ${percent(value.nextBracketRate)}`,
             },
             {
               label: 'Federal income tax',
@@ -148,7 +157,7 @@ export function FederalTaxBracketCalculator() {
           />
           <CalculationReceipt
             title={`Federal tax bracket — ${money(Number(income))} ${incomeBasis === 'gross' ? 'before deductions' : 'taxable'}, ${snapshot.taxYear}`}
-            headline={{ label: 'Federal bracket', value: percent(value.currentBracketRate) }}
+            headline={{ label: 'Federal bracket', value: bracketLabel(value.currentBracketRate) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}
             calculationVersion={calculation.result.calculationVersion}

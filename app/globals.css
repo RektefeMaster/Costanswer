@@ -927,10 +927,8 @@ input, select { font-variant-numeric: tabular-nums; }
 .insurance-modes { flex-wrap: wrap; }
 .insurance-auto-toggle { display: flex; align-items: center; gap: 9px; min-height: 24px; font-size: 12px; font-weight: 780; cursor: pointer; }
 .insurance-auto-toggle input { width: 18px; height: 18px; accent-color: #207767; }
-.insurance-customize { margin: 0 30px 20px; border: 1px solid var(--line); border-radius: 10px; background: white; }
-.insurance-customize > summary, .insurance-deductibles > summary { cursor: pointer; padding: 18px 20px; font-size: 14px; font-weight: 780; }
-.insurance-customize > summary span, .insurance-deductibles > summary span { display: block; margin-top: 6px; margin-left: 15px; color: var(--muted); font-size: 11px; font-weight: 400; }
-.insurance-customize .calc-form-grid { padding: 8px 20px 22px; }
+.insurance-deductibles > summary { cursor: pointer; padding: 18px 20px; font-size: 14px; font-weight: 780; }
+.insurance-deductibles > summary span { display: block; margin-top: 6px; margin-left: 15px; color: var(--muted); font-size: 11px; font-weight: 400; }
 .insurance-field-note { align-self: center; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .insurance-source-note { display: flex; align-items: center; gap: 12px; padding: 0 30px 24px; }
 .insurance-source-dot { width: 8px; height: 8px; flex: none; background: #207767; border-radius: 50%; }
@@ -958,7 +956,6 @@ input, select { font-variant-numeric: tabular-nums; }
 .insurance-claim-results thead { background: rgba(32,119,103,.06); }
 .insurance-comparison-verdict { margin: 22px 30px; font-size: 13px; line-height: 1.6; }
 @media (max-width: 600px) {
-  .insurance-customize { margin-left: 20px; margin-right: 20px; }
   .insurance-source-note { padding-left: 20px; padding-right: 20px; flex-wrap: wrap; }
   .insurance-source-note a { margin-left: 20px; }
   .insurance-cushion, .insurance-quote-grid { grid-template-columns: 1fr; gap: 20px; padding: 24px 20px; }
@@ -972,10 +969,6 @@ input, select { font-variant-numeric: tabular-nums; }
 .health-premiums { margin: 26px 30px 0; padding: 20px 0 4px; border: 1px solid var(--line); border-radius: 10px; background: white; }
 .health-premiums h3 { margin: 0 20px; font-size: 14px; font-weight: 800; }
 .health-premiums .calc-form-grid { padding: 18px 20px 20px; }
-.health-advanced { margin: 20px 30px 0; border: 1px solid var(--line); border-radius: 10px; background: white; }
-.health-advanced > summary { cursor: pointer; padding: 18px 20px; font-size: 14px; font-weight: 780; }
-.health-advanced > summary span { display: block; margin-top: 6px; margin-left: 15px; color: var(--muted); font-size: 11px; font-weight: 400; }
-.health-advanced .calc-form-grid { padding: 8px 20px 22px; }
 /* ---- Depth primitives (P5) ---------------------------------------------- */
 /* Shares the look of the hand-rolled advanced blocks it replaced, so folding a
    tool's optional inputs away does not change how the page reads. */
@@ -1051,7 +1044,7 @@ input, select { font-variant-numeric: tabular-nums; }
 .health-metal-table > p { margin: 14px 0 0; color: var(--muted); font-size: 11px; line-height: 1.6; }
 .health-range-note { margin: 0; padding: 20px 30px; border-top: 1px solid var(--line); font-size: 12px; line-height: 1.6; }
 @media (max-width: 600px) {
-  .health-premiums, .health-advanced { margin-left: 20px; margin-right: 20px; }
+  .health-premiums { margin-left: 20px; margin-right: 20px; }
   .health-status, .health-range-note, .health-metal-table, .health-county-choice { margin-left: 20px; margin-right: 20px; }
   .health-range-note { padding-left: 0; padding-right: 0; }
   .health-metal-table { font-size: 11px; }

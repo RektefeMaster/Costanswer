@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculateEffectiveTaxRate } from '@/lib/calculations/tax/effective-rate';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import { dependentsNote } from '@/lib/calculations/tax/dependents';
 import { DEFAULT_TAX_YEAR, FILING_STATUSES, FILING_STATUS_LABELS } from '@/lib/calculations/tax';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { STATE_CODES, getStateName, type StateCode } from '@/lib/location/states';
@@ -115,7 +116,7 @@ export function EffectiveTaxRateCalculator() {
         hint="Defaults cover the common case: no dependents, the current tax year."
       >
         <div className="calc-form-grid">
-          <Field label="Dependents" htmlFor="etr-dependents">
+          <Field label="Dependents" htmlFor="etr-dependents" hint={dependentsNote(policy) ?? undefined}>
             <InputShell>
               <input id="etr-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
             </InputShell>
@@ -141,8 +142,10 @@ export function EffectiveTaxRateCalculator() {
           <StatGrid items={[
             {
               label: 'Your federal bracket',
-              value: percent(value.statutoryFederalBracket),
-              note: `${percent(value.bracketMinusEffectiveFederal)} above your federal effective rate`,
+              value: value.statutoryFederalBracket === null ? 'None' : percent(value.statutoryFederalBracket),
+              note: value.statutoryFederalBracket === null
+                ? 'No taxable income, so no federal bracket is in play'
+                : `${percent(value.bracketMinusEffectiveFederal)} above your federal effective rate`,
             },
             {
               label: 'Federal effective',

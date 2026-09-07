@@ -29,7 +29,12 @@ Required gates are source schema, units, expected geography/series, uniqueness, 
 
 ## 4. Register the tool
 
-Add one entry to `lib/tool-registry.ts` with:
+Add one file under `lib/tools/registry/` named for the tool id, exporting
+`tool`. Then run `npm run tools:index` so the generated barrel lists it.
+Do not append to `lib/tool-registry.ts` — that file re-exports the catalogue
+and is not where definitions live.
+
+The entry needs:
 
 - stable ID and human URL;
 - title, short title and honest description;
@@ -41,6 +46,12 @@ Add one entry to `lib/tool-registry.ts` with:
 Hubs, search, related links and the sitemap derive from this registry.
 
 Add one `ToolEditorial` record in `lib/tool-content/` (the category file that matches, then `index.ts` coverage). The registry assert fails if a tool has no unique guide, FAQ, glossary, tips, and caveats. Copy must be written for that tool. Search aliases and optional `metaTitle` / `metaDescription` must describe what the engine actually does — no loan-program or location bait the page cannot compute. Optional `longTail` notes belong in that record, not as generated doorway URLs.
+
+Add an explicit row in `lib/monetization/policy.ts`. A calculator with no
+entry silently inherits `DEFAULT_POLICY` (`__default__`, general/low). Tax
+and money tools belong with the other `financial` / `high` entries; health
+estimates are `restricted`. The suite fails if a shipped tool has no policy
+of its own.
 
 ## 5. Compose the page
 

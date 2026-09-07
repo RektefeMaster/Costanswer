@@ -6,6 +6,7 @@ import { normalizeEmail, normalizePhone, pepperedHash, timingSafeEqual, verifyHm
 import { assertPlainData, toCalculationFacts } from '@/lib/monetization/boundary';
 import { createMonetizationContext } from '@/lib/monetization/context';
 import { assertPoliciesAreUnique, getMonetizationPolicy, MONETIZATION_POLICIES } from '@/lib/monetization/policy';
+import { tools } from '@/lib/tool-registry';
 import { resolveFlag } from '@/lib/monetization/flags';
 import { activeConsentVersion, assertConsentVersionsAreComplete, renderConsent } from '@/lib/monetization/consent/versions';
 import { hasCoverage, requiredFieldsFor, routeLead, scoreLeadQuality } from '@/lib/monetization/leads/routing';
@@ -195,9 +196,17 @@ describe('policy defaults', () => {
 
   it('defaults an unknown page to ads only', () => {
     const policy = getMonetizationPolicy('a-page-nobody-configured');
+    expect(policy.pageId).toBe('__default__');
     expect(policy.ads.enabled).toBe(true);
     expect(policy.affiliate.enabled).toBe(false);
     expect(policy.lead.enabled).toBe(false);
+  });
+
+  it('gives every shipped calculator its own policy, not the default', () => {
+    const missing = tools
+      .map((tool) => tool.id)
+      .filter((id) => getMonetizationPolicy(id).pageId !== id);
+    expect(missing, 'A calculator with no policy entry silently inherits __default__').toEqual([]);
   });
 
   it('never enables lead generation on a financial, insurance or health page', () => {

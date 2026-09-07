@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { formatNumber } from '@/lib/calculations/contracts';
-import { salaryHubPayLabel, salaryHubPayNote, type SalaryHubGroup, type SalaryHubOccupation } from '@/lib/salary-hub';
+import { salaryHubPayLabel, salaryHubPayNote, type SalaryHubGroup, type SalaryHubOccupation } from '@/lib/salary-hub-view';
 
 export function SalaryOccupationList({
   occupations,

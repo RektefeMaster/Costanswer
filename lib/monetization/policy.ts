@@ -123,7 +123,8 @@ export const MONETIZATION_POLICIES: readonly MonetizationPolicy[] = Object.freez
   policy('auto-coverage', 'insurance', 'high', { ads: { enabled: true } }),
 
   // ---- Financial: ads only. Section 42 keeps lead generation off here. ----
-  ...(['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'mortgage-payment',
+  ...(['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'effective-tax-rate',
+    'federal-tax-bracket', 'mortgage-payment',
     'loan', 'compound-interest', 'debt-payoff', 'inflation', 'home-affordability',
     'cost-of-living', 'car-loan', 'investment', 'retirement', 'amortization', 'cd',
     'interest', 'roth-ira', '401k', 'refinance', 'mortgage-payoff', 'credit-card-payoff',

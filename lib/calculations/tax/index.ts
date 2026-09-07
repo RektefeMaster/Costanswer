@@ -1,4 +1,4 @@
-export { calculateProgressiveTax } from './brackets';
+export { calculateProgressiveTax, currentBracketRate } from './brackets';
 export { calculateFederalIncomeTax } from './federal';
 export { calculateFica } from './fica';
 export { calculateStateIncomeTax } from './state';

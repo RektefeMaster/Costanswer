@@ -442,6 +442,8 @@ describe('internal linking graph', () => {
       getRelatedTools(getTool(from)).some((candidate) => candidate.id === to);
     expect(step('hourly-to-salary', 'salary-after-tax')).toBe(true);
     expect(step('salary-after-tax', 'paycheck')).toBe(true);
+    expect(step('salary-after-tax', 'effective-tax-rate')).toBe(true);
+    expect(step('salary-after-tax', 'federal-tax-bracket')).toBe(true);
     expect(step('paycheck', '401k')).toBe(true);
     expect(step('home-affordability', 'mortgage-payment')).toBe(true);
     expect(step('mortgage-payment', 'mortgage-payoff')).toBe(true);

@@ -488,6 +488,34 @@ function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefine
   };
 }
 
+/**
+ * Whether a dependent count changes this state's answer at all.
+ *
+ * Sixteen of the forty-two wage-taxing states carry no per-dependent amount in
+ * this snapshot, so the dependents field is inert for them. That is a real gap
+ * in the data for several of those states rather than a fact about their law —
+ * California's dependent exemption credit and South Carolina's dependent
+ * exemption both exist and are simply not modelled yet. Either way the reader
+ * must not type a number into a box and watch nothing happen with no
+ * explanation, which is exactly what happened before this existed.
+ *
+ * Every channel the engine actually reads has to be checked here, or the hint
+ * will lie in the other direction: a per-dependent exemption, a stepped
+ * exemption whose count includes dependents, and an exemption credit with a
+ * per-dependent amount.
+ */
+export function stateUsesDependents(policy: StateTaxPolicy): boolean {
+  if (policy.status !== 'supported' || policy.kind === 'none') return false;
+  if ((policy.perDependentExemption ?? 0) > 0) return true;
+  if ('steppedPersonalExemption' in policy) {
+    const stepped = policy.steppedPersonalExemption;
+    if (stepped && stepped.includeDependents !== false
+      && stepped.amountStepsByFilingStatus.single.some((step) => step.amount > 0)) return true;
+  }
+  if ('exemptionCredit' in policy && policy.exemptionCredit && policy.exemptionCredit.perDependent > 0) return true;
+  return false;
+}
+
 export function calculateStateIncomeTax(input: StateTaxInput): StateIncomeTaxBreakdown {
   if (!Number.isFinite(input.taxableIncome) || input.taxableIncome < 0) {
     throw new Error('Income must be a finite amount of at least $0.');

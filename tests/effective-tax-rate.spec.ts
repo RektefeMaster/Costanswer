@@ -15,7 +15,7 @@ describe('effective tax rate', () => {
     expect(value.statutoryFederalBracket).toBe(22);
     expect(value.effectiveFederalRate).toBeCloseTo(13.17, 2);
     expect(value.bracketMinusEffectiveFederal).toBeCloseTo(22 - value.effectiveFederalRate, 2);
-    expect(value.effectiveFederalRate).toBeLessThan(value.statutoryFederalBracket);
+    expect(value.effectiveFederalRate).toBeLessThan(22);
   });
 
   it('measures the next $1,000 as bracket plus FICA in a state with no wage tax', () => {
@@ -67,6 +67,7 @@ describe('effective tax rate', () => {
     const { value } = run(0, 'CA');
     expect(value.effectiveTotalRate).toBe(0);
     expect(value.totalTax).toBe(0);
+    expect(value.statutoryFederalBracket).toBeNull();
   });
 
   it('keeps the effective rate at or below the next-dollar rate as income rises', () => {

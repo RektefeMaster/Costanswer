@@ -32,6 +32,8 @@ export const tool: ToolDefinition = {
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'paycheck', type: 'next-decision' },
+    { toolId: 'effective-tax-rate', type: 'sibling' },
+    { toolId: 'federal-tax-bracket', type: 'sibling' },
     { toolId: 'home-affordability', type: 'next-decision' },
     { toolId: 'cost-of-living', type: 'next-decision' },
   ],

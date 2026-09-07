@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 import axe from 'axe-core';
 
 const axeSource = axe.source;
@@ -28,6 +28,8 @@ const toolPaths = [
   '/money/401k',
   '/money/mortgage-payoff',
   '/money/credit-card-payoff',
+  '/money/effective-tax-rate',
+  '/money/federal-tax-bracket',
   '/home/electricity-cost',
   '/home/appliance-electricity-cost',
   '/home/concrete-calculator',
@@ -95,6 +97,27 @@ test('salary after tax and paycheck use the tax snapshot and stay estimates', as
   await expect(page.locator('.result-details')).toContainText('not employer payroll withholding');
 });
 
+test('federal bracket and effective rate calculate, and zero taxable income is not a 10% bracket', async ({ page }) => {
+  await page.goto('/money/federal-tax-bracket');
+  await expect(page.getByRole('heading', { name: 'Federal Tax Bracket Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('22%');
+  await page.locator('#bracket-income').fill('0');
+  await expect(page.locator('.primary-result strong')).toHaveText('None');
+  await expect(page.locator('.primary-result span')).toContainText('no federal income tax is due');
+  await expect(page.locator('.result-stat-grid')).toContainText('The first taxable dollar is taxed at 10%');
+  await expect(page.locator('.result-stat-grid')).not.toContainText('Top bracket');
+
+  await page.goto('/money/effective-tax-rate');
+  await expect(page.getByRole('heading', { name: 'Effective Tax Rate Calculator' })).toBeVisible();
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
+  await expect(page.locator('.primary-result strong')).toHaveText('20.82%');
+  await page.locator('#etr-gross').fill('0');
+  await expect(page.locator('.primary-result strong')).toHaveText('0.00%');
+  await expect(page.locator('.result-stat-grid')).toContainText('None');
+  await expect(page.locator('.result-stat-grid')).toContainText('No taxable income');
+});
+
 test('manual electricity input removes the EIA snapshot claim', async ({ page }) => {
   await page.goto('/home/electricity-cost');
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
@@ -107,6 +130,20 @@ test('manual electricity input removes the EIA snapshot claim', async ({ page })
   await expect(page.locator('.result-audit')).not.toContainText('eia-electricity-residential');
 });
 
+/**
+ * Open a calculator's advanced section before touching what it holds.
+ *
+ * Optional inputs now sit behind a disclosure, so a journey that fills one has
+ * to open it first — exactly as a reader would. Written as a helper because the
+ * alternative is repeating a selector at every call site and missing one.
+ */
+async function openAdvanced(page: Page, index = 0): Promise<void> {
+  const section = page.locator('.advanced-section').nth(index);
+  if (await section.count() === 0) return;
+  if (await section.evaluate((node: HTMLDetailsElement) => node.open)) return;
+  await section.locator('> summary').click();
+}
+
 test('appliance electricity uses the EIA snapshot until a manual rate replaces it', async ({ page }) => {
   await page.goto('/home/appliance-electricity-cost');
   await expect(page.getByRole('heading', { name: 'Appliance Electricity Cost Calculator' })).toBeVisible();
@@ -117,6 +154,7 @@ test('appliance electricity uses the EIA snapshot until a manual rate replaces i
   await expect(page.locator('.data-callout')).not.toContainText('Latest available official data');
   await expect(page.locator('.result-audit')).toContainText('Method appliance-energy-v1.0.0');
   await expect(page.locator('.result-audit')).toContainText('eia-electricity-residential');
+  await openAdvanced(page);
   await page.locator('#appliance-custom-rate').fill('10');
   // The air-conditioner preset counts 60% of its on-hours, because a compressor
   // cycles rather than drawing nameplate watts continuously: 1500 W x 8 h x 7 d
@@ -141,6 +179,7 @@ test('car affordability prices the whole vehicle and tracks which data it used',
 
   await page.locator('#car-take-home').fill('4000');
   await page.locator('#car-price').fill('30000');
+  await openAdvanced(page);
   await page.locator('#car-down').fill('6000');
   await page.locator('#car-rate').fill('0');
   await page.locator('#car-term').fill('60');
@@ -182,9 +221,23 @@ test('car affordability prices the whole vehicle and tracks which data it used',
   await expect(page.locator('.decision-note').first()).toContainText('planning thresholds on take-home pay');
 
   await page.getByRole('button', { name: 'Estimate from salary' }).click();
+  /*
+   * This used to assert that New York was omitted. P2 closed at 51/51, so it is
+   * computed now — and this tool never surfaced the per-state assumption lines
+   * anyway, so matching on their wording was checking the wrong page.
+   *
+   * What is worth asserting is the behaviour: a state that taxes wages leaves
+   * less take-home than one that does not, so the affordable price has to fall.
+   * That holds whatever the assumption copy says.
+   */
+  await page.locator('#car-state').selectOption('TX');
+  const noStateTaxPrice = await page.locator('.primary-result strong').textContent();
   await page.locator('#car-state').selectOption('NY');
+  const withStateTaxPrice = await page.locator('.primary-result strong').textContent();
   await expect(page.locator('.result-audit')).toContainText('us-tax-2026-v1');
-  await expect(page.locator('.result-details')).toContainText('New York wage income tax is omitted');
+  const asNumber = (text: string | null) => Number((text ?? '').replace(/[^0-9.]/g, ''));
+  expect(asNumber(withStateTaxPrice)).toBeLessThan(asNumber(noStateTaxPrice));
+  await expect(page.locator('.result-details')).toContainText('state income tax');
 });
 
 test('cost of living stays dollar-first and keeps HUD as a gross-rent benchmark', async ({ page }) => {
@@ -378,6 +431,7 @@ test('the remaining calculator classes recalculate and explain their results', a
   await page.getByRole('button', { name: '30-year fixed' }).click();
   await page.locator('#mortgage-price').fill('200000');
   await page.locator('#mortgage-down').fill('0');
+  await openAdvanced(page);
   await page.getByRole('checkbox', { name: /PMI estimate/ }).uncheck();
   await page.locator('#mortgage-rate').fill('6');
   await expect(page.locator('.primary-result strong')).toHaveText('$1,199.10');
@@ -463,7 +517,7 @@ test('loan, compound interest, and debt payoff calculators use the shared shell'
 
 test('intent search rejects unsupported pages and tracks only supported tools', async ({ page }) => {
   await page.goto('/search?q=how%20much%20paint%20do%20I%20need');
-  await expect(page.getByRole('heading', { name: 'No calculator matches that yet.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Nothing matches that yet.' })).toBeVisible();
   await expect(page.locator('.search-results > a')).toHaveCount(0);
   await expect(page.locator('.search-experience')).toHaveAttribute('data-hydrated', 'true');
   await page.locator('#site-search').fill('how much concrete do I need');
@@ -520,7 +574,18 @@ test('header navigation at 390px with the mobile menu open stays inside the view
   await expect(menu.locator('summary')).toBeVisible();
   await menu.locator('summary').click();
   await expect(menu).toHaveJSProperty('open', true);
-  await expect(menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link')).toHaveCount(10);
+  /*
+   * The set, not a count. A bare number goes stale the moment a category or a
+   * hub is added and says nothing about what went wrong; listing the
+   * destinations makes a navigation change fail loudly and read as a decision.
+   */
+  const mobileLinks = menu.getByRole('navigation', { name: 'Mobile navigation' }).getByRole('link');
+  await expect(mobileLinks).toHaveCount(11);
+  expect(await mobileLinks.evaluateAll((nodes) => nodes.map((node) => node.getAttribute('href')))).toEqual([
+    '/salary', '/search',
+    '/topics/money', '/topics/home', '/topics/car', '/topics/everyday', '/topics/food',
+    '/topics/shopping', '/topics/health', '/topics/math', '/topics/education',
+  ]);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
 });
 
@@ -610,11 +675,11 @@ test('phase 7.5 calculators calculate across each family', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'BMI Calculator' })).toBeVisible();
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await expect(page.locator('.primary-result p')).toHaveText('Estimated BMI');
-  await expect(page.locator('.primary-result strong')).toHaveText('22.86');
+  await expect(page.locator('.primary-result strong')).toHaveText('22.74');
   await expect(page.locator('.primary-result strong')).not.toHaveText(/healthy/i);
 
   await page.goto('/health/calorie');
-  await expect(page.locator('.primary-result strong')).toHaveText('2,136 kcal/day');
+  await expect(page.locator('.primary-result strong')).toHaveText('2,112 kcal/day');
 
   await page.goto('/math/scientific');
   await expect(page.locator('.primary-result strong')).toHaveText('14');
@@ -654,6 +719,7 @@ test('phase 7.5 calculators calculate across each family', async ({ page }) => {
 
   await page.goto('/money/investment');
   await page.locator('#inv-contrib').fill('0');
+  await openAdvanced(page);
   await page.locator('#inv-comp').selectOption('annually');
   await page.locator('#inv-freq').selectOption('annually');
   await expect(page.locator('.primary-result strong')).toHaveText('$19,671.51');
@@ -737,7 +803,7 @@ test('insurance budget uses the dated NAIC benchmark, switches to entered premiu
 
   // An entered premium is the household total: it is annualized, never multiplied
   // by the vehicle count, and it retires the snapshot claim in the audit line.
-  await page.locator('.insurance-customize > summary').click();
+  await openAdvanced(page);
   await page.locator('#insurance-auto-basis').selectOption('custom');
   await page.locator('#insurance-auto-premium').fill('900');
   await page.locator('#insurance-auto-premium-frequency').selectOption('six-month');
@@ -787,11 +853,17 @@ test('the subsidy calculator prices a real county and refuses to price what it c
   await expect(page.locator('.data-footnote').nth(1)).toContainText('not charged a premium');
 
   // A state that runs its own exchange is named, not shown as having no plans.
+  /*
+   * Scoped to the ZIP lookup's own status block. A bare `.health-status` also
+   * matches the result-side block, which renders at the same time — the
+   * assertion was only ever passing because one of them happened to be absent.
+   */
+  const zipStatus = page.locator('.health-status-review');
   await page.locator('#health-zip').fill('90012');
-  await expect(page.locator('.health-status')).toContainText('Priced by a state exchange');
-  await expect(page.locator('.health-status')).toContainText('California');
+  await expect(zipStatus).toContainText('Priced by a state exchange');
+  await expect(zipStatus).toContainText('California');
   await page.locator('#health-zip').fill('00000');
-  await expect(page.locator('.health-status')).toContainText('ZIP not recognised');
+  await expect(zipStatus).toContainText('ZIP not recognised');
 
   // Above the 2026 ceiling the credit is gone, and the headline stops claiming one.
   await page.locator('#health-zip').fill('77002');
@@ -803,7 +875,7 @@ test('the subsidy calculator prices a real county and refuses to price what it c
 
   // Unconfirmed eligibility must read as "not estimated", never as a zero credit.
   await page.locator('#health-magi').fill('42000');
-  await page.locator('.health-advanced > summary').click();
+  await page.locator('.advanced-section > summary').click();
   await page.locator('#health-eligibility').selectOption('unknown');
   await expect(page.locator('.health-status')).toContainText('Eligibility not confirmed');
   await expect(page.locator('.primary-result p')).toHaveText('Full monthly premium, no credit estimated');
@@ -871,7 +943,7 @@ test('the coverage calculator weighs a capped benefit against an uncapped premiu
 
   // Entered premiums replace the benchmark and retire the snapshot claim.
   await page.locator('#coverage-value').fill('6000');
-  await page.locator('.health-advanced > summary').click();
+  await page.locator('.advanced-section > summary').click();
   await page.locator('#coverage-basis').selectOption('custom');
   await page.locator('#coverage-collision-premium').fill('400');
   await page.locator('#coverage-comprehensive-premium').fill('200');

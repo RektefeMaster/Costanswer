@@ -40,12 +40,14 @@ export type FederalBracketValue = {
   grossIncome: number | null;
   standardDeduction: number;
   taxableIncome: number;
-  currentBracketRate: number;
+  /** Rate on the last taxable dollar, or null when there is no taxable income. */
+  currentBracketRate: number | null;
   bands: BracketBand[];
   federalIncomeTax: number;
   effectiveFederalRate: number;
   /** Taxable income still available before the next band starts, or null at the top. */
   roomInCurrentBracket: number | null;
+  /** Rate the next dollar would pay. The first band when not yet in one; null at the top. */
   nextBracketRate: number | null;
 };
 
@@ -83,9 +85,16 @@ export function calculateFederalBracket(rawInput: unknown): CalculationResult<Fe
 
   const schedule = snapshot.federal.bracketsByFilingStatus[input.filingStatus];
   let floor = 0;
-  let currentBracketRate = schedule[0].rate;
+  /*
+   * Stay null until a band actually holds the last dollar. Seeding this with
+   * the first band's 10% made a filer with no taxable income look like they
+   * were in that band — and, because room also stayed null, like they were in
+   * the top band. The first dollar's rate is still reported as nextBracketRate
+   * so the page can say what happens when they start to owe tax.
+   */
+  let currentRate: number | null = null;
   let roomInCurrentBracket: number | null = null;
-  let nextBracketRate: number | null = null;
+  let nextBracketRate: number | null = schedule[0]?.rate ?? null;
 
   const bands: BracketBand[] = schedule.map((bracket, index) => {
     const ceiling = bracket.notOver;
@@ -98,7 +107,7 @@ export function calculateFederalBracket(rawInput: unknown): CalculationResult<Fe
      */
     const isCurrent = taxableIncome > floor && (ceiling === null || taxableIncome <= ceiling);
     if (isCurrent) {
-      currentBracketRate = bracket.rate;
+      currentRate = bracket.rate;
       roomInCurrentBracket = ceiling === null ? null : ceiling - taxableIncome;
       nextBracketRate = schedule[index + 1]?.rate ?? null;
     }
@@ -124,7 +133,7 @@ export function calculateFederalBracket(rawInput: unknown): CalculationResult<Fe
     grossIncome: grossIncome === null ? null : round(grossIncome),
     standardDeduction: round(standardDeduction),
     taxableIncome: round(taxableIncome),
-    currentBracketRate: round(currentBracketRate * 100, 2),
+    currentBracketRate: currentRate === null ? null : round(currentRate * 100, 2),
     bands,
     federalIncomeTax: round(federal.tax),
     effectiveFederalRate: round(effectiveFederalRate * 100, 2),

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculateSalaryAfterTax } from '@/lib/calculations/salary-after-tax';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import { dependentsNote } from '@/lib/calculations/tax/dependents';
 import { DEFAULT_TAX_YEAR, FILING_STATUSES, FILING_STATUS_LABELS } from '@/lib/calculations/tax';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { STATE_CODES, getStateName, type StateCode } from '@/lib/location/states';
@@ -86,7 +87,7 @@ export function SalaryAfterTaxCalculator() {
             </select>
           </span>
         </Field>
-        <Field label="Dependents" htmlFor="salary-dependents">
+        <Field label="Dependents" htmlFor="salary-dependents" hint={dependentsNote(selectedPolicy) ?? undefined}>
           <InputShell>
             <input id="salary-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
           </InputShell>

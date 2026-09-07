@@ -3,6 +3,7 @@ import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult 
 import { getStateName, isStateCode } from '@/lib/location/states';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { estimateAnnualTaxLiability, sharedAssumptions } from './annual';
+import { currentBracketRate } from './brackets';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from './types';
 import { EFFECTIVE_TAX_RATE_ENGINE_ID } from './version';
 
@@ -31,8 +32,8 @@ export type EffectiveTaxRateValue = {
   effectiveFicaRate: number;
   effectiveStateRate: number;
   effectiveTotalRate: number;
-  /** The federal bracket the last dollar of taxable income falls in. */
-  statutoryFederalBracket: number;
+  /** The federal bracket the last dollar of taxable income falls in, or null at zero. */
+  statutoryFederalBracket: number | null;
   /**
    * Tax on the next $1,000 of gross pay, and that amount as a rate.
    *
@@ -56,12 +57,8 @@ export type EffectiveTaxRateValue = {
  * tax by income gives the effective rate, which is the thing this tool exists
  * to distinguish it from.
  */
-function statutoryBracketRate(taxYear: number, filingStatus: FilingStatus, taxableIncome: number): number {
-  const brackets = getTaxYearSnapshot(taxYear).federal.bracketsByFilingStatus[filingStatus];
-  for (const bracket of brackets) {
-    if (bracket.notOver === null || taxableIncome <= bracket.notOver) return bracket.rate;
-  }
-  return brackets[brackets.length - 1].rate;
+function statutoryBracketRate(taxYear: number, filingStatus: FilingStatus, taxableIncome: number): number | null {
+  return currentBracketRate(taxableIncome, getTaxYearSnapshot(taxYear).federal.bracketsByFilingStatus[filingStatus]);
 }
 
 /**
@@ -129,10 +126,12 @@ export function calculateEffectiveTaxRate(rawInput: unknown): CalculationResult<
     effectiveFicaRate: round(share(fica) * 100, 2),
     effectiveStateRate: round(share(liability.stateTax.tax) * 100, 2),
     effectiveTotalRate: round(liability.effectiveRate * 100, 2),
-    statutoryFederalBracket: round(statutoryFederalBracket * 100, 2),
+    statutoryFederalBracket: statutoryFederalBracket === null ? null : round(statutoryFederalBracket * 100, 2),
     nextThousandTax: round(nextThousandTax),
     nextThousandRate: round((nextThousandTax / step) * 100, 2),
-    bracketMinusEffectiveFederal: round((statutoryFederalBracket - effectiveFederalRate) * 100, 2),
+    bracketMinusEffectiveFederal: statutoryFederalBracket === null
+      ? 0
+      : round((statutoryFederalBracket - effectiveFederalRate) * 100, 2),
     stateTaxStatus: liability.stateTax.status,
   };
 
@@ -165,8 +164,10 @@ export function calculateEffectiveTaxRate(rawInput: unknown): CalculationResult<
       { label: 'Total tax', value: formatMoney(liability.totalTax), detail: `${percent(value.effectiveTotalRate)} of gross` },
       {
         label: 'Your federal bracket',
-        value: percent(value.statutoryFederalBracket),
-        detail: `The rate on your last taxable dollar. It is ${percent(value.bracketMinusEffectiveFederal)} above your federal effective rate because the standard deduction and the lower brackets come first`,
+        value: value.statutoryFederalBracket === null ? 'None' : percent(value.statutoryFederalBracket),
+        detail: value.statutoryFederalBracket === null
+          ? 'No taxable income, so no federal band is in play'
+          : `The rate on your last taxable dollar. It is ${percent(value.bracketMinusEffectiveFederal)} above your federal effective rate because the standard deduction and the lower brackets come first`,
       },
       {
         label: 'Tax on your next $1,000',

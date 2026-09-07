@@ -81,10 +81,9 @@ describe('what the salary family submits to search', () => {
   it('publishes every level that is open, and nothing from a level that is not', () => {
     /*
      * Asserts the gate, not a particular setting of it. The leaves are staged
-     * while most states still have no 2026 tax schedule — their headline
-     * take-home would omit state income tax — so a test that hard-codes them as
-     * published would have to be edited every time that decision moves, which
-     * is how a gate quietly stops being one.
+     * for crawl/indexation on a young domain, not because state tax is missing,
+     * so a test that hard-codes them as published would have to be edited every
+     * time that decision moves, which is how a gate quietly stops being one.
      */
     const entries = getSitemapFamilies().salary;
     const paths = new Set(entries.map((entry) => entry.path));

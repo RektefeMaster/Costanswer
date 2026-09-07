@@ -1,5 +1,6 @@
+import { isSalaryLevelIndexable } from '../../lib/salary-pages';
+
 const baseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
-export {};
 
 const htmlPaths = [
   '/',
@@ -28,6 +29,8 @@ const htmlPaths = [
   '/money/mortgage-payoff',
   '/money/refinance',
   '/money/bonus-tax',
+  '/money/effective-tax-rate',
+  '/money/federal-tax-bracket',
   '/everyday/per-diem',
   '/money/credit-card-payoff',
   '/home/electricity-cost',
@@ -144,14 +147,14 @@ for (const [from, to] of [
 }
 
 /*
- * Every level of the salary family is open to search. The sitemap index must
- * therefore carry more than one salary page — a single file of 31,000 URLs is
- * six megabytes the Worker would rebuild on every cache miss — and every level
- * must be indexable, including the leaves.
+ * The salary family publishes whatever SALARY_PUBLICATION currently opens.
+ * The leaves are staged, so this asserts the gate rather than a particular
+ * size: hubs stay in the sitemap and indexable; leaves stay reachable but
+ * withdrawn from search until the gate flips.
  */
 const salaryIndexXml = await (await fetchWithTimeout('/sitemap.xml')).text();
 const salaryPageCount = [...salaryIndexXml.matchAll(/\/sitemaps\/salary\/\d+\.xml/g)].length;
-if (salaryPageCount < 2) throw new Error(`The salary family should be split across sitemap files, found ${salaryPageCount}.`);
+if (salaryPageCount < 1) throw new Error(`The salary family is missing from the sitemap index, found ${salaryPageCount}.`);
 
 const salarySitemap = await (await fetchWithTimeout('/sitemaps/salary/1.xml')).text();
 if (!salarySitemap.includes('/salary/registered-nurse<') && !salarySitemap.includes('/salary/registered-nurse</loc>')) {
@@ -163,11 +166,17 @@ const allSalaryPages = await Promise.all(
   Array.from({ length: salaryPageCount }, (_unused, index) => fetchWithTimeout(`/sitemaps/salary/${index + 1}.xml`).then((response) => response.text())),
 );
 const salaryCorpus = allSalaryPages.join('');
-if (!salaryCorpus.includes('/salary/registered-nurse/texas')) {
-  throw new Error('Occupation-in-state pages are open but missing from the sitemap.');
-}
+const leafInSitemap = salaryCorpus.includes('/salary/registered-nurse/texas');
 const submitted = [...salaryCorpus.matchAll(/<loc>/g)].length;
-if (submitted < 30_000) throw new Error(`Only ${submitted} salary URLs were submitted; the whole corpus is meant to be open.`);
+const leavesOpen = isSalaryLevelIndexable('occupationInState');
+
+if (leavesOpen) {
+  if (salaryPageCount < 2) throw new Error(`The open salary family should be split across sitemap files, found ${salaryPageCount}.`);
+  if (!leafInSitemap) throw new Error('Occupation-in-state pages are open but missing from the sitemap.');
+  if (submitted < 30_000) throw new Error(`Only ${submitted} salary URLs were submitted; the whole corpus is meant to be open.`);
+} else if (leafInSitemap) {
+  throw new Error('Occupation-in-state pages are staged but still in the sitemap.');
+}
 
 const salaryHubHtml = await (await fetchWithTimeout('/salary')).text();
 if (!salaryHubHtml.includes('/salary/registered-nurse')) throw new Error('The salary hub must still link every occupation page.');
@@ -179,7 +188,11 @@ if (occupationHtml.includes('noindex')) throw new Error('Occupation pages should
 const stateHubHtml = await (await fetchWithTimeout('/salary/states/texas')).text();
 if (stateHubHtml.includes('noindex')) throw new Error('State hubs should be indexable.');
 const leafHtml = await (await fetchWithTimeout('/salary/registered-nurse/texas')).text();
-if (leafHtml.includes('noindex')) throw new Error('Occupation-in-state pages should be indexable.');
+if (leavesOpen) {
+  if (leafHtml.includes('noindex')) throw new Error('Occupation-in-state pages should be indexable.');
+} else if (!leafHtml.includes('noindex')) {
+  throw new Error('Occupation-in-state pages are staged but missing noindex.');
+}
 if (!leafHtml.includes('/salary/registered-nurse/oklahoma')) throw new Error('An occupation-in-state page must link its peer states.');
 
 for (const path of ['/salary/all-occupations', '/salary/not-a-real-job', '/salary/registered-nurse/not-a-state']) {

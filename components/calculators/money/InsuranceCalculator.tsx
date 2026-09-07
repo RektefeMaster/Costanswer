@@ -7,7 +7,7 @@ import { calculationErrorMessage } from '@/lib/calculations/error';
 import { formatMoney } from '@/lib/calculations/contracts';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { STATE_CODES, US_STATES, type StateCode } from '@/lib/location/states';
-import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
+import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 import { InsuranceDeductibleComparison } from './InsuranceDeductibleComparison';
 
 type Frequency = 'monthly' | 'six-month' | 'annual';
@@ -66,8 +66,7 @@ export function InsuranceCalculator() {
         </Field>}
       </div>
     </div>
-    <details className="insurance-customize">
-      <summary>Use your own premiums <span>Have a quote or renewal?</span></summary>
+    <AdvancedSection id="own-premiums" title="Use your own premiums" hint="Have a quote or renewal?">
       <div className="calc-form-grid">
         {housingType !== 'none' && <>
           <Field label={`${housingLabel} premium source`} htmlFor="insurance-housing-basis">
@@ -82,7 +81,7 @@ export function InsuranceCalculator() {
           {autoBasis === 'custom' && <PremiumInput id="insurance-auto-premium" label="Auto premium for all vehicles" amount={autoPremium} setAmount={setAutoPremium} frequency={autoFrequency} setFrequency={setAutoFrequency} hint="Total for all selected vehicles, not per vehicle." />}
         </>}
       </div>
-    </details>
+    </AdvancedSection>
     <div className="insurance-source-note"><span className="insurance-source-dot" aria-hidden="true" /><p>{usesBenchmark ? <><strong>NAIC · {insuranceSnapshot.observationPeriod} observations</strong><span>Historical state averages. Current quotes can differ substantially.</span></> : <><strong>Your entered premiums</strong><span>The budget uses your amounts and billing periods.</span></>}</p><a href="#sources-title">View sources ↗</a></div>
     {calculation.error && <InlineError message={calculation.error} />}
     {result && <div className="calculation-output">
