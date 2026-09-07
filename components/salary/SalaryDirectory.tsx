@@ -1,18 +1,16 @@
 'use client';
 
-import { useMemo, useState, type FormEvent } from 'react';
+import { useMemo, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { SalaryOccupationList } from '@/components/salary/SalaryCatalog';
 import { formatNumber } from '@/lib/calculations/contracts';
 import {
   compareSalaryHubOccupations,
   filterSalaryHubGroups,
   flattenSalaryHub,
   normalizeSalaryQuery,
-  salaryHubPayLabel,
-  salaryHubPayNote,
   type SalaryHubGroup,
-  type SalaryHubOccupation,
   type SalaryHubSort,
 } from '@/lib/salary-hub';
 import { salaryStateIndexPath } from '@/lib/salary-pages';
@@ -62,41 +60,22 @@ function SortControl({
   );
 }
 
-function OccupationRow({ occupation }: { occupation: SalaryHubOccupation }) {
-  return (
-    <li>
-      <Link href={occupation.path}>
-        <span className="salary-hub-job-name">{occupation.name}</span>
-        <span className="salary-hub-job-pay">{salaryHubPayLabel(occupation)}</span>
-      </Link>
-    </li>
-  );
-}
-
-function OccupationList({
-  occupations,
-  ranked,
-}: {
-  occupations: readonly SalaryHubOccupation[];
-  ranked: boolean;
-}) {
-  return (
-    <ul className={ranked ? 'salary-hub-jobs is-ranked' : 'salary-hub-jobs'}>
-      {occupations.map((occupation) => (
-        <OccupationRow occupation={occupation} key={occupation.code} />
-      ))}
-    </ul>
-  );
-}
-
+/**
+ * Search, sort, and jump controls over the server-rendered catalogue.
+ *
+ * The 761 occupation links stay server HTML so the page hydrates as a toolbar,
+ * not as a tree of every job. Filtering and ranking swap that catalogue for a
+ * smaller client list only after the reader asks.
+ */
 export function SalaryDirectory({
   groups,
-  featured,
+  children,
 }: {
   groups: SalaryHubGroup[];
-  featured: SalaryHubOccupation[];
+  children: ReactNode;
 }) {
   const router = useRouter();
+  const hydrated = useSyncExternalStore(() => () => undefined, () => true, () => false);
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<SalaryHubSort>('field');
   const needle = normalizeSalaryQuery(query);
@@ -124,13 +103,13 @@ export function SalaryDirectory({
 
   const showGrouped = sort === 'field';
   const ranking = sort === 'field' ? null : rankedHeading(sort);
-  const showFeatured = !searching && featured.length > 0;
+  const overlay = searching || ranking !== null;
   const resultLabel = searching
     ? `${formatNumber(matches.length)} match${matches.length === 1 ? '' : 'es'}`
     : `${formatNumber(matches.length)} occupations`;
 
   return (
-    <div className="tool-workspace salary-hub">
+    <div className="tool-workspace salary-hub" data-hydrated={hydrated}>
       <div className="tool-main-column">
         <div className="salary-hub-toolbar">
           <form className="answer-search salary-hub-search" role="search" onSubmit={submit}>
@@ -142,7 +121,7 @@ export function SalaryDirectory({
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Nurse, electrician, RN, software developer…"
+              placeholder="Nurse, RN, electrician…"
               autoCapitalize="none"
               autoCorrect="off"
               autoComplete="off"
@@ -166,31 +145,13 @@ export function SalaryDirectory({
           )}
         </div>
 
-        {showFeatured && (
-          <section className="salary-hub-featured" aria-labelledby="salary-featured-title">
-            <p className="eyebrow muted"><span /> Common jobs</p>
-            <h2 id="salary-featured-title">Start with a job people actually search</h2>
-            <ul className="salary-hub-featured-grid">
-              {featured.map((occupation) => (
-                <li key={occupation.code}>
-                  <Link href={occupation.path}>
-                    <strong>{occupation.name}</strong>
-                    <b>{salaryHubPayLabel(occupation)}</b>
-                    <small>{salaryHubPayNote(occupation)}</small>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
         <div id="salary-hub-results">
-          {matches.length === 0 ? (
+          {overlay && matches.length === 0 ? (
             <div className="salary-hub-empty">
               <h2>No occupation matches that.</h2>
               <p>Try a shorter title, an abbreviation like RN, or a SOC code. You can also browse by field or by state.</p>
             </div>
-          ) : showGrouped ? (
+          ) : overlay && showGrouped ? (
             visibleGroups.map((group) => (
               <section
                 className="related-section salary-hub-group"
@@ -200,16 +161,16 @@ export function SalaryDirectory({
               >
                 <p className="eyebrow muted"><span /> {`SOC ${group.majorCode} · ${formatNumber(group.members.length)}`}</p>
                 <h2 id={`group-${group.majorCode}-title`}>{group.title}</h2>
-                <OccupationList occupations={group.members} ranked={false} />
+                <SalaryOccupationList occupations={group.members} />
               </section>
             ))
           ) : ranking ? (
             <section className="related-section salary-hub-group" aria-labelledby="salary-ranked-title">
               <p className="eyebrow muted"><span /> {ranking.kicker}</p>
               <h2 id="salary-ranked-title">{ranking.title}</h2>
-              <OccupationList occupations={ranked} ranked />
+              <SalaryOccupationList occupations={ranked} ranked />
             </section>
-          ) : null}
+          ) : children}
         </div>
       </div>
 

@@ -67,11 +67,16 @@ describe('finding a job from what a reader types', () => {
     expect(filterSalaryHubGroups(hub.groups, 'n')).toHaveLength(hub.groups.length);
   });
 
-  it('narrows to nursing titles for RN without dropping the page the reader meant', () => {
+  it('narrows to RN without matching attorney or furnace', () => {
+    const lawyers = occupations.find((occupation) => occupation.code === '23-1011')!;
+    const furnace = occupations.find((occupation) => occupation.haystack.includes('furnace'));
+    expect(occupationMatchesNeedle(lawyers, normalizeSalaryQuery('RN'))).toBe(false);
+    if (furnace) expect(occupationMatchesNeedle(furnace, normalizeSalaryQuery('RN'))).toBe(false);
     const matches = flattenSalaryHub(filterSalaryHubGroups(hub.groups, 'RN'));
     expect(matches.some((occupation) => occupation.code === '29-1141')).toBe(true);
     expect(matches.length).toBeGreaterThan(0);
-    expect(matches.length).toBeLessThan(occupations.length);
+    expect(matches.length).toBeLessThan(10);
+    expect(matches.some((occupation) => occupation.code === '23-1011')).toBe(false);
   });
 
   it('ranks the highest median first when asked what pays most', () => {

@@ -156,13 +156,24 @@ const QUERY_STOPWORDS = new Set([
   'does', 'do', 'did', 'what', 'is', 'are', 'my', 'me', 'at', 'by', 'with', 'from',
 ]);
 
+function escapeSearchToken(token: string): string {
+  return token.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function haystackHasToken(haystack: string, token: string): boolean {
+  if (token.length <= 3) {
+    return new RegExp(`(^|[^a-z0-9])${escapeSearchToken(token)}([^a-z0-9]|$)`).test(haystack);
+  }
+  return haystack.includes(token);
+}
+
 export function occupationMatchesNeedle(occupation: SalaryHubOccupation, needle: string): boolean {
   if (needle.length < 2) return true;
   const compact = needle.replace(/ /g, '');
   if (compact.length >= 2 && occupation.code.replace('-', '').includes(compact)) return true;
   const tokens = needle.split(' ').filter((token) => token.length >= 2 && !QUERY_STOPWORDS.has(token));
-  if (tokens.length === 0) return occupation.haystack.includes(needle);
-  return tokens.every((token) => occupation.haystack.includes(token));
+  if (tokens.length === 0) return haystackHasToken(occupation.haystack, needle);
+  return tokens.every((token) => haystackHasToken(occupation.haystack, token));
 }
 
 export function filterSalaryHubGroups(groups: readonly SalaryHubGroup[], query: string): SalaryHubGroup[] {

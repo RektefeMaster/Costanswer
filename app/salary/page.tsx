@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { SalaryFeatured, SalaryGroupCatalog } from '@/components/salary/SalaryCatalog';
 import { SalaryDirectory } from '@/components/salary/SalaryDirectory';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
@@ -83,7 +84,10 @@ export default function SalaryHubPage() {
           </div>
         </header>
 
-        <SalaryDirectory groups={hub.groups} featured={hub.featured} />
+        <SalaryDirectory groups={hub.groups}>
+          <SalaryFeatured featured={hub.featured} />
+          <SalaryGroupCatalog groups={hub.groups} />
+        </SalaryDirectory>
       </main>
       <SiteFooter />
     </>
