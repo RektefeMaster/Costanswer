@@ -164,6 +164,11 @@ if (!salaryCorpus.includes('/salary/registered-nurse/texas')) {
 const submitted = [...salaryCorpus.matchAll(/<loc>/g)].length;
 if (submitted < 30_000) throw new Error(`Only ${submitted} salary URLs were submitted; the whole corpus is meant to be open.`);
 
+const salaryHubHtml = await (await fetchWithTimeout('/salary')).text();
+if (!salaryHubHtml.includes('/salary/registered-nurse')) throw new Error('The salary hub must still link every occupation page.');
+if (!salaryHubHtml.includes('salary-job-search')) throw new Error('The salary hub must offer occupation search.');
+if (!salaryHubHtml.includes('Chief Executive')) throw new Error('The salary hub must list occupations by the names people use.');
+
 const occupationHtml = await (await fetchWithTimeout('/salary/registered-nurse')).text();
 if (occupationHtml.includes('noindex')) throw new Error('Occupation pages should be indexable.');
 const stateHubHtml = await (await fetchWithTimeout('/salary/states/texas')).text();

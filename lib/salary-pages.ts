@@ -169,6 +169,25 @@ export type SalarySearchEntry = {
 };
 
 /**
+ * The words a reader might type for one occupation.
+ *
+ * Spoken names and aliases first, because that is what people search.
+ * The SOC code is included so a pasted classification still resolves,
+ * with the hyphen stripped for the form "291141".
+ */
+export function occupationSearchTerms(occupation: OewsOccupation): string[] {
+  const spoken = occupationSingular(occupation);
+  return [...new Set([
+    spoken.toLowerCase(),
+    occupation.displayTitle.toLowerCase(),
+    occupation.title.toLowerCase(),
+    occupation.code.toLowerCase(),
+    occupation.code.replace('-', ''),
+    ...occupationAliases(occupation).map((alias) => alias.toLowerCase()),
+  ])];
+}
+
+/**
  * A search index over the occupations, small enough to hand to the browser.
  *
  * Only the search page loads it, and only the fields a match needs: a name, a
@@ -179,21 +198,12 @@ export type SalarySearchEntry = {
  * will paste the label BLS used.
  */
 export function salarySearchIndex(): SalarySearchEntry[] {
-  return nationalSalaryOccupations().map((occupation) => {
-    const spoken = occupationSingular(occupation);
-    const terms = new Set<string>([
-      spoken.toLowerCase(),
-      occupation.displayTitle.toLowerCase(),
-      occupation.title.toLowerCase(),
-      ...occupationAliases(occupation).map((alias) => alias.toLowerCase()),
-    ]);
-    return {
-      slug: salaryOccupationPath(occupation).slice(SALARY_ROOT.length + 1),
-      name: occupationHeadingName(occupation),
-      code: occupation.code,
-      terms: [...terms],
-    };
-  });
+  return nationalSalaryOccupations().map((occupation) => ({
+    slug: salaryOccupationPath(occupation).slice(SALARY_ROOT.length + 1),
+    name: occupationHeadingName(occupation),
+    code: occupation.code,
+    terms: occupationSearchTerms(occupation),
+  }));
 }
 
 /**
