@@ -259,6 +259,42 @@ const alternativeLowIncomeScheduleSchema = z.object({
  * $500,000 — a staircase, not a taper, so the proportional phase-out shape
  * would give the wrong figure everywhere except at the step edges.
  */
+/**
+ * A per-dependent amount that steps down as income rises.
+ *
+ * Distinct from `steppedPersonalExemption`, which multiplies one staircase by
+ * filers plus dependents. Alabama and North Carolina both give the filer a
+ * flat amount and the dependents a different, income-stepped one, so the two
+ * cannot share a staircase: Alabama's personal exemption is $1,500 or $3,000
+ * regardless of income while its dependent exemption falls $1,000 → $500 →
+ * $300, and North Carolina gives no personal exemption at all.
+ *
+ * The step is read on the income the state's own worksheet reads it on, which
+ * for both of these is the income before the deductions and subtractions that
+ * follow — Alabama Form 40 line 10, North Carolina Form D-400 line 6.
+ */
+const steppedDependentExemptionSchema = z.object({
+  /**
+   * Per status, because North Carolina's staircase is twice as wide for joint
+   * filers as for single ones. Alabama's is one table for everybody and is
+   * written out four times rather than given a shape of its own; a second
+   * shape would have to be kept in step with this one forever.
+   */
+  amountStepsByFilingStatus: z.object({
+    single: exemptionStepsSchema,
+    marriedFilingJointly: exemptionStepsSchema,
+    marriedFilingSeparately: exemptionStepsSchema,
+    headOfHousehold: exemptionStepsSchema,
+  }).strict(),
+  /**
+   * What the state counts. North Carolina's table is per qualifying child with
+   * a federal child tax credit, not per dependent, so a filer with a dependent
+   * parent gets less than this model gives them. Alabama counts any dependent.
+   * Stated here so the difference is on the record rather than in a comment.
+   */
+  countedAs: z.enum(['dependent', 'qualifying-child']),
+}).strict();
+
 const steppedExemptionSchema = z.object({
   /**
    * Amount per exemption, by the income it applies at, per filing status.
@@ -427,6 +463,7 @@ const flatStateSchema = stateMetadataSchema.extend({
   standardDeductionByFilingStatus: filingStatusNumberSchema.optional(),
   /** A dependent deduction, where the state states one separately from the filer's. */
   perDependentExemption: z.number().finite().min(0).optional(),
+  steppedDependentExemption: steppedDependentExemptionSchema.optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
   federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),
@@ -441,6 +478,7 @@ const flatWithSurtaxStateSchema = stateMetadataSchema.extend({
   scheduleTaxYear: z.number().int().min(2000).max(2100),
   exemptionByFilingStatus: filingStatusNumberSchema,
   perDependentExemption: z.number().finite().min(0).optional(),
+  steppedDependentExemption: steppedDependentExemptionSchema.optional(),
   /**
    * Cap on Social Security + Medicare withheld, deducted from income.
    *
@@ -558,6 +596,7 @@ const progressiveStateSchema = stateMetadataSchema.extend({
   /** A separate schedule that replaces this one below a stated income. */
   alternativeLowIncomeSchedule: alternativeLowIncomeScheduleSchema.optional(),
   perDependentExemption: z.number().finite().min(0).optional(),
+  steppedDependentExemption: steppedDependentExemptionSchema.optional(),
   exemptionCredit: exemptionCreditSchema.optional(),
   federalDeduction: federalDeductionSchema.optional(),
   federalStandardDeductionAddBack: federalStandardDeductionAddBackSchema.optional(),

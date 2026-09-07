@@ -124,7 +124,10 @@ function computeSupportedStateTax(
     case 'flat': {
       const deduction = policy.standardDeductionByFilingStatus?.[filingStatus] ?? 0;
       const exemption = policy.exemptionByFilingStatus[filingStatus]
-        + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0);
+        + (policy.perDependentExemption ?? 0) * (input.dependents ?? 0)
+        + (policy.steppedDependentExemption
+          ? steppedDependentAmount(policy.steppedDependentExemption, startingIncome, filingStatus, input.dependents ?? 0)
+          : 0);
       taxBeforeCredits = Math.max(0, income - deduction - exemption) * policy.rate;
       break;
     }
@@ -208,7 +211,16 @@ function computeSupportedStateTax(
           income,
           filingStatus,
         );
-      const taxableIncome = Math.max(0, income - deduction - exemptions);
+      /*
+       * Added after the phase-out rather than inside it. New Mexico's per-person
+       * amount phases as one combined figure, which is why dependents sit inside
+       * `exemptions` above; Alabama's dependent chart does its own tapering by
+       * income and has no second phase-out on top of it.
+       */
+      const steppedDependents = policy.steppedDependentExemption
+        ? steppedDependentAmount(policy.steppedDependentExemption, startingIncome, filingStatus, input.dependents ?? 0)
+        : 0;
+      const taxableIncome = Math.max(0, income - deduction - exemptions - steppedDependents);
       taxBeforeCredits = calculateProgressiveTax(taxableIncome, policy.bracketsByFilingStatus[filingStatus])
         + (policy.additionalTax
           ? Math.max(0, taxableIncome - policy.additionalTax.thresholdByFilingStatus[filingStatus]) * policy.additionalTax.rate
@@ -347,6 +359,26 @@ function steppedExemptionAt(
   const amount = amountAtIncomeStep(spec.amountStepsByFilingStatus[filingStatus], income);
   const dependentCount = spec.includeDependents === false ? 0 : dependents;
   return amount * (spec.countByFilingStatus[filingStatus] + dependentCount);
+}
+
+/**
+ * The dependent allowance a stepped table gives at this income.
+ *
+ * Read on `startingIncome` rather than on income after the deductions and
+ * subtractions that follow, because that is the line both states' worksheets
+ * point at: Alabama Form 40 line 10, before the federal-tax subtraction on
+ * line 12, and North Carolina Form D-400 line 6, federal AGI. Reading it later
+ * would pick a lower row and hand the filer more than the state allows.
+ */
+function steppedDependentAmount(
+  spec: {
+    amountStepsByFilingStatus: Record<FilingStatus, ReadonlyArray<{ notOver: number | null; amount: number }>>;
+  },
+  income: number,
+  filingStatus: FilingStatus,
+  dependents: number,
+): number {
+  return amountAtIncomeStep(spec.amountStepsByFilingStatus[filingStatus], income) * dependents;
 }
 
 function boundedPercentageDeduction(
@@ -491,7 +523,7 @@ function omittedLocalTaxFor(policy: SupportedPolicy): OmittedLocalTax | undefine
 /**
  * Whether a dependent count changes this state's answer at all.
  *
- * Sixteen of the forty-two wage-taxing states carry no per-dependent amount in
+ * Fourteen of the forty-two wage-taxing states carry no per-dependent amount in
  * this snapshot, so the dependents field is inert for them. That is a real gap
  * in the data for several of those states rather than a fact about their law —
  * California's dependent exemption credit and South Carolina's dependent
@@ -513,6 +545,8 @@ export function stateUsesDependents(policy: StateTaxPolicy): boolean {
       && stepped.amountStepsByFilingStatus.single.some((step) => step.amount > 0)) return true;
   }
   if ('exemptionCredit' in policy && policy.exemptionCredit && policy.exemptionCredit.perDependent > 0) return true;
+  if ('steppedDependentExemption' in policy && policy.steppedDependentExemption
+    && policy.steppedDependentExemption.amountStepsByFilingStatus.single.some((step) => step.amount > 0)) return true;
   return false;
 }
 

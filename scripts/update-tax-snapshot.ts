@@ -138,6 +138,57 @@ function alabamaDeductionChart(spec: {
   return steps;
 }
 
+/**
+ * Alabama's dependent exemption chart, 2025 Form 40 booklet page 8.
+ *
+ * Read on Form 40 line 10 — Alabama AGI, before the federal income tax
+ * subtraction on line 12 — which is the same line its standard deduction chart
+ * is read on. One table for every filing status; Alabama does not widen it for
+ * couples the way it widens the standard deduction chart.
+ */
+const AL_DEPENDENT_STEPS: ExemptionStep[] = [
+  { notOver: 50_000, amount: 1_000 },
+  { notOver: 100_000, amount: 500 },
+  { notOver: null, amount: 300 },
+];
+
+/**
+ * North Carolina's child deduction table, 2025 Form D-401.
+ *
+ * Read on federal AGI (Form D-400 line 6). The joint staircase is twice the
+ * single one and the head-of-household staircase is one and a half times it,
+ * so all three are written out rather than derived: North Carolina prints
+ * them, and a derivation would silently drift if it ever stopped being a clean
+ * multiple.
+ */
+const NC_CHILD_SINGLE: ExemptionStep[] = [
+  { notOver: 20_000, amount: 3_000 },
+  { notOver: 30_000, amount: 2_500 },
+  { notOver: 40_000, amount: 2_000 },
+  { notOver: 50_000, amount: 1_500 },
+  { notOver: 60_000, amount: 1_000 },
+  { notOver: 70_000, amount: 500 },
+  { notOver: null, amount: 0 },
+];
+const NC_CHILD_JOINT: ExemptionStep[] = [
+  { notOver: 40_000, amount: 3_000 },
+  { notOver: 60_000, amount: 2_500 },
+  { notOver: 80_000, amount: 2_000 },
+  { notOver: 100_000, amount: 1_500 },
+  { notOver: 120_000, amount: 1_000 },
+  { notOver: 140_000, amount: 500 },
+  { notOver: null, amount: 0 },
+];
+const NC_CHILD_HEAD: ExemptionStep[] = [
+  { notOver: 30_000, amount: 3_000 },
+  { notOver: 45_000, amount: 2_500 },
+  { notOver: 60_000, amount: 2_000 },
+  { notOver: 75_000, amount: 1_500 },
+  { notOver: 90_000, amount: 1_000 },
+  { notOver: 105_000, amount: 500 },
+  { notOver: null, amount: 0 },
+];
+
 const AL_SD_JOINT = alabamaDeductionChart({
   firstBandNotOver: 25_999, stepWidth: 500, startAmount: 8_500, decrement: 175, floorAmount: 5_000,
 });
@@ -582,11 +633,21 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     rate: 0.0399,
     exemptionByFilingStatus: filingAmounts(0, 0, 0, 0),
     standardDeductionByFilingStatus: filingAmounts(12_750, 25_500, 12_750, 19_125),
+    steppedDependentExemption: {
+      amountStepsByFilingStatus: {
+        single: NC_CHILD_SINGLE,
+        marriedFilingJointly: NC_CHILD_JOINT,
+        marriedFilingSeparately: NC_CHILD_SINGLE,
+        headOfHousehold: NC_CHILD_HEAD,
+      },
+      countedAs: 'qualifying-child',
+    },
     notes: [
       'North Carolina taxes individual income at a flat 3.99% for taxable years after 2025 (NCDOR Tax Rate Schedules; Session Law 2023-134; G.S. 105-153.7).',
       'The standard deduction is the amount currently in G.S. 105-153.5: $12,750 single or married filing separately, $25,500 married filing jointly, $19,125 head of household. Those figures are the enacted 2026 amounts — Senate Bill 437 would have raised them and did not pass.',
       'Married filing separately uses $12,750 only where the spouse does not claim itemized deductions; where the spouse itemizes, North Carolina allows $0. This model uses the more common case.',
-      'The North Carolina child deduction, other subtractions and credits are not modeled. The starting point is gross wages.',
+      'The child deduction is $3,000 per qualifying child, stepping down to $0 by federal AGI on a staircase that differs by filing status (2025 Form D-401, Child Deduction Table). North Carolina allows it only for a child claimed for the federal child tax credit, so this model overstates it for a filer whose dependents are not qualifying children. That table is the 2025 one, the latest North Carolina has published, applied alongside the enacted 2026 rate.',
+      'Other North Carolina subtractions and credits are not modeled. The starting point is gross wages.',
     ],
   }],
   ['MI', {
@@ -1674,6 +1735,15 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
       },
     },
     personalExemptionByFilingStatus: filingAmounts(1_500, 3_000, 1_500, 3_000),
+    steppedDependentExemption: {
+      amountStepsByFilingStatus: {
+        single: AL_DEPENDENT_STEPS,
+        marriedFilingJointly: AL_DEPENDENT_STEPS,
+        marriedFilingSeparately: AL_DEPENDENT_STEPS,
+        headOfHousehold: AL_DEPENDENT_STEPS,
+      },
+      countedAs: 'dependent',
+    },
     federalDeduction: {
       capByFilingStatus: null,
       federalTaxBase: 'income-tax-plus-niit-minus-refundable-credits',
@@ -1686,7 +1756,7 @@ const supportedEntries: Array<[StateCode, StateTaxPolicy]> = [
     notes: [
       'Alabama taxes taxable income at 2%, 4% and 5% (Alabama Department of Revenue FAQ; 2025 Form 40 booklet tax tables). Single, head of family and married filing separately: 2% of the first $500, 4% of the next $2,500, 5% over $3,000. Married filing jointly: 2% of the first $1,000, 4% of the next $5,000, 5% over $6,000. 2026 Form 40 was not published at verification.',
       'The standard deduction is the 21-row chart on pages 8–9 of the 2025 Form 40 booklet, looked up on Alabama AGI (line 10), not a single figure and not a linear phase-out. Married filing jointly: $8,500 at or below $25,999, then $175 less in each $500 band to $5,000 at $35,500 and above. Head of family: $5,200 down $135 per $500 to $2,500. Single: $3,000 down $25 per $500 to $2,500, on the same $26,000–$35,500 income bands. Married filing separately: $4,250 at or below $12,999, then $88 less in each $250 band to $2,500 at $17,750 and above.',
-      'The personal exemption is $1,500 single or married filing separately and $3,000 married filing jointly or head of family (Form 40 lines 1–4). Dependent exemptions ($1,000 / $500 / $300 by AGI) are not modeled.',
+      'The personal exemption is $1,500 single or married filing separately and $3,000 married filing jointly or head of family (Form 40 lines 1–4). The dependent exemption is $1,000 per dependent where Alabama AGI is $50,000 or less, $500 to $100,000 and $300 above that (Form 40 booklet page 8), read on line 10 like the standard deduction chart rather than after the federal tax subtraction on line 12.',
       'Alabama subtracts federal income tax in full (Form 40 line 12 worksheet: Form 1040 line 22 plus NIIT, minus refundable credits, not below zero). For a wage-only filer with none of those extras, that is the federal income tax this engine computes.',
       'Alabama cities levy occupational taxes that are not included. No statewide rate is published, so the page names the omission without inventing its size.',
       'Alabama itemized deductions, credits and other Form 40 adjustments are not modeled. The starting point is gross wages.',

@@ -226,6 +226,16 @@ const MA_SOURCE = {
   sourceUrl: 'https://www.mass.gov/info-details/massachusetts-tax-rates',
   verifiedAt: '2026-09-03T00:00:00.000Z',
 };
+const AL_DEPENDENT_SOURCE = {
+  sourceName: '2025 Form 40 booklet, page 8 dependent exemption chart, with the tax tables on pages 25–33',
+  sourceUrl: 'https://www.revenue.alabama.gov/wp-content/uploads/2026/01/25f40bk.pdf',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
+const NC_CHILD_SOURCE = {
+  sourceName: '2025 Form D-401 instructions, Child Deduction Table and Child Deduction Worksheet',
+  sourceUrl: 'https://www.ncdor.gov/2025-d-401-individual-income-tax-instructions/open',
+  verifiedAt: '2026-09-07T00:00:00.000Z',
+};
 const NC_SOURCE = {
   sourceName: 'NCDOR Tax Rate Schedules (3.99% after 2025) and G.S. 105-153.5',
   sourceUrl: 'https://www.ncdor.gov/taxes-forms/individual-income-tax/tax-rate-schedules',
@@ -513,6 +523,25 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('NC', 'single', 120_000, 4_279.27, 'worked-from-schedule', NC_SOURCE),
   vector('NC', 'marriedFilingJointly', 150_000, 4_967.55, 'worked-from-schedule', NC_SOURCE),
 
+  /*
+   * Three steps of the child deduction staircase and the cliff at the top of
+   * it. North Carolina prints no worked example and its tax is a flat rate, so
+   * the expected figures are arithmetic on the published table rather than
+   * numbers the state itself printed — which is what worked-from-schedule
+   * means and why these are not labelled published-table.
+   */
+  // Single, $35,000 of AGI: the $2,000 band. Two children are worth $4,000.
+  vector('NC', 'single', 35_000, 728.17, 'worked-from-schedule', NC_CHILD_SOURCE, { dependents: 2 }),
+  // Joint, $95,000: the $1,500 band, which starts $40,000 higher than single.
+  vector('NC', 'marriedFilingJointly', 95_000, 2_593.50, 'worked-from-schedule', NC_CHILD_SOURCE, { dependents: 3 }),
+  // Head of household, $70,000: the $1,500 band on its own third staircase.
+  vector('NC', 'headOfHousehold', 70_000, 1_970.06, 'worked-from-schedule', NC_CHILD_SOURCE, { dependents: 1 }),
+  /*
+   * Above $70,000 single the table pays nothing at all. This row is the one
+   * that fails if the staircase is ever given a floor it does not have.
+   */
+  vector('NC', 'single', 75_000, 2_483.78, 'worked-from-schedule', NC_CHILD_SOURCE, { dependents: 2 }),
+
   vector('MN', 'single', 15_300, 0, 'published-threshold', MN_SOURCE),
   vector('MN', 'single', 60_000, 2_556.61, 'worked-from-schedule', MN_SOURCE),
   vector('MN', 'single', 150_000, 8_941.94, 'worked-from-schedule', MN_SOURCE),
@@ -563,6 +592,25 @@ export const STATE_GOLDEN_VECTORS: readonly StateGoldenVector[] = [
   vector('AL', 'marriedFilingJointly', 30_000, 923.75, 'worked-from-schedule', AL_SOURCE, { federalIncomeTax: 0 }),
   // Separate filers use the $250-band chart, not half of the joint $500-band one.
   vector('AL', 'marriedFilingSeparately', 13_500, 360.70, 'worked-from-schedule', AL_SOURCE, { federalIncomeTax: 0 }),
+
+  /*
+   * Alabama's dependent chart, one row per step, each landing on a figure the
+   * state printed in its own tax table.
+   *
+   * Federal income tax is held at one value across the first three so that the
+   * only thing moving is the dependent allowance: each extra dependent needs
+   * exactly $1,000 more of gross wages to stay on the $23,300–$23,400 row that
+   * prints $1,088 joint. A chart read one band off would move the taxable
+   * income and miss the printed figure.
+   */
+  vector('AL', 'marriedFilingJointly', 41_000, 1_088, 'published-table', AL_DEPENDENT_SOURCE, { federalIncomeTax: 8_640, dependents: 1 }),
+  vector('AL', 'marriedFilingJointly', 42_000, 1_088, 'published-table', AL_DEPENDENT_SOURCE, { federalIncomeTax: 8_640, dependents: 2 }),
+  vector('AL', 'marriedFilingJointly', 43_000, 1_088, 'published-table', AL_DEPENDENT_SOURCE, { federalIncomeTax: 8_640, dependents: 3 }),
+  // $500 band: Alabama AGI $55,050 is over $50,000, so two dependents are worth
+  // $1,000, not $2,000. Taxable income $44,050 prints $2,163 single.
+  vector('AL', 'single', 55_050, 2_163, 'published-table', AL_DEPENDENT_SOURCE, { federalIncomeTax: 6_000, dependents: 2 }),
+  // $300 band: over $100,000 of Alabama AGI. Taxable $79,450 prints $3,933.
+  vector('AL', 'single', 102_050, 3_933, 'published-table', AL_DEPENDENT_SOURCE, { federalIncomeTax: 18_000, dependents: 2 }),
 
   /*
    * Kansas tax table: $59,951–$60,000 of Kansas taxable income is $3,259
