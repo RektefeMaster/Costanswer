@@ -13,10 +13,10 @@ import { occupationWageProfile, taxesOnWagesLabel } from '@/lib/calculations/sal
 import { getOewsEstimate } from '@/lib/data/bls-oews-snapshot';
 import { getStateName } from '@/lib/location/states';
 import {
-  isSalaryLevelIndexable,
   salaryFamilyPath,
   salaryOccupationFromSlug,
   salaryOccupationPath,
+  salaryLeafIsOpen,
   salaryOccupationInStatePath,
   salaryStatePath,
   stateFromSlug,
@@ -68,7 +68,9 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
     ? `What ${occupation.displayTitle.toLowerCase()} earn in ${stateName}, from the BLS ${profile.referenceLabel} wage survey, with pay by percentile and take-home after tax.`
     : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} in ${stateName} earns a median of ${formatMoney(median, 0)} a year${profile.takeHome ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after tax` : ''}. BLS ${profile.referenceLabel} pay by percentile, plus what it buys locally.`;
   return pageMetadata(title, description, salaryOccupationInStatePath(occupation, state), {
-    index: isSalaryLevelIndexable('occupationInState'),
+    // Per occupation, not per level: leaves open in waves, and the same
+    // predicate decides whether anything links to this page.
+    index: salaryLeafIsOpen(occupation),
     follow: true,
   });
 }

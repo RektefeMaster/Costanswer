@@ -1557,6 +1557,24 @@ input, select { font-variant-numeric: tabular-nums; }
 .info-article > ul { margin: 0 0 1.4em; padding-left: 1.2em; }
 .info-article > ul li { margin: 0 0 .55em; }
 .info-article a { color: #207767; font-weight: 750; border-bottom: 1px solid currentColor; }
+
+/*
+ * The 404 page.
+ *
+ * It reuses the info-page shell, but its lists are navigation rather than
+ * prose: two or three columns of destinations, no bullets, so a reader who
+ * landed on a dead address sees somewhere to go instead of a paragraph.
+ */
+.not-found-page .answer-search { margin: 0 0 8px; }
+.not-found-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px 26px;
+  margin: 0 0 1.4em;
+  padding: 0;
+  list-style: none;
+}
+.info-article > ul.not-found-links li { margin: 0; }
 .policy-nav {
   display: flex;
   flex-wrap: wrap;

@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "costanswer-dev",
+      "runtimeExecutable": "/Users/aydin/.nvm/versions/node/v22.23.1/bin/node",
+      "runtimeArgs": [
+        "node_modules/vinext/dist/cli.js",
+        "dev"
+      ],
+      "port": 3000
+    }
+  ]
+}

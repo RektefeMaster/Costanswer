@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { SiteAnalytics } from '@/components/analytics/SiteAnalytics';
+import { AdvertisingScript } from '@/components/monetization/AdvertisingScript';
 import { AttributionCapture } from '@/components/monetization/AttributionCapture';
 import { siteConfig } from '@/lib/site-config';
 
@@ -51,6 +53,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           nothing, and stores nothing in a cookie.
         */}
         <AttributionCapture />
+        {/*
+          Renders nothing unless a network is configured and its flag is on.
+          Placed after the content it must never delay, and consent-gated
+          inside `AdScript` rather than here.
+        */}
+        <AdvertisingScript />
+        {/* Nothing unless analytics is enabled and a measurement id is set. */}
+        <SiteAnalytics />
         {children}
       </body>
     </html>

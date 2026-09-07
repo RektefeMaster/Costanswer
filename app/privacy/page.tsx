@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { InfoPage } from '@/components/site/InfoPage';
+import { ga4MeasurementId } from '@/lib/analytics-provider';
 import { integrationConfig } from '@/lib/integration-config';
 import { resolveFlag } from '@/lib/monetization/flags';
 import { PrivacyChoices } from '@/components/monetization/PrivacyChoices';
@@ -26,6 +27,8 @@ const CONTENTS = [
   { id: 'cookies', label: 'Cookies' },
   { id: 'corrections', label: 'Corrections and requests' },
 ];
+
+const analyticsProviderName = ga4MeasurementId() ? 'Google Analytics 4' : null;
 
 export default function PrivacyPage() {
   const effectiveDate = formatPublishingDateLong(integrationConfig.privacyEffectiveDate ?? PUBLISHING_SNAPSHOT_DATE);
@@ -65,6 +68,16 @@ export default function PrivacyPage() {
       <p>{integrationConfig.analyticsEnabled
         ? 'Analytics are on. We count that a calculator was opened, that a calculation finished, or that a search ran. The amounts you type are never part of that.'
         : 'Analytics are off. Nothing about a visit is measured or sent anywhere. If that changes, this page is updated first and will say exactly what is counted. The amounts you type would stay out of it either way.'}</p>
+      {integrationConfig.analyticsEnabled && analyticsProviderName && (
+        <p>
+          The measurement runs through {analyticsProviderName}, acting for us. What it
+          receives is the page you opened, the address you arrived from, an approximate
+          location from your IP address, your device and browser, and the short list of
+          events named above. What you type into a calculator is not sent — the arithmetic
+          happens in your browser and the figures never leave it. The privacy choices below
+          also govern the advertising signals sent with that measurement.
+        </p>
+      )}
 
       <h2 id="advertising">Advertising</h2>
       <p>{integrationConfig.advertisingEnabled

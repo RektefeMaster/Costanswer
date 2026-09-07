@@ -4,6 +4,25 @@ import { siteConfig } from './site-config';
 import { categories, evaluateToolIndexability, type ToolDefinition } from './tool-registry';
 import type { ToolEditorial } from './tool-content';
 
+/**
+ * The social preview card every page carries.
+ *
+ * `images: []` is not "inherit" — it is an explicit empty list, and it
+ * overrode the root layout's card on all 913 pages below the home page. A
+ * calculator shared into a forum, a group chat or a Slack channel arrived as a
+ * bare blue link, which is the single cheapest piece of distribution a site
+ * like this has and it was being thrown away. There is one house card rather
+ * than a per-page rendering service: the page title and description are
+ * already in the unfurl beside it, so a generated image would repeat them at
+ * the cost of an image pipeline the Worker does not have.
+ */
+const SHARE_CARD_URL = '/og.png';
+const SHARE_CARD_ALT = `${siteConfig.name} — practical U.S. calculators with the math shown`;
+
+function shareCard() {
+  return [{ url: SHARE_CARD_URL, width: 1200, height: 630, alt: SHARE_CARD_ALT }];
+}
+
 export function pageMetadata(
   title: string,
   description: string,
@@ -20,13 +39,13 @@ export function pageMetadata(
       title: `${title} | ${siteConfig.name}`,
       description,
       siteName: siteConfig.name,
-      images: [],
+      images: shareCard(),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `${title} | ${siteConfig.name}`,
       description,
-      images: [],
+      images: shareCard(),
     },
     robots,
   };
@@ -46,13 +65,13 @@ export function toolMetadata(tool: ToolDefinition): Metadata {
       title: `${title} | ${siteConfig.name}`,
       description,
       siteName: siteConfig.name,
-      images: [],
+      images: shareCard(),
     },
     twitter: {
-      card: 'summary',
+      card: 'summary_large_image',
       title: `${title} | ${siteConfig.name}`,
       description,
-      images: [],
+      images: shareCard(),
     },
     category: categories[tool.category].name,
     robots: { index: indexable, follow: true },

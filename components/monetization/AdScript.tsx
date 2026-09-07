@@ -33,6 +33,12 @@ export function AdScript({
   clientId: string;
   consentRequirement: ConsentRequirement;
 }) {
+  /*
+   * Rendered from the root layout via `AdvertisingScript`, which returns
+   * nothing at all unless a network is configured and its channel flag is on.
+   * This component used to exist without a single importer, so the layer had
+   * everything except the line that put a script on a page.
+   */
   useEffect(() => {
     const marker = `data-costanswer-ad-${networkId}`;
     if (document.querySelector(`script[${marker}]`)) return;

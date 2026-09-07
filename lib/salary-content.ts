@@ -175,6 +175,35 @@ export function occupationSingular(occupation: Pick<OewsOccupation, 'code' | 'di
   return OCCUPATION_NAMING[occupation.code]?.singular ?? occupation.displayTitle;
 }
 
+/**
+ * How long the informative half of a page title may be.
+ *
+ * The layout appends " | CostAnswer" (13 characters), and a result listing cuts
+ * the whole thing near 60. 50 leaves the brand room to survive and keeps the
+ * part a reader is scanning inside the visible width.
+ */
+const TITLE_BUDGET = 50;
+
+/**
+ * The `<title>` for an occupation's salary page.
+ *
+ * "Registered Nurse Salary: How Much Do They Make?" is the phrase people
+ * search, and it fits. "Grinding, Lapping, Polishing, and Buffing Machine Tool
+ * Setters, Operators, and Tenders, Metal and Plastic Salary: How Much Do They
+ * Make?" is 136 characters in which the word a searcher typed — *salary* —
+ * arrives at character 105, past anything a listing will show.
+ *
+ * So the question is a bonus, dropped when it does not fit, and the name is
+ * never shortened to make room. Shortening it would name a narrower job than
+ * BLS surveyed, which is the rule the naming layer exists to hold; a long name
+ * that a listing truncates is still the right name.
+ */
+export function occupationTitleTag(occupation: Pick<OewsOccupation, 'code' | 'displayTitle'>): string {
+  const heading = occupationHeadingName(occupation);
+  const withQuestion = `${heading} Salary: How Much Do They Make?`;
+  return withQuestion.length <= TITLE_BUDGET ? withQuestion : `${heading} Salary`;
+}
+
 const TITLE_CASE_MINOR_WORDS = new Set(['a', 'an', 'and', 'or', 'of', 'in', 'the', 'for', 'to', 'at', 'by', 'with']);
 
 /**

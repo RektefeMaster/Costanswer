@@ -1,7 +1,8 @@
 # CostAnswer implementation roadmap
 
-Status as of 2026-09-07. Execution detail lives in `docs/MASTER_PLAN.md` **v3
-(rebased after P2 closed)**. P2 acceptance is `docs/P2_STATE_TAX_FINAL.md`.
+Status as of 2026-09-08. Execution detail lives in `docs/MASTER_PLAN.md` **v3.1
+(rebased after the pre-domain audit)**. P2 acceptance is
+`docs/P2_STATE_TAX_FINAL.md`; the audit's findings are §A.2b.
 
 Do not trust a historical HEAD SHA. Reconcile branch, commit, dirty files,
 `tools.length`, tests and `npm run verify:tax` before starting a phase.
@@ -14,8 +15,10 @@ Do not trust a historical HEAD SHA. Reconcile branch, commit, dirty files,
 | Platform (MASTER_PLAN P1) | CI/lint/typecheck **shipped**. Client bundle gate is **150 KiB gzip**. Worker `costanswer` deploys with `npm run deploy`. Custom domain `costanswer.com` **open — public-launch blocker** (name was unregistered 2026-09-07). D1/secrets are a **monetization activation** blocker, not a public-launch blocker while providers stay off |
 | State wage tax (MASTER_PLAN P2) | **Closed — do not execute.** 51/51 supported, 0 unsupported. Authority: `docs/P2_STATE_TAX_FINAL.md`. Dependents leftover (PA/CO/DC/KY) closed. Mixed-year rows are listed on every `npm run verify:tax` run |
 | Registry | **66** calculators — confirm `registryTools.length` |
-| Salary corpus | 761 occupations, 51 state hubs, 30,807 leaves **staged** (`occupationInState: 'staged'`). Staging reason is **crawl/indexation**, not missing state tax |
-| Next work (MASTER_PLAN §L) | **1** finish public launch (`costanswer.com` zone + TLS + `www` + GSC + Bing + analytics) → **4b** P1c **shipped** → **5** P7 Job Cost V1 **shipped** (9 recipes, `/cost` family; sourced basket; roof and chain-link dropped — no materials-only baseline) → **6** remaining P4 (including IRS mileage) → **7** P6/P8 after GSC → **8** local/payroll tax engine. P3 and P5 are **closed**. P4 step-4 tax tools shipped except `w4-withholding`, which waits on Pub 15-T tables. |
+| Salary corpus | 761 occupations, 51 state hubs. Leaves open in **waves** (`occupationInState: 'wave-1'`): **4,562 open** under the 90 occupations with 400,000+ national employment, **26,245 closed and unlinked**. Closed now means unlinked — that was the bug |
+| Measurement | GA4 wired behind the event allowlist. Needs `NEXT_PUBLIC_ANALYTICS_ENABLED=true` + `NEXT_PUBLIC_GA4_MEASUREMENT_ID`, then a rebuild |
+| Display advertising | Rendering path **shipped and inert**. Needs AdSense approval, then `AD_PROVIDER`, `ADSENSE_CLIENT_ID`, `ADSENSE_SLOT_*` and a rebuild. `/ads.txt` publishes itself from the client id |
+| Next work (MASTER_PLAN §L) | **1** finish public launch (`costanswer.com` zone + TLS + `www` 301 + GSC + Bing + the two analytics env vars) → **4b** P1c **shipped** → **5** P7 Job Cost V1 **shipped** (14 job pages, `/cost` family; sourced basket; roof and chain-link dropped — no materials-only baseline) → **6** remaining P4 (including IRS mileage) → **7** P6/P8 after GSC → **8** local/payroll tax engine. P3 and P5 are **closed**. P4 step-4 tax tools shipped except `w4-withholding`, which waits on Pub 15-T tables. |
 
 Nothing in §L.4 is abandoned. Medical, full ES-US, and permit calibration stay in later waves because they have a trigger (GSC + Job V1), not because they are optional. Mixed-year 2026 forms are a **re-check on each tax refresh**, not a phase. Local tax is **step 8**, its own engine, official sources only.
 
@@ -64,7 +67,10 @@ Nothing in §L.4 is abandoned. Medical, full ES-US, and permit calibration stay 
 
 ## Phase 4 — Verification and launch
 
-**Partially shipped.**
+**Partially shipped.** Pre-domain audit 2026-09-08: `npm run verify` green end
+to end. Four things that would have cost real money at launch were found and
+fixed — no ad rendering path, no analytics sink, no `/ads.txt`, and 30,807
+crawlable-but-unindexable salary leaves. See `docs/MASTER_PLAN.md` §A.2b.
 
 - Typecheck, lint, unit/integration tests and production build pass.
 - Keyboard, touch and reduced-motion behavior are supported.
@@ -85,14 +91,26 @@ Nothing in §L.4 is abandoned. Medical, full ES-US, and permit calibration stay 
 - 51 state/DC salary hubs only after each page passes the quality gate. **Shipped** — each hub carries the state's own wage distribution, its most common and best-paid occupations, and the occupations most concentrated there.
 - 2026 state wage-tax engine. **Shipped (P2 closed)** — salary-after-tax, paycheck, bonus, COL gross-salary, and occupation take-home use the same 51-jurisdiction snapshot. Local city/county tax is named, not computed.
 - Search Console import and opportunity scoring. **Open** — connect the day
-  `costanswer.com` is live. That feed gates salary-leaf waves and guide
+  `costanswer.com` is live. That feed gates salary-leaf waves 2+ and guide
   expansion, not P3/P5/P4 tax tools.
 
-Occupation × state pages are **staged** (`occupationInState: 'staged'`).
-State tax is a resolved prerequisite. They stay closed until GSC shows indexed
-ratio, impressions and canonical health on the 813 live salary URLs. Metro
-combinations remain unbuilt: the OEWS metro release is 40 MB and would not fit
-the Worker bundle the state release fits in, so it needs a storage decision first.
+Occupation × state pages open in **waves** (`occupationInState: 'wave-1'`).
+State tax was a prerequisite and is resolved. Wave 1 is the 90 occupations with
+400,000+ national employment — 4,562 pages, 68% of measured U.S. employment.
+
+The rest stay closed *and unlinked*. That second half is the fix: while they
+were merely `noindex`, every occupation page still linked about fifty of them
+and every state hub forty more, so Google crawled all 30,807 and indexed none —
+spending exactly the budget staging was meant to protect. `salaryLeafIsOpen()`
+now answers "index it?" and "link it?" with one predicate, and a test asserts
+the two agree for every occupation.
+
+Waves 2+ are one number: lower `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT` to 150,000
+(9,890 leaves) or 50,000 (17,977) once GSC shows the domain absorbed wave 1.
+
+Metro combinations remain unbuilt: the OEWS metro release is 40 MB and would
+not fit the Worker bundle the state release fits in, so it needs a storage
+decision first.
 
 ## Expansion wave 2 — Reuse-led tools
 

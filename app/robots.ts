@@ -6,10 +6,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: [{
       userAgent: '*',
       allow: '/',
-      // Operator surfaces and the endpoints behind them. A crawler finding
-      // these is a crawler probing an authenticated endpoint, and there is
-      // nothing here for a search result.
-      disallow: ['/admin/', '/api/monetization/'],
+      // Operator surfaces, and the whole JSON surface behind the calculators.
+      // A crawler reaching `/admin/` is a crawler probing an authenticated
+      // endpoint. `/api/` answers the calculators — estimate, quote, location,
+      // per diem — and none of it is a search result, so budget spent crawling
+      // it is budget not spent on the pages that are the product.
+      disallow: ['/admin/', '/api/'],
     }],
     sitemap: new URL('/sitemap.xml', siteConfig.origin).toString(),
   };

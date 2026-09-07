@@ -1,4 +1,5 @@
-import { isSalaryLevelIndexable } from '../../lib/salary-pages';
+import { isSalaryLevelIndexable, occupationsWithOpenLeaves, salaryLeafIsOpen } from '../../lib/salary-pages';
+import { getOewsOccupation } from '../../lib/data/bls-oews-snapshot';
 
 const baseUrl = process.env.E2E_BASE_URL ?? 'http://localhost:3000';
 
@@ -193,12 +194,27 @@ const leafInSitemap = salaryCorpus.includes('/salary/registered-nurse/texas');
 const submitted = [...salaryCorpus.matchAll(/<loc>/g)].length;
 const leavesOpen = isSalaryLevelIndexable('occupationInState');
 
+/*
+ * Leaves open in waves, so "is the leaf in the sitemap" is asked about a
+ * specific occupation. Registered nurses are one of the largest occupations in
+ * the country and are in every wave; a page nobody searches for is in none of
+ * them yet. The contract that matters either way is that submission and
+ * linking agree — the defect this replaced was 30,807 noindex leaves that were
+ * out of the sitemap and linked from every occupation page regardless.
+ */
+const nurse = getOewsOccupation('29-1141');
+if (!nurse) throw new Error('The OEWS release no longer carries registered nurses.');
+const nurseLeavesOpen = salaryLeafIsOpen(nurse);
+
 if (leavesOpen) {
   if (salaryPageCount < 2) throw new Error(`The open salary family should be split across sitemap files, found ${salaryPageCount}.`);
-  if (!leafInSitemap) throw new Error('Occupation-in-state pages are open but missing from the sitemap.');
   if (submitted < 30_000) throw new Error(`Only ${submitted} salary URLs were submitted; the whole corpus is meant to be open.`);
-} else if (leafInSitemap) {
-  throw new Error('Occupation-in-state pages are staged but still in the sitemap.');
+}
+if (leafInSitemap !== nurseLeavesOpen) {
+  throw new Error(`The registered-nurse leaf is ${nurseLeavesOpen ? 'open but missing from' : 'closed but present in'} the sitemap.`);
+}
+if (!leavesOpen && occupationsWithOpenLeaves().length === 0 && submitted > 900) {
+  throw new Error('No leaf wave is open, yet the salary sitemap is larger than the hubs and occupation pages.');
 }
 
 const salaryHubHtml = await (await fetchWithTimeout('/salary')).text();
@@ -211,10 +227,15 @@ if (occupationHtml.includes('noindex')) throw new Error('Occupation pages should
 const stateHubHtml = await (await fetchWithTimeout('/salary/states/texas')).text();
 if (stateHubHtml.includes('noindex')) throw new Error('State hubs should be indexable.');
 const leafHtml = await (await fetchWithTimeout('/salary/registered-nurse/texas')).text();
-if (leavesOpen) {
-  if (leafHtml.includes('noindex')) throw new Error('Occupation-in-state pages should be indexable.');
+if (nurseLeavesOpen) {
+  if (leafHtml.includes('noindex')) throw new Error('An open occupation-in-state page should be indexable.');
+  if (!occupationHtml.includes('/salary/registered-nurse/texas')) {
+    throw new Error('An open leaf must be linked from its occupation page, or it is an orphan.');
+  }
 } else if (!leafHtml.includes('noindex')) {
-  throw new Error('Occupation-in-state pages are staged but missing noindex.');
+  throw new Error('A closed occupation-in-state page is missing noindex.');
+} else if (occupationHtml.includes('/salary/registered-nurse/texas')) {
+  throw new Error('A closed leaf must not be linked, or the crawl budget the wave protects is spent on it anyway.');
 }
 if (!leafHtml.includes('/salary/registered-nurse/oklahoma')) throw new Error('An occupation-in-state page must link its peer states.');
 

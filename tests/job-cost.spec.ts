@@ -10,6 +10,7 @@ import {
   JOB_IDS,
   jobFormFields,
   jobPath,
+  jobTitleInSentence,
   jobSearchIndex,
   type JobId,
 } from '@/lib/job/catalog';
@@ -633,7 +634,8 @@ describe('Job Cost Engine V1', () => {
     }
   });
 
-  it('forbids accusatory vocabulary and “normal range” in job code', () => {
+  // I/O-bound source scan; see the note in tests/data-store.spec.ts.
+  it('forbids accusatory vocabulary and “normal range” in job code', { timeout: 30_000 }, () => {
     const files = [...walk(join(ROOT, 'lib', 'job')), ...walk(join(ROOT, 'components', 'job'))];
     const offenders: string[] = [];
     for (const file of files) {
@@ -677,5 +679,25 @@ describe('Job Cost Engine V1', () => {
     const family = costFamilySitemapPaths();
     for (const jobId of JOB_IDS) expect(family).toContain(jobPath(jobId));
     expect(family).not.toContain('/cost/roof-replacement');
+  });
+});
+
+describe('job titles inside a sentence', () => {
+  it('lowers ordinary words and leaves acronyms alone', () => {
+    // The heading on the page meant to rank for HVAC replacement cost used to
+    // read "What should hvac replacement cost?".
+    expect(jobTitleInSentence('hvac-replacement')).toBe('HVAC replacement');
+    expect(jobTitleInSentence('water-heater-replacement')).toBe('water heater');
+    expect(jobTitleInSentence('tree-removal')).toBe('tree removal');
+  });
+
+  it('never leaves a job reading as a proper noun mid-sentence', () => {
+    for (const jobId of JOB_IDS) {
+      const sentence = jobTitleInSentence(jobId);
+      for (const word of sentence.split(' ')) {
+        const isAcronym = /[A-Z].*[A-Z]/.test(word);
+        expect(isAcronym || word === word.toLowerCase(), `${jobId}: ${word}`).toBe(true);
+      }
+    }
   });
 });

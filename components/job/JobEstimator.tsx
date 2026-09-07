@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { CalculatorPanel, InlineError } from '@/components/calculators/CalculatorUI';
-import { JOB_CATALOG, jobFormFields, type JobId } from '@/lib/job/catalog';
+import { JOB_CATALOG, jobFormFields, jobTitleInSentence, type JobId } from '@/lib/job/catalog';
 import { fetchJobEstimate, fetchQuoteCheck } from '@/lib/job/client';
 import { parseScopeFields, resolveJobScope } from '@/lib/job/scope';
 import type { CalculationResult } from '@/lib/calculations/contracts';
@@ -119,7 +119,7 @@ export function JobEstimator({ jobId, mode }: { jobId: JobId; mode: 'estimate' |
 
   return (
     <CalculatorPanel
-      title={mode === 'quote' ? 'Is this quote in our estimated range?' : `What should ${job.shortTitle.toLowerCase()} cost?`}
+      title={mode === 'quote' ? 'Is this quote in our estimated range?' : `What should ${jobTitleInSentence(jobId)} cost?`}
       intro="ZIP, the quantities you can actually measure, and a few named modifiers. The range is a CostAnswer estimate, not a market quantile."
       toolId={`job-${jobId}`}
       category="home"

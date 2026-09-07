@@ -17,6 +17,7 @@ import {
   nationalSalaryOccupations,
   salaryFamilyPath,
   salaryOccupationFromSlug,
+  salaryLeafIsOpen,
   salaryOccupationInStatePath,
   salaryOccupationPath,
   statesWithWageFor,
@@ -27,6 +28,7 @@ import {
   occupationJsonLd,
   occupationPlural,
   occupationSingular,
+  occupationTitleTag,
   salaryQuestions,
 } from '@/lib/salary-content';
 import { breadcrumbJsonLd, faqPageJsonLd, pageMetadata } from '@/lib/seo';
@@ -46,9 +48,8 @@ export async function generateMetadata({ params }: { params: Promise<{ occupatio
   if (!result) return {};
   const profile = result.value;
   const median = profile.wage.annualMedian;
-  const heading = occupationHeadingName(occupation);
   const singular = occupationSingular(occupation);
-  const title = `${heading} Salary: How Much Do They Make?`;
+  const title = occupationTitleTag(occupation);
   const description = median === null
     ? `What ${occupation.displayTitle.toLowerCase()} earn across the United States, from the BLS ${profile.referenceLabel} wage survey, with pay by percentile and by state.`
     : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} earns a median of ${formatMoney(median, 0)} a year in the U.S. BLS ${profile.referenceLabel} pay by percentile, and what the job pays in all 50 states.`;
@@ -137,9 +138,14 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
                 <ul>
                   <li>
                     <strong>{getStateName(best.state)}.</strong>{' '}
-                    <Link href={salaryOccupationInStatePath(occupation, best.state)}>
-                      {`See take-home and local prices in ${getStateName(best.state)} →`}
-                    </Link>
+                    {/* Same gate as the table: an unopened leaf is described, not linked. */}
+                    {salaryLeafIsOpen(occupation)
+                      ? (
+                        <Link href={salaryOccupationInStatePath(occupation, best.state)}>
+                          {`See take-home and local prices in ${getStateName(best.state)} →`}
+                        </Link>
+                      )
+                      : `Take-home there depends on ${getStateName(best.state)} wage tax, which the salary-after-tax calculator computes on this median.`}
                   </li>
                   <li>
                     <strong>The nominal figure is not the comparison.</strong>{' '}

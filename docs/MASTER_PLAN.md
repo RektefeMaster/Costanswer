@@ -1,6 +1,6 @@
 # CostAnswer master plan
 
-Status: **v3, rebased 2026-09-07 after P2 closed** · drafted 2026-09-06
+Status: **v3.1, rebased 2026-09-08 after a full pre-domain audit** · drafted 2026-09-06
 (state tax: `docs/P2_STATE_TAX_FINAL.md`; living sequence: §L and `docs/ROADMAP.md`)
 owner: site owner · executor: coding agents
 
@@ -115,7 +115,7 @@ do not treat these as HEAD.
 | Worker JS | — | **budget: ≤ 2.8 MiB gzip** (ours, not Cloudflare's ceiling) |
 | Client route chunk | — | **budget: ≤ 150 KiB gzip** |
 | State wage tax | 14/51 | **51/51 — P2 closed** |
-| Salary leaves | 31,621 indexable in v1 code | **staged** in current code — crawl/indexation, not tax (§J.1) |
+| Salary leaves | 31,621 indexable in v1 code | **wave 1: 4,562 open, 26,245 closed and unlinked** (§J.1) |
 
 ### A.2 What is incomplete
 
@@ -126,13 +126,41 @@ do not treat these as HEAD.
 | **Content engine** | No `/guides` surface. Per-tool editorial in `lib/tool-content/` is the only long-form | P8 |
 | **Job Cost Engine** | **P7 V1 shipped.** One engine, 9 recipes, `/cost` family. Sourced basket. Roof replacement and chain-link fence were dropped — no materials-only public baseline. `/cost/:job/:state` not opened | Calibration is wave 2 |
 | **Medical Cost Engine** | Medicare *premium* calculator only | wave 2 |
-| **Analytics sink** | Local `CustomEvent` bus; `analyticsEnabled` off | Connect **as soon as the custom domain is live**, not on a final launch day |
+| ~~**Analytics sink**~~ | **Closed 2026-09-08.** GA4 forwards from the existing event allowlist (`components/analytics/`, `lib/analytics-provider.ts`). Set `NEXT_PUBLIC_ANALYTICS_ENABLED=true` and `NEXT_PUBLIC_GA4_MEASUREMENT_ID`, then rebuild — the CSP is derived from the id, so it is a rebuild, not a restart | — |
+| ~~**Display ads could not render at all**~~ | **Closed 2026-09-08.** `AdScript` had no importer anywhere and `AdSlot` emitted a bare reserved `div`, so a configured `ADSENSE_CLIENT_ID` still served zero ads and nothing in the HTML said why. `AdvertisingScript.tsx`, `AdUnit.tsx`, `lib/monetization/ads/embed.ts` and `app/ads.txt/route.ts` close it, inert until the env is set | AdSense approval |
 | **Search Console / Bing** | Not connected | Same: the day the domain is live, not P9 |
 | ~~Missing analytics events~~ | **P5 closed.** All seven added to `lib/analytics.ts` behind the strict field allowlist. `related_calculator_clicked` was deliberately not added: `related_tool_click` already carries it | — |
 | ~~Basic/Advanced / compare / reverse / confidence~~ | **P5 closed.** `AdvancedSection`, `ScenarioCompare`, `ReverseSolve`, `ConfidenceChip`, `CalculationReceipt` in `CalculatorUI.tsx`, logic in `lib/calculators/depth.ts`, 24 tests | — |
 | ~~GSA per diem refresh + published-vs-effective~~ | **P3 closed.** In the refresh script; `data/gsa-perdiem/releases.json` exists | — |
 | ~~Freshness enforcement + clock~~ | **P3 closed.** Runtime clock via `utcCalendarDate()`; CI `verify:freshness` | — |
 | **Custom domain** | Not deployed | **Launch blocker** (P1 deploy). D1 is not. |
+
+### A.2b Pre-domain audit, 2026-09-08
+
+The whole release gate was green — typecheck, lint, 875 unit tests, five data
+verifications, build, both bundle budgets, 112 route contracts, 51 Playwright
+tests. The defects this audit found were therefore not in tested code; they
+were in what nothing tested because nothing rendered it.
+
+| Found | Severity | State |
+| --- | --- | --- |
+| `AdScript.tsx` had no importer, and `AdSlot` rendered an empty `div` with no network markup. Setting `ADSENSE_CLIENT_ID` would have served zero ads with no error | **Serious** — the revenue path did not exist | Fixed |
+| Analytics had no sink. Events reached a `window` CustomEvent and stopped there, so launch day would have measured nothing | **Serious** — no measurement means no expansion gate either | Fixed (GA4) |
+| No `/ads.txt`. Exchanges treat a missing file as unauthorised inventory once one is expected | **Serious** for revenue | Fixed |
+| 30,807 `noindex` leaves linked from every occupation page and state hub | **Serious** — crawl budget spent on pages that could not be indexed | Fixed (§J.1) |
+| 913 of 914 pages had no `og:image`: `pageMetadata` passed `images: []`, which overrides rather than inherits. Every shared link unfurled bare | Moderate — free distribution thrown away | Fixed |
+| 1.1 MB of PNG category art on the home page, drawn at `opacity: .2` and never wider than 320 CSS px | Moderate — mobile LCP | Fixed (WebP, 229 KB) |
+| The 404 was the framework default: no header, no footer, no link out | Moderate — dead end for readers and crawlers | Fixed |
+| `robots.txt` allowed the whole `/api/` JSON surface | Minor | Fixed |
+| 623 of 814 salary titles over 60 characters; on 333 the word "Salary" fell past the visible width | Minor | Fixed — the question tail drops when it does not fit; no name is shortened |
+| Eleven empty `… 2` directories, iCloud conflict leftovers, untracked | Cosmetic | Deleted |
+
+**Not defects, recorded so they are not re-found.** Playwright's
+`reuseExistingServer` means a stale local dev server produces four confident
+false failures in `job-cost.spec.ts` and `tool-journeys.spec.ts`; restart the
+dev server before believing an e2e failure. `<input type="number">` renders
+`1.5` as `1,5` for a browser in a comma-decimal locale — that is the browser,
+not the site, and U.S. visitors see a period.
 
 ### A.3 Architectural debt
 
@@ -158,8 +186,9 @@ Do not reopen those as current bugs. Evidence is in the P1 and P2 cards.
    subfolders (`money/`, `home/`, `car/`, …) shipped before the P4 wave.
 4. ~~Freshness SLA and runtime clock (P3).~~ **Closed.**
 5. **Custom-domain deploy** (P1 remaining). Launch blocker.
-6. **Analytics + Search Console + Bing** the day the domain is live, not at
-   the end of the catalog.
+6. **Search Console + Bing** the day the domain is live, not at the end of the
+   catalog. Analytics is no longer debt: GA4 is wired behind the event
+   allowlist and needs two environment variables, not a phase.
 7. **Localization architecture** (P6) — dual root layouts for `<html lang>`.
 8. **Job Cost Engine** (P7) — the product moat; data model rules in §D.
 9. ~~Monolithic `lib/tool-registry.ts`.~~ **Closed.** Fragments live under
@@ -175,7 +204,7 @@ Do not reopen those as current bugs. Evidence is in the P1 and P2 cards.
 | B4 | Analytics, Search Console, Bing | P1 deploy day | **open — start the day B3 ships, not P9** |
 | B5 | `verify` vs CI lint mismatch | P1 | **closed** |
 | B6 | Mortgage cron weekday vs PMMS Thursday | P3 | **closed** |
-| B7 | 30,807 salary leaves | J.1 | Tax defect **closed**. Leaves stay staged for **new-domain crawl/indexation**, not because state tax is missing |
+| B7 | 30,807 salary leaves | J.1 | **Resolved 2026-09-08 by waves.** Wave 1 opens 4,562; the other 26,245 are `noindex` **and unlinked**. The defect was that staged leaves were still linked from every occupation page, so they were crawled and discarded |
 | B8 | Nine-minute typecheck | P1 | **closed** |
 | B9 | D1 + monetization secrets | Monetization activation | **not a public-launch blocker** while providers stay off |
 
@@ -1001,51 +1030,75 @@ Wave 2, weeks 3–5:
 
 ## J. SEO and indexation
 
-### J.1 The salary staging decision
+### J.1 The salary staging decision — **superseded 2026-09-08 by waves**
 
-`SALARY_PUBLICATION` in `lib/salary-pages.ts` currently has
-`occupationInState: 'staged'`. The site ships 813 salary URLs — family hub,
-state index, 51 state hubs, 761 occupation pages. The 30,807 occupation×state
-leaves exist as routes but are `noindex` and out of the sitemap.
+`SALARY_PUBLICATION.occupationInState` is **`wave-1`**. It was `staged`, and
+staging had a defect that made it worse than either alternative:
 
-**State-tax correctness is no longer the staging blocker.** P2 is a resolved
-prerequisite: those leaves would compute 51-jurisdiction wage tax. They stay
-staged solely because a **new domain should not expose 30,807 programmatic
-URLs before indexation behavior is measured.**
+> The 30,807 leaves were `noindex` and out of the sitemap — and every
+> occupation page linked about fifty of them, and every state hub linked forty
+> more. Googlebot followed those links. The result was 30,807 pages crawled
+> and none indexed: exactly the crawl budget staging existed to protect, spent
+> on the pages it was protecting it from.
 
-Open the leaves when Search Console shows, on the levels already live:
+Indexing a page nothing links to orphans it. Linking a page that is not
+indexed spends budget on it anyway. **They are one decision**, and
+`salaryLeafIsOpen()` is now the single predicate that answers both — read by
+the sitemap, by `SalaryTables`, and by the leaf page's own `robots`. A test
+asserts they agree for every occupation, so they cannot drift apart again.
 
-- indexed ratio worth expanding
-- impressions on hubs/occupation pages
-- duplication / canonical health (no mass soft-404 or near-duplicate clusters)
+**Wave 1** opens the leaves under occupations with national employment at or
+above `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT` (**400,000**): 90 occupations,
+**4,562 leaves**, 68% of all measured U.S. employment. Those are the queries
+with volume behind them — "registered nurse salary texas", not "geographers
+salary vermont". The other 26,245 leaves still resolve, still carry `noindex`,
+and are now **not linked from anywhere**.
 
-Then open in waves, measuring between them:
+The threshold is a round number so employment drift between annual releases
+does not shuffle URLs in and out of the sitemap, and the resulting counts are
+asserted in `tests/salary-pages.spec.ts` — lowering it arrives with its
+page-count diff attached rather than silently.
+
+Widen in waves, measuring between them:
 
 ```text
-P2 closed (resolved)
-+ Search Console: indexed ratio + impressions + canonical health on 813 URLs
+wave 1: >= 400,000 employment  →  4,562 leaves   [open]
+        ↓ Search Console: indexed ratio, impressions, canonical health
+wave 2: >= 150,000 employment  →  9,890 leaves
+wave 3: >= 50,000 employment   → 17,977 leaves
         ↓
-    10k leaves → measure → next wave → measure → 30,807
+'indexable' → all 30,807
 ```
 
-Reversing this is still one word in `SALARY_PUBLICATION`. Opening them because
-“the tax engine is done” is the wrong reason. Opening them because GSC says
-the domain can absorb them is the right one.
+Each step is one number. `'indexable'` is the last step, not the first.
+Opening a wave because the tax engine is done, or to hit a URL count, is still
+the wrong reason; opening it because GSC says the domain absorbed the last one
+is the right one.
 
 ### J.2 Launch indexation budget
 
 | Family | URLs at launch |
 | --- | --- |
-| Tools | 101 |
-| Topic hubs + site pages | ~20 |
-| Salary (leaves staged) | 813 |
-| Guides EN | 30 |
-| Job cost | 12 (`/cost`, 2 entry points, 9 job pages) |
-| ES slice | ~60 |
-| **Total** | **≈ 1,040** |
+| Tools | 66 today (101 is a catalogue target, not a ship gate) |
+| Topic hubs + site pages | 17 |
+| Salary hubs + occupation pages | 814 |
+| Salary leaves, wave 1 | 4,562 |
+| Job cost | 17 (`/cost`, 2 entry points, 14 job pages) |
+| Guides EN | 0 until P8 |
+| ES slice | 0 until P6 |
+| **Total** | **5,476** |
 
-A thousand genuinely distinct pages from a new domain is an aggressive but
-defensible opening. Thirty-two thousand is not.
+Five thousand distinct pages from a new domain is more than the ≈1,040 this
+plan first budgeted, and the change is deliberate. The earlier figure assumed
+the alternative to opening leaves was not crawling them; it was not — they
+were being crawled and discarded. Wave 1 spends the same crawl on pages that
+can rank, and 26,245 leaves stay closed *and unlinked*, which is a smaller
+crawl surface than the site had before this change, not a larger one.
+
+Every one of the 4,562 composes state wage tax on the median, BEA regional
+price parities, ACS household income and the occupation's location quotient —
+all of which vary by state. They differ by data, not by a substituted place
+name, which is the §J bar.
 
 ### J.3 Job-cost SEO
 
@@ -1166,7 +1219,7 @@ and a **step**. Do not invent data to pull them forward.
 | Medical Cost pilot | wave 2 | GSC has weeks of data | Do not scrape messy MRF files for launch |
 | Full ES-US parity | waves 2–4 | P6 dual-root PoC + authored slice | Do not machine-translate to hit a page count |
 | Permit / DOT-bid calibration | wave 2 | P7 V1 seam already ships | Do not fake calibration evidence in V1 |
-| Salary leaves indexation | expansion gate | GSC indexed ratio on 813 live salary URLs | Do not unstage for crawl budget guesses |
+| Salary leaves, waves 2+ | expansion gate | GSC indexed ratio on the 5,476 live URLs | Do not widen the threshold for a URL count. Wave 1 (>= 400,000 employment) shipped 2026-09-08 |
 
 ### L.5 Later waves
 
@@ -1188,7 +1241,7 @@ and a **step**. Do not invent data to pull them forward.
 - ✅ The three conflict copies are deleted.
 - ✅ Typecheck under 30s.
 - ⬜ `https://costanswer.com` serves the production build over TLS; `www` redirects. **This is the public-launch blocker.**
-- ⬜ Analytics + Search Console + Bing connected **the day the custom domain is live**.
+- ⬜ Search Console + Bing connected, and `NEXT_PUBLIC_GA4_MEASUREMENT_ID` set, **the day the custom domain is live**. The analytics code is shipped; only the property id and the two switches are outstanding.
 - ✅ `/money/marketplace-plans` and `/money/health-insurance` re-verified on the deployed Worker (2026-09-07). CMS county pricing still loads; they are not a dataset-in-the-browser page.
 - D1 provisioned, migrated, and `MONETIZATION_*` secrets set — **monetization activation blocker**, not a public-launch blocker while every provider stays off.
 
@@ -1268,7 +1321,7 @@ and a **step**. Do not invent data to pull them forward.
 - [ ] Edge cache headers on `/salary/:occupation` and `/salary/states/:state`, not just the leaves
 
 **Measurement — same day the custom domain is live, not a last-day item**
-- [ ] Analytics enabled with no calculator input values in any payload (asserted by the event boundary test)
+- [ ] `NEXT_PUBLIC_ANALYTICS_ENABLED=true` + `NEXT_PUBLIC_GA4_MEASUREMENT_ID` set and rebuilt; no calculator input values in any payload (asserted by the event boundary test)
 - [ ] Cookie/consent posture matches what analytics actually sets
 - [ ] Google Search Console verified; sitemap submitted
 - [ ] Bing Webmaster Tools verified; sitemap submitted
@@ -1276,14 +1329,23 @@ and a **step**. Do not invent data to pull them forward.
 **Monetization activation (not required to serve the public site)**
 - [ ] D1 provisioned and migrated; `MONETIZATION_*` secrets set — only when a provider is being turned on
 - [ ] Lead capture stays disabled if D1 is absent
+- [ ] Display advertising, when AdSense approves: `AD_PROVIDER=adsense`,
+      `ADSENSE_CLIENT_ID`, one `ADSENSE_SLOT_*` per placement you want filled,
+      then **rebuild** — the CSP is derived from the provider at build time
+- [ ] `/ads.txt` returns the seller line once `ADSENSE_CLIENT_ID` is set. It
+      404s until then, which is correct: a placeholder entry reads as "this
+      seller is not authorised" rather than as "not configured yet"
 
 **Crawl and index**
 - [ ] `/robots.txt` correct; sitemap absolute URL
 - [ ] `/sitemap.xml` index resolves; every child sitemap returns 200 and validates
 - [ ] Self-canonical on every page; no cross-canonical
-- [ ] `hreflang` reciprocal and `x-default` present on all localized pairs
-- [ ] `noindex` on staged families verified by fetching three sampled URLs
+- [ ] `noindex` on closed families verified by fetching three sampled URLs — and
+      those URLs verified to be **linked from nowhere**, which is the half that
+      was missing before 2026-09-08
 - [ ] Structured data validates in the Rich Results Test for each page type
+- [ ] `hreflang` reciprocal and `x-default` — **only once P6 ships a localized
+      pair.** There are none today, so this box is not a launch blocker
 
 **Correctness**
 - [ ] `npm run verify` green
@@ -1303,7 +1365,8 @@ and a **step**. Do not invent data to pull them forward.
 
 **Links and errors**
 - [ ] Zero broken internal links (crawl)
-- [ ] 404 page useful and returns HTTP 404
+- [x] 404 page useful and returns HTTP 404 — `app/not-found.tsx`, 2026-09-08.
+      It used to be the framework default: no header, no footer, no link out
 - [ ] Every redirect in `next.config.ts` resolves in one hop
 - [ ] External citation URLs: schema/path checked in CI; live fetch is scheduled (a 403 does not block deploy)
 

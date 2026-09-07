@@ -3,6 +3,9 @@ import {
   assertSalarySlugsAreUnreserved,
   isSalaryLevelIndexable,
   nationalSalaryOccupations,
+  occupationsWithOpenLeaves,
+  salaryLeafIsOpen,
+  SALARY_PUBLICATION,
   salaryOccupationFromSlug,
   salaryOccupationInStatePath,
   salaryOccupationPath,
@@ -92,14 +95,50 @@ describe('what the salary family submits to search', () => {
     expect(paths.has('/salary/states')).toBe(isSalaryLevelIndexable('stateIndex'));
     expect(paths.has('/salary/states/texas')).toBe(isSalaryLevelIndexable('stateHub'));
     expect(paths.has('/salary/registered-nurse')).toBe(isSalaryLevelIndexable('occupation'));
-    expect(paths.has('/salary/registered-nurse/texas')).toBe(isSalaryLevelIndexable('occupationInState'));
+    // Leaves open per occupation, so the gate is asked per occupation too.
+    const nurse = nationalSalaryOccupations().find((occupation) => occupation.code === '29-1141');
+    expect(nurse).toBeDefined();
+    expect(paths.has('/salary/registered-nurse/texas')).toBe(salaryLeafIsOpen(nurse!));
   });
 
   it('submits exactly the pages that exist, and no more', () => {
     const entries = getSitemapFamilies().salary;
-    const leaves = isSalaryLevelIndexable('occupationInState') ? oewsPageWorthyPairs().length : 0;
+    const leaves = occupationsWithOpenLeaves()
+      .reduce((total, occupation) => total + statesWithWageFor(occupation).length, 0);
     expect(entries).toHaveLength(2 + STATE_CODES.length + nationalSalaryOccupations().length + leaves);
     expect(new Set(entries.map((entry) => entry.path)).size).toBe(entries.length);
+  });
+
+  it('opens wave 1 at the size the threshold describes, and no wider', () => {
+    /*
+     * A threshold is only a reviewed decision if moving it is visible. These
+     * two numbers are what a change to SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT
+     * actually does to the corpus, so raising or lowering it arrives with its
+     * page-count diff attached rather than silently.
+     */
+    const open = occupationsWithOpenLeaves();
+    const leaves = open.reduce((total, occupation) => total + statesWithWageFor(occupation).length, 0);
+    expect(SALARY_PUBLICATION.occupationInState).toBe('wave-1');
+    expect(open).toHaveLength(90);
+    expect(leaves).toBe(4_562);
+    // The whole corpus is far larger; the wave is the point.
+    expect(oewsPageWorthyPairs().length).toBeGreaterThan(30_000);
+  });
+
+  it('never links a leaf it does not submit, or submits one nothing links', () => {
+    /*
+     * The defect this pins: 30,807 noindex leaves that every occupation page
+     * still linked. Google crawled all of them and indexed none, which spent
+     * exactly the budget staging was meant to protect. One predicate answers
+     * both questions, so the two cannot drift apart again.
+     */
+    const submitted = new Set(getSitemapFamilies().salary.map((entry) => entry.path));
+    for (const occupation of nationalSalaryOccupations()) {
+      const state = statesWithWageFor(occupation)[0];
+      if (!state) continue;
+      const path = salaryOccupationInStatePath(occupation, state);
+      expect(submitted.has(path)).toBe(salaryLeafIsOpen(occupation));
+    }
   });
 
   it('splits the family so no one sitemap file is unreasonably large', () => {
@@ -114,24 +153,24 @@ describe('what the salary family submits to search', () => {
     expect(sitemapPagePaths().filter(({ family }) => family === 'salary')).toHaveLength(pages.length);
   });
 
-  it('withdraws the leaves from search without touching a route', () => {
-    // The staging decision has to be reversible in one edit, so this pins the
-    // property that makes it so: the pages still resolve, they are simply not
-    // submitted and not indexable.
+  it('withholds a closed leaf from search without touching its route', () => {
+    // A closed leaf is still a real address the family builds; it is simply
+    // not submitted, not indexable, and not linked. That is what makes opening
+    // the next wave a threshold change rather than a routing change.
     const submitted = new Set(getSitemapFamilies().salary.map((entry) => entry.path));
-    if (!isSalaryLevelIndexable('occupationInState')) {
-      expect(submitted.has('/salary/registered-nurse/texas')).toBe(false);
-      // The address is still real: the family still builds it.
-      expect(oewsPageWorthyPairs().length).toBeGreaterThan(30_000);
-    }
+    const closed = nationalSalaryOccupations().find((occupation) => !salaryLeafIsOpen(occupation));
+    expect(closed).toBeDefined();
+    const state = statesWithWageFor(closed!)[0];
+    expect(state).toBeDefined();
+    expect(submitted.has(salaryOccupationInStatePath(closed!, state!))).toBe(false);
+    expect(oewsPageWorthyPairs().length).toBeGreaterThan(30_000);
   });
 
-  it('can pull the leaves back out in one edit', () => {
-    // The gate is what makes opening the whole corpus reversible: everything
-    // below the hubs is published only because this returns true.
+  it('keeps the whole corpus behind the wave rather than in it', () => {
     const leafPaths = getSitemapFamilies().salary
       .filter((entry) => entry.path.split('/').length === 4 && !entry.path.startsWith('/salary/states'));
-    expect(leafPaths.length > 0).toBe(isSalaryLevelIndexable('occupationInState'));
+    expect(leafPaths.length).toBeGreaterThan(0);
+    expect(leafPaths.length).toBeLessThan(oewsPageWorthyPairs().length / 5);
   });
 
   it('dates the family from the release it was built from', () => {

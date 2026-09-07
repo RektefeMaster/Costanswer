@@ -10,6 +10,7 @@ import { oewsIndex } from '@/lib/data/bls-oews-snapshot';
 import {
   isSalaryLevelIndexable,
   nationalSalaryOccupations,
+  occupationsWithOpenLeaves,
   salaryFamilyPath,
   salaryOccupationInStatePath,
   salaryOccupationPath,
@@ -93,16 +94,20 @@ function salaryEntries(): SitemapEntry[] {
       entries.push({ path: salaryOccupationPath(occupation), lastModified, changeFrequency: 'monthly', priority: 0.6 });
     }
   }
-  if (isSalaryLevelIndexable('occupationInState')) {
-    for (const occupation of nationalSalaryOccupations()) {
-      for (const state of statesWithWageFor(occupation)) {
-        entries.push({
-          path: salaryOccupationInStatePath(occupation, state),
-          lastModified,
-          changeFrequency: 'monthly',
-          priority: 0.5,
-        });
-      }
+  /*
+   * Leaves open by wave, not by level. `occupationsWithOpenLeaves` is the same
+   * predicate the tables use to decide whether to link one, so a leaf is never
+   * in the sitemap without an inbound link, and never linked without being in
+   * the sitemap.
+   */
+  for (const occupation of occupationsWithOpenLeaves()) {
+    for (const state of statesWithWageFor(occupation)) {
+      entries.push({
+        path: salaryOccupationInStatePath(occupation, state),
+        lastModified,
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      });
     }
   }
   return entries;

@@ -1,3 +1,5 @@
+import { AdUnit } from '@/components/monetization/AdUnit';
+import { adUnitFor } from '@/lib/monetization/ads/embed';
 import { activeAdProvider } from '@/lib/monetization/ads/provider';
 import { PLACEMENT_SPECS, type AdPlacement } from '@/lib/monetization/ads/slots';
 import { resolveFlag, type FlagOverrides } from '@/lib/monetization/flags';
@@ -46,6 +48,12 @@ export function AdSlot({
   const spec = PLACEMENT_SPECS[placement];
   const enabled = resolveFlag('ads.enabled', process.env, overrides);
   const provider = enabled ? activeAdProvider() : null;
+  /*
+   * A live network still needs a unit id for *this* placement. Without one the
+   * slot stays the reserved box it is today rather than emitting markup with a
+   * guessed identifier, which a network reads as an invalid request.
+   */
+  const unit = provider ? adUnitFor(placement) : null;
   const status = provider ? 'live' : enabled ? 'reserved' : 'empty';
 
   /*
@@ -70,6 +78,15 @@ export function AdSlot({
       style={{ minHeight: spec.reservedHeight, maxWidth: spec.reservedWidth }}
       role={announced ? 'region' : 'presentation'}
       aria-label={announced ? adSlotLabel(placement) : undefined}
-    />
+    >
+      {unit && provider && (
+        <AdUnit
+          clientId={unit.clientId}
+          unitId={unit.unitId}
+          consentRequirement={provider.consentRequirement}
+          reservedHeight={spec.reservedHeight}
+        />
+      )}
+    </div>
   );
 }

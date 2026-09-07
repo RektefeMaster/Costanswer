@@ -1,15 +1,37 @@
 import { categories, type CategoryId } from '@/lib/categories';
 
-export const categoryArtSrc: Record<CategoryId, string> = {
-  money: '/categories/money.png',
-  home: '/categories/home.png',
-  car: '/categories/car.png',
-  everyday: '/categories/everyday.png',
-  food: '/categories/food.png',
-  shopping: '/categories/shopping.png',
-  health: '/categories/health.svg',
-  math: '/categories/math.svg',
-  education: '/categories/education.svg',
+/*
+ * WebP, at the resolution these are actually painted.
+ *
+ * Six of these are raster art. As 720px PNGs they were 1.1 MB the home page
+ * downloaded on every cold visit — for decoration drawn at `opacity: .2`
+ * behind a category card, never wider than 320 CSS pixels. Re-encoded at 640px
+ * (2x the widest render) they are 229 KB, and at a fifth opacity the
+ * difference is not visible. The three vector ones were already small and stay
+ * SVG.
+ */
+type CategoryArtAsset = { readonly src: string; readonly width: number; readonly height: number };
+
+/*
+ * Each file's own pixels, not a square guess.
+ *
+ * The element used to declare 520x520 for art that is 640x221 (car) through
+ * 640x665 (home). With `height: auto` the browser reserves the declared ratio
+ * until the bytes arrive and the real one after, so a wrong ratio is a reflow
+ * waiting to happen — harmless only because the art is absolutely positioned.
+ * Stating the true size costs nothing and removes the trap for whoever moves
+ * one of these into normal flow.
+ */
+export const CATEGORY_ART: Record<CategoryId, CategoryArtAsset> = {
+  money: { src: '/categories/money.webp', width: 640, height: 556 },
+  home: { src: '/categories/home.webp', width: 640, height: 665 },
+  car: { src: '/categories/car.webp', width: 640, height: 221 },
+  everyday: { src: '/categories/everyday.webp', width: 640, height: 540 },
+  food: { src: '/categories/food.webp', width: 640, height: 584 },
+  shopping: { src: '/categories/shopping.webp', width: 640, height: 631 },
+  health: { src: '/categories/health.svg', width: 64, height: 64 },
+  math: { src: '/categories/math.svg', width: 64, height: 64 },
+  education: { src: '/categories/education.svg', width: 64, height: 64 },
 };
 
 export function CategoryArt({
@@ -20,14 +42,15 @@ export function CategoryArt({
   priority?: boolean;
 }) {
   // Decorative local static files; the Worker deploy has no image optimizer.
+  const asset = CATEGORY_ART[category];
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       className={`category-art category-art-${category}`}
-      src={categoryArtSrc[category]}
+      src={asset.src}
       alt=""
-      width={520}
-      height={520}
+      width={asset.width}
+      height={asset.height}
       decoding="async"
       loading={priority ? 'eager' : 'lazy'}
       fetchPriority={priority ? 'high' : 'low'}

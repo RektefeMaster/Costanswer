@@ -78,7 +78,16 @@ describe('tier-2 data store', () => {
     expect(offenders).toEqual([]);
   });
 
-  it('keeps Job Cost modules from statically importing material or labor tables', () => {
+  /*
+   * Source-scanning tests read every file under a directory, so their runtime
+   * is the machine's disk rather than the assertion's difficulty. At the 5s
+   * default they timed out inside `npm run verify` — where a build and a
+   * browser suite are competing for the same disk — and passed in 1.5s when run
+   * alone. A gate that fails when the machine is busy is a gate people learn to
+   * re-run and then to ignore, so these two say what they are actually waiting
+   * for.
+   */
+  it('keeps Job Cost modules from statically importing material or labor tables', { timeout: 30_000 }, () => {
     const jobDir = join(ROOT, 'lib', 'job');
     let files: string[] = [];
     try {

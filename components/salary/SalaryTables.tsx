@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import type { OewsEstimate, OewsOccupation } from '@/lib/data/bls-oews';
 import { getStateName, type StateCode } from '@/lib/location/states';
-import { salaryOccupationInStatePath, salaryOccupationPath } from '@/lib/salary-pages';
+import { salaryLeafIsOpen, salaryOccupationInStatePath, salaryOccupationPath } from '@/lib/salary-pages';
 import { occupationHeadingName, occupationPlural } from '@/lib/salary-content';
 
 /**
@@ -11,7 +11,27 @@ import { occupationHeadingName, occupationPlural } from '@/lib/salary-content';
  * Each row is both a comparison a reader wants and a crawlable edge into the
  * level below, which is what keeps 34,000 pages from being orphans without
  * hand-maintaining link lists anywhere.
+ *
+ * A row for a leaf that is not open yet is still a row. It keeps the state,
+ * the jobs and the median — the comparison is the point of the table — and
+ * simply is not a link. Linking a `noindex` page gets it crawled and not
+ * indexed, which spends the crawl budget the wave was protecting; `SalaryCell`
+ * is where that stops being possible to get wrong in one table and right in
+ * the other.
  */
+
+function SalaryCell({
+  occupation,
+  state,
+  label,
+}: {
+  occupation: OewsOccupation;
+  state: StateCode;
+  label: string;
+}) {
+  if (!salaryLeafIsOpen(occupation)) return <>{label}</>;
+  return <Link href={salaryOccupationInStatePath(occupation, state)}>{label}</Link>;
+}
 
 export function StatesForOccupationTable({
   occupation,
@@ -38,7 +58,7 @@ export function StatesForOccupationTable({
           {ranked.map(({ state, estimate }) => (
             <tr className={state === highlight ? 'is-home' : undefined} key={state}>
               <th scope="row">
-                <Link href={salaryOccupationInStatePath(occupation, state)}>{getStateName(state)}</Link>
+                <SalaryCell occupation={occupation} state={state} label={getStateName(state)} />
                 {estimate.locationQuotient !== null && (
                   <small>{`Concentration ${formatNumber(estimate.locationQuotient, { maximumFractionDigits: 2 })}`}</small>
                 )}
@@ -79,7 +99,7 @@ export function OccupationsInStateTable({
           {rows.map(({ occupation, estimate }) => (
             <tr key={occupation.code}>
               <th scope="row">
-                <Link href={salaryOccupationInStatePath(occupation, state)}>{occupationHeadingName(occupation)}</Link>
+                <SalaryCell occupation={occupation} state={state} label={occupationHeadingName(occupation)} />
               </th>
               <td>
                 {secondaryColumn === 'employment'

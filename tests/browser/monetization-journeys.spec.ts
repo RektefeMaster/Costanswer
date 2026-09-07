@@ -132,8 +132,17 @@ test.describe('the admin surface', () => {
 
   test('is excluded from crawling', async ({ request }) => {
     const robots = await (await request.get('/robots.txt')).text();
-    expect(robots).toContain('/admin/');
-    expect(robots).toContain('/api/monetization/');
+    const disallowed = robots
+      .split('\n')
+      .filter((line) => line.toLowerCase().startsWith('disallow:'))
+      .map((line) => line.slice('disallow:'.length).trim());
+
+    // Asserts coverage, not the exact prefix: `/api/` excludes the whole JSON
+    // surface, of which the monetization endpoints are one part.
+    const covers = (path: string) => disallowed.some((rule) => rule.length > 0 && path.startsWith(rule));
+    expect(covers('/admin/monetization')).toBe(true);
+    expect(covers('/api/monetization/admin')).toBe(true);
+    expect(covers('/api/monetization/webhooks/generic')).toBe(true);
   });
 
   test('carries a noindex directive of its own', async ({ page }) => {

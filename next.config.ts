@@ -1,20 +1,26 @@
 import type { NextConfig } from 'next';
+import { analyticsCspSources } from './lib/analytics-provider';
 import { adCspSources } from './lib/monetization/ads/provider';
 
 /*
- * The policy widens only for the ad network that is actually configured.
+ * The policy widens only for the vendors that are actually configured.
  *
  * With none configured this is byte-for-byte the policy the site has always
- * shipped. With one configured it gains that network's own origins and nothing
- * else — no wildcard, no blanket https:. Deriving it from the provider record
+ * shipped. With one configured it gains that vendor's own origins and nothing
+ * else — no wildcard, no blanket https:. Deriving it from the provider records
  * is what stops the two from drifting: `script-src 'self'` silently blocks
- * every ad script, and the failure looks like a broken integration rather than
- * a refused one.
+ * every third-party script, and the failure looks like a broken integration
+ * rather than a refused one.
+ *
+ * Both are read at build time, so enabling advertising or analytics needs a
+ * rebuild rather than a restart.
  */
 const ads = adCspSources();
+const analytics = analyticsCspSources();
 
 function directive(name: string, base: string, extra: readonly string[]): string {
-  return extra.length > 0 ? `${name} ${base} ${extra.join(' ')}` : `${name} ${base}`;
+  const unique = [...new Set(extra)];
+  return unique.length > 0 ? `${name} ${base} ${unique.join(' ')}` : `${name} ${base}`;
 }
 
 const contentSecurityPolicy = [
@@ -23,11 +29,11 @@ const contentSecurityPolicy = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  directive('img-src', "'self' data:", ads.img),
+  directive('img-src', "'self' data:", [...ads.img, ...analytics.img]),
   "font-src 'self' data:",
   "style-src 'self' 'unsafe-inline'",
-  directive('script-src', "'self' 'unsafe-inline'", ads.script),
-  directive('connect-src', "'self' ws: wss:", ads.connect),
+  directive('script-src', "'self' 'unsafe-inline'", [...ads.script, ...analytics.script]),
+  directive('connect-src', "'self' ws: wss:", [...ads.connect, ...analytics.connect]),
   // No ad network configured means no third-party frames at all.
   ads.frame.length > 0 ? `frame-src ${ads.frame.join(' ')}` : "frame-src 'none'",
   "worker-src 'self' blob:",

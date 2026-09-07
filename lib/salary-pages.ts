@@ -9,7 +9,7 @@
  * something to say, and a whole level is opened to search only when the level
  * below it has been measured.
  */
-import { oewsOccupationsForArea, oewsPublishesWage } from '@/lib/data/bls-oews-snapshot';
+import { getOewsEstimate, oewsOccupationsForArea, oewsPublishesWage } from '@/lib/data/bls-oews-snapshot';
 import { oewsOccupationSlug, type OewsOccupation } from '@/lib/data/bls-oews';
 import {
   hasCuratedName,
@@ -32,28 +32,85 @@ export const SALARY_RESERVED_SEGMENTS = ['states'] as const;
 
 export type SalaryLevel = 'familyHub' | 'stateIndex' | 'stateHub' | 'occupation' | 'occupationInState';
 
+export type SalaryPublicationState = 'indexable' | 'wave-1' | 'staged';
+
 /**
  * How far the family has been opened to search engines.
  *
- * The leaves are staged. State wage tax is no longer the reason — P2 closed
- * 51/51 — but publishing 30,807 pages on a young domain in one go is the
- * profile most likely to be crawled slowly and left largely unindexed. The
- * 813 pages above the leaves are open: a hub reports the distribution rather
- * than one person's take-home.
+ * Publishing 30,807 leaves at once on a young domain is the profile most
+ * likely to be crawled slowly and left largely unindexed, so the leaves open
+ * in waves rather than in one word. State wage tax stopped being the reason
+ * when P2 closed 51/51; crawl behaviour is.
  *
- * Opening the leaves is one word, once Search Console shows the levels above
- * indexing. Then in waves, measuring between them, not all at once.
+ * `wave-1` opens the leaves under the occupations most people actually work
+ * in — see `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT`. The rest stay closed, and
+ * closed means *not linked either*: a `noindex` page that every occupation
+ * page still links is a page Google crawls anyway, which spends exactly the
+ * budget staging was meant to protect. `salaryLeafIsOpen` is the one answer
+ * both the sitemap and the tables read, so the two cannot drift.
+ *
+ * Widening is a threshold change, measured against Search Console between
+ * waves; `'indexable'` opens all 30,807 at once and is the last step, not the
+ * first.
  */
-export const SALARY_PUBLICATION: Record<SalaryLevel, 'indexable' | 'staged'> = {
+export const SALARY_PUBLICATION: Record<SalaryLevel, SalaryPublicationState> = {
   familyHub: 'indexable',
   stateIndex: 'indexable',
   stateHub: 'indexable',
   occupation: 'indexable',
-  occupationInState: 'staged',
+  occupationInState: 'wave-1',
 };
 
+/**
+ * The wave-1 line: national employment in the occupation.
+ *
+ * 400,000 is 90 occupations and 4,562 leaves — 68% of all measured U.S.
+ * employment, and the queries with the volume behind them ("registered nurse
+ * salary texas"). It is a round number on purpose: employment moves a few
+ * percent between annual releases, so a round threshold keeps the same pages
+ * open across a refresh instead of shuffling URLs in and out of the sitemap.
+ *
+ * The count is asserted in the family's tests, so raising or lowering this is
+ * a reviewed change with a visible page-count diff rather than a silent one.
+ */
+export const SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT = 400_000;
+
+/** True only for a level that is wholly open. `wave-1` is not: ask per occupation. */
 export function isSalaryLevelIndexable(level: SalaryLevel): boolean {
   return SALARY_PUBLICATION[level] === 'indexable';
+}
+
+let openLeafCodes: Set<string> | undefined;
+
+function leafWaveCodes(): Set<string> {
+  if (!openLeafCodes) {
+    const codes = new Set<string>();
+    for (const occupation of oewsOccupationsForArea('US')) {
+      const employment = getOewsEstimate('US', occupation.code)?.employment ?? 0;
+      if (employment >= SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT) codes.add(occupation.code);
+    }
+    openLeafCodes = codes;
+  }
+  return openLeafCodes;
+}
+
+/**
+ * May this occupation's state pages be indexed and linked?
+ *
+ * One predicate for both questions on purpose. Indexing a page nothing links
+ * to orphans it; linking a page that is not indexed spends crawl budget on it
+ * regardless. They are the same decision and they are answered here.
+ */
+export function salaryLeafIsOpen(occupation: Pick<OewsOccupation, 'code'>): boolean {
+  const state = SALARY_PUBLICATION.occupationInState;
+  if (state === 'indexable') return true;
+  if (state === 'staged') return false;
+  return leafWaveCodes().has(occupation.code);
+}
+
+/** Occupations whose state pages are open, in SOC order. */
+export function occupationsWithOpenLeaves(): OewsOccupation[] {
+  return oewsOccupationsForArea('US').filter((occupation) => salaryLeafIsOpen(occupation));
 }
 
 /**

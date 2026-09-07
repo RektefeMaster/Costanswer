@@ -285,6 +285,23 @@ export const JOB_CATALOG: Record<JobId, JobPublicMeta> = {
   },
 };
 
+
+/**
+ * The short title as it reads inside a sentence.
+ *
+ * `shortTitle.toLowerCase()` turned "HVAC replacement" into "hvac replacement"
+ * on the heading of the page that is meant to rank for HVAC replacement cost.
+ * An acronym is not a capitalised word, so only words that are ordinary
+ * capitalisation are lowered — anything already carrying two or more capitals
+ * is left exactly as written.
+ */
+export function jobTitleInSentence(jobId: JobId): string {
+  return JOB_CATALOG[jobId].shortTitle
+    .split(' ')
+    .map((word) => (/[A-Z].*[A-Z]/.test(word) ? word : word.toLowerCase()))
+    .join(' ');
+}
+
 export function jobFormFields(job: JobPublicMeta): ScopeField[] {
   return job.intakeFields ?? [job.scope];
 }

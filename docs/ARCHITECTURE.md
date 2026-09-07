@@ -126,12 +126,22 @@ Long-tail queries (loan type + year, “$400,000 30-year payment”) belong in t
 
 **Levels and publication:** `SALARY_PUBLICATION` in `lib/salary-pages.ts`
 records how far the family has been opened. Hubs and occupation pages are
-indexable; **`occupationInState` is `staged`** (30,807 leaves exist as routes
-but are `noindex` and out of the sitemap). State-tax correctness is no longer
-the reason — P2 closed. Leaves stay staged until Search Console shows indexed
-ratio, impressions and canonical health on the 813 live URLs that justify
-opening them. Setting the level back to `indexable` is one word; do not open
-them to hit a URL count.
+indexable; **`occupationInState` is `wave-1`** — the leaves under the 90
+occupations with at least 400,000 people employed nationally are open (4,562
+pages), and the remaining 26,245 exist as routes that are `noindex`.
+
+A closed leaf is also **not linked**. That is one decision, not two: indexing a
+page nothing links to orphans it, and linking a page that is not indexed spends
+crawl budget on it regardless. The family got this wrong once — all 30,807
+leaves were `noindex` while every occupation page linked fifty of them and
+every state hub forty more, so they were crawled in full and indexed not at
+all. `salaryLeafIsOpen()` is now the single predicate the sitemap, the tables
+and the leaf page's own `robots` all read, and a test asserts they agree for
+every occupation.
+
+Widening is one number — `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT` — measured against
+Search Console between waves. Setting the level to `indexable` opens all 30,807
+at once and is the last step, not the first. Do not widen to hit a URL count.
 
 The salary family pages at 10,000 URLs per sitemap file rather than the protocol's 50,000. One file holding the whole family is about six megabytes the Worker rebuilds on every cache miss, and one file a crawler must re-fetch whole whenever any page in it changes.
 
@@ -159,11 +169,21 @@ Every tool has a `ToolEditorial` record in `lib/tool-content/`, keyed by tool id
 
 ### Advertising and analytics
 
+A configured network reaches the page through exactly two files:
+`AdvertisingScript` puts the loader in the document once, consent permitting,
+and `AdSlot` renders that network's unit inside the box it has already
+reserved. With no network configured both render nothing and the document is
+byte-for-byte the one that ships today. `/ads.txt` is generated from the same
+publisher id, and 404s without one — a placeholder seller line reads as "not
+authorised" rather than as "not configured yet".
+
 Ad placements are named, reusable slots with reserved IAB space: `header-leaderboard` (~728×90, after the H1, desktop only), `desktop-rail` (~300×250 empty / 300×600 when advertising is on), and `in-content` (between the calculator and the guide). Empty slots are quiet reserved height with an `aria-label` — no hatched “fake ad” chrome. Below 921px, empty slots hide. A reserved in-content 300×250 may remain on larger phones. A reserved rail hides below 681px so the calculator stays first. No slot sits between an input and its result.
 
 Affiliate / lead-gen cards render only when affiliates are enabled and a real `https` partner URL exists (`lib/affiliates.ts`). FTC disclosure is shown only in that live state. Example names in `AFFILIATE_PARTNERS` are placeholders, not tracking IDs. Offers are labeled advertising and are never the calculator’s answer.
 
-Analytics uses a provider-neutral event boundary. Allowed events are `tool_opened`, `calculation_started`, `calculation_completed`, `result_interaction`, `search`, `related_tool_click` and `share`. Raw financial amounts, dates, ZIP codes and free-text queries are not sent by default.
+Analytics uses a provider-neutral event boundary. Raw financial amounts, dates, ZIP codes and free-text queries are not sent by default; `lib/analytics.ts` validates every event against a closed name list and a per-field allowlist and drops anything else.
+
+The vendor sits behind that boundary rather than beside it. `GoogleAnalytics` subscribes to the same DOM event `emitAnalyticsEvent` dispatches, so there is one listener and it can only ever see events that already survived validation — no call site talks to a vendor directly. It renders only when `NEXT_PUBLIC_ANALYTICS_ENABLED` and `NEXT_PUBLIC_GA4_MEASUREMENT_ID` are both set, and the Content-Security-Policy is derived from that id, so enabling measurement is a rebuild rather than a restart.
 
 ### Internal links
 
@@ -191,7 +211,7 @@ Milestone 1 uses EIA monthly residential electricity prices by state, EIA weekly
 ## Scale checks
 
 - **500 tools:** registry entries and domain engines remain independent; category and relation indexes are derived at build time.
-- **100,000 URLs:** sitemap families paginate at 50,000 URLs; indexability evidence is computed before URL publication. The salary family adds 31,620 URLs against a measured 2.55 MB gzipped Worker bundle, of which its packed wage columns are 1.16 MB.
+- **100,000 URLs:** sitemap families paginate at 50,000 URLs; indexability evidence is computed before URL publication. The salary family holds 31,620 routes against a measured 2.33 MB gzipped Worker bundle, of which its packed wage columns are 1.16 MB; 5,376 of those routes are submitted today.
 - **External outage:** request paths never depend on provider uptime; last promoted snapshot survives.
 - **Dataset revision:** snapshot identity and calculation version keep results auditable.
 - **Large client bundle:** pages render content on the server; only one calculator island hydrates per tool page.
