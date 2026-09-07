@@ -38,6 +38,7 @@
     "verify:freshness": "tsx scripts/check-freshness.ts",
     "data:location": "tsx scripts/promote-phase7-snapshots.ts",
     "data:tax": "tsx scripts/update-tax-snapshot.ts",
+    "tools:index": "tsx scripts/generate-tool-index.ts",
     "data:perdiem": "tsx scripts/ingest-gsa-perdiem.ts",
     "data:zcta": "tsx scripts/ingest-census-zcta.ts",
     "verify:oews": "tsx scripts/ingest-bls-oews.ts --rebuild",
