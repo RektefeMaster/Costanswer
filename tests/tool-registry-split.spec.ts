@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { importAlias, renderIndex } from '@/scripts/generate-tool-index';
+import { fragmentProblems, importAlias, renderIndex } from '@/scripts/generate-tool-index';
 import { registryTools } from '@/lib/tools/registry';
 import { tools } from '@/lib/tool-registry';
 
@@ -45,6 +45,17 @@ describe('registry fragments', () => {
     expect(importAlias('hourly-to-salary')).toBe('hourlyToSalary');
     expect(importAlias('401k')).toBe('tool401k');
     expect(importAlias('cd')).toBe('cd');
+  });
+
+  /*
+   * The split removed merge conflicts and introduced drift in their place. A
+   * fragment naming another tool's id, two fragments on one URL, or a file that
+   * forgot its export all build cleanly and produce a quietly wrong catalogue,
+   * so the generator's checks run here too — the generator is only invoked by
+   * hand, and this is not.
+   */
+  it('finds no duplicate id, duplicate route, or missing export among the fragments', async () => {
+    expect(await fragmentProblems()).toEqual([]);
   });
 
   it('declares each tool once, so nothing is registered twice', () => {

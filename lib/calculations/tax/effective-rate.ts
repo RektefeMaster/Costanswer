@@ -33,7 +33,14 @@ export type EffectiveTaxRateValue = {
   effectiveTotalRate: number;
   /** The federal bracket the last dollar of taxable income falls in. */
   statutoryFederalBracket: number;
-  /** What is actually kept from the next $1,000 of gross pay. */
+  /**
+   * Tax on the next $1,000 of gross pay, and that amount as a rate.
+   *
+   * An *effective marginal* rate across a $1,000 interval, not an instantaneous
+   * one. Where the interval crosses a boundary it is the weighted average of
+   * both sides, which is correct for the question asked and would be wrong if
+   * this were presented as a statutory marginal rate. It is not.
+   */
   nextThousandTax: number;
   nextThousandRate: number;
   /** How far the headline bracket sits above the real federal share. */
@@ -80,11 +87,26 @@ export function calculateEffectiveTaxRate(rawInput: unknown): CalculationResult<
   const share = (amount: number) => (gross === 0 ? 0 : amount / gross);
 
   /*
-   * The marginal figure is measured, not derived from a rate table, because the
-   * state layer is not always a bracket: Utah phases a credit out, Oregon
-   * subtracts federal tax, Arkansas switches schedules entirely. Running the
-   * whole stack a thousand dollars higher is the only way to get a number that
-   * is right for every one of them.
+   * Measured by running the whole stack a thousand dollars higher, rather than
+   * read off a rate table, because the state layer is not always a bracket:
+   * Utah phases a credit out, Oregon subtracts federal tax, Arkansas switches
+   * schedules entirely.
+   *
+   * This is not the only computable approach — an engine that exposed the
+   * derivative of every piecewise, credit and phase-out rule could do it
+   * analytically. It is the most reliable general method over the combined
+   * federal, payroll and state engine as it stands, without writing per-state
+   * marginal-rate heuristics that would then have to be kept in step with the
+   * schedules themselves.
+   *
+   * What it produces is therefore the effective marginal rate across the next
+   * $1,000, not an instantaneous marginal rate. Where the interval straddles a
+   * boundary — the Social Security wage base is the common one — the answer is
+   * the weighted average of the two regimes either side of it. That is the
+   * right answer to "what happens to my next $1,000" and the wrong answer to
+   * "what is my statutory marginal rate", so it is never labelled as the
+   * latter. Refundable credits, when they arrive, will make the distinction
+   * sharper still.
    */
   const step = 1_000;
   const higher = estimateAnnualTaxLiability({ ...input, annualGrossSalary: gross + step });
@@ -155,7 +177,7 @@ export function calculateEffectiveTaxRate(rawInput: unknown): CalculationResult<
     assumptions: [
       'Effective tax rate here means total tax divided by gross pay, not by taxable income. Dividing by taxable income gives a higher number and is not what most people mean.',
       'The federal bracket shown is the rate on your last dollar of taxable income. It is a rate on part of your income, never on all of it.',
-      'The next-$1,000 figure is measured by running the whole calculation again $1,000 higher, so it accounts for state credits and phase-outs rather than assuming a flat bracket.',
+      'The next-$1,000 figure is measured by running the whole calculation again $1,000 higher, so it accounts for state credits and phase-outs rather than assuming a flat bracket. It is an effective marginal rate across that $1,000, not a statutory marginal rate: if the interval crosses the Social Security wage base it averages both sides of it, which is what actually happens to the money.',
       ...sharedAssumptions(liability),
       `Filing status: ${FILING_STATUS_LABELS[liability.filingStatus]}.`,
     ],

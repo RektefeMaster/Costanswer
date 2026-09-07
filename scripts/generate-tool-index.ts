@@ -73,7 +73,59 @@ ${entries}
 `;
 }
 
+/**
+ * What can go wrong now that merge conflicts cannot.
+ *
+ * Splitting the registry traded one failure mode for others: a fragment that
+ * declares a second tool's id, two fragments claiming the same URL, a file that
+ * forgot to export `tool`, or an index nobody regenerated. Every one of those
+ * is silent — the build succeeds and the catalogue is quietly wrong — so they
+ * are checked here and in `tests/tool-registry-split.spec.ts` rather than left
+ * to be noticed on a live page.
+ */
+export type FragmentProblem = { readonly file: string; readonly problem: string };
+
+export async function fragmentProblems(): Promise<FragmentProblem[]> {
+  const ids = await registryFragmentIds();
+  const problems: FragmentProblem[] = [];
+  const declaredIds = new Map<string, string>();
+  const declaredPaths = new Map<string, string>();
+
+  for (const id of ids) {
+    const file = `${id}.ts`;
+    const source = await readFile(path.join(REGISTRY_DIR, file), 'utf8');
+
+    const exports = [...source.matchAll(/export const (\w+)\s*:/g)].map((match) => match[1]);
+    if (!exports.includes('tool')) problems.push({ file, problem: 'does not export `tool`' });
+    if (exports.length > 1) problems.push({ file, problem: `exports more than the tool: ${exports.join(', ')}` });
+
+    const declaredId = /\bid:\s*'([^']+)'/.exec(source)?.[1];
+    if (!declaredId) problems.push({ file, problem: 'declares no id' });
+    else if (declaredId !== id) problems.push({ file, problem: `declares id '${declaredId}', so the file name lies` });
+    else {
+      const clash = declaredIds.get(declaredId);
+      if (clash) problems.push({ file, problem: `declares the same id as ${clash}` });
+      declaredIds.set(declaredId, file);
+    }
+
+    const declaredPath = /\bpath:\s*'([^']+)'/.exec(source)?.[1];
+    if (!declaredPath) problems.push({ file, problem: 'declares no path' });
+    else {
+      const clash = declaredPaths.get(declaredPath);
+      if (clash) problems.push({ file, problem: `claims ${declaredPath}, already claimed by ${clash}` });
+      declaredPaths.set(declaredPath, file);
+    }
+  }
+  return problems;
+}
+
 async function main(): Promise<void> {
+  const problems = await fragmentProblems();
+  if (problems.length > 0) {
+    for (const { file, problem } of problems) console.error(`  ${file}: ${problem}`);
+    throw new Error(`${problems.length} registry fragment problem(s). The index was not written.`);
+  }
+
   const ids = await registryFragmentIds();
   await writeFile(path.join(REGISTRY_DIR, 'index.ts'), renderIndex(ids), 'utf8');
   console.log(`Wrote lib/tools/registry/index.ts with ${ids.length} tools.`);

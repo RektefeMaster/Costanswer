@@ -36,7 +36,7 @@ export default function EffectiveTaxRatePage() {
         },
         {
           title: 'The next $1,000 is measured, not assumed',
-          body: 'The rate on additional pay is found by running the entire calculation again a thousand dollars higher and taking the difference. That is slower than reading a bracket off a table, and it is the only way to be right in states that phase a credit out, subtract federal tax, or switch schedules — where the marginal rate is not any single published number.',
+          body: 'The rate on additional pay is found by running the entire calculation again a thousand dollars higher and taking the difference. That is slower than reading a bracket off a table, and it is the most reliable general method over a combined federal, payroll and state engine — states that phase a credit out, subtract federal tax, or switch schedules have no single published marginal rate to read. It is an effective marginal rate across that $1,000, not an instantaneous one: where the interval crosses a boundary such as the Social Security wage base, the figure is the weighted average of both sides. That is the right answer to what happens to your next $1,000, and it is deliberately not labelled a statutory marginal rate.',
         },
         {
           title: 'What is left out',

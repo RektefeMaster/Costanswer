@@ -207,14 +207,47 @@ describe('bundled snapshot integrity', () => {
   });
 });
 
+/**
+ * The number of tools already shipped. Raise it as tools land; never lower it.
+ * It exists so an accidental removal fails without a count blocking additions.
+ */
+const SHIPPED_TOOL_BASELINE = 59;
+
+/** §M P4's acceptance figure. The catalogue is done when it reaches this. */
+const P4_TARGET_TOOL_COUNT = 101;
+
+describe('catalogue size', () => {
+  it('never regresses below what has already shipped', () => {
+    expect(tools.length).toBeGreaterThanOrEqual(SHIPPED_TOOL_BASELINE);
+  });
+
+  /*
+   * Two gates rather than one, on purpose. A single `=== 101` would fail on
+   * every commit until the very last tool landed, so it would be deleted within
+   * a week. A single floor would let P4 be called finished at any size. This
+   * one stays skipped and becomes the acceptance check the day the owner
+   * decides the catalogue is the priority — the plan is explicit that it is a
+   * target, not a deadline.
+   */
+  it.skip('P4 completion: the catalogue is exactly the planned 101 tools', () => {
+    expect(tools.length).toBe(P4_TARGET_TOOL_COUNT);
+  });
+
+  it('states the remaining distance rather than hiding it', () => {
+    const remaining = P4_TARGET_TOOL_COUNT - tools.length;
+    expect(remaining).toBeGreaterThanOrEqual(0);
+    expect(tools.length + remaining).toBe(P4_TARGET_TOOL_COUNT);
+  });
+});
+
 describe('registry and intent search', () => {
   it('keeps every launch tool above the indexability threshold and on a unique route', () => {
     /*
-     * A floor, not an exact count. P4 adds tools one at a time and the plan is
-     * explicit that a catalogue size must not be a release gate — but an
-     * accidental deletion should still fail, so the number only moves up.
+     * A floor, so day-to-day work is not blocked by a count, but a deletion
+     * still fails. The catalogue target is a separate gate below — loosening
+     * this one must not quietly retire that one.
      */
-    expect(tools.length).toBeGreaterThanOrEqual(59);
+    expect(tools.length).toBeGreaterThanOrEqual(SHIPPED_TOOL_BASELINE);
     expect(tools.every((tool) => evaluateToolIndexability(tool).indexable)).toBe(true);
     expect(new Set(tools.map((tool) => tool.id)).size).toBe(tools.length);
     expect(new Set(tools.map((tool) => tool.path)).size).toBe(tools.length);
