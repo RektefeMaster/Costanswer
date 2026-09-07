@@ -63,6 +63,7 @@ import { tool as tool401k } from './401k';
 import { tool as refinance } from './refinance';
 import { tool as mortgagePayoff } from './mortgage-payoff';
 import { tool as creditCardPayoff } from './credit-card-payoff';
+import { tool as effectiveTaxRate } from './effective-tax-rate';
 
 export const registryTools: ToolDefinition[] = [
   hourlyToSalary,
@@ -123,4 +124,5 @@ export const registryTools: ToolDefinition[] = [
   refinance,
   mortgagePayoff,
   creditCardPayoff,
+  effectiveTaxRate,
 ];

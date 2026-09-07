@@ -18,7 +18,7 @@ export const TOOL_CLUSTERS = {
     // what an affordability screen is built on, so both sit in this journey.
     // Marketplace assistance is calculated from household income, so the
     // subsidy check belongs to the same journey as after-tax pay.
-    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'home-affordability', 'health-insurance'],
+    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'effective-tax-rate', 'home-affordability', 'health-insurance'],
   },
   retirement: {
     label: 'Saving and retirement',

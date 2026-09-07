@@ -209,7 +209,12 @@ describe('bundled snapshot integrity', () => {
 
 describe('registry and intent search', () => {
   it('keeps every launch tool above the indexability threshold and on a unique route', () => {
-    expect(tools).toHaveLength(58);
+    /*
+     * A floor, not an exact count. P4 adds tools one at a time and the plan is
+     * explicit that a catalogue size must not be a release gate — but an
+     * accidental deletion should still fail, so the number only moves up.
+     */
+    expect(tools.length).toBeGreaterThanOrEqual(59);
     expect(tools.every((tool) => evaluateToolIndexability(tool).indexable)).toBe(true);
     expect(new Set(tools.map((tool) => tool.id)).size).toBe(tools.length);
     expect(new Set(tools.map((tool) => tool.path)).size).toBe(tools.length);

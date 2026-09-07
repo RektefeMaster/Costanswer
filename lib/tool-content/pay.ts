@@ -267,4 +267,78 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       'High-dollar supplemental wages can switch IRS methods. That switch is not fully modeled.',
     ],
   },
+  {
+    toolId: 'effective-tax-rate',
+    guide: {
+      heading: 'Why your tax rate is lower than your tax bracket',
+      lede: 'Being "in the 22% bracket" does not mean 22% of your pay goes to federal tax. It means the last slice of it does. This page separates the two numbers and shows the gap between them.',
+      sections: [
+        {
+          heading: 'What the bracket actually applies to',
+          paragraphs: [
+            'US federal income tax is charged in bands. The standard deduction comes off first, and what is left is taxed a slice at a time: the lowest band at its rate, the next band at its rate, and so on. Your bracket is the rate on the final slice — never on all of it.',
+            'That is why someone on $100,000 sits in the 22% bracket while paying about 13% of their pay in federal income tax. Nothing has been avoided; the lower bands were charged at their own rates and the deduction was not charged at all.',
+          ],
+        },
+        {
+          heading: 'The number that matters for a raise',
+          paragraphs: [
+            'Neither figure answers "what happens if I earn more". The effective rate is an average of everything already earned, and the federal bracket ignores Social Security, Medicare and state tax.',
+            'The rate on your next $1,000 is the one that answers it, and this page measures it by running the whole calculation again a thousand dollars higher. In a state with no wage tax that comes to your bracket plus 7.65%. In a state with its own brackets it is higher, and above the Social Security wage base it drops, because that part of FICA has stopped.',
+          ],
+        },
+        {
+          heading: 'Effective against gross, not against taxable income',
+          paragraphs: [
+            'There are two ways to write an effective rate and they give different answers. Dividing by taxable income produces a bigger number, because the standard deduction has already been taken out of the denominator.',
+            'This page divides by gross pay, which is what people mean when they ask what share of their money goes to tax. If you compare against a figure published elsewhere, check which denominator it used before concluding one of them is wrong.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'Why is my effective tax rate so much lower than my bracket?',
+        answer: [
+          'Because the bracket only applies to your top slice of income. The standard deduction is taxed at nothing, and every band below your bracket is charged at its own lower rate.',
+          'The gap widens as income rises through a band and narrows as you approach the next one.',
+        ],
+      },
+      {
+        question: 'Does a raise push all of my income into a higher bracket?',
+        answer: [
+          'No. Only the part above the threshold is taxed at the higher rate. Crossing into a new bracket never reduces your take-home pay.',
+          'The next-$1,000 figure on this page is what the extra money is actually taxed at, including FICA and state tax.',
+        ],
+      },
+      {
+        question: 'Why does the next-$1,000 rate fall at high incomes?',
+        answer: [
+          'Social Security stops at the yearly wage base, so once your pay is past it that 6.2% is no longer charged on additional earnings. Medicare continues, and an extra 0.9% starts once you pass its threshold.',
+        ],
+      },
+      {
+        question: 'Is this what I will owe on my return?',
+        answer: [
+          'No. This is wage income under the published schedules. Credits, itemised deductions, retirement contributions and any income that is not salary all change the answer, and none of them are modelled here.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Effective tax rate', definition: 'Total tax divided by gross pay. An average across everything you earned.' },
+      { term: 'Marginal rate', definition: 'The rate charged on the next dollar you earn. Higher than the effective rate whenever the brackets are progressive.' },
+      { term: 'Tax bracket', definition: 'A band of taxable income and the rate charged on the part of your income inside it.' },
+      { term: 'Taxable income', definition: 'Gross pay less the standard or itemised deduction. What the brackets are applied to.' },
+    ],
+    tips: [
+      'Compare two states on the same salary to see how much of the difference is state tax rather than pay.',
+      'If you are deciding whether extra work is worth it, the next-$1,000 rate is the number to use, not the effective rate.',
+      'A traditional 401(k) contribution reduces taxable income, so it comes off at your bracket rate rather than your effective rate.',
+    ],
+    caveats: [
+      'Wage income only. This is not a tax return and not tax advice.',
+      'Local income taxes are named where a state has them but never estimated, so real take-home in those places is lower.',
+      'Where a state has not published its current schedule, the page uses the latest one it did publish and says which year that is.',
+    ],
+  },
 ];
