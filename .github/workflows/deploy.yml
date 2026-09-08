@@ -1,10 +1,14 @@
-name: Deploy
+name: Deploy (Cloudflare Worker, manual)
 
-# Production Worker. Custom-domain binding waits until costanswer.com is a
-# Cloudflare zone on this account. Until then wrangler.jsonc ships workers_dev.
+# Production is deployed by Vercel from `master`. This workflow is the
+# Cloudflare Workers path, kept working but no longer triggered by a push:
+# two hosts deploying the same commit means two live copies of the site and no
+# single answer to "what is serving costanswer.com".
+#
+# Run it from the Actions tab when you want a Worker build — the config it
+# deploys is the one the build emits, `dist/server/wrangler.json`, not the
+# source `wrangler.worker.jsonc`.
 on:
-  push:
-    branches: [master, main]
   workflow_dispatch:
 
 jobs:

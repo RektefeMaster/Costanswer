@@ -64,10 +64,14 @@ export default defineConfig(async () => {
   const plugins = [vinext(), sites()];
   // Vercel is a Node host. The Cloudflare Vite plugin emits a Worker and can
   // stall SSR chunk emit when workerd install scripts were skipped.
-  if (process.env.VERCEL !== '1') {
+  const onVercel = process.env.VERCEL === '1';
+  if (!onVercel) {
     const { cloudflare } = await import('@cloudflare/vite-plugin');
     plugins.push(cloudflare({
       viteEnvironment: { name: 'rsc', childEnvironments: ['ssr'] },
+      // The config is `wrangler.worker.jsonc`, not `wrangler.jsonc`; the file
+      // says why. Without this the plugin would find no config at all.
+      configPath: './wrangler.worker.jsonc',
       config: localBindingConfig,
     }));
   }
@@ -76,6 +80,21 @@ export default defineConfig(async () => {
     css: { postcss: { plugins: [tailwindcss()] } },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
+      : undefined,
+    /*
+     * On a Node host, `cloudflare:*` is a specifier nothing provides.
+     *
+     * `lib/data/store/read.ts` reaches for the ASSETS binding through
+     * `await import('cloudflare:workers')` inside a try/catch, precisely so
+     * that a runtime without it falls through to reading the promoted files
+     * from disk. The bundler does not know that: it tries to resolve the
+     * specifier at build time and fails the whole build. Marking it external
+     * hands the decision back to the runtime, where the catch is already
+     * waiting — which is how the same module already works under Node in the
+     * test suite.
+     */
+    build: onVercel
+      ? { rollupOptions: { external: [/^cloudflare:/] } }
       : undefined,
     plugins,
   };

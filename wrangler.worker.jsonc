@@ -1,4 +1,21 @@
 {
+  // Deliberately NOT named wrangler.jsonc.
+  //
+  // vinext refuses to build when a wrangler config sits in the project root
+  // without the Cloudflare Vite plugin also being registered — a good default
+  // for a Workers-only project, and the reason the Vercel build failed: the
+  // Vercel branch of vite.config.ts drops that plugin on purpose. The guard
+  // matches wrangler.jsonc / wrangler.json / wrangler.toml / cloudflare.config.ts
+  // by name, so the file keeps its place (every path below stays root-relative)
+  // and loses the name. Both the plugin and the CLI are pointed here explicitly:
+  // `configPath` in vite.config.ts, `-c` in the npm scripts.
+  //
+  // This file is the SOURCE config. `wrangler deploy` must not be pointed at
+  // it: `main` below is a package specifier that the Cloudflare Vite plugin
+  // resolves during the build, and wrangler on its own reports it as a missing
+  // entry point. The build emits the resolved config at
+  // `dist/server/wrangler.json` — with main, the assets directory, cache and
+  // observability all filled in — and that is what `npm run deploy` deploys.
   "$schema": "node_modules/wrangler/config-schema.json",
   // Worker name `costanswer`. costanswer.com is not a zone on this account yet
   // (unregistered as of 2026-09-07). After it is, add:

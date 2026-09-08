@@ -31,6 +31,7 @@
     "data:oews": "tsx scripts/ingest-bls-oews.ts",
     "data:oews:rebuild": "tsx scripts/ingest-bls-oews.ts --rebuild",
     "data:job": "tsx scripts/ingest-job-cost-data.ts",
+    "data:census-construction": "tsx scripts/ingest-census-construction.ts",
     "data:pmms": "tsx scripts/ingest-freddie-mac-pmms.ts",
     "data:insurance": "tsx scripts/ingest-naic-insurance.ts",
     "data:cms": "tsx scripts/ingest-cms-marketplace.ts",
@@ -44,11 +45,11 @@
     "data:perdiem": "tsx scripts/ingest-gsa-perdiem.ts",
     "data:zcta": "tsx scripts/ingest-census-zcta.ts",
     "verify:oews": "tsx scripts/ingest-bls-oews.ts --rebuild",
-    "monetization:migrate:local": "wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --local --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
-    "monetization:migrate": "wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization --remote --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
+    "monetization:migrate:local": "wrangler d1 execute costanswer-monetization -c wrangler.worker.jsonc --local --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization -c wrangler.worker.jsonc --local --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
+    "monetization:migrate": "wrangler d1 execute costanswer-monetization -c wrangler.worker.jsonc --remote --file lib/monetization/store/migrations/0001_monetization.sql && wrangler d1 execute costanswer-monetization -c wrangler.worker.jsonc --remote --file lib/monetization/store/migrations/0002_attribution_calls_conversions.sql",
     "monetization:drain": "tsx scripts/monetization-drain.ts",
     "verify:bundle": "node scripts/check-bundle-budget.mjs",
-    "deploy": "NEXT_PUBLIC_SITE_URL=https://costanswer.com npm run build && wrangler deploy"
+    "deploy": "NEXT_PUBLIC_SITE_URL=https://costanswer.com npm run build && wrangler deploy -c dist/server/wrangler.json"
   },
   "dependencies": {
     "next": "16.3.4",

@@ -36,20 +36,40 @@ closed when that value is missing so localhost canonicals cannot be published.
 
 ## Deploy
 
-Cloudflare Workers is the launch host. Vercel output remains an escape hatch.
+**Vercel is the host.** It builds `master` on every push, from `vercel.json`:
+`npm run build && node scripts/emit-vercel-output.mjs`, which writes the Vercel
+Build Output API to `.vercel/output`.
+
+The Cloudflare Vite plugin is skipped on Vercel (`VERCEL=1`), and two things
+follow from that, both handled in `vite.config.ts`:
+
+- `cloudflare:*` is marked external. `lib/data/store/read.ts` reaches for the
+  ASSETS binding through `await import('cloudflare:workers')` inside a
+  try/catch so that a runtime without it falls back to reading the promoted
+  files from disk. The bundler cannot see that and fails to resolve the
+  specifier, so the build has to hand the decision to the runtime.
+- The Workers config is named `wrangler.worker.jsonc`, not `wrangler.jsonc`.
+  vinext refuses to build when a wrangler config sits in the root without the
+  Cloudflare plugin registered; the file explains the rename.
+
+### Cloudflare Workers (kept working, manual)
 
 ```text
 npm run deploy
 ```
 
-That builds with `NEXT_PUBLIC_SITE_URL=https://costanswer.com` and runs
-`wrangler deploy` using `wrangler.jsonc` (Worker name `costanswer`). Until
-`costanswer.com` is a zone on this Cloudflare account the Worker is reachable
-on `workers.dev`. After the domain is registered here, uncomment the custom
-domain routes in `wrangler.jsonc` and redeploy. GitHub Actions
-(`.github/workflows/deploy.yml`) needs repository secret `CLOUDFLARE_API_TOKEN`
-(Edit Cloudflare Workers). D1 / monetization secrets are not required to serve
-pages.
+Builds with `NEXT_PUBLIC_SITE_URL=https://costanswer.com`, then deploys
+`dist/server/wrangler.json` — the config the build emits, with `main`, the
+assets directory, cache and observability resolved. Do not point `wrangler` at
+`wrangler.worker.jsonc`: `main` there is a package specifier the build resolves,
+and wrangler alone reports it as a missing entry point.
+
+`.github/workflows/deploy.yml` runs the same command but only on
+`workflow_dispatch`, so a push does not deploy to two hosts at once. It needs
+repository secret `CLOUDFLARE_API_TOKEN` (Edit Cloudflare Workers) — without it
+the job prints a skip notice and succeeds, so a green run is not by itself
+evidence that anything deployed. D1 / monetization secrets are not required to
+serve pages.
 
 ## Data refresh
 

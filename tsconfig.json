@@ -24,5 +24,5 @@
     "**/*.tsx",
     "**/*.mts"
   ],
-  "exclude": ["node_modules", ".next", "dist", ".wrangler", ".git", ".vinext", "test-results"]
+  "exclude": ["node_modules", ".next", "dist", ".vercel", ".wrangler", ".git", ".vinext", "test-results"]
 }
