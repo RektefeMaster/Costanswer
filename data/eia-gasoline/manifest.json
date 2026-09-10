@@ -1,6 +1,6 @@
 {
-  "currentSnapshotId": "eia-gasoline-regular-weekly-2026-08-31-v1",
-  "observationPeriod": "2026-08-31",
-  "normalizedSha256": "ba47c4110e8b146dbfdf4479188caa0d37eb893819181abe1d5a5834152a5eae",
+  "currentSnapshotId": "eia-gasoline-regular-weekly-2026-09-07-v1",
+  "observationPeriod": "2026-09-07",
+  "normalizedSha256": "cd42555395712877433e4798dc2b53033a27d4f5262dcdf9fb8fdfa90cdec0f2",
   "validationStatus": "passed"
 }
