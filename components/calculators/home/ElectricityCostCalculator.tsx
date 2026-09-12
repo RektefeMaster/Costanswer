@@ -24,7 +24,7 @@ export function ElectricityCostCalculator({ rates, snapshotId, observationPeriod
   const calculation = useMemo(() => {
     try {
       return { result: calculateElectricityCost(
-        { monthlyKwh: Number(monthlyKwh), rateCentsPerKwh: effectiveRate },
+        { monthlyKwh, rateCentsPerKwh: effectiveRate },
         customRate.trim() === '' ? snapshotId : undefined,
       ), error: '' };
     } catch (error) {

@@ -49,9 +49,12 @@ export type TaxRefundValue = {
 export function calculateTaxRefund(rawInput: unknown): CalculationResult<TaxRefundValue> {
   const input = taxRefundInputSchema.parse(rawInput);
   const snapshot = getTaxYearSnapshot(input.taxYear);
+  // Treat entered gross income as W-2 wages for Schedule SE wage-base sharing
+  // and Form 8959 Additional Medicare Tax (boxes 3 / 5 are not separate inputs).
   const se = calculateSelfEmploymentTax({
     netProfit: input.netSelfEmploymentProfit,
-    socialSecurityWages: 0,
+    socialSecurityWages: input.grossIncome,
+    medicareWages: input.grossIncome,
     filingStatus: input.filingStatus,
     taxYear: input.taxYear,
   });
@@ -123,7 +126,7 @@ export function calculateTaxRefund(rawInput: unknown): CalculationResult<TaxRefu
         ? [{ label: 'Self-employment tax', value: formatMoney(se.value.scheduleSeTax) }]
         : []),
       ...(se.value.additionalMedicare > 0
-        ? [{ label: 'Additional Medicare Tax', value: formatMoney(se.value.additionalMedicare), detail: 'Form 8959 on net SE earnings. W-2 Medicare wages are not an input here' }]
+        ? [{ label: 'Additional Medicare Tax', value: formatMoney(se.value.additionalMedicare), detail: 'Form 8959 on W-2 Medicare wages (entered gross income) plus net SE earnings' }]
         : []),
       ...(totalTax !== taxAfterNonrefundableCredits
         ? [{ label: 'Total tax', value: formatMoney(totalTax) }]

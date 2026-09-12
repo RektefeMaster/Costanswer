@@ -26,8 +26,8 @@ export function TimeCalculator() {
       return {
         result: calculateTime({
           operation,
-          left: { hours: Number(leftH), minutes: Number(leftM), seconds: Number(leftS) },
-          right: { hours: Number(rightH), minutes: Number(rightM), seconds: Number(rightS) },
+          left: { hours: leftH, minutes: leftM, seconds: leftS },
+          right: { hours: rightH, minutes: rightM, seconds: rightS },
         }),
         error: '',
       };
@@ -71,7 +71,7 @@ export function DateCalculator() {
 
   const offsetCalc = useMemo(() => {
     try {
-      return { result: calculateDateOffset({ startDate, amount: Number(amount), unit, direction }), error: '' };
+      return { result: calculateDateOffset({ startDate, amount, unit, direction }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
@@ -173,7 +173,7 @@ export function DaysFromTodayCalculator({ today }: { today: string }) {
       if (mode === 'until') {
         return { diffResult: calculateDateDifference({ startDate: today, endDate: targetDate }), result: null, error: '' };
       }
-      return { diffResult: null, result: calculateDaysFromToday({ days: Number(days), direction: mode }, () => today), error: '' };
+      return { diffResult: null, result: calculateDaysFromToday({ days, direction: mode }, () => today), error: '' };
     } catch (error) {
       return { diffResult: null, result: null, error: calculationErrorMessage(error) };
     }
@@ -251,9 +251,9 @@ export function TimeCardCalculator() {
             id: shift.id,
             start: shift.start,
             end: shift.end,
-            unpaidBreakMinutes: Number(shift.unpaidBreakMinutes),
+            unpaidBreakMinutes: shift.unpaidBreakMinutes,
           })),
-          hourlyRate: hourlyRate === '' ? undefined : Number(hourlyRate),
+          hourlyRate: hourlyRate === '' ? undefined : hourlyRate,
         }),
         error: '',
       };
@@ -320,7 +320,7 @@ export function RandomNumberCalculator() {
 
   const generate = () => {
     try {
-      setOutput(calculateRandomNumber({ min: Number(min), max: Number(max), count: Number(count), integer, unique }));
+      setOutput(calculateRandomNumber({ min, max, count, integer, unique }));
       setError('');
     } catch (caught) {
       setOutput(null);

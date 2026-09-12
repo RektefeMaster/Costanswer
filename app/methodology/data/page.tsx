@@ -27,7 +27,6 @@ import { datasetSourceDisplay, officialDatasetJsonLd } from '@/lib/data/source-d
 import { DATASET_POLICIES } from '@/lib/data/dataset-policy';
 import { pageMetadata } from '@/lib/seo';
 import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
-import { utcCalendarDate } from '@/lib/data/freshness';
 import { jobCostDatasetCards } from '@/lib/job/dataset-cards';
 
 export const dynamic = 'force-dynamic';
@@ -118,9 +117,11 @@ function dataPageSources() {
     verifiedAt: usdaFoodSnapshot.verifiedAt,
     fetchedAt: usdaFoodSnapshot.fetchedAt,
   });
-  const hudEffective = resolveHudFmrSnapshot(utcCalendarDate());
+  // Same publication clock as the Cost of Living calculator — not utcCalendarDate() —
+  // so "currently effective" on this page cannot disagree with the live engine.
+  const hudEffective = resolveHudFmrSnapshot(PUBLISHING_SNAPSHOT_DATE);
   const gsaLatest = latestPublishedGsaPerDiemSnapshot();
-  const gsaEffectiveRelease = findEffectivePerDiemRelease(gsaPerDiemReleases, utcCalendarDate());
+  const gsaEffectiveRelease = findEffectivePerDiemRelease(gsaPerDiemReleases, PUBLISHING_SNAPSHOT_DATE);
   const gsaEffective = gsaEffectiveRelease
     ? getGsaPerDiemSnapshotById(gsaEffectiveRelease.snapshotId)
     : null;
@@ -600,7 +601,7 @@ export default function DataSourcesPage() {
         <p><span className="status-dot" /> Current copy</p>
         <h2>GSA travel per diem, continental U.S.</h2>
         <dl>
-          <div><dt>Currently effective</dt><dd>{gsaEffective ? gsaEffective.snapshotId : `No GSA per diem release is effective on ${utcCalendarDate()}.`}</dd></div>
+          <div><dt>Currently effective</dt><dd>{gsaEffective ? gsaEffective.snapshotId : `No GSA per diem release is effective on ${PUBLISHING_SNAPSHOT_DATE}.`}</dd></div>
           <div><dt>Latest published</dt><dd>{gsaLatest.snapshotId}</dd></div>
           {freshnessRows(perDiemSource)}
           <div><dt>Source status</dt><dd>{gsaLatest.sourceStatus}</dd></div>

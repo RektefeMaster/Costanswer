@@ -30,8 +30,8 @@ export function SelfEmploymentTaxCalculator() {
     try {
       return {
         result: calculateSelfEmploymentTax({
-          netProfit: Number(netProfit),
-          socialSecurityWages: Number(socialSecurityWages),
+          netProfit,
+          socialSecurityWages,
           medicareWages: medicareWages === '' ? undefined : Number(medicareWages),
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,

@@ -34,13 +34,13 @@ export function TaxRefundCalculator() {
     try {
       return {
         result: calculateTaxRefund({
-          grossIncome: Number(grossIncome),
-          netSelfEmploymentProfit: Number(netSelfEmploymentProfit),
-          qualifyingChildren: Number(qualifyingChildren),
-          otherDependents: Number(otherDependents),
-          federalWithholding: Number(federalWithholding),
-          estimatedTaxPayments: Number(estimatedTaxPayments),
-          investmentIncome: Number(investmentIncome),
+          grossIncome,
+          netSelfEmploymentProfit,
+          qualifyingChildren,
+          otherDependents,
+          federalWithholding,
+          estimatedTaxPayments,
+          investmentIncome,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
         }),

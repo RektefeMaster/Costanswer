@@ -31,8 +31,8 @@ export function CapitalGainsCalculator() {
     try {
       return {
         result: calculateCapitalGains({
-          otherTaxableIncome: Number(otherTaxableIncome),
-          longTermGains: Number(longTermGains),
+          otherTaxableIncome,
+          longTermGains,
           modifiedAgi: modifiedAgi === '' ? undefined : Number(modifiedAgi),
           netInvestmentIncome: netInvestmentIncome === '' ? undefined : Number(netInvestmentIncome),
           filingStatus,

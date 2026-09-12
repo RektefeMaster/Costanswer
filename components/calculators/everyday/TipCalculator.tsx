@@ -18,7 +18,7 @@ export function TipCalculator() {
 
   const calculation = useMemo(() => {
     try {
-      return { result: calculateTip({ billSubtotal: Number(billSubtotal), tipPercent: Number(tipPercent), people: Number(people), taxAmount: Number(taxAmount) }), error: '' };
+      return { result: calculateTip({ billSubtotal, tipPercent, people, taxAmount }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

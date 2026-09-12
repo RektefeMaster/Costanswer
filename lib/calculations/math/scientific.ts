@@ -77,7 +77,7 @@ function tokenize(source: string): Token[] {
         }
       }
       const raw = source.slice(start, index);
-      if (!/^\d+(\.\d+)?([eE][+-]?\d+)?$|^\.\d+([eE][+-]?\d+)?$/.test(raw)) {
+      if (!/^\d+(\.\d*)?([eE][+-]?\d+)?$|^\.\d+([eE][+-]?\d+)?$/.test(raw)) {
         throw new ParseError('Use a valid number.');
       }
       const value = Number(raw);
@@ -259,6 +259,7 @@ class Parser {
       this.take();
       const exponent = this.parseUnary();
       if (Math.abs(exponent) > 1_000) throw new ParseError('Exponent is too large.');
+      if (base === 0 && exponent === 0) throw new ParseError('0^0 is undefined.');
       const result = base ** exponent;
       return finiteResult(result, 'Power');
     }

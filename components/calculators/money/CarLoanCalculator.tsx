@@ -21,13 +21,13 @@ export function CarLoanCalculator() {
       return {
         result: calculateCarLoan({
           mode,
-          vehiclePrice: Number(vehiclePrice),
-          downPayment: Number(downPayment),
-          tradeInValue: Number(tradeInValue),
-          taxesAndFees: Number(taxesAndFees),
-          financedAmount: Number(financedAmount),
-          annualRatePercent: Number(annualRatePercent),
-          termMonths: Number(termMonths),
+          vehiclePrice,
+          downPayment,
+          tradeInValue,
+          taxesAndFees,
+          financedAmount,
+          annualRatePercent,
+          termMonths,
         }),
         error: '',
       };

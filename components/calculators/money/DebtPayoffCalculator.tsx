@@ -36,13 +36,13 @@ export function DebtPayoffCalculator() {
     try {
       return {
         result: calculateDebtPayoff({
-          additionalMonthlyPayment: Number(additionalMonthlyPayment),
+          additionalMonthlyPayment,
           debts: debts.map((debt) => ({
             id: debt.id,
             label: debt.label,
-            balance: Number(debt.balance),
-            annualRatePercent: Number(debt.annualRatePercent),
-            minimumPayment: Number(debt.minimumPayment),
+            balance: debt.balance,
+            annualRatePercent: debt.annualRatePercent,
+            minimumPayment: debt.minimumPayment,
           })),
         }),
         error: '',

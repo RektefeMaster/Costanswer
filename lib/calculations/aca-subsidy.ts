@@ -1,26 +1,24 @@
 import { z } from 'zod';
 import { acaSubsidySnapshot, acaSubsidySnapshotSchema, type AcaSubsidySnapshot } from '@/lib/data/aca-subsidy';
 import { isStateCode } from '@/lib/location/states';
-import { formatMoney, formatNumber, round, type CalculationResult } from './contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
 
 export const ACA_SUBSIDY_VERSION = 'aca-subsidy-v1.0.0';
 
-// Unknown values such as null, booleans, or blank strings must not become $0.
-const dollars = (name: string) => z.number({ error: `${name} must be a number.` }).finite().min(0).max(100_000_000);
 export const acaSubsidyInputSchema = z.object({
   coverageYear: z.literal(2026),
   stateCode: z.string().refine(isStateCode, 'Choose one of the 50 states or Washington, DC.'),
-  householdSize: z.number().int().min(1).max(30),
-  annualHouseholdMagi: dollars('Annual household MAGI'),
+  householdSize: finiteNumber('Household size', 1, 30).refine(Number.isInteger, 'Household size must be a whole number.'),
+  annualHouseholdMagi: finiteNumber('Annual household MAGI', 0, 100_000_000),
   /** Actual second-lowest-cost Silver premium for the coverage family, without a tobacco surcharge. */
-  monthlyBenchmarkPremium: dollars('Monthly benchmark Silver premium'),
+  monthlyBenchmarkPremium: finiteNumber('Monthly benchmark Silver premium', 0, 100_000_000),
   /** Full monthly price of the selected plan, before premium tax credits. */
-  monthlyPlanPremium: dollars('Monthly selected-plan premium'),
+  monthlyPlanPremium: finiteNumber('Monthly selected-plan premium', 0, 100_000_000),
   /** Tax-credit-eligible enrollment premium, excluding non-EHB add-ons. Defaults to the full selected premium. */
-  monthlyEligiblePlanPremium: dollars('Monthly eligible enrollment premium').optional(),
+  monthlyEligiblePlanPremium: finiteNumber('Monthly eligible enrollment premium', 0, 100_000_000).optional(),
   /** A planning assumption about all non-income conditions, not an eligibility determination. */
   eligibility: z.enum(['assumed-eligible', 'ineligible', 'unknown']),
-  coverageMonths: z.number().int().min(1).max(12).default(12),
+  coverageMonths: finiteNumber('Coverage months', 1, 12).refine(Number.isInteger, 'Coverage months must be a whole number.').default(12),
   /**
    * The published release a supplied benchmark was read from, when it was not
    * typed in by hand.

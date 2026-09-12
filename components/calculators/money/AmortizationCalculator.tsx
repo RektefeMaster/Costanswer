@@ -16,7 +16,7 @@ export function AmortizationCalculator() {
   const [showAll, setShowAll] = useState(false);
   const calculation = useMemo(() => {
     try {
-      return { result: calculateAmortization({ principal: Number(principal), annualRatePercent: Number(annualRatePercent), termMonths: Number(termMonths), extraMonthlyPayment: Number(extraMonthlyPayment), startDate }), error: '' };
+      return { result: calculateAmortization({ principal, annualRatePercent, termMonths, extraMonthlyPayment, startDate }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

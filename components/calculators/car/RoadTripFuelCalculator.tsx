@@ -34,7 +34,7 @@ export function RoadTripFuelCalculator({
     try {
       return {
         result: calculateRoadTripFuel(
-          { miles: Number(miles), mpg: Number(mpg), dollarsPerGallon },
+          { miles, mpg, dollarsPerGallon },
           customPrice.trim() === '' ? snapshotId : undefined,
         ),
         error: '',

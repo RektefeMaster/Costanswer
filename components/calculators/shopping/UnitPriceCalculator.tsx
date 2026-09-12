@@ -41,7 +41,7 @@ export function UnitPriceCalculator() {
 
   const calculation = useMemo(() => {
     try {
-      return { result: calculateUnitPrices({ options: packages.map((option) => ({ ...option, price: Number(option.price), quantity: Number(option.quantity) })) }), error: '' };
+      return { result: calculateUnitPrices({ options: packages.map((option) => ({ ...option, price: option.price, quantity: option.quantity })) }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

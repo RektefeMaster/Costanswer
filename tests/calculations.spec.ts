@@ -375,6 +375,13 @@ describe('mortgage engine', () => {
     expect(withPmi.value.monthlyPropertyTax).toBe(400);
     expect(withPmi.value.monthlyInsurance).toBe(100);
     expect(withPmi.value.monthlyTotal).toBe(round(withPmi.value.monthlyPrincipalAndInterest + 400 + 100 + 50 + 150));
+    expect(withPmi.value.monthlyTotal).toBe(
+      withPmi.value.monthlyPrincipalAndInterest
+      + withPmi.value.monthlyPropertyTax
+      + withPmi.value.monthlyInsurance
+      + withPmi.value.monthlyHoa
+      + withPmi.value.monthlyPmi,
+    );
     expect(withPmi.datasetSnapshotIds).toEqual(['fixture']);
   });
 

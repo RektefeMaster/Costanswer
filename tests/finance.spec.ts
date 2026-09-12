@@ -119,6 +119,17 @@ describe('compound and simple interest primitives', () => {
     expect(round(growth.totalGrowth)).toBe(6_288.95);
   });
 
+  it('rejects fractional years that would create non-integer compounding periods', () => {
+    expect(() => compoundInterestGrowth({
+      principal: 1_000,
+      annualRatePercent: 5,
+      years: 2.5,
+      contribution: 0,
+      compounding: 'annually',
+      contributionFrequency: 'annually',
+    })).toThrow(/whole number/i);
+  });
+
   it('uses end-of-period contributions for monthly deposits', () => {
     const growth = compoundInterestGrowth({
       principal: 0,
@@ -407,5 +418,14 @@ describe('validation bounds', () => {
   it('rejects non-finite rates through the shared number helper', () => {
     expect(finiteNumber('Rate', 0, 40).safeParse(Number.NaN).success).toBe(false);
     expect(finiteNumber('Rate', 0, 40).safeParse(Number.POSITIVE_INFINITY).success).toBe(false);
+  });
+
+  it('rejects blanks, booleans, null, and hex that Number()/coerce would accept', () => {
+    const rate = finiteNumber('Rate', 0, 40);
+    for (const value of ['', '   ', null, false, true, '0x10', '6.5%', undefined]) {
+      expect(rate.safeParse(value).success).toBe(false);
+    }
+    expect(rate.safeParse('6.5').success).toBe(true);
+    expect(rate.safeParse(6.5).success).toBe(true);
   });
 });

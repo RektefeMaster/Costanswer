@@ -32,11 +32,11 @@ export function ChildTaxCreditCalculator() {
     try {
       return {
         result: calculateChildTaxCredit({
-          modifiedAgi: Number(modifiedAgi),
-          qualifyingChildren: Number(qualifyingChildren),
-          otherDependents: Number(otherDependents),
-          earnedIncome: Number(earnedIncome),
-          taxBeforeThisCredit: Number(taxBeforeThisCredit),
+          modifiedAgi,
+          qualifyingChildren,
+          otherDependents,
+          earnedIncome,
+          taxBeforeThisCredit,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
         }),

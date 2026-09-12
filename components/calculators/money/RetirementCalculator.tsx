@@ -17,12 +17,12 @@ export function RetirementCalculator() {
     try {
       return {
         result: calculateRetirement({
-          currentAge: Number(currentAge),
-          retirementAge: Number(retirementAge),
-          currentSavings: Number(currentSavings),
-          monthlyContribution: Number(monthlyContribution),
-          assumedReturnPercent: Number(assumedReturnPercent),
-          goalAmount: Number(goalAmount),
+          currentAge,
+          retirementAge,
+          currentSavings,
+          monthlyContribution,
+          assumedReturnPercent,
+          goalAmount,
         }),
         error: '',
       };

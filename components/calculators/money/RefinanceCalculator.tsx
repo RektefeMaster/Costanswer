@@ -35,13 +35,13 @@ export function RefinanceCalculator({
     try {
       return {
         result: calculateRefinance({
-          currentBalance: Number(currentBalance),
-          currentRatePercent: Number(currentRatePercent),
-          currentTermYears: Number(currentTermYears),
-          monthsAlreadyPaid: Number(monthsAlreadyPaid),
-          newRatePercent: Number(newRatePercent),
-          newTermYears: Number(newTermYears),
-          closingCosts: Number(closingCosts),
+          currentBalance,
+          currentRatePercent,
+          currentTermYears,
+          monthsAlreadyPaid,
+          newRatePercent,
+          newTermYears,
+          closingCosts,
           financeClosingCosts,
         }),
         error: '',

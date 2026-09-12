@@ -35,7 +35,7 @@ export function BusinessDaysCalculator({ initialDate }: { initialDate: string })
     try {
       const result = mode === 'between'
         ? calculateBusinessDaysBetween({ startDate, endDate, includeStart, includeEnd, excludeFederalHolidays })
-        : addBusinessDays({ startDate, businessDays: Number(daysToAdd), excludeFederalHolidays });
+        : addBusinessDays({ startDate, businessDays: daysToAdd, excludeFederalHolidays });
       return { result, error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };

@@ -116,39 +116,39 @@ export function CarAffordabilityCalculator({
   const calculation = useMemo(() => {
     try {
       const income = incomeMode === 'take-home'
-        ? { incomeMode: 'take-home' as const, monthlyTakeHome: Number(monthlyTakeHome) }
+        ? { incomeMode: 'take-home' as const, monthlyTakeHome }
         : {
             incomeMode: 'gross-salary' as const,
-            annualGrossSalary: Number(annualGrossSalary),
+            annualGrossSalary,
             filingStatus,
             taxYear,
           };
       const driving = powertrain === 'gas'
         ? {
             powertrain: 'gas' as const,
-            annualMiles: Number(annualMiles),
-            mpg: Number(mpg),
+            annualMiles,
+            mpg,
             dollarsPerGallon: customGasPrice.trim() === '' ? selected.dollarsPerGallon : Number(customGasPrice),
           }
         : {
             powertrain: 'ev' as const,
-            annualMiles: Number(annualMiles),
-            kwhPer100Miles: Number(kwhPer100Miles),
+            annualMiles,
+            kwhPer100Miles,
             electricityCentsPerKwh: customElectricityRate.trim() === '' ? selected.priceCentsPerKwh : Number(customElectricityRate),
-            chargingLossPercent: Number(chargingLossPercent),
+            chargingLossPercent,
           };
       const shared = {
         state: stateCode,
         income,
         driving,
-        downPayment: Number(downPayment),
-        tradeInValue: Number(tradeInValue),
-        salesTaxAndFees: Number(salesTaxAndFees),
-        annualRatePercent: Number(annualRatePercent),
-        termMonths: Number(termMonths),
-        monthlyInsurance: Number(monthlyInsurance),
-        monthlyMaintenance: Number(monthlyMaintenance),
-        annualRegistration: Number(annualRegistration),
+        downPayment,
+        tradeInValue,
+        salesTaxAndFees,
+        annualRatePercent,
+        termMonths,
+        monthlyInsurance,
+        monthlyMaintenance,
+        annualRegistration,
       };
       const options = usingManualEnergyRate
         ? { energyRateSource: 'manual' as const }
@@ -157,7 +157,7 @@ export function CarAffordabilityCalculator({
             energySnapshotId: powertrain === 'gas' ? gasoline.snapshotId : electricity.snapshotId,
           };
       const result = mode === 'this-car'
-        ? calculateCarAffordability({ mode: 'this-car', vehiclePrice: Number(vehiclePrice), ...shared }, options)
+        ? calculateCarAffordability({ mode: 'this-car', vehiclePrice, ...shared }, options)
         : calculateCarAffordability({ mode: 'how-much-car', ...shared }, options);
       return { result, error: '' };
     } catch (error) {

@@ -21,6 +21,7 @@ export function percentChange(oldValue: number, newValue: number): number {
 
 export function percentOff(originalPrice: number, discountPercent: number): { finalPrice: number; amountSaved: number } {
   if (discountPercent < 0) throw new Error('Discount percent cannot be negative.');
+  if (discountPercent > 100) throw new Error('Discount percent cannot exceed 100.');
   const amountSaved = (discountPercent / 100) * originalPrice;
   const finalPrice = originalPrice - amountSaved;
   return { finalPrice, amountSaved };

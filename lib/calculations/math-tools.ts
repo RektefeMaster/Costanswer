@@ -81,6 +81,7 @@ export function calculatePercentage(rawInput: unknown): CalculationResult<{
       'Percent of: (percent ÷ 100) × base.',
       'What percent: part ÷ whole × 100. A zero whole is rejected.',
       'Percent of what: part ÷ (percent ÷ 100). A zero percent is rejected.',
+      'Percent off: discount cannot exceed 100%.',
     ],
   };
 }

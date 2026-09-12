@@ -16,6 +16,25 @@ function randomIntInclusive(min: number, max: number, rng: Rng): number {
   return min + Math.floor(nextUnit(rng) * span);
 }
 
+/**
+ * Floyd's algorithm: sample `count` distinct integers from [min, max] using
+ * O(count) memory. Avoids allocating a `max - min + 1` pool that can be
+ * billions of entries when unique rejection sampling exhausts its attempt cap.
+ */
+function sampleUniqueInts(min: number, max: number, count: number, rng: Rng): number[] {
+  const span = max - min + 1;
+  const selected = new Set<number>();
+  for (let j = span - count + 1; j <= span; j += 1) {
+    const t = min + Math.floor(nextUnit(rng) * j);
+    if (selected.has(t)) {
+      selected.add(min + j - 1);
+    } else {
+      selected.add(t);
+    }
+  }
+  return [...selected];
+}
+
 export function generateRandomNumbers(input: {
   min: number;
   max: number;
@@ -36,6 +55,11 @@ export function generateRandomNumbers(input: {
   if (!integer && unique) throw new Error('Unique values are only available in integer mode.');
 
   if (!integer) {
+    // Half-open [min, max). Equal bounds are an empty interval — reject rather
+    // than silently collapsing to a single point that contradicts the contract.
+    if (min === max) {
+      throw new Error('Decimal mode needs a non-empty range: minimum must be less than maximum.');
+    }
     return Array.from({ length: count }, () => min + nextUnit(rng) * (max - min));
   }
 
@@ -57,12 +81,7 @@ export function generateRandomNumbers(input: {
   while (values.length < count) {
     attempts += 1;
     if (attempts > attemptCap) {
-      const pool = Array.from({ length: span }, (_, index) => min + index);
-      for (let i = pool.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(nextUnit(rng) * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-      }
-      return pool.slice(0, count);
+      return sampleUniqueInts(min, max, count, rng);
     }
     const candidate = randomIntInclusive(min, max, rng);
     if (picked.has(candidate)) continue;

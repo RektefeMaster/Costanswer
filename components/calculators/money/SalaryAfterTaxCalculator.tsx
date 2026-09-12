@@ -25,11 +25,11 @@ export function SalaryAfterTaxCalculator() {
     try {
       return {
         result: calculateSalaryAfterTax({
-          annualGrossSalary: Number(annualGrossSalary),
+          annualGrossSalary,
           state: stateCode,
           filingStatus,
-          taxYear: Number(taxYear),
-          dependents: Number(dependents),
+          taxYear,
+          dependents,
         }),
         error: '',
       };

@@ -38,6 +38,7 @@ const ToolAnalyticsContext = createContext<{ toolId: string; category: CategoryI
 
 type ResultDockState = { label: string; value: string; tone: string };
 const ResultDockContext = createContext<{
+  dock: ResultDockState | null;
   setDock: (state: ResultDockState | null) => void;
   setDockVisible: (visible: boolean) => void;
 } | null>(null);
@@ -177,7 +178,7 @@ export function CalculatorPanel({
 
   const [dock, setDock] = useState<ResultDockState | null>(null);
   const [dockVisible, setDockVisible] = useState(false);
-  const dockApi = useMemo(() => ({ setDock, setDockVisible }), []);
+  const dockApi = useMemo(() => ({ dock, setDock, setDockVisible }), [dock]);
 
   return (
     <ToolAnalyticsContext.Provider value={{ toolId, category }}>
@@ -341,10 +342,15 @@ export function CalculationReceipt({
     if (analytics) emitAnalyticsEvent('result_interaction', { ...analytics, interaction });
   };
 
+  const dock = useContext(ResultDockContext);
+  const resolvedHeadline = headline
+    ?? (dock?.dock ? { label: dock.dock.label, value: dock.dock.value } : null)
+    ?? { label: 'Result', value: breakdown[breakdown.length - 1]?.value ?? '' };
+
   const copyReceipt = async () => {
     const text = receiptText({
       title: title ?? 'CostAnswer result',
-      headline: headline ?? { label: 'Result', value: breakdown[breakdown.length - 1]?.value ?? '' },
+      headline: resolvedHeadline,
       breakdown,
       assumptions,
       calculationVersion,

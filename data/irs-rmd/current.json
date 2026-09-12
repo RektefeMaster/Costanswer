@@ -1,0 +1,248 @@
+{
+  "schemaVersion": "1.0.0",
+  "snapshotId": "irs-rmd-uniform-lifetime-2026-v1",
+  "datasetId": "irs-rmd-tables",
+  "observationPeriod": "2026",
+  "distributionYear": 2026,
+  "tableEffectiveYear": 2022,
+  "fetchedAt": "2026-09-08T00:00:00.000Z",
+  "verifiedAt": "2026-09-08",
+  "sourceStatus": "verified",
+  "sourceUrl": "https://www.irs.gov/pub/irs-pdf/p590b.pdf",
+  "sourceDocumentationUrl": "https://www.irs.gov/publications/p590b",
+  "attribution": "IRS Publication 590-B, Appendix B, Table III (Uniform Lifetime), used for 2026 required minimum distributions. The table itself was last revised for 2022. Required beginning ages are SECURE 2.0, not the table.",
+  "uniformLifetime": [
+    {
+      "age": 72,
+      "period": 27.4
+    },
+    {
+      "age": 73,
+      "period": 26.5
+    },
+    {
+      "age": 74,
+      "period": 25.5
+    },
+    {
+      "age": 75,
+      "period": 24.6
+    },
+    {
+      "age": 76,
+      "period": 23.7
+    },
+    {
+      "age": 77,
+      "period": 22.9
+    },
+    {
+      "age": 78,
+      "period": 22
+    },
+    {
+      "age": 79,
+      "period": 21.1
+    },
+    {
+      "age": 80,
+      "period": 20.2
+    },
+    {
+      "age": 81,
+      "period": 19.4
+    },
+    {
+      "age": 82,
+      "period": 18.5
+    },
+    {
+      "age": 83,
+      "period": 17.7
+    },
+    {
+      "age": 84,
+      "period": 16.8
+    },
+    {
+      "age": 85,
+      "period": 16
+    },
+    {
+      "age": 86,
+      "period": 15.2
+    },
+    {
+      "age": 87,
+      "period": 14.4
+    },
+    {
+      "age": 88,
+      "period": 13.7
+    },
+    {
+      "age": 89,
+      "period": 12.9
+    },
+    {
+      "age": 90,
+      "period": 12.2
+    },
+    {
+      "age": 91,
+      "period": 11.5
+    },
+    {
+      "age": 92,
+      "period": 10.8
+    },
+    {
+      "age": 93,
+      "period": 10.1
+    },
+    {
+      "age": 94,
+      "period": 9.5
+    },
+    {
+      "age": 95,
+      "period": 8.9
+    },
+    {
+      "age": 96,
+      "period": 8.4
+    },
+    {
+      "age": 97,
+      "period": 7.8
+    },
+    {
+      "age": 98,
+      "period": 7.3
+    },
+    {
+      "age": 99,
+      "period": 6.8
+    },
+    {
+      "age": 100,
+      "period": 6.4
+    },
+    {
+      "age": 101,
+      "period": 6
+    },
+    {
+      "age": 102,
+      "period": 5.6
+    },
+    {
+      "age": 103,
+      "period": 5.2
+    },
+    {
+      "age": 104,
+      "period": 4.9
+    },
+    {
+      "age": 105,
+      "period": 4.6
+    },
+    {
+      "age": 106,
+      "period": 4.3
+    },
+    {
+      "age": 107,
+      "period": 4.1
+    },
+    {
+      "age": 108,
+      "period": 3.9
+    },
+    {
+      "age": 109,
+      "period": 3.7
+    },
+    {
+      "age": 110,
+      "period": 3.5
+    },
+    {
+      "age": 111,
+      "period": 3.4
+    },
+    {
+      "age": 112,
+      "period": 3.3
+    },
+    {
+      "age": 113,
+      "period": 3.1
+    },
+    {
+      "age": 114,
+      "period": 3
+    },
+    {
+      "age": 115,
+      "period": 2.9
+    },
+    {
+      "age": 116,
+      "period": 2.8
+    },
+    {
+      "age": 117,
+      "period": 2.7
+    },
+    {
+      "age": 118,
+      "period": 2.5
+    },
+    {
+      "age": 119,
+      "period": 2.3
+    },
+    {
+      "age": 120,
+      "period": 2
+    }
+  ],
+  "requiredBeginningAges": [
+    {
+      "bornOnOrAfter": 1960,
+      "age": 75
+    },
+    {
+      "bornOnOrAfter": 1951,
+      "age": 73
+    },
+    {
+      "bornOnOrAfter": null,
+      "age": 72
+    }
+  ],
+  "sources": [
+    {
+      "id": "irs-pub-590b",
+      "name": "IRS Publication 590-B, Distributions from Individual Retirement Arrangements (IRAs)",
+      "url": "https://www.irs.gov/pub/irs-pdf/p590b.pdf",
+      "publishedAt": "2026-01-01",
+      "detail": "Appendix B Table III Uniform Lifetime, and the instruction to divide the prior year-end balance by the denominator for the owner’s age as of birthday in the distribution year."
+    },
+    {
+      "id": "secure-2-0",
+      "name": "SECURE 2.0 Act of 2022, section 107",
+      "url": "https://www.congress.gov/117/plaws/publ328/PLAW-117publ328.pdf",
+      "publishedAt": "2022-12-29",
+      "detail": "Required beginning age 73 for those born 1951 through 1959, and 75 for those born in 1960 or later."
+    }
+  ],
+  "validationReport": [
+    "Table III runs from age 72 at 27.4 through age 120 and over at 2.0, 49 rows with no gaps.",
+    "IRS worked example: $100,000 at age 75 ÷ 24.6 = $4,065.",
+    "The table is used unless the sole beneficiary is a spouse more than 10 years younger, in which case Table II applies and this snapshot does not compute it."
+  ],
+  "normalizedSha256": "8753d455fa3b8f71bd23386bc401e5107b271875de4d48873ef59f46ad13d499"
+}

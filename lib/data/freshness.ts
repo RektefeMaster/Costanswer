@@ -51,8 +51,9 @@ const UTC_DAY_MS = 24 * 60 * 60 * 1000;
  *
  * `PUBLISHING_SNAPSHOT_DATE` is a reviewed SEO/build clock and does not age
  * after deploy. A six-month-old Worker would otherwise keep saying "current"
- * because its asOf never moved. Calculators that need a stable asOf should
- * pass one explicitly; chips and the data page call this.
+ * because its asOf never moved. Calculator engines and methodology "currently
+ * effective" dataset labels share that publishing clock so they cannot disagree;
+ * freshness chips call this calendar helper instead.
  */
 export function utcCalendarDate(now: Date = new Date()): string {
   return now.toISOString().slice(0, 10);

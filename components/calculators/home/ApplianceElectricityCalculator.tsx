@@ -74,10 +74,10 @@ export function ApplianceElectricityCalculator({
       return {
         result: calculateApplianceElectricity(
           {
-            watts: Number(watts),
-            hoursPerDay: Number(hoursPerDay),
-            daysPerWeek: Number(daysPerWeek),
-            dutyCyclePercent: Number(dutyCyclePercent),
+            watts,
+            hoursPerDay,
+            daysPerWeek,
+            dutyCyclePercent,
             rateCentsPerKwh: effectiveRate,
           },
           usingManualRate

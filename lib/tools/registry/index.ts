@@ -71,6 +71,7 @@ import { tool as eitc } from './eitc';
 import { tool as quarterlyEstimatedTax } from './quarterly-estimated-tax';
 import { tool as selfEmploymentTax } from './self-employment-tax';
 import { tool as taxRefund } from './tax-refund';
+import { tool as rmd } from './rmd';
 
 export const registryTools: ToolDefinition[] = [
   hourlyToSalary,
@@ -139,4 +140,5 @@ export const registryTools: ToolDefinition[] = [
   quarterlyEstimatedTax,
   selfEmploymentTax,
   taxRefund,
+  rmd,
 ];

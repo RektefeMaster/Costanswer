@@ -22,6 +22,11 @@ describe('percentage family', () => {
     expect(result.value.amountSaved).toBe(16);
   });
 
+  it('rejects discount percents above 100%', () => {
+    expect(() => percentOff(80, 150)).toThrow(/100/);
+    expect(() => calculatePercentage({ mode: 'percent-off', first: 150, second: 80 })).toThrow(/100/);
+  });
+
   it('rejects zero denominators instead of returning Infinity', () => {
     expect(() => calculatePercentage({ mode: 'is-what-percent', first: 10, second: 0 })).toThrow(/zero/i);
     expect(() => calculatePercentage({ mode: 'percent-of-what', first: 10, second: 0 })).toThrow(/zero/i);
@@ -72,8 +77,13 @@ describe('scientific parser', () => {
     expect(evaluateScientific('sqrt(9)', { angleMode: 'radians' })).toBe(3);
     expect(evaluateScientific('sin(π/2)', { angleMode: 'radians' })).toBeCloseTo(1, 12);
     expect(evaluateScientific('sin(90)', { angleMode: 'degrees' })).toBeCloseTo(1, 12);
+    expect(evaluateScientific('1.', { angleMode: 'radians' })).toBe(1);
     expect(calculateScientific({ expression: '2 + 3 * 4', angleMode: 'radians' }).value.result).toBe(14);
     expect(calculateScientific({ expression: '2π', angleMode: 'radians' }).value.result).toBeCloseTo(2 * Math.PI, 6);
+  });
+
+  it('rejects 0^0 as undefined', () => {
+    expect(() => evaluateScientific('0^0', { angleMode: 'radians' })).toThrow(/undefined/i);
   });
 
   it('rejects identifiers, host objects, and oversized expressions', () => {
@@ -108,6 +118,31 @@ describe('random numbers', () => {
       unique: true,
       rng: () => 0,
     })).toThrow(/unique/i);
+  });
+
+  it('rejects decimal mode when min equals max (empty [min, max) interval)', () => {
+    expect(() => generateRandomNumbers({
+      min: 5,
+      max: 5,
+      count: 1,
+      integer: false,
+      unique: false,
+      rng: () => 0.5,
+    })).toThrow(/non-empty range/i);
+  });
+
+  it('falls back to O(count) unique sampling without allocating the full span', () => {
+    const values = generateRandomNumbers({
+      min: 0,
+      max: 1_000_000,
+      count: 5,
+      integer: true,
+      unique: true,
+      rng: () => 0, // pathological: always the same unit interval draw
+    });
+    expect(values).toHaveLength(5);
+    expect(new Set(values).size).toBe(5);
+    expect(values.every((value) => value >= 0 && value <= 1_000_000)).toBe(true);
   });
 });
 

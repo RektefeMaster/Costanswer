@@ -30,7 +30,7 @@ export function FederalTaxBracketCalculator() {
     try {
       return {
         result: calculateFederalBracket({
-          income: Number(income),
+          income,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
           incomeBasis,

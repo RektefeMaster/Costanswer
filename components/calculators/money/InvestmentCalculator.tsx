@@ -18,12 +18,12 @@ export function InvestmentCalculator() {
     try {
       return {
         result: calculateInvestment({
-          principal: Number(principal),
-          contribution: Number(contribution),
+          principal,
+          contribution,
           contributionFrequency,
           contributionTiming,
-          annualReturnPercent: Number(annualReturnPercent),
-          years: Number(years),
+          annualReturnPercent,
+          years,
           compounding,
         }),
         error: '',

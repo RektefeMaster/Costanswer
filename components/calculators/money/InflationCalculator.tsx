@@ -62,7 +62,7 @@ export function InflationCalculator({
   const calculation = useMemo(() => {
     try {
       return {
-        result: calculateInflation({ amount: Number(amount), startPeriod, endPeriod }, { observations, snapshotId }),
+        result: calculateInflation({ amount, startPeriod, endPeriod }, { observations, snapshotId }),
         error: '',
       };
     } catch (error) {

@@ -25,12 +25,12 @@ export function MedicareCalculator() {
     return {
       coverageYear: 2026 as const,
       filingStatus,
-      annualMagi: Number(annualMagi),
+      annualMagi,
       partAQuarters,
       hasDrugCoverage,
       monthlyDrugPlanPremium: hasDrugCoverage ? Number(monthlyDrugPlanPremium) : 0,
       monthlyMedigapPremium: monthlyMedigapPremium.trim() === '' ? 0 : Number(monthlyMedigapPremium),
-      coverageMonths: Number(coverageMonths),
+      coverageMonths,
     };
   }, [filingStatus, annualMagi, partAQuarters, hasDrugCoverage, monthlyDrugPlanPremium, monthlyMedigapPremium, coverageMonths]);
 

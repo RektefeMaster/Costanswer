@@ -12,6 +12,12 @@ import {
   type CalorieGoal,
 } from '@/lib/calculations/health';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import {
+  convertLengthForUnitSwitch,
+  convertWeightForUnitSwitch,
+  healthHeightInputBounds,
+  healthWeightInputBounds,
+} from '@/lib/health-units';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 
 function EnergyFields({
@@ -43,6 +49,8 @@ function EnergyFields({
   setActivity: (value: ActivityLevel) => void;
   showActivity?: boolean;
 }) {
+  const weightBounds = healthWeightInputBounds(unitSystem);
+  const heightBounds = healthHeightInputBounds(unitSystem);
   return (
     <>
       <div className="mode-tabs" role="group" aria-label="Unit system">
@@ -61,12 +69,12 @@ function EnergyFields({
         </Field>
         <Field label="Weight" htmlFor="energy-weight">
           <InputShell suffix={unitSystem === 'metric' ? 'kg' : 'lb'}>
-            <input id="energy-weight" type="number" min="20" step="0.1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} />
+            <input id="energy-weight" type="number" min={weightBounds.min} max={weightBounds.max} step="0.1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} />
           </InputShell>
         </Field>
         <Field label="Height" htmlFor="energy-height">
           <InputShell suffix={unitSystem === 'metric' ? 'cm' : 'in'}>
-            <input id="energy-height" type="number" min="50" step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} />
+            <input id="energy-height" type="number" min={heightBounds.min} max={heightBounds.max} step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} />
           </InputShell>
         </Field>
         {showActivity && (
@@ -95,16 +103,9 @@ function useEnergyState() {
 
   const setUnitSystem = (target: 'metric' | 'us') => {
     if (target === unitSystem) return;
+    setWeight(convertWeightForUnitSwitch(weight, unitSystem, target));
+    setHeight(convertLengthForUnitSwitch(height, unitSystem, target));
     setUnitSystemState(target);
-    const w = Number(weight);
-    const h = Number(height);
-    if (target === 'metric') {
-      if (Number.isFinite(w) && w > 0) setWeight(String(Math.round((w / 2.20462262) * 10) / 10));
-      if (Number.isFinite(h) && h > 0) setHeight(String(Math.round(h * 2.54 * 10) / 10));
-    } else {
-      if (Number.isFinite(w) && w > 0) setWeight(String(Math.round(w * 2.20462262 * 10) / 10));
-      if (Number.isFinite(h) && h > 0) setHeight(String(Math.round((h / 2.54) * 10) / 10));
-    }
   };
 
   return { unitSystem, setUnitSystem, sex, setSex, age, setAge, weight, setWeight, height, setHeight, activity, setActivity };
@@ -114,7 +115,7 @@ export function BmrCalculator() {
   const state = useEnergyState();
   const calculation = useMemo(() => {
     try {
-      return { result: calculateBmr({ unitSystem: state.unitSystem, sex: state.sex, ageYears: Number(state.age), weight: Number(state.weight), height: Number(state.height), activity: state.activity }), error: '' };
+      return { result: calculateBmr({ unitSystem: state.unitSystem, sex: state.sex, ageYears: state.age, weight: state.weight, height: state.height, activity: state.activity }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
@@ -139,7 +140,7 @@ export function TdeeCalculator() {
   const state = useEnergyState();
   const calculation = useMemo(() => {
     try {
-      return { result: calculateTdee({ unitSystem: state.unitSystem, sex: state.sex, ageYears: Number(state.age), weight: Number(state.weight), height: Number(state.height), activity: state.activity }), error: '' };
+      return { result: calculateTdee({ unitSystem: state.unitSystem, sex: state.sex, ageYears: state.age, weight: state.weight, height: state.height, activity: state.activity }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
@@ -169,7 +170,7 @@ export function CalorieCalculator() {
   const [goal, setGoal] = useState<CalorieGoal>('maintain');
   const calculation = useMemo(() => {
     try {
-      return { result: calculateCalorie({ unitSystem: state.unitSystem, sex: state.sex, ageYears: Number(state.age), weight: Number(state.weight), height: Number(state.height), activity: state.activity, goal }), error: '' };
+      return { result: calculateCalorie({ unitSystem: state.unitSystem, sex: state.sex, ageYears: state.age, weight: state.weight, height: state.height, activity: state.activity, goal }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

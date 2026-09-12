@@ -44,6 +44,12 @@ describe('calendar dates', () => {
     expect(() => calculateAge({ birthDate: '2020-02-29', asOfDate: '2019-02-28' })).toThrow(/before/i);
   });
 
+  it('reports zero days until the next birthday when today is the birthday', () => {
+    const age = calendarAge(parseDateOnly('1990-09-12'), parseDateOnly('2026-09-12'));
+    expect(age.daysUntilNextBirthday).toBe(0);
+    expect(age.nextBirthday).toBe('2026-09-12');
+  });
+
   it('adds years across a leap day by clamping', () => {
     expect(formatDateOnly(addCalendarOffset(parseDateOnly('2024-02-29'), 1, 'years'))).toBe('2025-02-28');
   });

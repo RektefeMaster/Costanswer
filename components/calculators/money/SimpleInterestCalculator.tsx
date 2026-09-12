@@ -12,7 +12,7 @@ export function SimpleInterestCalculator() {
   const [years, setYears] = useState('3');
   const calculation = useMemo(() => {
     try {
-      return { result: calculateSimpleInterest({ principal: Number(principal), annualRatePercent: Number(annualRatePercent), years: Number(years) }), error: '' };
+      return { result: calculateSimpleInterest({ principal, annualRatePercent, years }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

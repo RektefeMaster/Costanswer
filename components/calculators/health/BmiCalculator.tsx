@@ -3,30 +3,31 @@
 import { useMemo, useState } from 'react';
 import { calculateBmi } from '@/lib/calculations/health';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import {
+  bmiHeightInputBounds,
+  bmiWeightInputBounds,
+  convertLengthForUnitSwitch,
+  convertWeightForUnitSwitch,
+} from '@/lib/health-units';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 
 export function BmiCalculator() {
   const [unitSystem, setUnitSystem] = useState<'metric' | 'us'>('us');
   const [weight, setWeight] = useState('154');
   const [height, setHeight] = useState('69');
+  const weightBounds = bmiWeightInputBounds(unitSystem);
+  const heightBounds = bmiHeightInputBounds(unitSystem);
 
   const switchUnits = (target: 'metric' | 'us') => {
     if (target === unitSystem) return;
+    setWeight(convertWeightForUnitSwitch(weight, unitSystem, target));
+    setHeight(convertLengthForUnitSwitch(height, unitSystem, target));
     setUnitSystem(target);
-    const w = Number(weight);
-    const h = Number(height);
-    if (target === 'metric') {
-      setWeight(Number.isFinite(w) && w > 0 ? String(Math.round((w / 2.20462262) * 10) / 10) : '70');
-      setHeight(Number.isFinite(h) && h > 0 ? String(Math.round(h * 2.54 * 10) / 10) : '175');
-    } else {
-      setWeight(Number.isFinite(w) && w > 0 ? String(Math.round(w * 2.20462262 * 10) / 10) : '154');
-      setHeight(Number.isFinite(h) && h > 0 ? String(Math.round((h / 2.54) * 10) / 10) : '69');
-    }
   };
 
   const calculation = useMemo(() => {
     try {
-      return { result: calculateBmi({ unitSystem, weight: Number(weight), height: Number(height) }), error: '' };
+      return { result: calculateBmi({ unitSystem, weight, height }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
@@ -48,12 +49,12 @@ export function BmiCalculator() {
       <div className="calc-form-grid">
         <Field label="Weight" htmlFor="bmi-weight">
           <InputShell suffix={unitSystem === 'metric' ? 'kg' : 'lb'}>
-            <input id="bmi-weight" type="number" min="0.1" step="0.1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} />
+            <input id="bmi-weight" type="number" min={weightBounds.min} max={weightBounds.max} step="0.1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} />
           </InputShell>
         </Field>
         <Field label="Height" htmlFor="bmi-height">
           <InputShell suffix={unitSystem === 'metric' ? 'cm' : 'in'}>
-            <input id="bmi-height" type="number" min="1" step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} />
+            <input id="bmi-height" type="number" min={heightBounds.min} max={heightBounds.max} step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} />
           </InputShell>
         </Field>
       </div>

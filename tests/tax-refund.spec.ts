@@ -57,7 +57,8 @@ describe('tax refund', () => {
   it('taxes self-employment profit as income after the deductible half of Schedule SE tax', () => {
     const se = calculateSelfEmploymentTax({
       netProfit: 50_000,
-      socialSecurityWages: 0,
+      socialSecurityWages: 50_000,
+      medicareWages: 50_000,
       filingStatus: 'single',
       taxYear: 2026,
     });
@@ -80,7 +81,7 @@ describe('tax refund', () => {
       filingStatus: 'single',
       taxYear: 2026,
     });
-    expect(value.selfEmploymentTax).toBe(7_064.78);
+    expect(value.selfEmploymentTax).toBe(se.value.scheduleSeTax);
     expect(value.federalIncomeTax).toBe(round(federal.tax));
     expect(value.federalIncomeTax).toBeGreaterThan(wagesOnly.value.federalIncomeTax);
     expect(value.amountOwed).toBe(round(federal.tax + se.value.scheduleSeTax + se.value.additionalMedicare));
@@ -88,6 +89,34 @@ describe('tax refund', () => {
     const totalTaxRow = breakdown.find((row) => row.label === 'Total tax');
     expect(afterCredits?.value).toBe(formatMoney(federal.tax));
     expect(totalTaxRow?.value).toBe(formatMoney(federal.tax + se.value.scheduleSeTax + se.value.additionalMedicare));
+  });
+
+  it('applies Additional Medicare Tax to high W-2 wages even without Schedule C profit', () => {
+    const { value } = calculateTaxRefund({
+      grossIncome: 300_000,
+      federalWithholding: 0,
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    expect(value.selfEmploymentTax).toBe(0);
+    expect(value.additionalMedicare).toBeGreaterThan(0);
+  });
+
+  it('shares the Social Security wage base between W-2 wages and Schedule SE', () => {
+    const fullSe = calculateSelfEmploymentTax({
+      netProfit: 50_000,
+      socialSecurityWages: 0,
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    const shared = calculateTaxRefund({
+      grossIncome: 150_000,
+      netSelfEmploymentProfit: 50_000,
+      federalWithholding: 0,
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    expect(shared.value.selfEmploymentTax).toBeLessThan(fullSe.value.scheduleSeTax);
   });
 
   it('lets a Schedule C loss reduce earned income for the earned income credit', () => {

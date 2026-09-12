@@ -12,7 +12,7 @@ export function CdCalculator() {
   const [years, setYears] = useState('1');
   const calculation = useMemo(() => {
     try {
-      return { result: calculateCd({ principal: Number(principal), apyPercent: Number(apyPercent), years: Number(years) }), error: '' };
+      return { result: calculateCd({ principal, apyPercent, years }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

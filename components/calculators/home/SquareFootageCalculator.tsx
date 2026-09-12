@@ -1,14 +1,35 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { convertValue } from '@/lib/calculations/conversion/units';
 import { calculateSquareFootage } from '@/lib/calculations/square-footage';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, InlineError, PrimaryResult, ResultDetails } from '../CalculatorUI';
 
 type SpaceRow = { id: string; name: string; length: string; width: string };
+type LengthUnit = 'ft' | 'm';
+
+const DISPLAY_DECIMALS = 4;
+
+function convertDimension(raw: string, from: LengthUnit, to: LengthUnit): string {
+  if (from === to) return raw;
+  const value = Number(raw.trim());
+  if (!Number.isFinite(value) || value <= 0) return raw;
+  const converted = convertValue(value, from, to);
+  const factor = 10 ** DISPLAY_DECIMALS;
+  return String(Math.round(converted * factor) / factor);
+}
+
+function switchUnit(spaces: SpaceRow[], from: LengthUnit, to: LengthUnit): SpaceRow[] {
+  return spaces.map((space) => ({
+    ...space,
+    length: convertDimension(space.length, from, to),
+    width: convertDimension(space.width, from, to),
+  }));
+}
 
 export function SquareFootageCalculator() {
-  const [unit, setUnit] = useState<'ft' | 'm'>('ft');
+  const [unit, setUnit] = useState<LengthUnit>('ft');
   const [spaces, setSpaces] = useState<SpaceRow[]>([{ id: 'space-1', name: 'Room', length: '12', width: '10' }]);
   const calculation = useMemo(() => {
     try {
@@ -18,8 +39,8 @@ export function SquareFootageCalculator() {
           spaces: spaces.map((space) => ({
             id: space.id,
             name: space.name,
-            length: Number(space.length),
-            width: Number(space.width),
+            length: space.length,
+            width: space.width,
           })),
         }),
         error: '',
@@ -29,11 +50,17 @@ export function SquareFootageCalculator() {
     }
   }, [unit, spaces]);
 
+  const changeUnit = (next: LengthUnit) => {
+    if (next === unit) return;
+    setSpaces((current) => switchUnit(current, unit, next));
+    setUnit(next);
+  };
+
   return (
     <CalculatorPanel title="Square footage" intro="Rectangles added together. Metric input converts through the shared conversion engine." toolId="square-footage" category="home" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([unit, spaces])}>
       <div className="mode-tabs" role="group" aria-label="Length unit">
-        <button type="button" aria-pressed={unit === 'ft'} className={unit === 'ft' ? 'active' : ''} onClick={() => setUnit('ft')}>Feet</button>
-        <button type="button" aria-pressed={unit === 'm'} className={unit === 'm' ? 'active' : ''} onClick={() => setUnit('m')}>Meters</button>
+        <button type="button" aria-pressed={unit === 'ft'} className={unit === 'ft' ? 'active' : ''} onClick={() => changeUnit('ft')}>Feet</button>
+        <button type="button" aria-pressed={unit === 'm'} className={unit === 'm' ? 'active' : ''} onClick={() => changeUnit('m')}>Meters</button>
       </div>
       <div className="ingredient-editor area-editor" role="group" aria-label="Spaces">
         <div className="ingredient-head" aria-hidden="true"><span>Name</span><span>Length</span><span>Width</span><span /><span /></div>

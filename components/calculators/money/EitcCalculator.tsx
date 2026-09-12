@@ -48,10 +48,10 @@ export function EitcCalculator() {
     try {
       return {
         result: calculateEitc({
-          earnedIncome: Number(earnedIncome),
-          adjustedGrossIncome: Number(adjustedGrossIncome),
-          qualifyingChildren: Number(qualifyingChildren),
-          investmentIncome: Number(investmentIncome),
+          earnedIncome,
+          adjustedGrossIncome,
+          qualifyingChildren,
+          investmentIncome,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
         }),

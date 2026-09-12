@@ -143,7 +143,7 @@ export function WhereCheaperCalculator({
   const boards = useMemo(() => {
     const datasets = { electricity, electricitySnapshotId, gasoline, grocery };
     try {
-      const input = { homeState, compareState, monthlyKwh: Number(monthlyKwh), monthlyGallons: Number(monthlyGallons) };
+      const input = { homeState, compareState, monthlyKwh, monthlyGallons };
       return {
         results: {
           electricity: compareWhereCheaper({ ...input, kind: 'electricity' }, datasets),

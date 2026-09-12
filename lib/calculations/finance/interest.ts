@@ -97,7 +97,11 @@ function simulateMismatchedFrequencies(
   const compoundPerYear = PERIODS_PER_YEAR[compounding];
   const contribPerYear = PERIODS_PER_YEAR[contributionFrequency];
   const stepsPerYear = lcm(compoundPerYear, contribPerYear);
-  const totalSteps = Math.round(years * stepsPerYear);
+  const totalStepsExact = years * stepsPerYear;
+  if (!Number.isInteger(totalStepsExact)) {
+    throw new Error('Years must produce a whole number of compounding and contribution steps for the selected frequencies.');
+  }
+  const totalSteps = totalStepsExact;
   const compoundEvery = stepsPerYear / compoundPerYear;
   const contribEvery = stepsPerYear / contribPerYear;
   const periodicRate = (annualRatePercent / 100) / compoundPerYear;
@@ -165,6 +169,9 @@ export function compoundInterestGrowth(input: {
 
   if (compounding === contributionFrequency) {
     const periods = years * compoundPerYear;
+    if (!Number.isInteger(periods)) {
+      throw new Error('Years must produce a whole number of compounding periods for the selected frequency.');
+    }
     const periodicRate = (annualRatePercent / 100) / compoundPerYear;
     const closed = contributionTiming === 'beginning'
       ? closedFormAnnuityDue(principal, contribution, periodicRate, periods)

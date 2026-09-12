@@ -44,10 +44,10 @@ export function CompoundInterestCalculator() {
     try {
       return {
         result: calculateCompoundInterest({
-          principal: Number(principal),
-          annualRatePercent: Number(annualRatePercent),
-          years: Number(years),
-          contribution: Number(contribution),
+          principal,
+          annualRatePercent,
+          years,
+          contribution,
           compounding,
           contributionFrequency,
         }),

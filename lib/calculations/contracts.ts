@@ -14,12 +14,23 @@ export type CalculationResult<T> = {
   assumptions: string[];
 };
 
+/**
+ * Shared numeric contract for calculator engines.
+ *
+ * Accepts real numbers and plain decimal strings ("6.5", ".5"). Rejects blanks,
+ * whitespace, booleans, null, hex, and other JavaScript coercions that
+ * `z.coerce.number()` / `Number("")` would silently turn into 0 or 1.
+ */
 export const finiteNumber = (label: string, minimum: number, maximum: number) =>
-  z.coerce
-    .number({ error: `${label} must be a number.` })
+  z.preprocess((value) => {
+    if (typeof value === 'string' && /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(value.trim())) {
+      return Number(value.trim());
+    }
+    return value;
+  }, z.number({ error: `${label} must be a number.` })
     .finite(`${label} must be finite.`)
     .min(minimum, `${label} must be at least ${minimum}.`)
-    .max(maximum, `${label} must be no more than ${maximum}.`);
+    .max(maximum, `${label} must be no more than ${maximum}.`));
 
 export function round(value: number, digits = 2): number {
   if (!Number.isFinite(value)) throw new Error('Rounded value must be finite.');

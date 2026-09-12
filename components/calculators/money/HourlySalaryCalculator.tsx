@@ -15,11 +15,11 @@ export function HourlySalaryCalculator() {
   const calculation = useMemo(() => {
     try {
       return { result: calculateHourlySalary({
-        hourlyRate: Number(hourlyRate),
-        regularHoursPerWeek: Number(regularHours),
-        overtimeHoursPerWeek: Number(overtimeHours),
-        overtimeMultiplier: Number(overtimeMultiplier),
-        weeksPerYear: Number(weeks),
+        hourlyRate,
+        regularHoursPerWeek: regularHours,
+        overtimeHoursPerWeek: overtimeHours,
+        overtimeMultiplier,
+        weeksPerYear: weeks,
       }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };

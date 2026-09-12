@@ -79,17 +79,28 @@ export function calculateMortgage(
   const monthlyPmi = estimatedMonthlyPmi(loanAmount, input.homePrice, input.includePmiEstimate);
   const totalPrincipalAndInterest = principalAndInterest * paymentCount;
   const totalInterest = totalPrincipalAndInterest - loanAmount;
-  const monthlyTotal = principalAndInterest + monthlyPropertyTax + monthlyInsurance + input.monthlyHoa + monthlyPmi;
+  // Round each displayed line first, then sum — so the headline total matches
+  // what a reader gets by adding the receipt rows (no silent cent drift).
+  const monthlyPrincipalAndInterestRounded = round(principalAndInterest);
+  const monthlyPropertyTaxRounded = round(monthlyPropertyTax);
+  const monthlyInsuranceRounded = round(monthlyInsurance);
+  const monthlyHoaRounded = round(input.monthlyHoa);
+  const monthlyPmiRounded = round(monthlyPmi);
+  const monthlyTotal = monthlyPrincipalAndInterestRounded
+    + monthlyPropertyTaxRounded
+    + monthlyInsuranceRounded
+    + monthlyHoaRounded
+    + monthlyPmiRounded;
 
   return {
     value: {
       loanAmount: round(loanAmount),
-      monthlyPrincipalAndInterest: round(principalAndInterest),
-      monthlyPropertyTax: round(monthlyPropertyTax),
-      monthlyInsurance: round(monthlyInsurance),
-      monthlyHoa: round(input.monthlyHoa),
-      monthlyPmi: round(monthlyPmi),
-      monthlyTotal: round(monthlyTotal),
+      monthlyPrincipalAndInterest: monthlyPrincipalAndInterestRounded,
+      monthlyPropertyTax: monthlyPropertyTaxRounded,
+      monthlyInsurance: monthlyInsuranceRounded,
+      monthlyHoa: monthlyHoaRounded,
+      monthlyPmi: monthlyPmiRounded,
+      monthlyTotal,
       totalInterest: round(totalInterest),
       totalPrincipalAndInterest: round(totalPrincipalAndInterest),
       downPaymentPercent: round(100 * input.downPayment / input.homePrice, 1),
@@ -106,13 +117,13 @@ export function calculateMortgage(
       },
       {
         label: 'Monthly principal and interest',
-        value: formatMoney(principalAndInterest),
+        value: formatMoney(monthlyPrincipalAndInterestRounded),
         detail: `${input.termYears}-year fixed at ${formatNumber(input.annualRatePercent, { maximumFractionDigits: 3 })}%`,
       },
       {
         label: 'Estimated monthly total',
         value: formatMoney(monthlyTotal),
-        detail: monthlyPmi > 0 || monthlyPropertyTax > 0 || monthlyInsurance > 0 || input.monthlyHoa > 0
+        detail: monthlyPmiRounded > 0 || monthlyPropertyTaxRounded > 0 || monthlyInsuranceRounded > 0 || monthlyHoaRounded > 0
           ? 'P&I plus the tax, insurance, HOA, and PMI lines you included'
           : 'Principal and interest only',
       },

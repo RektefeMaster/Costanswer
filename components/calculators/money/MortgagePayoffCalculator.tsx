@@ -18,10 +18,10 @@ export function MortgagePayoffCalculator() {
     try {
       return {
         result: calculateMortgagePayoff({
-          currentPrincipal: Number(currentPrincipal),
-          annualRatePercent: Number(annualRatePercent),
-          remainingMonths: Number(remainingMonths),
-          extraMonthlyPayment: Number(extraMonthlyPayment),
+          currentPrincipal,
+          annualRatePercent,
+          remainingMonths,
+          extraMonthlyPayment,
           startDate,
         }),
         error: '',

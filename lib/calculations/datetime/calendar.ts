@@ -138,8 +138,9 @@ export function calendarAge(birth: Date, asOf: Date): CalendarAge {
 
   const days = Math.round((asOf.getTime() - cursor.getTime()) / DAY_MS);
   const totalDays = Math.round((asOf.getTime() - birth.getTime()) / DAY_MS);
-  const nextBirthdayDate = asOf < anniversaryInYear(birth, asOf.getUTCFullYear())
-    ? anniversaryInYear(birth, asOf.getUTCFullYear())
+  const anniversaryThisYear = anniversaryInYear(birth, asOf.getUTCFullYear());
+  const nextBirthdayDate = asOf <= anniversaryThisYear
+    ? anniversaryThisYear
     : anniversaryInYear(birth, asOf.getUTCFullYear() + 1);
   const daysUntilNextBirthday = Math.round((nextBirthdayDate.getTime() - asOf.getTime()) / DAY_MS);
 

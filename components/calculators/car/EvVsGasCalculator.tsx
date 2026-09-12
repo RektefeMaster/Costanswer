@@ -61,9 +61,9 @@ export function EvVsGasCalculator({
         usingCustomGasPrice ? null : gasolineSnapshotId,
       ].filter((id): id is string => id !== null);
       return { result: calculateEvVsGas({
-        annualMiles: Number(annualMiles), gasMpg: Number(gasMpg), gasPricePerGallon: gasPrice,
-        evKwhPer100Miles: Number(evEfficiency), electricityCentsPerKwh: electricityRate,
-        chargingLossPercent: Number(chargingLoss),
+        annualMiles, gasMpg, gasPricePerGallon: gasPrice,
+        evKwhPer100Miles: evEfficiency, electricityCentsPerKwh: electricityRate,
+        chargingLossPercent: chargingLoss,
       }, snapshotIds), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };

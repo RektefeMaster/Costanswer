@@ -75,21 +75,21 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
     if (mode === 'this-house' && homePrice.trim() === '') return { result: null, error: 'Home price must be a number.' };
     try {
       const shared = {
-        monthlyNetIncome: Number(monthlyNetIncome),
-        monthlyExistingDebt: Number(monthlyExistingDebt),
-        monthlyOtherExpenses: Number(monthlyOtherExpenses),
-        downPayment: Number(downPayment),
+        monthlyNetIncome,
+        monthlyExistingDebt,
+        monthlyOtherExpenses,
+        downPayment,
         termYears,
-        annualRatePercent: Number(annualRatePercent),
-        annualPropertyTax: Number(annualPropertyTax),
-        annualHomeInsurance: Number(annualHomeInsurance),
-        monthlyHoa: Number(monthlyHoa),
+        annualRatePercent,
+        annualPropertyTax,
+        annualHomeInsurance,
+        monthlyHoa,
         includePmiEstimate,
-        maintenanceAnnualPercent: Number(maintenanceAnnualPercent),
-        closingCostPercent: Number(closingCostPercent),
+        maintenanceAnnualPercent,
+        closingCostPercent,
       };
       const result = mode === 'this-house'
-        ? calculateHomeAffordability({ mode: 'this-house', homePrice: Number(homePrice), ...shared }, rateTouched ? undefined : rates.snapshotId)
+        ? calculateHomeAffordability({ mode: 'this-house', homePrice, ...shared }, rateTouched ? undefined : rates.snapshotId)
         : calculateHomeAffordability({ mode: 'how-much-house', ...shared }, rateTouched ? undefined : rates.snapshotId);
       return { result, error: '' };
     } catch (error) {

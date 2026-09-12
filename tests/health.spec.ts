@@ -81,4 +81,47 @@ describe('health engine', () => {
       waist: 34,
     })).toThrow(/waist/i);
   });
+
+  it('keeps the same physical person valid across US and metric', () => {
+    const metric = { unitSystem: 'metric' as const, sex: 'male' as const, ageYears: 30, weight: 200, height: 180, activity: 'sedentary' as const };
+    const us = {
+      ...metric,
+      unitSystem: 'us' as const,
+      weight: 200 * 2.2046226218,
+      height: 180 / 2.54,
+    };
+    expect(calculateBmr(metric).value.bmrKcal).toBe(calculateBmr(us).value.bmrKcal);
+    expect(bmiInputValid(200, 180, 'metric')).toBe(true);
+    expect(bmiInputValid(us.weight, us.height, 'us')).toBe(true);
+  });
+
+  it('rejects energy inputs outside the canonical SI domain even when raw UI numbers look in-range', () => {
+    // 200 kg is valid metric; the same raw 200 as pounds is fine, but 450 lb (~204 kg) must stay valid
+    // while 20 lb (~9 kg) must fail in both systems for the same physical reason.
+    expect(() => calculateBmr({
+      unitSystem: 'us',
+      sex: 'female',
+      ageYears: 30,
+      weight: 20,
+      height: 70,
+      activity: 'sedentary',
+    })).toThrow(/weight/i);
+    expect(() => calculateBmr({
+      unitSystem: 'metric',
+      sex: 'female',
+      ageYears: 30,
+      weight: 20,
+      height: 180,
+      activity: 'sedentary',
+    })).toThrow(/weight/i);
+  });
 });
+
+function bmiInputValid(weight: number, height: number, unitSystem: 'metric' | 'us') {
+  try {
+    calculateBmi({ unitSystem, weight, height });
+    return true;
+  } catch {
+    return false;
+  }
+}

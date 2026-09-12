@@ -23,7 +23,7 @@ export function RecipeScaler() {
 
   const calculation = useMemo(() => {
     try {
-      return { result: scaleRecipe({ originalServings: Number(originalServings), desiredServings: Number(desiredServings), ingredients }), error: '' };
+      return { result: scaleRecipe({ originalServings, desiredServings, ingredients }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

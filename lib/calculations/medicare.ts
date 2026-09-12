@@ -2,26 +2,22 @@ import { z } from 'zod';
 import {
   MEDICARE_FILING_STATUSES, medicareIrmaaBracketFor, medicareSnapshot, type MedicareSnapshot,
 } from '@/lib/data/medicare';
-import { formatMoney, formatNumber, round, type CalculationResult } from './contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
 
 export const MEDICARE_ENGINE_ID = 'medicare-cost-v1.0.0';
-
-// Blank strings, booleans, and null must never become a free premium.
-const dollars = (label: string, maximum: number) => z.number({ error: `${label} must be a number.` })
-  .finite(`${label} must be finite.`).min(0, `${label} cannot be negative.`).max(maximum, `${label} is too large.`);
 
 export const medicareCostInputSchema = z.object({
   coverageYear: z.literal(2026),
   filingStatus: z.enum(MEDICARE_FILING_STATUSES),
   /** MAGI from the return two years before the coverage year, not today's income. */
-  annualMagi: dollars('Modified adjusted gross income', 100_000_000),
+  annualMagi: finiteNumber('Modified adjusted gross income', 0, 100_000_000),
   /**
    * Part A is premium-free with 40 quarters of Medicare-taxed work. Fewer than
    * that means a monthly premium, and the amount depends on how many quarters.
    */
   partAQuarters: z.enum(['40-or-more', '30-to-39', 'under-30']),
   /** What a chosen Part D or Medicare Advantage drug plan charges, before IRMAA. */
-  monthlyDrugPlanPremium: dollars('Drug plan premium', 10_000).default(0),
+  monthlyDrugPlanPremium: finiteNumber('Drug plan premium', 0, 10_000).default(0),
   /**
    * Whether the person is enrolled in Part D or a Medicare Advantage drug plan.
    *
@@ -32,9 +28,9 @@ export const medicareCostInputSchema = z.object({
    */
   hasDrugCoverage: z.boolean().optional(),
   /** A Medigap policy is priced by its insurer and is not part of any federal table. */
-  monthlyMedigapPremium: dollars('Medigap premium', 10_000).default(0),
+  monthlyMedigapPremium: finiteNumber('Medigap premium', 0, 10_000).default(0),
   /** Whole months of coverage in the year, for a mid-year start. */
-  coverageMonths: z.number().int().min(1).max(12).default(12),
+  coverageMonths: finiteNumber('Coverage months', 1, 12).refine(Number.isInteger, 'Coverage months must be a whole number.').default(12),
 }).transform((input) => ({
   ...input,
   hasDrugCoverage: input.hasDrugCoverage ?? input.monthlyDrugPlanPremium > 0,

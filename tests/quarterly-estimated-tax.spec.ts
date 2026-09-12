@@ -71,4 +71,11 @@ describe('quarterly estimated tax', () => {
     const sum = value.installments.reduce((total, row) => total + row.amount, 0);
     expect(sum).toBe(value.amountStillToPay);
   });
+
+  it('uses only the current-year safe harbor when prior-year tax is zero', () => {
+    const { value } = run({ current: 12_000, prior: 0, withholding: 0 });
+    expect(value.requiredAnnualPayment).toBe(10_800);
+    expect(value.paymentsRequired).toBe(true);
+    expect(value.quarterlyPayment).toBe(2_700);
+  });
 });

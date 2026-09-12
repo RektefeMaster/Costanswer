@@ -28,9 +28,9 @@ export function BonusTaxCalculator({ taxYear }: { taxYear: number }) {
     try {
       return {
         result: calculateBonusTax({
-          bonusAmount: Number(bonusAmount),
-          regularWagesToDate: Number(regularWagesToDate),
-          priorSupplementalWagesThisYear: Number(priorSupplementalWagesThisYear),
+          bonusAmount,
+          regularWagesToDate,
+          priorSupplementalWagesThisYear,
           state: stateCode,
           filingStatus,
           taxYear,

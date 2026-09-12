@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { calculateBodyFat, type BiologicalSex } from '@/lib/calculations/health';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import { convertLengthForUnitSwitch, healthHeightInputBounds } from '@/lib/health-units';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails } from '../CalculatorUI';
 
 export function BodyFatCalculator() {
@@ -12,6 +13,7 @@ export function BodyFatCalculator() {
   const [neck, setNeck] = useState('16');
   const [waist, setWaist] = useState('34');
   const [hip, setHip] = useState('38');
+  const heightBounds = healthHeightInputBounds(unitSystem);
 
   const calculation = useMemo(() => {
     try {
@@ -19,10 +21,10 @@ export function BodyFatCalculator() {
         result: calculateBodyFat({
           unitSystem,
           sex,
-          height: Number(height),
-          neck: Number(neck),
-          waist: Number(waist),
-          hip: sex === 'female' ? Number(hip) : undefined,
+          height,
+          neck,
+          waist,
+          hip: sex === 'female' ? hip : undefined,
         }),
         error: '',
       };
@@ -33,17 +35,11 @@ export function BodyFatCalculator() {
 
   const switchUnits = (target: 'us' | 'metric') => {
     if (target === unitSystem) return;
+    setHeight(convertLengthForUnitSwitch(height, unitSystem, target));
+    setNeck(convertLengthForUnitSwitch(neck, unitSystem, target));
+    setWaist(convertLengthForUnitSwitch(waist, unitSystem, target));
+    setHip(convertLengthForUnitSwitch(hip, unitSystem, target));
     setUnitSystem(target);
-    const convert = (val: string, toMetric: boolean) => {
-      const num = Number(val);
-      if (!Number.isFinite(num) || num <= 0) return val;
-      return toMetric ? String(Math.round(num * 2.54 * 10) / 10) : String(Math.round((num / 2.54) * 10) / 10);
-    };
-    const toMetric = target === 'metric';
-    setHeight((curr) => convert(curr, toMetric));
-    setNeck((curr) => convert(curr, toMetric));
-    setWaist((curr) => convert(curr, toMetric));
-    setHip((curr) => convert(curr, toMetric));
   };
 
   const suffix = unitSystem === 'metric' ? 'cm' : 'in';
@@ -66,7 +62,7 @@ export function BodyFatCalculator() {
         <button type="button" aria-pressed={sex === 'male'} className={sex === 'male' ? 'active' : ''} onClick={() => setSex('male')}>Male equation</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Height" htmlFor="bf-height"><InputShell suffix={suffix}><input id="bf-height" type="number" min="1" step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} /></InputShell></Field>
+        <Field label="Height" htmlFor="bf-height"><InputShell suffix={suffix}><input id="bf-height" type="number" min={heightBounds.min} max={heightBounds.max} step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} /></InputShell></Field>
         <Field label="Neck" htmlFor="bf-neck"><InputShell suffix={suffix}><input id="bf-neck" type="number" min="1" step="0.1" inputMode="decimal" value={neck} onChange={(event) => setNeck(event.target.value)} /></InputShell></Field>
         <Field label="Waist" htmlFor="bf-waist"><InputShell suffix={suffix}><input id="bf-waist" type="number" min="1" step="0.1" inputMode="decimal" value={waist} onChange={(event) => setWaist(event.target.value)} /></InputShell></Field>
         {sex === 'female' && (

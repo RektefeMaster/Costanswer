@@ -27,6 +27,13 @@ const unitSystemSchema = z.enum(['metric', 'us']);
 const activitySchema = z.enum(ACTIVITY_LEVELS as [ActivityLevel, ...ActivityLevel[]]);
 const goalSchema = z.enum(['maintain', 'lose-slow', 'gain-slow']);
 
+/** Canonical adult anthropometric domain (SI). Unit system is presentation only. */
+export const HEALTH_WEIGHT_KG = { min: 30, max: 300 } as const;
+export const HEALTH_HEIGHT_CM = { min: 120, max: 220 } as const;
+export const BMI_WEIGHT_KG = { min: 2, max: 400 } as const;
+export const BMI_HEIGHT_CM = { min: 50, max: 250 } as const;
+export const BODY_FAT_LENGTH_CM = { min: 10, max: 200 } as const;
+
 function toKg(weight: number, system: 'metric' | 'us'): number {
   return system === 'metric' ? weight : convertValue(weight, 'lb', 'kg');
 }
@@ -43,16 +50,38 @@ function toInches(value: number, system: 'metric' | 'us'): number {
   return system === 'metric' ? convertValue(value, 'cm', 'in') : value;
 }
 
+function addCanonicalRangeIssue(
+  context: z.RefinementCtx,
+  path: string,
+  label: string,
+  value: number,
+  range: { min: number; max: number },
+  unit: string,
+) {
+  if (value < range.min || value > range.max) {
+    context.addIssue({
+      code: 'custom',
+      path: [path],
+      message: `${label} must be between ${range.min} and ${range.max} ${unit} (same person, either unit system).`,
+    });
+  }
+}
+
 const HEALTH_ASSUMPTIONS = [
   'This is a formula-based estimate for adults, not a diagnosis or medical advice.',
   'Population-level equations can be a poor fit for children, pregnancy, elite athletes, and some clinical populations.',
   'Talk with a clinician before using a number like this to make a health decision.',
 ];
 
+// Wide raw bounds so US/metric presentation values can round-trip; physical
+// domain is enforced in SI after conversion.
 export const bmiInputSchema = z.object({
   unitSystem: unitSystemSchema,
-  weight: finiteNumber('Weight', 0.1, 500),
-  height: finiteNumber('Height', 1, 300),
+  weight: finiteNumber('Weight', 0.1, 2_000),
+  height: finiteNumber('Height', 0.1, 1_000),
+}).superRefine((input, context) => {
+  addCanonicalRangeIssue(context, 'weight', 'Weight', toKg(input.weight, input.unitSystem), BMI_WEIGHT_KG, 'kg');
+  addCanonicalRangeIssue(context, 'height', 'Height', toCm(input.height, input.unitSystem), BMI_HEIGHT_CM, 'cm');
 });
 
 export function calculateBmi(rawInput: unknown): CalculationResult<{
@@ -94,9 +123,12 @@ const energyBodySchema = z.object({
   unitSystem: unitSystemSchema,
   sex: sexSchema,
   ageYears: finiteNumber('Age', 18, 80).refine(Number.isInteger, 'Age must be a whole number.'),
-  weight: finiteNumber('Weight', 20, 400),
-  height: finiteNumber('Height', 50, 300),
+  weight: finiteNumber('Weight', 0.1, 2_000),
+  height: finiteNumber('Height', 0.1, 1_000),
   activity: activitySchema,
+}).superRefine((input, context) => {
+  addCanonicalRangeIssue(context, 'weight', 'Weight', toKg(input.weight, input.unitSystem), HEALTH_WEIGHT_KG, 'kg');
+  addCanonicalRangeIssue(context, 'height', 'Height', toCm(input.height, input.unitSystem), HEALTH_HEIGHT_CM, 'cm');
 });
 
 function energyBody(input: z.infer<typeof energyBodySchema>) {
@@ -108,6 +140,9 @@ function energyBody(input: z.infer<typeof energyBodySchema>) {
     ageYears: input.ageYears,
     sex: input.sex,
   });
+  if (!(bmr > 0)) {
+    throw new Error('These measurements produce a non-positive energy estimate. Check weight, height, age, and sex.');
+  }
   const tdee = tdeeFromBmr(bmr, input.activity);
   return { weightKg, heightCm, bmr, tdee };
 }
@@ -178,6 +213,9 @@ export function calculateCalorie(rawInput: unknown): CalculationResult<{
   const input = calorieInputSchema.parse(rawInput);
   const { bmr, tdee } = energyBody(input);
   const goalKcal = adjustedDailyCalories(tdee, input.goal);
+  if (!(goalKcal > 0)) {
+    throw new Error('These measurements produce a non-positive calorie estimate. Check weight, height, age, and sex.');
+  }
   return {
     value: {
       maintenanceKcal: round(tdee, 0),
@@ -203,13 +241,19 @@ export function calculateCalorie(rawInput: unknown): CalculationResult<{
 export const bodyFatInputSchema = z.object({
   unitSystem: unitSystemSchema,
   sex: sexSchema,
-  height: finiteNumber('Height', 50, 300),
-  neck: finiteNumber('Neck', 5, 80),
-  waist: finiteNumber('Waist', 10, 200),
-  hip: finiteNumber('Hip', 10, 200).optional(),
+  height: finiteNumber('Height', 0.1, 1_000),
+  neck: finiteNumber('Neck', 0.1, 1_000),
+  waist: finiteNumber('Waist', 0.1, 1_000),
+  hip: finiteNumber('Hip', 0.1, 1_000).optional(),
 }).superRefine((input, context) => {
   if (input.sex === 'female' && input.hip === undefined) {
     context.addIssue({ code: 'custom', path: ['hip'], message: 'Hip measurement is required for the female Navy estimate.' });
+  }
+  addCanonicalRangeIssue(context, 'height', 'Height', toCm(input.height, input.unitSystem), HEALTH_HEIGHT_CM, 'cm');
+  addCanonicalRangeIssue(context, 'neck', 'Neck', toCm(input.neck, input.unitSystem), BODY_FAT_LENGTH_CM, 'cm');
+  addCanonicalRangeIssue(context, 'waist', 'Waist', toCm(input.waist, input.unitSystem), BODY_FAT_LENGTH_CM, 'cm');
+  if (input.hip !== undefined) {
+    addCanonicalRangeIssue(context, 'hip', 'Hip', toCm(input.hip, input.unitSystem), BODY_FAT_LENGTH_CM, 'cm');
   }
 });
 

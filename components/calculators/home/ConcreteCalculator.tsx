@@ -16,9 +16,9 @@ export function ConcreteCalculator() {
   const calculation = useMemo(() => {
     try {
       return { result: calculateConcrete({
-        lengthFeet: Number(length), widthFeet: Number(width), thicknessInches: Number(thickness),
-        wastePercent: Number(waste), bagWeight,
-        ...(pricePerBag.trim() === '' ? {} : { pricePerBag: Number(pricePerBag) }),
+        lengthFeet: length, widthFeet: width, thicknessInches: thickness,
+        wastePercent: waste, bagWeight,
+        ...(pricePerBag.trim() === '' ? {} : { pricePerBag }),
       }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };

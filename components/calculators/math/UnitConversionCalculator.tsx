@@ -26,7 +26,7 @@ export function UnitConversionCalculator() {
 
   const calculation = useMemo(() => {
     try {
-      return { result: calculateUnitConversion({ category, fromUnit, toUnit, value: Number(value) }), error: '' };
+      return { result: calculateUnitConversion({ category, fromUnit, toUnit, value }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

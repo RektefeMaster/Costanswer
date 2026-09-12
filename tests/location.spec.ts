@@ -8,6 +8,7 @@ import { hudSnapshotIsEffectiveOn, resolveEffectiveHudRelease, type HudRelease }
 import { getAcsRow } from '@/lib/data/acs-snapshot';
 import { getBeaMetroRpp, getBeaStateRpp } from '@/lib/data/bea-rpp-snapshot';
 import { beaRppSnapshot } from '@/lib/data/bea-rpp-snapshot';
+import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
 const HUD_RELEASES: HudRelease[] = [
   {
@@ -187,6 +188,12 @@ describe('HUD effective dates', () => {
     const austin2027 = uniqueHudAreaForCounty(resolveHudFmrSnapshot('2026-10-01'), '48453');
     expect(austin2026 === 'ambiguous' || !austin2026 ? null : austin2026.bedrooms.br2).toBe(1852);
     expect(austin2027 === 'ambiguous' || !austin2027 ? null : austin2027.bedrooms.br2).toBe(1817);
+  });
+
+  it('uses the publishing clock for calculators so methodology and COL stay on the same FY', () => {
+    const published = resolveHudFmrSnapshot(PUBLISHING_SNAPSHOT_DATE);
+    expect(hudSnapshotIsEffectiveOn(published, PUBLISHING_SNAPSHOT_DATE)).toBe(true);
+    expect(resolveHudFmrSnapshot()).toEqual(published);
   });
 });
 

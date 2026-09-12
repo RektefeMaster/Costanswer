@@ -55,7 +55,11 @@ export function calculateQuarterlyEstimatedTax(rawInput: unknown): CalculationRe
     : rules.priorYearSafeHarborRate;
   const currentYearSafeHarbor = input.expectedCurrentYearTax * rules.currentYearSafeHarborRate;
   const priorYearSafeHarbor = input.priorYearTax * priorYearRate;
-  const requiredAnnualPayment = Math.min(currentYearSafeHarbor, priorYearSafeHarbor);
+  // A $0 prior-year tax cannot be a safe harbor floor — that would zero out
+  // estimated payments for filers who owed nothing last year but owe this year.
+  const requiredAnnualPayment = input.priorYearTax <= 0
+    ? currentYearSafeHarbor
+    : Math.min(currentYearSafeHarbor, priorYearSafeHarbor);
   const owedAfterWithholding = Math.max(0, input.expectedCurrentYearTax - input.expectedWithholdingAndRefundableCredits);
   const paymentsRequired = owedAfterWithholding >= rules.minimumTaxToOwe
     && input.expectedWithholdingAndRefundableCredits < requiredAnnualPayment;
@@ -105,7 +109,13 @@ export function calculateQuarterlyEstimatedTax(rawInput: unknown): CalculationRe
           ? `Prior-year AGI is over ${formatMoney(highIncomeThreshold)} for ${FILING_STATUS_LABELS[input.filingStatus]}, so the 110% rule applies`
           : 'Regular 100% prior-year safe harbor',
       },
-      { label: 'Required annual payment', value: formatMoney(requiredAnnualPayment), detail: 'The smaller of those two figures' },
+      {
+        label: 'Required annual payment',
+        value: formatMoney(requiredAnnualPayment),
+        detail: input.priorYearTax <= 0
+          ? 'Prior-year tax was $0, so only the current-year safe harbor applies'
+          : 'The smaller of those two figures',
+      },
       {
         label: 'Withholding and refundable credits',
         value: formatMoney(input.expectedWithholdingAndRefundableCredits),

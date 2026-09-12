@@ -39,14 +39,14 @@ export function PaycheckCalculator() {
       return {
         result: calculatePaycheck({
           payFrequency,
-          amount: payFrequency === 'hourly' ? undefined : Number(amount),
-          hourlyRate: payFrequency === 'hourly' ? Number(hourlyRate) : undefined,
-          hoursPerWeek: payFrequency === 'hourly' ? Number(hoursPerWeek) : undefined,
-          weeksPerYear: payFrequency === 'hourly' ? Number(weeksPerYear) : undefined,
+          amount: payFrequency === 'hourly' ? undefined : amount,
+          hourlyRate: payFrequency === 'hourly' ? hourlyRate : undefined,
+          hoursPerWeek: payFrequency === 'hourly' ? hoursPerWeek : undefined,
+          weeksPerYear: payFrequency === 'hourly' ? weeksPerYear : undefined,
           state: stateCode,
           filingStatus,
-          taxYear: Number(taxYear),
-          dependents: Number(dependents),
+          taxYear,
+          dependents,
         }),
         error: '',
       };

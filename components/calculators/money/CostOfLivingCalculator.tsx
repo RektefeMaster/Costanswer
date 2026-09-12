@@ -142,32 +142,32 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
         residentialState: residentialState || undefined,
         countyGeoid: countyGeoid || undefined,
         bedrooms,
-        adults: Number(adults),
-        children: Number(children),
+        adults,
+        children,
         foodPlan,
         housingMode,
         incomeMode,
         transportMode,
       };
-      if (housingMode === 'manual') payload.manualHousing = Number(manualHousing);
-      if (otherEssentials.trim() !== '') payload.otherEssentials = Number(otherEssentials);
-      if (incomeMode === 'take-home') payload.monthlyTakeHome = Number(monthlyTakeHome);
+      if (housingMode === 'manual') payload.manualHousing = manualHousing;
+      if (otherEssentials.trim() !== '') payload.otherEssentials = otherEssentials;
+      if (incomeMode === 'take-home') payload.monthlyTakeHome = monthlyTakeHome;
       if (incomeMode === 'gross-salary') {
-        payload.annualGrossSalary = Number(annualGrossSalary);
+        payload.annualGrossSalary = annualGrossSalary;
         payload.filingStatus = filingStatus;
       }
-      if (transportMode === 'none' && manualTransport.trim() !== '') payload.manualTransport = Number(manualTransport);
-      if (transportMode === 'manual') payload.manualTransport = Number(manualTransport);
+      if (transportMode === 'none' && manualTransport.trim() !== '') payload.manualTransport = manualTransport;
+      if (transportMode === 'manual') payload.manualTransport = manualTransport;
       if (transportMode === 'gas' || transportMode === 'ev') {
-        payload.annualMiles = Number(annualMiles);
-        payload.monthlyInsurance = Number(monthlyInsurance);
-        payload.monthlyMaintenance = Number(monthlyMaintenance);
-        payload.annualRegistration = Number(annualRegistration);
+        payload.annualMiles = annualMiles;
+        payload.monthlyInsurance = monthlyInsurance;
+        payload.monthlyMaintenance = monthlyMaintenance;
+        payload.annualRegistration = annualRegistration;
       }
-      if (transportMode === 'gas') payload.mpg = Number(mpg);
+      if (transportMode === 'gas') payload.mpg = mpg;
       if (transportMode === 'ev') {
-        payload.kwhPer100Miles = Number(kwhPer100Miles);
-        payload.chargingLossPercent = Number(chargingLossPercent);
+        payload.kwhPer100Miles = kwhPer100Miles;
+        payload.chargingLossPercent = chargingLossPercent;
       }
       return { result: calculateCostOfLivingFromCoverage(payload, coverage.value), error: '' };
     } catch (error) {

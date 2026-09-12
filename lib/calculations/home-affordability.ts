@@ -370,15 +370,28 @@ function stressForThisHouse(input: ThisHouseInput, housing: HousingCostParts): A
 }
 
 function roundHousing(housing: HousingCostParts): HousingCostParts {
+  const monthlyPrincipalAndInterest = round(housing.monthlyPrincipalAndInterest);
+  const monthlyPropertyTax = round(housing.monthlyPropertyTax);
+  const monthlyInsurance = round(housing.monthlyInsurance);
+  const monthlyHoa = round(housing.monthlyHoa);
+  const monthlyPmi = round(housing.monthlyPmi);
+  const monthlyMaintenance = round(housing.monthlyMaintenance);
   return {
     loanAmount: round(housing.loanAmount),
-    monthlyPrincipalAndInterest: round(housing.monthlyPrincipalAndInterest),
-    monthlyPropertyTax: round(housing.monthlyPropertyTax),
-    monthlyInsurance: round(housing.monthlyInsurance),
-    monthlyHoa: round(housing.monthlyHoa),
-    monthlyPmi: round(housing.monthlyPmi),
-    monthlyMaintenance: round(housing.monthlyMaintenance),
-    monthlyHousingTotal: round(housing.monthlyHousingTotal),
+    monthlyPrincipalAndInterest,
+    monthlyPropertyTax,
+    monthlyInsurance,
+    monthlyHoa,
+    monthlyPmi,
+    monthlyMaintenance,
+    // Sum rounded lines so the headline matches a receipt add-up (no cent drift).
+    monthlyHousingTotal:
+      monthlyPrincipalAndInterest
+      + monthlyPropertyTax
+      + monthlyInsurance
+      + monthlyHoa
+      + monthlyPmi
+      + monthlyMaintenance,
     loanToValuePercent: round(housing.loanToValuePercent, 1),
   };
 }

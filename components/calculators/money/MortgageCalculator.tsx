@@ -42,13 +42,13 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
     try {
       return {
         result: calculateMortgage({
-          homePrice: Number(homePrice),
-          downPayment: Number(downPayment),
+          homePrice,
+          downPayment,
           termYears,
-          annualRatePercent: Number(annualRatePercent),
-          annualPropertyTax: Number(annualPropertyTax),
-          annualHomeInsurance: Number(annualHomeInsurance),
-          monthlyHoa: Number(monthlyHoa),
+          annualRatePercent,
+          annualPropertyTax,
+          annualHomeInsurance,
+          monthlyHoa,
           includePmiEstimate,
         }, rateTouched ? undefined : rates.snapshotId),
         error: '',

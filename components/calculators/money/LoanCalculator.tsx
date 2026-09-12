@@ -10,42 +10,70 @@ function money(value: number, digits = 2) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: digits });
 }
 
+function formatTermDisplay(termMonths: number, termUnit: 'years' | 'months'): string {
+  if (termUnit === 'months') return String(termMonths);
+  const years = termMonths / 12;
+  return Number.isInteger(years) ? String(years) : String(Math.round(years * 100) / 100);
+}
+
 export function LoanCalculator() {
+  // Canonical term is always months so Years↔Months is a presentation toggle only.
+  const [termMonths, setTermMonths] = useState(60);
+  const [termUnit, setTermUnit] = useState<'years' | 'months'>('years');
+  const [termDraft, setTermDraft] = useState(() => formatTermDisplay(60, 'years'));
   const [loanAmount, setLoanAmount] = useState('20000');
   const [annualRatePercent, setAnnualRatePercent] = useState('8');
-  const [termLength, setTermLength] = useState('5');
-  const [termUnit, setTermUnit] = useState<'years' | 'months'>('years');
   const [extraMonthlyPayment, setExtraMonthlyPayment] = useState('0');
 
   const setUnit = (next: 'years' | 'months') => {
     if (next === termUnit) return;
-    if (next === 'months' && termUnit === 'years') {
-      const years = Number(termLength);
-      if (Number.isFinite(years) && years > 0) setTermLength(String(Math.round(years * 12)));
-    }
-    if (next === 'years' && termUnit === 'months') {
-      const months = Number(termLength);
-      if (Number.isFinite(months) && months > 0) setTermLength(String(Math.max(1, Math.round(months / 12))));
-    }
     setTermUnit(next);
+    setTermDraft(formatTermDisplay(termMonths, next));
   };
 
+  const onTermChange = (raw: string) => {
+    setTermDraft(raw);
+    const trimmed = raw.trim();
+    if (trimmed === '' || !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(trimmed)) return;
+    const value = Number(trimmed);
+    if (!Number.isFinite(value) || value <= 0) return;
+    if (termUnit === 'months') {
+      setTermMonths(Math.max(1, Math.min(480, Math.round(value))));
+      return;
+    }
+    setTermMonths(Math.max(1, Math.min(480, Math.round(value * 12))));
+  };
+
+  const termDraftMatchesCanonical = (() => {
+    const trimmed = termDraft.trim();
+    if (trimmed === '' || !/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(trimmed)) return false;
+    const value = Number(trimmed);
+    if (!Number.isFinite(value) || value <= 0) return false;
+    const months = termUnit === 'months'
+      ? Math.max(1, Math.min(480, Math.round(value)))
+      : Math.max(1, Math.min(480, Math.round(value * 12)));
+    return months === termMonths;
+  })();
+
   const calculation = useMemo(() => {
+    if (!termDraftMatchesCanonical) {
+      return { result: null, error: 'Loan term must be a number.' };
+    }
     try {
       return {
         result: calculateLoan({
-          loanAmount: Number(loanAmount),
-          annualRatePercent: Number(annualRatePercent),
-          termLength: Number(termLength),
-          termUnit,
-          extraMonthlyPayment: Number(extraMonthlyPayment),
+          loanAmount,
+          annualRatePercent,
+          termLength: termMonths,
+          termUnit: 'months',
+          extraMonthlyPayment,
         }),
         error: '',
       };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [loanAmount, annualRatePercent, termLength, termUnit, extraMonthlyPayment]);
+  }, [loanAmount, annualRatePercent, termMonths, extraMonthlyPayment, termDraftMatchesCanonical]);
 
   return (
     <CalculatorPanel
@@ -54,7 +82,7 @@ export function LoanCalculator() {
       toolId="loan"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([loanAmount, annualRatePercent, termLength, termUnit, extraMonthlyPayment])}
+      calculationSignature={JSON.stringify([loanAmount, annualRatePercent, termMonths, termUnit, extraMonthlyPayment])}
     >
       <div className="mode-tabs" role="group" aria-label="Loan term unit">
         <button type="button" aria-pressed={termUnit === 'years'} className={termUnit === 'years' ? 'active' : ''} onClick={() => setUnit('years')}>Years</button>
@@ -73,7 +101,16 @@ export function LoanCalculator() {
         </Field>
         <Field label={termUnit === 'years' ? 'Term in years' : 'Term in months'} htmlFor="loan-term">
           <InputShell suffix={termUnit}>
-            <input id="loan-term" type="number" min="1" max={termUnit === 'years' ? 40 : 480} step="1" inputMode="numeric" value={termLength} onChange={(event) => setTermLength(event.target.value)} />
+            <input
+              id="loan-term"
+              type="number"
+              min={termUnit === 'years' ? 1 / 12 : 1}
+              max={termUnit === 'years' ? 40 : 480}
+              step={termUnit === 'years' ? 0.01 : 1}
+              inputMode="decimal"
+              value={termDraft}
+              onChange={(event) => onTermChange(event.target.value)}
+            />
           </InputShell>
         </Field>
         <Field label="Extra monthly principal" htmlFor="loan-extra" hint="Optional">
@@ -98,7 +135,13 @@ export function LoanCalculator() {
             { label: 'Total repayment', value: money(calculation.result.value.totalRepayment, 0), note: `${money(calculation.result.value.totalPrincipal, 0)} principal` },
             { label: 'First payment interest', value: money(calculation.result.value.firstPayment.interest), note: `${money(calculation.result.value.firstPayment.principal)} to principal` },
           ]} />
-          <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
+          <ResultDetails
+            breakdown={calculation.result.breakdown}
+            assumptions={calculation.result.assumptions}
+            calculationVersion={calculation.result.calculationVersion}
+            datasetSnapshotIds={calculation.result.datasetSnapshotIds}
+            headline={{ label: 'Estimated monthly payment', value: money(calculation.result.value.monthlyPayment) }}
+          />
         </div>
       )}
     </CalculatorPanel>

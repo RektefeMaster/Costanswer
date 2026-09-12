@@ -16,11 +16,11 @@ export function RothIraCalculator() {
     try {
       return {
         result: calculateRothIra({
-          currentBalance: Number(currentBalance),
-          monthlyContribution: Number(monthlyContribution),
-          years: Number(years),
-          assumedReturnPercent: Number(assumedReturnPercent),
-          currentAge: Number(currentAge),
+          currentBalance,
+          monthlyContribution,
+          years,
+          assumedReturnPercent,
+          currentAge,
         }),
         error: '',
       };

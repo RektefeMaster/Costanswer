@@ -37,11 +37,11 @@ export function EffectiveTaxRateCalculator() {
     try {
       return {
         result: calculateEffectiveTaxRate({
-          annualGrossSalary: Number(annualGrossSalary),
+          annualGrossSalary,
           state: stateCode,
           filingStatus,
-          taxYear: Number(taxYear),
-          dependents: Number(dependents),
+          taxYear,
+          dependents,
         }),
         error: '',
       };

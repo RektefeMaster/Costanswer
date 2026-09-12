@@ -17,10 +17,10 @@ export function CreditCardPayoffCalculator() {
       return {
         result: calculateCreditCardPayoff({
           mode,
-          balance: Number(balance),
-          aprPercent: Number(aprPercent),
-          monthlyPayment: Number(monthlyPayment),
-          targetMonths: Number(targetMonths),
+          balance,
+          aprPercent,
+          monthlyPayment,
+          targetMonths,
         }),
         error: '',
       };

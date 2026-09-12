@@ -15,7 +15,7 @@ export function PercentageCalculator() {
   const [second, setSecond] = useState('200');
   const calculation = useMemo(() => {
     try {
-      return { result: calculatePercentage({ mode, first: Number(first), second: Number(second) }), error: '' };
+      return { result: calculatePercentage({ mode, first, second }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
@@ -61,7 +61,7 @@ export function PercentChangeCalculator() {
   const [newValue, setNewValue] = useState('100');
   const calculation = useMemo(() => {
     try {
-      return { result: calculatePercentChange({ oldValue: Number(oldValue), newValue: Number(newValue) }), error: '' };
+      return { result: calculatePercentChange({ oldValue, newValue }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
@@ -97,7 +97,7 @@ export function FractionCalculator() {
   const [rd, setRd] = useState('3');
   const calculation = useMemo(() => {
     try {
-      return { result: calculateFraction({ operation, left: { numerator: Number(ln), denominator: Number(ld) }, right: { numerator: Number(rn), denominator: Number(rd) } }), error: '' };
+      return { result: calculateFraction({ operation, left: { numerator: ln, denominator: ld }, right: { numerator: rn, denominator: rd } }), error: '' };
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }

@@ -40,10 +40,10 @@ export function QuarterlyEstimatedTaxCalculator() {
     try {
       return {
         result: calculateQuarterlyEstimatedTax({
-          expectedCurrentYearTax: Number(expectedCurrentYearTax),
-          priorYearTax: Number(priorYearTax),
-          priorYearAgi: Number(priorYearAgi),
-          expectedWithholdingAndRefundableCredits: Number(expectedWithholdingAndRefundableCredits),
+          expectedCurrentYearTax,
+          priorYearTax,
+          priorYearAgi,
+          expectedWithholdingAndRefundableCredits,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
         }),

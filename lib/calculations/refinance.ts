@@ -6,10 +6,10 @@ import { REFINANCE_ENGINE_ID } from './finance/version';
 export const refinanceInputSchema = z.object({
   currentBalance: finiteNumber('Current loan balance', 1, 100_000_000),
   currentRatePercent: finiteNumber('Current interest rate', 0, 25),
-  currentTermYears: finiteNumber('Original term', 1, 50),
+  currentTermYears: finiteNumber('Original term', 1, 50).refine(Number.isInteger, 'Original term must be a whole number of years.'),
   monthsAlreadyPaid: finiteNumber('Months already paid', 0, 600).refine(Number.isInteger, 'Payments already made must be a whole number of months.'),
   newRatePercent: finiteNumber('New interest rate', 0, 25),
-  newTermYears: finiteNumber('New term', 1, 50),
+  newTermYears: finiteNumber('New term', 1, 50).refine(Number.isInteger, 'New term must be a whole number of years.'),
   closingCosts: finiteNumber('Closing costs', 0, 1_000_000),
   /** Rolling costs into the loan means borrowing them, not avoiding them. */
   financeClosingCosts: z.boolean(),
