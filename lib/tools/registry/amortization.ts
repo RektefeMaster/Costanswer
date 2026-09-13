@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { AMORTIZATION_ENGINE_ID } from '../../calculations/finance/version';
 
 export const tool: ToolDefinition = {
@@ -15,6 +16,7 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('A schedule is the closed-form payment applied period by period.'),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'loan', type: 'uses-engine' },

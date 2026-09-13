@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { DAYS_FROM_TODAY_ENGINE_ID } from '../../calculations/datetime/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,7 @@ export const tool: ToolDefinition = {
   accent: 'rose',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Adding days to a date is calendar arithmetic.'),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'date', type: 'sibling' },

@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'unit-price',
@@ -25,6 +26,7 @@ export const tool: ToolDefinition = {
   accent: 'violet',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Price per unit is price ÷ quantity, once the units are normalised.'),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'recipe-scaler', type: 'uses-engine' },

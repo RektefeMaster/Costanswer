@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { RMD_ENGINE_ID } from '../../calculations/rmd';
 
 export const tool: ToolDefinition = {
@@ -22,6 +23,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['irs-rmd-tables'],
+    note: 'The denominator is a published life-expectancy factor. A remembered 27.4, or last year’s table, is not this year’s RMD.',
+  }),
   metaTitle: 'RMD Calculator Using the IRS Uniform Lifetime Table',
   metaDescription: 'Divide last year’s IRA balance by the IRS Table III factor for your age in 2026. Starting ages follow SECURE 2.0. Not Table II, and not an inherited-IRA 10-year rule.',
   indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, implementationConfidence: 5 }, 'verified'),

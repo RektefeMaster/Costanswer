@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'inflation',
@@ -23,6 +24,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['bls-cpi'],
+    note: 'The whole answer is a ratio of two published CPI-U index values.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'hourly-to-salary', type: 'sibling' },

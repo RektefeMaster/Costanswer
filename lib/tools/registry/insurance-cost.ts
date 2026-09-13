@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithBenchmark } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'insurance-cost',
@@ -14,6 +15,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: formulaWithBenchmark({
+    optional: ['naic-insurance'],
+    note: 'The budget arithmetic is yours: premium, deductible and the months you are covering. The state average is printed beside it and drops out cleanly.',
+  }),
   metaTitle: 'Insurance Cost Calculator: Home, Renters & Auto by State',
   metaDescription: 'Calculate a home, renters, and auto insurance budget using dated NAIC state averages or your own quotes. Compare premiums and deductibles with transparent math.',
   indexability: { ...launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'), reviewedAt: '2026-09-05', reviewValidUntil: '2027-03-05' },

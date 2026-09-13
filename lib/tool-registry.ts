@@ -10,13 +10,23 @@
 import { CATEGORY_IDS, type CategoryId } from './categories';
 import { CLUSTER_IDS, TOOL_CLUSTERS, clusterNeighbours, clustersForTool } from './clusters';
 import { parsePublishingDate, PUBLISHING_SNAPSHOT_DATE } from './publishing';
+import { assertToolDataManifest } from './tools/data-manifest';
 import { registryTools } from './tools/registry';
 import type { IndexabilityEvidence, ToolDefinition } from './tools/types';
 
 export { CATEGORY_IDS, HEADER_CATEGORY_IDS, categories } from './categories';
 export type { CategoryAccent, CategoryId } from './categories';
 export { launchIndexability } from './tools/indexability';
-export type { IndexabilityEvidence, ResultNature, ToolDefinition, ToolRelationship } from './tools/types';
+export {
+  assertToolDataManifest,
+  formulaOnly,
+  formulaWithBenchmark,
+  formulaWithDefault,
+  manifestDatasetIds,
+  manifestSourceIds,
+  requiresOfficialData,
+} from './tools/data-manifest';
+export type { DataFallback, IndexabilityEvidence, ResultNature, ToolDataManifest, ToolDefinition, ToolRelationship } from './tools/types';
 export { RESULT_NATURES } from './tools/types';
 
 export const tools: ToolDefinition[] = registryTools;
@@ -44,6 +54,7 @@ export function assertToolRegistryIntegrity(): void {
   for (const tool of tools) {
     if (clustersForTool(tool.id).length === 0) throw new Error(`${tool.id} is not in any topic cluster.`);
   }
+  for (const tool of tools) assertToolDataManifest(tool);
 }
 
 assertToolRegistryIntegrity();

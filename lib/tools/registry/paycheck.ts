@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { PAYCHECK_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'Per-period withholding is federal and state schedules applied to one pay period. Neither can be inferred.',
+  }),
   metaTitle: 'Estimated Paycheck Calculator: Weekly, Biweekly, and Monthly Take-Home',
   metaDescription: 'Estimate a U.S. net paycheck by spreading an annual federal, FICA, and state tax estimate across pay periods. A real stub uses a W-4 and IRS tables instead.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

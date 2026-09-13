@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithDefault } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'home-affordability',
@@ -23,11 +24,20 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'planning-model',
+  data: formulaWithDefault({
+    optional: ['freddie-mac-pmms'],
+    note: 'The ratios and the payment maths are yours. The survey rate is a default for the payment the model prices.',
+    modeled: [{
+      label: 'The affordability bands',
+      why: 'Comfortable, reasonable and stretched are CostAnswer thresholds on housing and total-debt ratios. They are not a lender’s underwriting rule and no lender has agreed to them.',
+    }],
+  }),
   metaTitle: 'Home Affordability Calculator Using Take-Home Pay',
   metaDescription: 'See whether a U.S. house fits take-home pay, or a comfortable / stretch / aggressive price from net pay, debts, and the national average mortgage rate. Not a lender DTI.',
   indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'mortgage-payment', type: 'uses-engine' },
+    { toolId: 'conforming-loan-limit', type: 'next-decision' },
     { toolId: 'hourly-to-salary', type: 'sibling' },
     { toolId: 'cost-of-living', type: 'next-decision' },
   ],

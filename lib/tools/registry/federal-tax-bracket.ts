@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { FEDERAL_BRACKET_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -26,6 +27,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'The page exists to show the published brackets. Without them there is no page.',
+  }),
   metaTitle: 'Federal Tax Bracket Calculator 2026: Which Band Your Income Falls In',
   metaDescription: 'See your 2026 federal tax bracket, how much of your income is taxed at each rate, and how far you are from the next band. Brackets from IRS Rev. Proc. 2025-32.',
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 20, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

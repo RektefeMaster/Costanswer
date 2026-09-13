@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { SCIENTIFIC_ENGINE_ID } from '../../calculations/math/version';
 
 export const tool: ToolDefinition = {
@@ -15,6 +16,7 @@ export const tool: ToolDefinition = {
   accent: 'violet',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('A scientific calculator evaluates the expression entered.'),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percentage', type: 'sibling' },

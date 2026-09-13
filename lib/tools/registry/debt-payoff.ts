@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { DEBT_PAYOFF_ENGINE_ID } from '../../calculations/finance/version';
 
 export const tool: ToolDefinition = {
@@ -23,6 +24,7 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Avalanche and snowball are orderings of the debts you list.'),
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'loan', type: 'sibling' },

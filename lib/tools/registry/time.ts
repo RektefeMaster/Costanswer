@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { TIME_ENGINE_ID } from '../../calculations/datetime/version';
 
 export const tool: ToolDefinition = {
@@ -15,6 +16,7 @@ export const tool: ToolDefinition = {
   accent: 'rose',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Time arithmetic is defined by the units.'),
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'time-card', type: 'sibling' },

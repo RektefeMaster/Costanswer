@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { BONUS_TAX_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -28,6 +29,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'Supplemental withholding is a published IRS rate. Without the 2026 tables there is no withholding figure to give, and last year’s rate would be a wrong answer rather than an old one.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 13, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'salary-after-tax', type: 'uses-dataset' },

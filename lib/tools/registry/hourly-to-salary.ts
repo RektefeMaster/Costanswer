@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'hourly-to-salary',
@@ -24,6 +25,7 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Hours, weeks and a rate. The conversion is defined by the numbers entered.'),
   metaTitle: 'Hourly to Salary Calculator: Weekly, Monthly, and Yearly Gross Pay',
   metaDescription: 'Convert a U.S. hourly wage into weekly, monthly, and yearly gross pay. Overtime is a separate line. This is before tax. Use salary after tax for take-home.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

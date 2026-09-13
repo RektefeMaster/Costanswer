@@ -14,6 +14,8 @@ import { breadcrumbJsonLd, toolArticleJsonLd, toolJsonLd } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
 import { getToolEditorial } from '@/lib/tool-content';
 import { categories, getRelatedTools, getToolClusters, type ResultNature, type ToolDefinition } from '@/lib/tool-registry';
+import type { DataSourceId } from '@/lib/data/data-sources';
+import { calculationReceipt, receiptSummary } from '@/lib/tools/receipt';
 
 export type SourceItem = {
   name: string;
@@ -28,6 +30,12 @@ type ToolPageProps = {
   methodology: Array<{ title: string; body: string }>;
   sources?: SourceItem[];
   caution?: string;
+  /**
+   * Observation period or effective version per source, when the page already
+   * holds the snapshot. Purely to sharpen the receipt: a page that does not
+   * pass one still names the source and its kind.
+   */
+  sourcePeriods?: Partial<Record<DataSourceId, string>>;
 };
 
 /**
@@ -65,8 +73,14 @@ const RESULT_NOTES: Record<ResultNature, { heading: string; body: string }> = {
   },
 };
 
-export async function ToolPage({ tool, children, methodology, sources = [], caution }: ToolPageProps) {
+export async function ToolPage({ tool, children, methodology, sources = [], caution, sourcePeriods }: ToolPageProps) {
   const category = categories[tool.category];
+  /*
+   * Built from the tool's own data manifest rather than hand-listed per page,
+   * so a tool cannot claim a source it does not read and cannot quietly gain a
+   * dependency without the receipt saying so.
+   */
+  const receipt = calculationReceipt({ manifest: tool.data, periods: sourcePeriods });
   const related = getRelatedTools(tool);
   // Naming the journey the reader is on gives the related block a reason to
   // exist beyond "more of the same category".
@@ -163,6 +177,36 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
             <AdSlot placement="desktop-rail" pageId={tool.id} />
           </aside>
         </div>
+
+        <section className="receipt-section" aria-labelledby="receipt-title">
+          <div>
+            <p className="eyebrow muted"><span /> Calculation receipt</p>
+            <h2 id="receipt-title">What each number here is</h2>
+            <p className="receipt-lede">{receiptSummary(tool.data)}</p>
+          </div>
+          <div className="receipt-list">
+            {receipt.length === 0 ? (
+              <p className="receipt-empty">{tool.data.fallbackBehavior.note}</p>
+            ) : (
+              <dl>
+                {receipt.map((line) => (
+                  <div className={`receipt-row receipt-${line.provenanceClass}`} key={`${line.provenanceClass}-${line.source}`}>
+                    <dt>
+                      <b>{line.classWord}</b>
+                      <span>{line.source}{line.period ? ` · ${line.period}` : ''}</span>
+                    </dt>
+                    <dd>{line.role}</dd>
+                  </div>
+                ))}
+              </dl>
+            )}
+            {tool.data.requiresData && (
+              <p className="receipt-fallback">
+                <strong>If a source above is unavailable or out of date:</strong> {tool.data.fallbackBehavior.note}
+              </p>
+            )}
+          </div>
+        </section>
 
         {sources.length > 0 && (
           <section className="sources-section" aria-labelledby="sources-title">

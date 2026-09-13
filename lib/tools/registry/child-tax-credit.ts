@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { CHILD_TAX_CREDIT_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -26,6 +27,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'Credit amounts and phase-out thresholds are set by statute and published each year. There is nothing to compute without them.',
+  }),
   metaTitle: 'Child Tax Credit Calculator 2026: $2,200 and ACTC',
   metaDescription: 'Estimate the 2026 child tax credit of up to $2,200 per qualifying child, the $500 other-dependent credit, and the additional child tax credit. Phase-out from Schedule 8812.',
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 23, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

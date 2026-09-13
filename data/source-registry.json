@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "generatedAt": "2026-09-06",
-  "note": "Machine-readable index of every data source CostAnswer uses, evaluates or has rejected. Licence fields are read from the source's own LICENSE/terms, never inferred from a repository name or from memory. A source may not enter production unless commercialUse is 'permitted'.",
+  "generatedAt": "2026-09-08",
+  "note": "Machine-readable index of every data source CostAnswer uses, evaluates or has rejected. Licence fields are read from the source's own LICENSE/terms, never inferred from a repository name or from memory. A source may not enter production unless commercialUse is 'permitted'. `tier` says what role a figure from this source plays in an answer, which is what decides the word printed beside it on a calculation receipt; `lib/data/data-sources.ts` is the code that reads it and the two are asserted to agree. A row with `partOf` is one document inside a compiled source: the tax snapshot is transcribed from several IRS publications and 51 state revenue departments, and ships as one source called `us-tax`.",
   "trustLevels": {
     "primary": "The body that creates the number. Its own publication is the authority.",
     "secondary": "Republishes or compiles primary figures. Usable to find and cross-check, never as the final value.",
@@ -14,246 +14,418 @@
       "name": "BLS Occupational Employment and Wage Statistics",
       "owner": "U.S. Bureau of Labor Statistics",
       "url": "https://www.bls.gov/oes/",
-      "categories": ["labor", "wages", "occupations"],
+      "categories": [
+        "labor",
+        "wages",
+        "occupations"
+      ],
       "geography": "national, state, metro",
       "version": "May 2025 reference period",
       "updateFrequency": "annual",
-      "formats": ["xlsx", "zip"],
+      "formats": [
+        "xlsx",
+        "zip"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Bureau of Labor Statistics, Occupational Employment and Wage Statistics",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["annual and hourly wage percentiles", "employment", "location quotient"],
-      "consumers": ["salary-engine", "job-cost-engine:labor"],
+      "usefulFields": [
+        "annual and hourly wage percentiles",
+        "employment",
+        "location quotient"
+      ],
+      "consumers": [
+        "salary-engine",
+        "job-cost-engine:labor"
+      ],
       "validationSource": "self",
-      "limitations": ["Suppressed estimates for small cells", "Metro release is 40 MB and needs tier-2 storage"],
-      "lastVerified": "2026-09-05"
+      "limitations": [
+        "Suppressed estimates for small cells",
+        "Metro release is 40 MB and needs tier-2 storage"
+      ],
+      "lastVerified": "2026-09-05",
+      "tier": "B"
     },
     {
       "id": "bls-cpi",
       "name": "BLS Consumer Price Index (CPI-U)",
       "owner": "U.S. Bureau of Labor Statistics",
       "url": "https://www.bls.gov/cpi/",
-      "categories": ["inflation", "time-normalization"],
+      "categories": [
+        "inflation",
+        "time-normalization"
+      ],
       "geography": "national",
       "version": "monthly series since 1913",
       "updateFrequency": "monthly",
-      "formats": ["flat file", "api"],
+      "formats": [
+        "flat file",
+        "api"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Bureau of Labor Statistics",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["all-items index"],
-      "consumers": ["inflation", "job-cost-engine:time-normalization"],
+      "usefulFields": [
+        "all-items index"
+      ],
+      "consumers": [
+        "inflation",
+        "job-cost-engine:time-normalization"
+      ],
       "validationSource": "self",
-      "limitations": ["Not construction-specific; PPI is the right index for materials"],
-      "lastVerified": "2026-09-02"
+      "limitations": [
+        "Not construction-specific; PPI is the right index for materials"
+      ],
+      "lastVerified": "2026-09-02",
+      "tier": "B"
     },
     {
       "id": "bls-ppi",
       "name": "BLS Producer Price Index",
       "owner": "U.S. Bureau of Labor Statistics",
       "url": "https://www.bls.gov/ppi/",
-      "categories": ["material-prices", "construction-inputs", "time-normalization"],
+      "categories": [
+        "material-prices",
+        "construction-inputs",
+        "time-normalization"
+      ],
       "geography": "national",
       "version": "monthly",
       "updateFrequency": "monthly",
-      "formats": ["api", "flat file"],
+      "formats": [
+        "api",
+        "flat file"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Bureau of Labor Statistics, Producer Price Index",
       "trustLevel": "primary",
-      "status": "planned",
-      "usefulFields": ["commodity indexes for lumber, roofing, concrete, HVAC equipment"],
-      "consumers": ["job-cost-engine:materials"],
+      "status": "integrated",
+      "usefulFields": [
+        "commodity indexes for lumber, roofing, concrete, HVAC equipment"
+      ],
+      "consumers": [
+        "job-cost-engine:materials"
+      ],
       "validationSource": "self",
-      "limitations": ["Gives movement, not an absolute retail price"],
-      "lastVerified": "2026-09-06"
+      "limitations": [
+        "Gives movement, not an absolute retail price"
+      ],
+      "lastVerified": "2026-09-08",
+      "tier": "B"
     },
     {
       "id": "bls-ecec",
       "name": "BLS Employer Costs for Employee Compensation",
       "owner": "U.S. Bureau of Labor Statistics",
       "url": "https://www.bls.gov/ncs/ect/",
-      "categories": ["labor-burden", "benefits"],
+      "categories": [
+        "labor-burden",
+        "benefits"
+      ],
       "geography": "national, region",
       "version": "quarterly",
       "updateFrequency": "quarterly",
-      "formats": ["api", "flat file"],
+      "formats": [
+        "api",
+        "flat file"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Bureau of Labor Statistics",
       "trustLevel": "primary",
-      "status": "planned",
-      "usefulFields": ["wages as a share of total compensation, by industry"],
-      "consumers": ["job-cost-engine:labor"],
+      "status": "integrated",
+      "usefulFields": [
+        "wages as a share of total compensation, by industry"
+      ],
+      "consumers": [
+        "job-cost-engine:labor"
+      ],
       "validationSource": "self",
-      "limitations": ["Industry aggregates, not trade-specific crews"],
-      "lastVerified": "2026-09-06"
+      "limitations": [
+        "Industry aggregates, not trade-specific crews"
+      ],
+      "lastVerified": "2026-09-08",
+      "tier": "B"
     },
     {
       "id": "bea-rpp",
       "name": "BEA Regional Price Parities",
       "owner": "U.S. Bureau of Economic Analysis",
       "url": "https://www.bea.gov/data/prices-inflation/regional-price-parities-state-and-metro-area",
-      "categories": ["cost-of-living", "geographic-adjustment"],
+      "categories": [
+        "cost-of-living",
+        "geographic-adjustment"
+      ],
       "geography": "state, metro",
       "version": "2024",
       "updateFrequency": "annual",
-      "formats": ["api", "csv"],
+      "formats": [
+        "api",
+        "csv"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Bureau of Economic Analysis",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["all-items and services price parity by area"],
-      "consumers": ["salary-engine", "cost-of-living", "job-cost-engine:location"],
+      "usefulFields": [
+        "all-items and services price parity by area"
+      ],
+      "consumers": [
+        "salary-engine",
+        "cost-of-living",
+        "job-cost-engine:location"
+      ],
       "validationSource": "self",
-      "limitations": ["Whole-basket parity, not a construction-cost index"],
-      "lastVerified": "2026-09-03"
+      "limitations": [
+        "Whole-basket parity, not a construction-cost index"
+      ],
+      "lastVerified": "2026-09-03",
+      "tier": "B"
     },
     {
       "id": "irs-federal-tax",
       "name": "IRS annual inflation adjustments and Publication 15",
       "owner": "Internal Revenue Service",
       "url": "https://www.irs.gov/pub/irs-drop/rp-25-32.pdf",
-      "categories": ["federal-tax", "withholding"],
+      "categories": [
+        "federal-tax",
+        "withholding"
+      ],
       "geography": "national",
       "version": "tax year 2026, Rev. Proc. 2025-32",
       "updateFrequency": "annual",
-      "formats": ["pdf"],
+      "formats": [
+        "pdf"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: Internal Revenue Service",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["brackets", "standard deduction", "EITC", "child tax credit", "long-term capital gains thresholds", "supplemental withholding rates"],
-      "consumers": ["tax-engine"],
+      "usefulFields": [
+        "brackets",
+        "standard deduction",
+        "EITC",
+        "child tax credit",
+        "long-term capital gains thresholds",
+        "supplemental withholding rates"
+      ],
+      "consumers": [
+        "tax-engine"
+      ],
       "validationSource": "self",
-      "limitations": ["Publication 15-T percentage-method tables are not transcribed"],
-      "lastVerified": "2026-09-07"
+      "limitations": [
+        "Publication 15-T percentage-method tables are not transcribed"
+      ],
+      "lastVerified": "2026-09-07",
+      "tier": "A"
     },
     {
       "id": "irs-schedule-se",
       "name": "IRS Schedule SE (Form 1040), Self-Employment Tax",
       "owner": "Internal Revenue Service",
       "url": "https://www.irs.gov/pub/irs-dft/f1040sse--dft.pdf",
-      "categories": ["federal-tax", "self-employment"],
+      "categories": [
+        "federal-tax",
+        "self-employment"
+      ],
       "geography": "national",
       "version": "tax year 2026 draft, instructions dated August 5, 2026",
       "updateFrequency": "annual",
-      "formats": ["pdf"],
+      "formats": [
+        "pdf"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: Internal Revenue Service",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["92.35% net earnings factor", "$400 filing threshold", "12.4% and 2.9% SE rates"],
-      "consumers": ["tax-engine"],
+      "usefulFields": [
+        "92.35% net earnings factor",
+        "$400 filing threshold",
+        "12.4% and 2.9% SE rates"
+      ],
+      "consumers": [
+        "tax-engine"
+      ],
       "validationSource": "self",
-      "limitations": ["2026 form and instructions are drafts marked not for filing"],
-      "lastVerified": "2026-09-07"
+      "limitations": [
+        "2026 form and instructions are drafts marked not for filing"
+      ],
+      "lastVerified": "2026-09-07",
+      "tier": "A",
+      "partOf": "irs-federal-tax"
     },
     {
       "id": "irs-1040-es",
       "name": "IRS Form 1040-ES, Estimated Tax for Individuals",
       "owner": "Internal Revenue Service",
       "url": "https://www.irs.gov/pub/irs-pdf/f1040es.pdf",
-      "categories": ["federal-tax", "estimated-tax"],
+      "categories": [
+        "federal-tax",
+        "estimated-tax"
+      ],
       "geography": "national",
       "version": "tax year 2026, Catalog 11340T February 12, 2026",
       "updateFrequency": "annual",
-      "formats": ["pdf"],
+      "formats": [
+        "pdf"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: Internal Revenue Service",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["safe-harbor percentages", "$1,000 owed threshold", "calendar-year due dates"],
-      "consumers": ["tax-engine"],
+      "usefulFields": [
+        "safe-harbor percentages",
+        "$1,000 owed threshold",
+        "calendar-year due dates"
+      ],
+      "consumers": [
+        "tax-engine"
+      ],
       "validationSource": "self",
-      "limitations": ["Does not include Form 2210 penalty computation or the annualized income installment method"],
-      "lastVerified": "2026-09-07"
+      "limitations": [
+        "Does not include Form 2210 penalty computation or the annualized income installment method"
+      ],
+      "lastVerified": "2026-09-07",
+      "tier": "A",
+      "partOf": "irs-federal-tax"
     },
     {
       "id": "irs-schedule-8812",
       "name": "IRS Schedule 8812 (Form 1040), Credits for Qualifying Children and Other Dependents",
       "owner": "Internal Revenue Service",
       "url": "https://www.irs.gov/pub/irs-dft/f1040s8--dft.pdf",
-      "categories": ["federal-tax", "credits"],
+      "categories": [
+        "federal-tax",
+        "credits"
+      ],
       "geography": "national",
       "version": "tax year 2026 draft, created April 24, 2026",
       "updateFrequency": "annual",
-      "formats": ["pdf"],
+      "formats": [
+        "pdf"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: Internal Revenue Service",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["CTC phase-out thresholds", "ODC amount", "ACTC earned-income worksheet"],
-      "consumers": ["tax-engine"],
+      "usefulFields": [
+        "CTC phase-out thresholds",
+        "ODC amount",
+        "ACTC earned-income worksheet"
+      ],
+      "consumers": [
+        "tax-engine"
+      ],
       "validationSource": "self",
-      "limitations": ["2026 form is a draft marked not for filing; Part II-B is not modelled"],
-      "lastVerified": "2026-09-07"
+      "limitations": [
+        "2026 form is a draft marked not for filing; Part II-B is not modelled"
+      ],
+      "lastVerified": "2026-09-07",
+      "tier": "A",
+      "partOf": "irs-federal-tax"
     },
     {
       "id": "irs-niit",
       "name": "IRS Questions and Answers on the Net Investment Income Tax",
       "owner": "Internal Revenue Service",
       "url": "https://www.irs.gov/newsroom/questions-and-answers-on-the-net-investment-income-tax",
-      "categories": ["federal-tax", "investment"],
+      "categories": [
+        "federal-tax",
+        "investment"
+      ],
       "geography": "national",
       "version": "IRC 1411 statutory thresholds, not inflation-indexed",
       "updateFrequency": "rare",
-      "formats": ["html"],
+      "formats": [
+        "html"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: Internal Revenue Service",
       "trustLevel": "primary",
       "status": "integrated",
-      "usefulFields": ["3.8% rate", "MAGI thresholds by filing status", "worked examples"],
-      "consumers": ["tax-engine"],
+      "usefulFields": [
+        "3.8% rate",
+        "MAGI thresholds by filing status",
+        "worked examples"
+      ],
+      "consumers": [
+        "tax-engine"
+      ],
       "validationSource": "self",
-      "limitations": ["Thresholds are statutory and are not published in the annual inflation revenue procedure"],
-      "lastVerified": "2026-09-07"
+      "limitations": [
+        "Thresholds are statutory and are not published in the annual inflation revenue procedure"
+      ],
+      "lastVerified": "2026-09-07",
+      "tier": "A",
+      "partOf": "irs-federal-tax"
     },
     {
       "id": "state-dor-publications",
       "name": "State Departments of Revenue — instruction booklets, withholding guides, rate schedules",
       "owner": "51 state and district revenue agencies",
       "url": "https://www.taxadmin.org/state-tax-agencies",
-      "categories": ["state-tax"],
+      "categories": [
+        "state-tax"
+      ],
       "geography": "state",
       "version": "tax year 2026 where published, otherwise latest",
       "updateFrequency": "annual",
-      "formats": ["pdf", "html"],
+      "formats": [
+        "pdf",
+        "html"
+      ],
       "license": "U.S. state government works; generally public domain or freely publishable",
       "commercialUse": "permitted",
       "attribution": "Named per state in the snapshot",
       "trustLevel": "primary",
       "status": "in-progress",
-      "usefulFields": ["brackets", "standard deduction", "exemptions and credits", "local tax bands"],
-      "consumers": ["tax-engine", "salary-engine"],
+      "usefulFields": [
+        "brackets",
+        "standard deduction",
+        "exemptions and credits",
+        "local tax bands"
+      ],
+      "consumers": [
+        "tax-engine",
+        "salary-engine"
+      ],
       "validationSource": "self",
       "limitations": [
         "Most agency sites refuse programmatic HTML requests: of eleven probed, four returned 403, two failed DNS, one 404'd on its own published path, one sat behind bot detection",
         "PDFs are reachable where HTML is not, and are the working route",
         "Withholding tables are not annual liability and must not be transcribed as such"
       ],
-      "lastVerified": "2026-09-06"
+      "lastVerified": "2026-09-06",
+      "tier": "A",
+      "partOf": "irs-federal-tax"
     },
     {
       "id": "policyengine-us",
       "name": "PolicyEngine US — tax and benefit parameters",
       "owner": "PolicyEngine",
       "url": "https://github.com/PolicyEngine/policyengine-us",
-      "categories": ["federal-tax", "state-tax", "benefits"],
+      "categories": [
+        "federal-tax",
+        "state-tax",
+        "benefits"
+      ],
       "geography": "national, all 51 jurisdictions",
       "version": "tracked by commit",
       "updateFrequency": "continuous",
-      "formats": ["yaml"],
+      "formats": [
+        "yaml"
+      ],
       "license": "AGPL-3.0",
       "licenseVerifiedFrom": "GitHub licence API on the repository itself",
       "commercialUse": "not-permitted-for-copying",
@@ -264,7 +436,9 @@
         "metadata.reference[] — title and href pointing at the official state document for each parameter",
         "values[] keyed by effective date, which reveals when a rate changes"
       ],
-      "consumers": ["tax-engine (as an index, not as data)"],
+      "consumers": [
+        "tax-engine (as an index, not as data)"
+      ],
       "validationSource": "the official document each reference points to",
       "limitations": [
         "AGPL-3.0 is copyleft: its parameter files and code are not copied into this project",
@@ -272,25 +446,35 @@
         "A 2026 Arizona $125 candidate was first seen here citing HB 4168; production cites Laws 2026, Ch. 140, not this repository",
         "A value taken from here without opening its reference would be unverified — Maine's phase-out increment was $1,000 here and $500 on the state's own instructions"
       ],
-      "lastVerified": "2026-09-07"
+      "lastVerified": "2026-09-07",
+      "tier": "none"
     },
     {
       "id": "cwicr",
       "name": "OpenConstructionEstimate DDC-CWICR",
       "owner": "Artem Boiko / DataDrivenConstruction.io",
       "url": "https://github.com/datadrivenconstruction/OpenConstructionEstimate-DDC-CWICR",
-      "categories": ["construction-cost", "work-items", "assemblies"],
+      "categories": [
+        "construction-cost",
+        "work-items",
+        "assemblies"
+      ],
       "geography": "China, Indonesia, Vietnam, Russia, Greece, Italy, Spain, Turkey, Brazil",
       "version": "pushed 2026-08-21",
       "updateFrequency": "irregular",
-      "formats": ["csv", "parquet"],
+      "formats": [
+        "csv",
+        "parquet"
+      ],
       "license": "Dual: DATA is CC BY-NC 4.0; CODE is Apache-2.0; long-form PDFs fully reserved",
       "licenseVerifiedFrom": "the repository's own LICENSE and LICENSE-CODE.txt files, read 2026-09-06",
       "commercialUse": "not-permitted",
       "attribution": "n/a — no data is used",
       "trustLevel": "rejected",
       "status": "rejected",
-      "usefulFields": ["structure only: work item, resource, unit, assembly, productivity"],
+      "usefulFields": [
+        "structure only: work item, resource, unit, assembly, productivity"
+      ],
       "consumers": [],
       "validationSource": "n/a",
       "limitations": [
@@ -298,118 +482,1248 @@
         "It also contains no United States dataset at all — the country directories are Asia, CIS, Europe and Brazil",
         "Rejected twice over. Its schema design is Apache-2.0 in the code and may be learned from; the cost data may not be used"
       ],
-      "lastVerified": "2026-09-06"
+      "lastVerified": "2026-09-06",
+      "tier": "none"
     },
     {
       "id": "fema-equipment-rates",
       "name": "FEMA Schedule of Equipment Rates",
       "owner": "Federal Emergency Management Agency",
       "url": "https://www.fema.gov/assistance/public/schedule-equipment-rates",
-      "categories": ["equipment-cost"],
+      "categories": [
+        "equipment-cost"
+      ],
       "geography": "national",
       "version": "current schedule",
       "updateFrequency": "roughly annual",
-      "formats": ["csv", "pdf"],
+      "formats": [
+        "csv",
+        "pdf"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: FEMA Schedule of Equipment Rates",
       "trustLevel": "primary",
-      "status": "planned",
-      "usefulFields": ["hourly rate by equipment class and capacity"],
-      "consumers": ["job-cost-engine:equipment"],
+      "status": "integrated",
+      "usefulFields": [
+        "hourly rate by equipment class and capacity"
+      ],
+      "consumers": [
+        "job-cost-engine:equipment"
+      ],
       "validationSource": "self",
-      "limitations": ["Reimbursement rates for disaster work, not a rental market price"],
-      "lastVerified": "2026-09-06"
+      "limitations": [
+        "Reimbursement rates for disaster work, not a rental market price"
+      ],
+      "lastVerified": "2026-09-08",
+      "tier": "C"
     },
     {
       "id": "dol-davis-bacon",
       "name": "Davis-Bacon prevailing wage determinations",
       "owner": "U.S. Department of Labor / SAM.gov",
       "url": "https://sam.gov/content/wage-determinations",
-      "categories": ["labor", "trade-wages"],
+      "categories": [
+        "labor",
+        "trade-wages"
+      ],
       "geography": "county, by trade",
       "version": "continuously updated determinations",
       "updateFrequency": "continuous",
-      "formats": ["html", "pdf", "api"],
+      "formats": [
+        "html",
+        "pdf",
+        "api"
+      ],
       "license": "U.S. Government work, public domain",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Department of Labor, Davis-Bacon wage determinations",
       "trustLevel": "primary",
       "status": "planned",
-      "usefulFields": ["base rate and fringe by trade and county"],
-      "consumers": ["job-cost-engine:labor"],
+      "usefulFields": [
+        "base rate and fringe by trade and county"
+      ],
+      "consumers": [
+        "job-cost-engine:labor"
+      ],
       "validationSource": "self",
       "limitations": [
         "Prevailing wage on federally funded work is a regional benchmark, not a residential market price",
         "Using it directly would overstate typical residential labour"
       ],
-      "lastVerified": "2026-09-06"
+      "lastVerified": "2026-09-06",
+      "tier": "none"
     },
     {
       "id": "census-building-permits",
       "name": "Census Building Permits Survey and city/county permit datasets",
       "owner": "U.S. Census Bureau; individual municipalities",
       "url": "https://www.census.gov/construction/bps/",
-      "categories": ["construction-activity", "observed-market"],
+      "categories": [
+        "construction-activity",
+        "observed-market"
+      ],
       "geography": "national, metro, county; municipal open-data portals",
       "version": "monthly and annual",
       "updateFrequency": "monthly",
-      "formats": ["csv", "api"],
+      "formats": [
+        "csv",
+        "api"
+      ],
       "license": "U.S. Government work, public domain; municipal portals vary",
       "commercialUse": "permitted",
       "attribution": "Source: U.S. Census Bureau; named municipality",
       "trustLevel": "primary",
       "status": "planned",
-      "usefulFields": ["permit valuation", "work description", "project category", "square footage"],
-      "consumers": ["job-cost-engine:calibration"],
+      "usefulFields": [
+        "permit valuation",
+        "work description",
+        "project category",
+        "square footage"
+      ],
+      "consumers": [
+        "job-cost-engine:calibration"
+      ],
       "validationSource": "self",
       "limitations": [
         "Permit valuation is not a final invoice and must be used as calibration evidence, never as ground truth",
         "Each municipality's licence must be checked separately before ingest"
       ],
-      "lastVerified": "2026-09-06"
+      "lastVerified": "2026-09-06",
+      "tier": "none"
     },
     {
       "id": "state-dot-bid-tabs",
       "name": "State DOT bid tabulations and average unit prices",
       "owner": "State departments of transportation",
       "url": "https://www.txdot.gov/business/letting-bids/bid-tabulations.html",
-      "categories": ["construction-cost", "observed-market"],
+      "categories": [
+        "construction-cost",
+        "observed-market"
+      ],
       "geography": "state",
       "version": "per letting",
       "updateFrequency": "monthly",
-      "formats": ["csv", "xlsx", "pdf"],
+      "formats": [
+        "csv",
+        "xlsx",
+        "pdf"
+      ],
       "license": "State government works, generally public domain",
       "commercialUse": "permitted",
       "attribution": "Named per state DOT",
       "trustLevel": "primary",
       "status": "planned",
-      "usefulFields": ["unit prices for concrete, asphalt, excavation, grading, drainage, hauling, demolition"],
-      "consumers": ["job-cost-engine:calibration"],
+      "usefulFields": [
+        "unit prices for concrete, asphalt, excavation, grading, drainage, hauling, demolition"
+      ],
+      "consumers": [
+        "job-cost-engine:calibration"
+      ],
       "validationSource": "self",
-      "limitations": ["Public infrastructure pricing differs from residential contractor pricing; use for sanity checking"],
-      "lastVerified": "2026-09-06"
+      "limitations": [
+        "Public infrastructure pricing differs from residential contractor pricing; use for sanity checking"
+      ],
+      "lastVerified": "2026-09-06",
+      "tier": "none"
     },
     {
       "id": "nrel-resstock",
       "name": "NREL ResStock",
       "owner": "National Renewable Energy Laboratory",
-      "url": "https://resstock.nrel.gov/",
-      "categories": ["building-stock", "hvac", "energy"],
+      "url": "https://data.openei.org/submissions/4520",
+      "categories": [
+        "building-stock",
+        "hvac",
+        "energy"
+      ],
       "geography": "national, county",
       "version": "current release",
       "updateFrequency": "irregular",
-      "formats": ["parquet", "csv"],
+      "formats": [
+        "parquet",
+        "csv"
+      ],
       "license": "U.S. Government work / NREL open data",
       "commercialUse": "permitted",
       "attribution": "Source: NREL ResStock",
       "trustLevel": "primary",
       "status": "planned",
-      "usefulFields": ["housing characteristics", "HVAC system types", "vintage"],
-      "consumers": ["job-cost-engine:building-context"],
+      "usefulFields": [
+        "housing characteristics",
+        "HVAC system types",
+        "vintage"
+      ],
+      "consumers": [
+        "job-cost-engine:building-context"
+      ],
       "validationSource": "self",
-      "limitations": ["Building and energy context, not a price database"],
-      "lastVerified": "2026-09-06"
+      "limitations": [
+        "The GitHub repository is model code, housing characteristic distributions and measure definitions. The 2.2-million-dwelling dataset itself is on OEDI, and confusing the two makes the source look empty.",
+        "Building stock and upgrade packages, not prices. It describes what is there to retrofit, not what a retrofit costs."
+      ],
+      "lastVerified": "2026-09-08",
+      "tier": "none"
+    },
+    {
+      "id": "irs-retirement-limits",
+      "name": "IRS annual retirement plan cost-of-living adjustments",
+      "owner": "Internal Revenue Service",
+      "url": "https://www.irs.gov/retirement-plans/cola-increases-for-dollar-limitations-on-benefits-and-contributions",
+      "categories": [
+        "retirement",
+        "contribution-limits"
+      ],
+      "geography": "national",
+      "version": "2026 limits",
+      "updateFrequency": "annual",
+      "formats": [
+        "html",
+        "pdf"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: Internal Revenue Service",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "elective deferral limit",
+        "catch-up amounts",
+        "IRA limit",
+        "income phase-out ranges"
+      ],
+      "consumers": [
+        "401k",
+        "roth-ira"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "Elective deferral limits are not the overall section 415(c) limit, which this file does not carry."
+      ],
+      "lastVerified": "2026-09-03"
+    },
+    {
+      "id": "fhfa-loan-limits",
+      "name": "FHFA conforming loan limit values",
+      "owner": "Federal Housing Finance Agency",
+      "url": "https://www.fhfa.gov/data/conforming-loan-limit",
+      "categories": ["housing", "mortgage"],
+      "geography": "county, including territories",
+      "version": "Calendar year 2026",
+      "updateFrequency": "annual",
+      "formats": ["csv"],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: Federal Housing Finance Agency, Conforming Loan Limit Values",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": ["one- to four-unit limits by county FIPS", "baseline and high-cost ceiling"],
+      "consumers": ["conforming-loan-limit"],
+      "validationSource": "self",
+      "limitations": [
+        "A November file is not effective before 1 January of the loan year.",
+        "The limit is not a loan approval. FHA and VA publish different limits; a VA loan with full entitlement has no FHFA cap."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "irs-hsa-limits",
+      "name": "IRS HSA contribution limits and HDHP tests",
+      "owner": "Internal Revenue Service",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
+      "categories": ["health-coverage", "contribution-limits"],
+      "geography": "national",
+      "version": "2026 amounts, Rev. Proc. 2025-19",
+      "updateFrequency": "annual",
+      "formats": ["pdf"],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: Internal Revenue Service, Revenue Procedure 2025-19",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": ["self-only and family contribution limits", "HDHP minimum deductible", "HDHP maximum out-of-pocket", "excepted-benefit HRA"],
+      "consumers": ["hsa-contribution"],
+      "validationSource": "self",
+      "limitations": [
+        "The $1,000 age-55 catch-up is statutory and is not in the revenue procedure.",
+        "A Marketplace metal tier is not an HDHP determination."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "va-funding-fee",
+      "name": "VA funding fee rate charts",
+      "owner": "U.S. Department of Veterans Affairs",
+      "url": "https://www.va.gov/housing-assistance/home-loans/funding-fee-and-closing-costs/",
+      "categories": ["housing", "veterans"],
+      "geography": "national",
+      "version": "Charts effective 7 April 2023",
+      "updateFrequency": "when Congress or VA revises the chart",
+      "formats": ["html"],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Department of Veterans Affairs",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": ["purchase and cash-out percentages by first/subsequent use and down payment", "IRRRL, NADL, manufactured, assumption, vendee rates", "exemption list"],
+      "consumers": ["va-funding-fee"],
+      "validationSource": "self",
+      "limitations": [
+        "The percentage applies to the loan amount, not the purchase price.",
+        "An exemption claimed on a calculator is not a VA determination."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "irs-rmd-tables",
+      "name": "IRS Publication 590-B Table III Uniform Lifetime",
+      "owner": "Internal Revenue Service",
+      "url": "https://www.irs.gov/publications/p590b",
+      "categories": ["retirement", "required-minimum-distribution"],
+      "geography": "national",
+      "version": "Table last revised 2022; used for 2026 distributions",
+      "updateFrequency": "table rarely; publication annual",
+      "formats": ["pdf"],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: Internal Revenue Service, Publication 590-B Appendix B Table III",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": ["uniform lifetime denominators by age 72–120+", "SECURE 2.0 required beginning ages"],
+      "consumers": ["rmd"],
+      "validationSource": "self",
+      "limitations": [
+        "Table II (joint life) is not in this snapshot.",
+        "Inherited-IRA 10-year rules are not in this snapshot.",
+        "A Roth IRA the original owner holds has no lifetime RMD."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "aca-subsidy-rules",
+      "name": "ACA premium tax credit applicable percentages and HHS poverty guidelines",
+      "owner": "Internal Revenue Service and U.S. Department of Health and Human Services",
+      "url": "https://www.irs.gov/affordable-care-act/individuals-and-families/the-premium-tax-credit-the-basics",
+      "categories": [
+        "health-coverage",
+        "federal-tax"
+      ],
+      "geography": "national, with Alaska and Hawaii guidelines",
+      "version": "2026 coverage year",
+      "updateFrequency": "annual",
+      "formats": [
+        "pdf",
+        "html"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: IRS and HHS",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "applicable percentage table",
+        "federal poverty guidelines",
+        "employer affordability percentage"
+      ],
+      "consumers": [
+        "health-insurance"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "The credit uses the prior year’s poverty guidelines, not the coverage year’s.",
+        "Hand-transcribed: the file carries a hash rather than a provider manifest, so a wrong digit is caught by the hash and not by a diff against the provider."
+      ],
+      "lastVerified": "2026-09-05"
+    },
+    {
+      "id": "medicare-rules",
+      "name": "CMS Medicare premiums, deductibles and IRMAA brackets",
+      "owner": "Centers for Medicare & Medicaid Services",
+      "url": "https://www.cms.gov/newsroom/fact-sheets",
+      "categories": [
+        "health-coverage"
+      ],
+      "geography": "national",
+      "version": "2026 coverage year",
+      "updateFrequency": "annual",
+      "formats": [
+        "html"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: Centers for Medicare & Medicaid Services",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "Part B premium and deductible",
+        "Part A amounts",
+        "IRMAA income brackets"
+      ],
+      "consumers": [
+        "medicare-cost"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "IRMAA is read from a tax year two years earlier, not from current income."
+      ],
+      "lastVerified": "2026-09-05"
+    },
+    {
+      "id": "gsa-perdiem",
+      "name": "GSA per diem rates",
+      "owner": "U.S. General Services Administration",
+      "url": "https://www.gsa.gov/travel/plan-book/per-diem-rates",
+      "categories": [
+        "travel",
+        "reimbursement"
+      ],
+      "geography": "CONUS destinations and state standard rates",
+      "version": "FY2026 effective, FY2027 published",
+      "updateFrequency": "annual",
+      "formats": [
+        "api",
+        "xlsx"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. General Services Administration",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "lodging ceiling by month",
+        "M&IE tier and its meal breakdown"
+      ],
+      "consumers": [
+        "per-diem"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A published fiscal-year file is not effective until 1 October, so the newest release and the applicable release are different files.",
+        "These are federal reimbursement ceilings, not observed hotel prices."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "opm-federal-holidays",
+      "name": "OPM federal holiday schedule",
+      "owner": "U.S. Office of Personnel Management",
+      "url": "https://www.opm.gov/policy-data-oversight/pay-leave/federal-holidays/",
+      "categories": [
+        "calendar"
+      ],
+      "geography": "national",
+      "version": "2026",
+      "updateFrequency": "annual",
+      "formats": [
+        "html"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Office of Personnel Management",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "holiday dates and in-lieu-of rules"
+      ],
+      "consumers": [
+        "business-days"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "Federal holidays are not a private employer’s paid-day list, and state holidays differ."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "quikrete-concrete-yields",
+      "name": "Packaged concrete mix yields",
+      "owner": "Quikrete",
+      "url": "https://www.quikrete.com/product-lines/concrete-mix/",
+      "categories": [
+        "materials",
+        "published-specification"
+      ],
+      "geography": "product specification",
+      "version": "2026 published yields",
+      "updateFrequency": "on product change",
+      "formats": [
+        "html"
+      ],
+      "license": "Manufacturer published specification, used as a stated product fact",
+      "commercialUse": "permitted",
+      "attribution": "Yields as published by the manufacturer",
+      "tier": "A",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "cubic feet yielded per 60 lb and 80 lb bag"
+      ],
+      "consumers": [
+        "concrete"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A bagged-mix yield says nothing about ready-mix delivered by the cubic yard."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "eia-electricity",
+      "name": "EIA retail electricity prices",
+      "owner": "U.S. Energy Information Administration",
+      "url": "https://www.eia.gov/electricity/monthly/",
+      "categories": [
+        "energy",
+        "utility-prices"
+      ],
+      "geography": "national, state",
+      "version": "monthly",
+      "updateFrequency": "monthly",
+      "formats": [
+        "api",
+        "csv"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Energy Information Administration",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "residential cents per kWh by state"
+      ],
+      "consumers": [
+        "electricity-cost",
+        "appliance-electricity",
+        "ev-vs-gas",
+        "cost-of-living",
+        "where-cheaper",
+        "car-affordability"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A state average is not a tariff: tiered rates, demand charges and fixed monthly charges are outside it.",
+        "Electric Power Monthly runs about two months behind the data month."
+      ],
+      "lastVerified": "2026-09-02"
+    },
+    {
+      "id": "eia-gasoline",
+      "name": "EIA weekly retail gasoline prices",
+      "owner": "U.S. Energy Information Administration",
+      "url": "https://www.eia.gov/petroleum/gasdiesel/",
+      "categories": [
+        "energy",
+        "fuel-prices"
+      ],
+      "geography": "national, PADD, selected states",
+      "version": "weekly",
+      "updateFrequency": "weekly",
+      "formats": [
+        "api",
+        "csv"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Energy Information Administration",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "regular all-formulations retail price"
+      ],
+      "consumers": [
+        "road-trip-fuel",
+        "ev-vs-gas",
+        "cost-of-living",
+        "where-cheaper",
+        "car-affordability"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A regional weekly average is not one station on one day."
+      ],
+      "lastVerified": "2026-09-02"
+    },
+    {
+      "id": "bls-grocery",
+      "name": "BLS Average Price Data",
+      "owner": "U.S. Bureau of Labor Statistics",
+      "url": "https://www.bls.gov/cpi/data.htm",
+      "categories": [
+        "food-prices"
+      ],
+      "geography": "U.S. city average, Census regions",
+      "version": "monthly",
+      "updateFrequency": "monthly",
+      "formats": [
+        "api"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Bureau of Labor Statistics",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "average price per item"
+      ],
+      "consumers": [
+        "where-cheaper"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "Item prices without household quantities cannot be turned into a grocery bill, which is why the cost-of-living food line uses USDA plans instead."
+      ],
+      "lastVerified": "2026-09-03"
+    },
+    {
+      "id": "freddie-mac-pmms",
+      "name": "Freddie Mac Primary Mortgage Market Survey",
+      "owner": "Freddie Mac",
+      "url": "https://www.freddiemac.com/pmms",
+      "categories": [
+        "mortgage-rates"
+      ],
+      "geography": "national",
+      "version": "weekly",
+      "updateFrequency": "weekly",
+      "formats": [
+        "csv",
+        "html"
+      ],
+      "license": "Freddie Mac terms of use; attribution required",
+      "commercialUse": "permitted",
+      "attribution": "Source: Freddie Mac Primary Mortgage Market Survey",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "30-year and 15-year fixed average rate and points"
+      ],
+      "consumers": [
+        "mortgage-payment",
+        "refinance",
+        "home-affordability"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A survey average is not a rate any particular borrower is offered, and it excludes credit, points and fees."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "hud-fmr",
+      "name": "HUD Fair Market Rents",
+      "owner": "U.S. Department of Housing and Urban Development",
+      "url": "https://www.huduser.gov/portal/datasets/fmr.html",
+      "categories": [
+        "housing",
+        "rent"
+      ],
+      "geography": "FMR area, county, ZIP for Small Area FMRs",
+      "version": "FY2026",
+      "updateFrequency": "annual",
+      "formats": [
+        "xlsx",
+        "api"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Department of Housing and Urban Development",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "gross rent by bedroom count and area"
+      ],
+      "consumers": [
+        "cost-of-living"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "An FMR is a payment standard set for a programme at a rent percentile, not observed asking rent.",
+        "Gross rent includes tenant-paid utilities, so comparing it to a rent figure that excludes them understates housing."
+      ],
+      "lastVerified": "2026-09-03"
+    },
+    {
+      "id": "census-acs5",
+      "name": "Census American Community Survey, 5-year estimates",
+      "owner": "U.S. Census Bureau",
+      "url": "https://www.census.gov/programs-surveys/acs",
+      "categories": [
+        "income",
+        "housing",
+        "demographics"
+      ],
+      "geography": "place, county, metro, state",
+      "version": "2020–2024 ACS 5-Year",
+      "updateFrequency": "annual",
+      "formats": [
+        "api"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Census Bureau",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "median household income",
+        "median gross rent",
+        "median home value",
+        "median real-estate taxes"
+      ],
+      "consumers": [
+        "cost-of-living",
+        "salary-engine"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "Every estimate carries a margin of error, and a median is not one household’s bill.",
+        "A five-year estimate describes a period, not the current year."
+      ],
+      "lastVerified": "2026-09-03"
+    },
+    {
+      "id": "census-omb-geography",
+      "name": "Census and OMB geographic delineations",
+      "owner": "U.S. Census Bureau and Office of Management and Budget",
+      "url": "https://www.census.gov/programs-surveys/metro-micro.html",
+      "categories": [
+        "geography"
+      ],
+      "geography": "national",
+      "version": "OMB Bulletin 23-01 delineations",
+      "updateFrequency": "irregular",
+      "formats": [
+        "xlsx",
+        "csv"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Census Bureau",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "county to CBSA",
+        "place to county",
+        "ZCTA relationships"
+      ],
+      "consumers": [
+        "cost-of-living",
+        "job-cost-engine:location",
+        "salary-engine"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A ZCTA approximates a postal ZIP code and does not equal it; PO-box-only ZIPs have no ZCTA at all."
+      ],
+      "lastVerified": "2026-09-03"
+    },
+    {
+      "id": "usda-food-plans",
+      "name": "USDA Food Plans monthly cost reports",
+      "owner": "U.S. Department of Agriculture, Food and Nutrition Service",
+      "url": "https://www.fns.usda.gov/cnpp/usda-food-plans-cost-food-monthly-reports",
+      "categories": [
+        "food-costs"
+      ],
+      "geography": "national, with Alaska and Hawaii adjustments",
+      "version": "monthly",
+      "updateFrequency": "monthly",
+      "formats": [
+        "xlsx",
+        "pdf"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Department of Agriculture",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "food-at-home cost by plan, age and sex"
+      ],
+      "consumers": [
+        "cost-of-living"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A food plan is a normative cost for a nutritious diet, not observed household spending.",
+        "The plans are national; only the Thrifty plan carries an Alaska and Hawaii adjustment."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "naic-insurance",
+      "name": "NAIC Auto and Homeowners Insurance Database reports",
+      "owner": "National Association of Insurance Commissioners",
+      "url": "https://content.naic.org/article/auto-and-homeowners-insurance-databases",
+      "categories": [
+        "insurance"
+      ],
+      "geography": "state",
+      "version": "2023 data year",
+      "updateFrequency": "annual, two to three years behind",
+      "formats": [
+        "pdf",
+        "xlsx"
+      ],
+      "license": "NAIC publication terms; figures reproduced with attribution",
+      "commercialUse": "permitted",
+      "attribution": "Source: National Association of Insurance Commissioners",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "average written premium by state and coverage"
+      ],
+      "consumers": [
+        "insurance-cost",
+        "auto-coverage"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "A statewide average two to three years old is not a current quote, and it hides the vehicle, home, driver and credit factors that decide a premium."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "cms-marketplace",
+      "name": "CMS Individual Market Medical Landscape file",
+      "owner": "Centers for Medicare & Medicaid Services",
+      "url": "https://www.cms.gov/marketplace/resources/data/public-use-files",
+      "categories": [
+        "health-coverage"
+      ],
+      "geography": "county, rating area",
+      "version": "2026 plan year",
+      "updateFrequency": "annual",
+      "formats": [
+        "zip",
+        "csv"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: Centers for Medicare & Medicaid Services",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "premium by metal level and age",
+        "deductible",
+        "out-of-pocket maximum"
+      ],
+      "consumers": [
+        "marketplace-plans",
+        "health-insurance"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "Filed figures for a county are not a quote, and the file covers only the states using HealthCare.gov.",
+        "The file does not pair a plan’s cheapest premium with that same plan’s out-of-pocket maximum, so a worst-year figure is a bound rather than one plan’s bill."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "census-economic-census-construction",
+      "name": "Census Economic Census, Construction sector",
+      "owner": "U.S. Census Bureau",
+      "url": "https://data.census.gov/table/ECNBASIC2022.EC2223BASIC",
+      "categories": [
+        "construction",
+        "cost-structure"
+      ],
+      "geography": "national by NAICS industry",
+      "version": "2022 Economic Census, released 2024-11-20",
+      "updateFrequency": "every five years",
+      "formats": [
+        "zip",
+        "psv",
+        "api"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Census Bureau, 2022 Economic Census",
+      "tier": "B",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "value of construction work",
+        "cost of materials",
+        "construction-worker wages and hours",
+        "fringe benefits",
+        "equipment rentals",
+        "depreciation and other operating expenses"
+      ],
+      "consumers": [
+        "job-cost-engine:business-cost"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "Industry-wide ratios for a whole census year; a single contractor on a single job is nothing like the mean.",
+        "The profit share is a residual after the costs the census enumerates, not a reported margin.",
+        "National only at this level of detail, so it carries no regional variation.",
+        "Landscaping services, which is where tree work sits, is in the sector 56 file and reports no materials, hours or benefits, so the same residual cannot be computed for it."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "nrel-remdb",
+      "name": "NREL Residential Efficiency Measures Database (REMDB) 2024",
+      "owner": "National Renewable Energy Laboratory / U.S. Department of Energy",
+      "url": "https://data.openei.org/submissions/8336",
+      "categories": [
+        "retrofit-costs",
+        "materials"
+      ],
+      "geography": "national",
+      "version": "REMDB 2024.12.23 machine-readable release",
+      "updateFrequency": "irregular",
+      "formats": [
+        "xlsx"
+      ],
+      "license": "CC BY 4.0",
+      "licenseVerifiedFrom": "OpenEI submission page for the 2024 release",
+      "commercialUse": "permitted",
+      "attribution": "Source: NREL Residential Efficiency Measures Database (2024), CC BY 4.0",
+      "tier": "C",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "measure cost intercepts for windows, doors, panels, drywall and envelope work"
+      ],
+      "consumers": [
+        "job-cost-engine:materials"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "REMDB’s installed-cost figures carry labour multipliers of commercial-database origin; only the material intercepts are taken.",
+        "Costs are in 2023 dollars and must be escalated before use."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "eia-equipment-costs",
+      "name": "EIA residential equipment cost assumptions, Appendix A",
+      "owner": "U.S. Energy Information Administration",
+      "url": "https://www.eia.gov/analysis/studies/buildings/equipcosts/",
+      "categories": [
+        "equipment-prices"
+      ],
+      "geography": "national, with North and South variants",
+      "version": "2022 typical retail",
+      "updateFrequency": "irregular",
+      "formats": [
+        "pdf",
+        "xlsx"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Energy Information Administration",
+      "tier": "C",
+      "trustLevel": "primary",
+      "status": "integrated",
+      "usefulFields": [
+        "typical retail equipment prices for central AC, furnaces, heat pumps and water heaters"
+      ],
+      "consumers": [
+        "job-cost-engine:materials"
+      ],
+      "validationSource": "self",
+      "limitations": [
+        "2022 retail prices, escalated by PPI rather than re-surveyed.",
+        "A retail price is above what a contractor pays, so a business markup applied on top of it double-counts part of the distributor margin."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "costanswer-material-basket",
+      "name": "CostAnswer material basket",
+      "owner": "CostAnswer",
+      "url": "https://costanswer.com/methodology/data",
+      "categories": [
+        "materials"
+      ],
+      "geography": "national",
+      "version": "material-basket-sourced-v4",
+      "updateFrequency": "on source change",
+      "formats": [
+        "json"
+      ],
+      "license": "CostAnswer compilation of sourced public baselines",
+      "commercialUse": "permitted",
+      "attribution": "CostAnswer compilation; each component names its own public source",
+      "tier": "D",
+      "trustLevel": "secondary",
+      "status": "integrated",
+      "usefulFields": [
+        "per-component national baseline price and its PPI escalation series"
+      ],
+      "consumers": [
+        "job-cost-engine:materials"
+      ],
+      "validationSource": "component sources",
+      "limitations": [
+        "A national baseline escalated by a commodity index is not a local supplier quote.",
+        "A component with no sourced baseline stays unpriced and blocks a complete estimate rather than being guessed at."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "costanswer-job-recipes",
+      "name": "CostAnswer job recipes",
+      "owner": "CostAnswer",
+      "url": "https://costanswer.com/methodology/data",
+      "categories": [
+        "productivity",
+        "scope"
+      ],
+      "geography": "national",
+      "version": "job-cost-v1.0.0",
+      "updateFrequency": "on review",
+      "formats": [
+        "typescript"
+      ],
+      "license": "CostAnswer editorial",
+      "commercialUse": "permitted",
+      "attribution": "CostAnswer reviewed assumptions",
+      "tier": "D",
+      "trustLevel": "secondary",
+      "status": "integrated",
+      "usefulFields": [
+        "crew composition",
+        "labour hours per unit",
+        "material quantities and waste",
+        "named site modifiers"
+      ],
+      "consumers": [
+        "job-cost-engine"
+      ],
+      "validationSource": "editorial review",
+      "limitations": [
+        "Crew size and productivity are reviewed assumptions, not measured production rates: no public, licence-clear national production-rate file exists for US residential trades.",
+        "Every recipe excludes local permit fees and disposal, and says so on the page."
+      ],
+      "lastVerified": "2026-09-07"
+    },
+    {
+      "id": "austin-permits",
+      "name": "City of Austin Issued Construction Permits",
+      "owner": "City of Austin",
+      "url": "https://data.austintexas.gov/d/3syk-w9eu",
+      "categories": [
+        "permits",
+        "observed-market"
+      ],
+      "geography": "Austin, Texas",
+      "version": "continuously updated",
+      "updateFrequency": "daily",
+      "formats": [
+        "api",
+        "csv"
+      ],
+      "license": "Public Domain U.S. Government",
+      "licenseVerifiedFrom": "Socrata dataset metadata, license.name field, 2026-09-08",
+      "commercialUse": "permitted",
+      "attribution": "Source: City of Austin open data",
+      "tier": "none",
+      "trustLevel": "primary",
+      "status": "evaluated-not-used",
+      "usefulFields": [
+        "total job valuation",
+        "work description",
+        "permit class",
+        "work class",
+        "remodel square footage"
+      ],
+      "consumers": [],
+      "validationSource": "self",
+      "limitations": [
+        "Trade permits carry no valuation. Of residential permits issued since 2023, mechanical, electrical and plumbing permits populate their valuation columns in single-digit counts against tens of thousands of rows, so HVAC, water-heater and panel jobs cannot be observed here at all.",
+        "Valuation is per permit, not per scope. A permit whose description mentions a deck averages $226,000 because the deck is part of a whole-house remodel; keyword matching therefore attributes an entire job to one line item.",
+        "A strict filter does work for a few scopes — 109 Austin permits since 2023 are window replacement and nothing else, median $10,350 — but that is one metro, a few jobs, and a valuation declared before the work rather than an invoice after it."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "la-building-permits",
+      "name": "Los Angeles building permits issued",
+      "owner": "City of Los Angeles",
+      "url": "https://data.lacity.org/d/pi9x-tg5x",
+      "categories": [
+        "permits",
+        "observed-market"
+      ],
+      "geography": "Los Angeles",
+      "version": "2020 to present",
+      "updateFrequency": "daily",
+      "formats": [
+        "api",
+        "csv"
+      ],
+      "license": "not stated",
+      "licenseVerifiedFrom": "Socrata dataset metadata, license field is null, 2026-09-08",
+      "commercialUse": "unclear",
+      "attribution": "Source: City of Los Angeles open data",
+      "tier": "none",
+      "trustLevel": "primary",
+      "status": "evaluated-not-used",
+      "usefulFields": [
+        "valuation",
+        "work description",
+        "square footage",
+        "permit type"
+      ],
+      "consumers": [],
+      "validationSource": "self",
+      "limitations": [
+        "The portal states no licence on this dataset, so commercial use is not cleared and it may not enter production under this project’s own rule.",
+        "It carries building permits only — no separate mechanical, electrical or plumbing permits — so it has the same blind spot as Austin for equipment-replacement jobs."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "usace-ep-1110-1-8",
+      "name": "USACE Construction Equipment Ownership and Operating Expense Schedule (EP 1110-1-8)",
+      "owner": "U.S. Army Corps of Engineers",
+      "url": "https://www.wbdg.org/ffc/army-coe/engineer-pamphlets-ep/ep-1110-1-8",
+      "categories": [
+        "equipment-rates"
+      ],
+      "geography": "12 U.S. regions",
+      "version": "current pamphlet set",
+      "updateFrequency": "irregular",
+      "formats": [
+        "pdf"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Army Corps of Engineers",
+      "tier": "none",
+      "trustLevel": "primary",
+      "status": "evaluated-not-used",
+      "usefulFields": [
+        "hourly ownership and operating cost",
+        "age adjustment",
+        "standby rates",
+        "local area factors"
+      ],
+      "consumers": [],
+      "validationSource": "self",
+      "limitations": [
+        "The publications host answers automated requests with HTTP 403, and the schedule ships as regional PDFs rather than a machine-readable table, so ingesting it is a transcription project rather than a fetch.",
+        "It is richer than the FEMA schedule already in use — it carries regional and age factors FEMA does not — which is why it stays a named candidate rather than being dropped."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "ec-sector56-landscaping",
+      "name": "Census Economic Census, Administrative and Support Services (sector 56)",
+      "owner": "U.S. Census Bureau",
+      "url": "https://www2.census.gov/programs-surveys/economic-census/data/2022/sector56/",
+      "categories": [
+        "cost-structure"
+      ],
+      "geography": "national by NAICS",
+      "version": "2022 Economic Census",
+      "updateFrequency": "every five years",
+      "formats": [
+        "zip",
+        "psv"
+      ],
+      "license": "U.S. Government work, public domain",
+      "commercialUse": "permitted",
+      "attribution": "Source: U.S. Census Bureau, 2022 Economic Census",
+      "tier": "none",
+      "trustLevel": "primary",
+      "status": "evaluated-not-used",
+      "usefulFields": [
+        "revenue",
+        "annual payroll",
+        "employment for landscaping services (561730)"
+      ],
+      "consumers": [],
+      "validationSource": "self",
+      "limitations": [
+        "The sector 56 basic file reports revenue, payroll and employment only. Without cost of materials, construction-worker hours and fringe benefits the direct/overhead/profit split computed for construction cannot be reproduced, so tree removal keeps its modelled business rates rather than borrowing a construction trade’s."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "buildstock-fetch",
+      "name": "buildstock-fetch",
+      "owner": "NREL",
+      "url": "https://github.com/NREL/buildstock-fetch",
+      "categories": [
+        "tooling"
+      ],
+      "geography": "n/a",
+      "version": "n/a",
+      "updateFrequency": "n/a",
+      "formats": [
+        "python"
+      ],
+      "license": "repository code licence",
+      "commercialUse": "n/a",
+      "attribution": "n/a",
+      "tier": "none",
+      "trustLevel": "discovery",
+      "status": "not-a-dataset",
+      "usefulFields": [],
+      "consumers": [],
+      "validationSource": "n/a",
+      "limitations": [
+        "A downloader for ResStock and ComStock outputs, not a dataset. Scanning it for prices finds nothing because there are none in it; the data it fetches lives on OEDI."
+      ],
+      "lastVerified": "2026-09-08"
+    },
+    {
+      "id": "open-takeoff-tools",
+      "name": "OpenTakeoff, qto and similar quantity-takeoff projects",
+      "owner": "various",
+      "url": "https://github.com/topics/quantity-takeoff",
+      "categories": [
+        "tooling"
+      ],
+      "geography": "n/a",
+      "version": "n/a",
+      "updateFrequency": "n/a",
+      "formats": [
+        "software"
+      ],
+      "license": "various",
+      "commercialUse": "n/a",
+      "attribution": "n/a",
+      "tier": "none",
+      "trustLevel": "discovery",
+      "status": "not-a-dataset",
+      "usefulFields": [],
+      "consumers": [],
+      "validationSource": "n/a",
+      "limitations": [
+        "Quantity-takeoff software. They measure drawings; they carry no unit prices, so they cannot answer what a job costs."
+      ],
+      "lastVerified": "2026-09-08"
     }
-  ]
+  ],
+  "tiers": {
+    "A": "Calculation source of truth. The publisher sets the number or the rule and we reproduce it. Printed as VERIFIED.",
+    "B": "Official observed data. The publisher measures something and we use the measurement. Printed as OBSERVED.",
+    "C": "Model calibration. Real observations that cannot be quoted as a price on their own. Printed as MODELED.",
+    "D": "CostAnswer model. A value we chose and review. Printed as MODELED.",
+    "none": "Not shipped: a discovery aid, an evaluated candidate, or a rejected source."
+  }
 }

@@ -18,15 +18,15 @@ export const TOOL_CLUSTERS = {
     // what an affordability screen is built on, so both sit in this journey.
     // Marketplace assistance is calculated from household income, so the
     // subsidy check belongs to the same journey as after-tax pay.
-    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'effective-tax-rate', 'federal-tax-bracket', 'self-employment-tax', 'eitc', 'child-tax-credit', 'capital-gains', 'quarterly-estimated-tax', 'tax-refund', 'home-affordability', 'health-insurance'],
+    toolIds: ['hourly-to-salary', 'salary-after-tax', 'paycheck', 'bonus-tax', 'time-card', '401k', 'effective-tax-rate', 'federal-tax-bracket', 'self-employment-tax', 'eitc', 'child-tax-credit', 'capital-gains', 'quarterly-estimated-tax', 'tax-refund', 'home-affordability', 'health-insurance', 'hsa-contribution'],
   },
   retirement: {
     label: 'Saving and retirement',
-    toolIds: ['401k', 'roth-ira', 'retirement', 'investment', 'compound-interest', 'cd', 'interest', 'medicare-cost'],
+    toolIds: ['401k', 'roth-ira', 'retirement', 'investment', 'compound-interest', 'cd', 'interest', 'medicare-cost', 'hsa-contribution', 'rmd'],
   },
   'home-buying': {
     label: 'Buying a home',
-    toolIds: ['mortgage-payment', 'home-affordability', 'insurance-cost', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
+    toolIds: ['mortgage-payment', 'home-affordability', 'conforming-loan-limit', 'va-funding-fee', 'insurance-cost', 'refinance', 'mortgage-payoff', 'amortization', 'cost-of-living'],
   },
   debt: {
     label: 'Borrowing and paying off debt',

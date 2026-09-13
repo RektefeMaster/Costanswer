@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithDefault } from '../data-manifest';
 import { CAR_AFFORDABILITY_ENGINE_ID } from '../../calculations/vehicle/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,14 @@ export const tool: ToolDefinition = {
   accent: 'blue',
   featured: true,
   resultNature: 'planning-model',
+  data: formulaWithDefault({
+    optional: ['us-tax', 'eia-electricity', 'eia-gasoline'],
+    note: 'The budget bands are ratios on take-home pay. Tax tables only convert a gross salary you could enter as take-home instead, and the energy prices are running-cost defaults.',
+    modeled: [{
+      label: 'The budget bands and running-cost allowances',
+      why: 'Comfortable, reasonable and aggressive, plus the default maintenance, insurance and registration amounts, are CostAnswer thresholds rather than a dealer or lender decision. Your own insurance quote and service history beat all of them.',
+    }],
+  }),
   metaTitle: 'Car Affordability Calculator: Monthly Cash Cost vs. Take-Home Pay',
   metaDescription: 'Loan, fuel or charging, insurance, upkeep, and registration versus take-home pay. Depreciation is omitted, so this is cash out of pocket, not total cost of ownership.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 12, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

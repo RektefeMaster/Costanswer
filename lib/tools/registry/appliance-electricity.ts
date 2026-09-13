@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithDefault } from '../data-manifest';
 import { APPLIANCE_ENERGY_ENGINE_ID } from '../../calculations/energy/version';
 
 export const tool: ToolDefinition = {
@@ -23,6 +24,10 @@ export const tool: ToolDefinition = {
   accent: 'amber',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: formulaWithDefault({
+    optional: ['eia-electricity'],
+    note: 'Watts × hours × rate. The state average rate is a default; your own per-kWh rate from a bill is better and the page prefers it.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'electricity-cost', type: 'uses-dataset' },

@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { TAX_REFUND_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'A refund is withholding minus liability, and liability is the published schedules.',
+  }),
   metaTitle: 'Tax Refund Calculator 2026: Withholding vs. Published Tax',
   metaDescription: 'Estimate a 2026 federal refund from IRS income tax, EITC and the child tax credit, minus W-2 withholding you enter. Publication 15-T W-4 tables are not used.',
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 21, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

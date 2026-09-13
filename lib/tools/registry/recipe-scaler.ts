@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'recipe-scaler',
@@ -14,6 +15,7 @@ export const tool: ToolDefinition = {
   accent: 'coral',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Scaling is a ratio applied to each quantity.'),
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'unit-price', type: 'uses-engine' },

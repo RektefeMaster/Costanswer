@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "1.0.0",
+  "snapshotId": "irs-hsa-limits-2026-v1",
+  "datasetId": "irs-hsa-limits",
+  "observationPeriod": "2026",
+  "coverageYear": 2026,
+  "fetchedAt": "2026-09-08T00:00:00.000Z",
+  "verifiedAt": "2026-09-08",
+  "publishedAt": "2025-05-19",
+  "sourceStatus": "verified",
+  "sourceUrl": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
+  "sourceDocumentationUrl": "https://www.irs.gov/irb/2025-21_IRB",
+  "attribution": "IRS Revenue Procedure 2025-19, Internal Revenue Bulletin 2025-21. 2026 HSA contribution limits and HDHP deductible / out-of-pocket ceilings. The $1,000 age-55 catch-up is IRC §223(b)(3), which is not inflation-adjusted.",
+  "limits": {
+    "selfOnlyContribution": 4400,
+    "familyContribution": 8750,
+    "catchUpAge55": 1000,
+    "hdhpMinDeductibleSelfOnly": 1700,
+    "hdhpMinDeductibleFamily": 3400,
+    "hdhpMaxOutOfPocketSelfOnly": 8500,
+    "hdhpMaxOutOfPocketFamily": 17000,
+    "exceptedBenefitHra": 2200
+  },
+  "sources": [
+    {
+      "id": "irs-rp-2025-19",
+      "name": "IRS Revenue Procedure 2025-19",
+      "url": "https://www.irs.gov/pub/irs-drop/rp-25-19.pdf",
+      "publishedAt": "2025-05-19",
+      "detail": "Calendar year 2026 HSA annual limitation, HDHP minimum deductible, HDHP maximum out-of-pocket, and excepted-benefit HRA maximum."
+    },
+    {
+      "id": "irs-pub-969",
+      "name": "IRS Publication 969, Health Savings Accounts and Other Tax-Favored Health Plans",
+      "url": "https://www.irs.gov/publications/p969",
+      "publishedAt": null,
+      "detail": "The $1,000 additional contribution for an eligible individual who turns 55 before the close of the tax year, which IRC §223(b)(3) does not index."
+    }
+  ],
+  "validationReport": [
+    "Self-only contribution $4,400 and family contribution $8,750 match Rev. Proc. 2025-19 §2.01(1).",
+    "HDHP minimum deductible $1,700 / $3,400 and out-of-pocket maximum $8,500 / $17,000 match §2.01(2).",
+    "Excepted-benefit HRA maximum $2,200 matches §2.02.",
+    "Age-55 catch-up remains $1,000 under IRC §223(b)(3); it is not in the revenue procedure because it is not inflation-adjusted."
+  ],
+  "normalizedSha256": "762e95e9cf4034e0295cd36ecea80c3052a4399f2a9b7b43a817730ebdff8484"
+}

@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { GPA_ENGINE_ID } from '../../calculations/education/formulas';
 
 export const tool: ToolDefinition = {
@@ -15,6 +16,7 @@ export const tool: ToolDefinition = {
   accent: 'coral',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('A GPA is a weighted mean of grade points.'),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'grade', type: 'sibling' },

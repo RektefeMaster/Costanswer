@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithBenchmark } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'business-days',
@@ -24,6 +25,10 @@ export const tool: ToolDefinition = {
   accent: 'rose',
   featured: true,
   resultNature: 'exact',
+  data: formulaWithBenchmark({
+    optional: ['opm-federal-holidays'],
+    note: 'Counting weekdays between two dates is a calendar operation. Without the federal holiday list the count still excludes weekends and says the holiday exclusion is unavailable.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 13, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'date', type: 'sibling' },

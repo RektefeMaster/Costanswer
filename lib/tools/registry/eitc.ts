@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { EITC_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'EITC is a published table of thresholds and phase-out rates. Nothing about it can be derived.',
+  }),
   metaTitle: 'Earned Income Credit Calculator 2026 (EITC)',
   metaDescription: 'Estimate the 2026 federal EITC from Revenue Procedure 2025-32 amounts, including the $12,200 investment-income limit. Not a filed Schedule EIC.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

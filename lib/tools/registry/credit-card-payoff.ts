@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { CREDIT_CARD_PAYOFF_ENGINE_ID } from '../../calculations/finance/version';
 
 export const tool: ToolDefinition = {
@@ -17,6 +18,7 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Payoff time is your balance, APR and payment. Card terms differ by issuer, so the page asks for yours rather than assuming a national rule.'),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'debt-payoff', type: 'next-decision' },

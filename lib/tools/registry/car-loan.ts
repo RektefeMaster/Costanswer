@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { CAR_LOAN_ENGINE_ID } from '../../calculations/finance/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,7 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('A car loan payment is the same amortisation as any other instalment loan.'),
   metaTitle: 'Car Loan Payment Calculator (Amount Financed, U.S.)',
   metaDescription: 'Monthly auto-loan payment, total interest, and amount financed from price, tax, down payment, rate, and term. Not insurance, fuel, or the true cost of owning the car.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),

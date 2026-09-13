@@ -15,6 +15,8 @@ export const DATASET_IDS = [
   'gsa-perdiem',
   'naic-insurance',
   'cms-marketplace',
+  'fhfa-loan-limits',
+  'irs-hsa-limits',
 ] as const;
 
 export type DatasetId = (typeof DATASET_IDS)[number];
@@ -253,12 +255,30 @@ export const DATASET_POLICIES: Record<DatasetId, DatasetPolicy> = {
     publicationLagDays: 0,
     releaseSchedule: 'Homeowners and Auto Insurance Database reports, roughly annual and two to three years behind the data year',
   },
-  /*
-   * The landscape file describes a plan year, and it is published shortly before
-   * that year's open enrollment rather than after it. Anchoring on the release
-   * date keeps a 2026 file current through the year it prices, and the 120-day
-   * grace window covers the gap between one plan year's file and the next.
-   */
+  'fhfa-loan-limits': {
+    datasetId: 'fhfa-loan-limits',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 120,
+    refreshMode: 'manual',
+    providerShort: 'FHFA',
+    periodKind: 'reference-year',
+    freshnessAnchor: 'published-at',
+    releaseIntervalDays: 365,
+    publicationLagDays: 0,
+    releaseSchedule: 'Conforming loan limit values for the coming calendar year, announced each November',
+  },
+  'irs-hsa-limits': {
+    datasetId: 'irs-hsa-limits',
+    expectedCadence: 'yearly',
+    staleAfterMissedDays: 90,
+    refreshMode: 'manual',
+    providerShort: 'IRS',
+    periodKind: 'yearly',
+    freshnessAnchor: 'observation-end',
+    releaseIntervalDays: 365,
+    publicationLagDays: 0,
+    releaseSchedule: 'Revenue Procedure each spring for the following calendar year’s HSA and HDHP amounts',
+  },
   'cms-marketplace': {
     datasetId: 'cms-marketplace',
     expectedCadence: 'yearly',

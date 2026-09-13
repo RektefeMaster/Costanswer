@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithBenchmark } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'auto-coverage',
@@ -14,6 +15,10 @@ export const tool: ToolDefinition = {
   accent: 'blue',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: formulaWithBenchmark({
+    optional: ['naic-insurance'],
+    note: 'Coverage cost comparison is arithmetic on the premiums you enter. The NAIC state average is context and is simply omitted when it is not available.',
+  }),
   metaTitle: 'Is Collision and Comprehensive Worth It? Coverage vs Car Value',
   metaDescription: 'Compare what collision and comprehensive can pay on your car against what they cost each year, using published NAIC state premiums or your own policy figures.',
   indexability: { ...launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'), reviewedAt: '2026-09-05', reviewValidUntil: '2027-03-05' },

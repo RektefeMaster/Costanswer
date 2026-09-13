@@ -71,7 +71,10 @@ import { tool as eitc } from './eitc';
 import { tool as quarterlyEstimatedTax } from './quarterly-estimated-tax';
 import { tool as selfEmploymentTax } from './self-employment-tax';
 import { tool as taxRefund } from './tax-refund';
+import { tool as conformingLoanLimit } from './conforming-loan-limit';
+import { tool as hsaContribution } from './hsa-contribution';
 import { tool as rmd } from './rmd';
+import { tool as vaFundingFee } from './va-funding-fee';
 
 export const registryTools: ToolDefinition[] = [
   hourlyToSalary,
@@ -140,5 +143,8 @@ export const registryTools: ToolDefinition[] = [
   quarterlyEstimatedTax,
   selfEmploymentTax,
   taxRefund,
+  conformingLoanLimit,
+  hsaContribution,
   rmd,
+  vaFundingFee,
 ];

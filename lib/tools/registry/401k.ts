@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { K401_ENGINE_ID } from '../../calculations/finance/version';
 
 export const tool: ToolDefinition = {
@@ -15,10 +16,16 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'projection',
+  data: requiresOfficialData({
+    required: ['irs-retirement-limits'],
+    note: 'The elective-deferral limit and the catch-up amount cap every contribution this page projects. Without the published limits it would happily project an illegal contribution.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'roth-ira', type: 'sibling' },
     { toolId: 'retirement', type: 'next-decision' },
     { toolId: 'salary-after-tax', type: 'sibling' },
+    { toolId: 'hsa-contribution', type: 'sibling' },
+    { toolId: 'rmd', type: 'next-decision' },
   ],
 };

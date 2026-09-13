@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { PERCENTAGE_ENGINE_ID } from '../../calculations/math/version';
 
 export const tool: ToolDefinition = {
@@ -26,6 +27,7 @@ export const tool: ToolDefinition = {
   accent: 'violet',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Percentage arithmetic is exact.'),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percent-change', type: 'sibling' },

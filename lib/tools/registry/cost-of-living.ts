@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { COST_OF_LIVING_ENGINE_ID } from '../../calculations/col/version';
 
 export const tool: ToolDefinition = {
@@ -27,6 +28,11 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['hud-fmr', 'usda-food-plans'],
+    optional: ['bea-rpp', 'census-acs5', 'eia-electricity', 'eia-gasoline', 'us-tax'],
+    note: 'Housing comes from HUD’s area rent and food from the USDA plan. Without those two the page would only add up figures the reader typed, which answers nothing about a place.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 25, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'salary-after-tax', type: 'uses-engine' },

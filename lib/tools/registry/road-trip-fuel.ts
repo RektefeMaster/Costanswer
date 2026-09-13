@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithDefault } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'road-trip-fuel',
@@ -25,6 +26,10 @@ export const tool: ToolDefinition = {
   accent: 'blue',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: formulaWithDefault({
+    optional: ['eia-gasoline'],
+    note: 'Miles ÷ MPG × price. The regional average price is a starting value, not a dependency.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 13, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'ev-vs-gas', type: 'sibling' },

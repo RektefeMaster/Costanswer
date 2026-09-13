@@ -211,7 +211,7 @@ describe('bundled snapshot integrity', () => {
  * The number of tools already shipped. Raise it as tools land; never lower it.
  * It exists so an accidental removal fails without a count blocking additions.
  */
-const SHIPPED_TOOL_BASELINE = 66;
+const SHIPPED_TOOL_BASELINE = 70;
 
 /** §M P4's acceptance figure. The catalogue is done when it reaches this. */
 const P4_TARGET_TOOL_COUNT = 101;
@@ -411,6 +411,10 @@ describe('search reaches the tool a reader asked for', () => {
       ['texas teacher salary after taxes', 'salary-after-tax'],
       ['mortgage payment from a quoted rate', 'mortgage-payment'],
       ['days between dates', 'date'],
+      ['conforming loan limit 2026', 'conforming-loan-limit'],
+      ['va funding fee calculator', 'va-funding-fee'],
+      ['hsa contribution limit 2026', 'hsa-contribution'],
+      ['rmd calculator', 'rmd'],
     ];
     for (const [query, expected] of expectations) {
       const hits = searchTools(query, 3).map((result) => result.tool.id);
@@ -458,6 +462,8 @@ describe('internal linking graph', () => {
     expect(step('salary-after-tax', 'federal-tax-bracket')).toBe(true);
     expect(step('paycheck', '401k')).toBe(true);
     expect(step('home-affordability', 'mortgage-payment')).toBe(true);
+    expect(step('mortgage-payment', 'conforming-loan-limit')).toBe(true);
+    expect(step('conforming-loan-limit', 'va-funding-fee')).toBe(true);
     expect(step('mortgage-payment', 'mortgage-payoff')).toBe(true);
   });
 });

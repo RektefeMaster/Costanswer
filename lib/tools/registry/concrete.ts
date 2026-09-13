@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithBenchmark } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'concrete',
@@ -14,6 +15,10 @@ export const tool: ToolDefinition = {
   accent: 'amber',
   featured: true,
   resultNature: 'formula-estimate',
+  data: formulaWithBenchmark({
+    optional: ['quikrete-concrete-yields'],
+    note: 'Volume is geometry from your dimensions. Without a published bag yield the cubic-yard answer stands and the bag count is dropped.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'electricity-cost', type: 'sibling' },

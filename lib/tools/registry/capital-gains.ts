@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { CAPITAL_GAINS_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -26,6 +27,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'The long-term rate a household pays is decided by published thresholds. Without them the page cannot say which bracket applies.',
+  }),
   metaTitle: 'Capital Gains Tax Calculator 2026: 0%, 15%, 20% and NIIT',
   metaDescription: 'Estimate 2026 long-term capital gains tax from IRS Rev. Proc. 2025-32 brackets and the 3.8% Net Investment Income Tax. Short-term gains are ordinary income.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

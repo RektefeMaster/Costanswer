@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { EFFECTIVE_TAX_RATE_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -26,6 +27,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'An effective rate is liability over income, and liability comes entirely from the published schedules.',
+  }),
   metaTitle: 'Effective Tax Rate Calculator: Your Real Rate vs. Your Bracket (2026)',
   metaDescription: 'See what share of a U.S. salary actually goes to federal income tax, FICA and state tax — and why that is well below your bracket. Includes the rate on your next $1,000.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

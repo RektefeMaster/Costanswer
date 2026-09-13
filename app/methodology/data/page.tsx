@@ -18,6 +18,10 @@ import {
   latestPublishedGsaPerDiemSnapshot,
 } from '@/lib/data/gsa-perdiem-snapshot';
 import { irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
+import { irsHsaSnapshot } from '@/lib/data/irs-hsa';
+import { fhfaLoanLimitSnapshot } from '@/lib/data/fhfa-loan-limits-snapshot';
+import { vaFundingFeeSnapshot } from '@/lib/data/va-funding-fee';
+import { irsRmdSnapshot } from '@/lib/data/irs-rmd';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { cmsMarketplaceIndex } from '@/lib/data/cms-marketplace-snapshot';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
@@ -141,6 +145,21 @@ function dataPageSources() {
     verifiedAt: irsRetirementSnapshot.verifiedAt,
     fetchedAt: irsRetirementSnapshot.fetchedAt,
   });
+  const hsaSource = datasetSourceDisplay({
+    datasetId: 'irs-hsa-limits',
+    observationPeriod: irsHsaSnapshot.observationPeriod,
+    sourceStatus: irsHsaSnapshot.sourceStatus,
+    publishedAt: `${irsHsaSnapshot.publishedAt}T00:00:00.000Z`,
+    verifiedAt: irsHsaSnapshot.verifiedAt,
+    fetchedAt: irsHsaSnapshot.fetchedAt,
+  });
+  const fhfaSource = datasetSourceDisplay({
+    datasetId: 'fhfa-loan-limits',
+    observationPeriod: fhfaLoanLimitSnapshot.observationPeriod,
+    sourceStatus: fhfaLoanLimitSnapshot.sourceStatus,
+    verifiedAt: fhfaLoanLimitSnapshot.verifiedAt,
+    fetchedAt: fhfaLoanLimitSnapshot.fetchedAt,
+  });
   const insuranceSource = datasetSourceDisplay({
     datasetId: 'naic-insurance',
     observationPeriod: insuranceSnapshot.observationPeriod,
@@ -163,6 +182,8 @@ function dataPageSources() {
     { label: 'BLS grocery average prices', source: grocerySource },
     { label: 'IRS and SSA tax parameters', source: taxSource },
     { label: 'IRS retirement limits', source: irsRetirementSource },
+    { label: 'IRS HSA and HDHP limits', source: hsaSource },
+    { label: 'FHFA conforming loan limits', source: fhfaSource },
     { label: 'Census ACS 5-year estimates', source: acsSource },
     { label: 'HUD Fair Market Rents', source: hudSource },
     { label: 'BEA Regional Price Parities', source: beaSource },
@@ -187,6 +208,8 @@ function dataPageSources() {
     gsaLatest,
     perDiemSource,
     irsRetirementSource,
+    hsaSource,
+    fhfaSource,
     insuranceSource,
     cmsSource,
     allSources,
@@ -334,6 +357,8 @@ export default function DataSourcesPage() {
     gsaLatest,
     perDiemSource,
     irsRetirementSource,
+    hsaSource,
+    fhfaSource,
     insuranceSource,
     cmsSource,
     allSources,
@@ -536,6 +561,33 @@ export default function DataSourcesPage() {
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
+        <h2>IRS HSA contribution limits and HDHP tests</h2>
+        <dl>
+          <div><dt>Calendar year</dt><dd>{irsHsaSnapshot.coverageYear}</dd></div>
+          {freshnessRows(hsaSource)}
+          <div><dt>Self-only / family contribution</dt><dd>${irsHsaSnapshot.limits.selfOnlyContribution.toLocaleString('en-US')} / ${irsHsaSnapshot.limits.familyContribution.toLocaleString('en-US')}</dd></div>
+          <div><dt>Age-55 catch-up</dt><dd>${irsHsaSnapshot.limits.catchUpAge55.toLocaleString('en-US')} (statutory, not inflated)</dd></div>
+          <div><dt>HDHP minimum deductible</dt><dd>${irsHsaSnapshot.limits.hdhpMinDeductibleSelfOnly.toLocaleString('en-US')} / ${irsHsaSnapshot.limits.hdhpMinDeductibleFamily.toLocaleString('en-US')}</dd></div>
+          <div><dt>HDHP maximum out-of-pocket</dt><dd>${irsHsaSnapshot.limits.hdhpMaxOutOfPocketSelfOnly.toLocaleString('en-US')} / ${irsHsaSnapshot.limits.hdhpMaxOutOfPocketFamily.toLocaleString('en-US')}</dd></div>
+        </dl>
+        <p>{irsHsaSnapshot.attribution}</p>
+        <p className="dataset-links"><a href={irsHsaSnapshot.sourceUrl}>Rev. Proc. 2025-19 ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>FHFA conforming loan limit values</h2>
+        <dl>
+          <div><dt>Loan year</dt><dd>{fhfaLoanLimitSnapshot.loanYear}</dd></div>
+          {freshnessRows(fhfaSource)}
+          <div><dt>Effective window</dt><dd>{fhfaLoanLimitSnapshot.effectiveFrom} to {fhfaLoanLimitSnapshot.effectiveTo}</dd></div>
+          <div><dt>One-unit baseline / ceiling</dt><dd>${fhfaLoanLimitSnapshot.baseline.oneUnit.toLocaleString('en-US')} / ${fhfaLoanLimitSnapshot.ceiling.oneUnit.toLocaleString('en-US')}</dd></div>
+          <div><dt>Counties</dt><dd>{fhfaLoanLimitSnapshot.countyFips.length.toLocaleString('en-US')} across {new Set(fhfaLoanLimitSnapshot.countyState).size} states and territories</dd></div>
+        </dl>
+        <p>{fhfaLoanLimitSnapshot.attribution} A November announcement is not in force before 1 January. Alaska, Hawaii, Guam and the Virgin Islands can exceed the mainland ceiling.</p>
+        <p className="dataset-links"><a href={fhfaLoanLimitSnapshot.sourceUrl}>FHFA loan-limit page ↗</a><a href={fhfaLoanLimitSnapshot.sourceDocumentationUrl}>County CSV ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
         <h2>Census geography and ACS 5-Year estimates</h2>
         <dl>
           <div><dt>Geography snapshot</dt><dd>{geographySnapshot.snapshotId}</dd></div>
@@ -690,6 +742,30 @@ export default function DataSourcesPage() {
           </dl>
         </details>
         <p className="dataset-links">{medicareSnapshot.sources.map((source) => <a key={source.id} href={source.url}>{source.name} ↗</a>)}</p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>VA funding fee rate charts</h2>
+        <dl>
+          <div><dt>Effective</dt><dd>{vaFundingFeeSnapshot.effectiveFrom}</dd></div>
+          <div><dt>Verified</dt><dd>{vaFundingFeeSnapshot.verifiedAt}</dd></div>
+          <div><dt>Purchase first use, under 5% down</dt><dd>{vaFundingFeeSnapshot.purchase.firstUse[0].ratePercent}%</dd></div>
+          <div><dt>IRRRL</dt><dd>{vaFundingFeeSnapshot.irrrlPercent}%</dd></div>
+        </dl>
+        <p>{vaFundingFeeSnapshot.attribution}</p>
+        <p className="dataset-links"><a href={vaFundingFeeSnapshot.sourceUrl}>VA funding fee page ↗</a></p>
+      </section>
+      <section className="dataset-card">
+        <p><span className="status-dot" /> Current copy</p>
+        <h2>IRS Uniform Lifetime Table (RMD)</h2>
+        <dl>
+          <div><dt>Distribution year</dt><dd>{irsRmdSnapshot.distributionYear}</dd></div>
+          <div><dt>Table last revised</dt><dd>{irsRmdSnapshot.tableEffectiveYear}</dd></div>
+          <div><dt>Age 75 factor</dt><dd>{irsRmdSnapshot.uniformLifetime.find((row) => row.age === 75)?.period}</dd></div>
+          <div><dt>Verified</dt><dd>{irsRmdSnapshot.verifiedAt}</dd></div>
+        </dl>
+        <p>{irsRmdSnapshot.attribution}</p>
+        <p className="dataset-links"><a href={irsRmdSnapshot.sourceUrl}>Publication 590-B ↗</a></p>
       </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>

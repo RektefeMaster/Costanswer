@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'health-insurance',
@@ -14,6 +15,11 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['aca-subsidy-rules'],
+    optional: ['cms-marketplace'],
+    note: 'The applicable percentage table and the poverty guidelines decide the credit. Without them there is no subsidy to compute; the benchmark premium only sharpens a figure the rules already fix.',
+  }),
   metaTitle: 'Health Insurance Subsidy Calculator: 2026 ACA Premium Tax Credit',
   metaDescription: 'Work out your 2026 ACA premium tax credit and net Marketplace premium from the published IRS contribution table and HHS poverty guidelines, with every rule shown.',
   indexability: { ...launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 23, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'), reviewedAt: '2026-09-05', reviewValidUntil: '2027-03-05' },
@@ -22,5 +28,6 @@ export const tool: ToolDefinition = {
     { toolId: 'medicare-cost', type: 'next-decision' },
     { toolId: 'insurance-cost', type: 'sibling' },
     { toolId: 'cost-of-living', type: 'sibling' },
+    { toolId: 'hsa-contribution', type: 'sibling' },
   ],
 };

@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'marketplace-plans',
@@ -14,6 +15,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['cms-marketplace'],
+    note: 'Every premium, deductible and out-of-pocket maximum on this page is a figure issuers filed for the county. There is no formula behind it to fall back on.',
+  }),
   metaTitle: 'Marketplace Health Plan Cost by ZIP: Bronze vs Silver vs Gold 2026',
   metaDescription: 'Compare 2026 Marketplace plan costs in your county from filed CMS premiums: monthly cost, deductible, and the most a year can cost at each metal level.',
   indexability: { ...launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'), reviewedAt: '2026-09-05', reviewValidUntil: '2027-03-05' },

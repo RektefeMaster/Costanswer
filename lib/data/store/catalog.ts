@@ -53,6 +53,12 @@ export const STORE_CATALOG = {
     reason: 'PPI series for material escalation. Tier 2.',
     optional: true,
   },
+  'census-construction': {
+    sourcePath: 'data/census-construction/current.json',
+    assetPath: '/store/census-construction.json',
+    reason: 'Observed contractor overhead and profit shares by trade. Tier 2.',
+    optional: true,
+  },
   'fema-equipment': {
     sourcePath: 'data/fema-equipment/current.json',
     assetPath: '/store/fema-equipment.json',

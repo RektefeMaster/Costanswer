@@ -359,4 +359,112 @@ export const WEALTH_EDITORIAL: ToolEditorial[] = [
       },
     ],
   },
+  {
+    toolId: 'hsa-contribution',
+    guide: {
+      heading: 'How the 2026 HSA cap is applied',
+      lede: 'The annual contribution limit is the IRS figure for self-only or family HDHP coverage, plus $1,000 in the year you turn 55, times the months you were eligible. Employer deposits count against the same cap. A plan that fails the deductible or out-of-pocket test is not an HDHP, so the limit is zero.',
+      sections: [
+        {
+          heading: 'What Rev. Proc. 2025-19 actually sets',
+          paragraphs: [
+            'For 2026 the self-only cap is $4,400 and the family cap is $8,750. A qualifying HDHP must have a deductible of at least $1,700 or $3,400 and an out-of-pocket maximum no higher than $8,500 or $17,000. Those out-of-pocket figures exclude premiums. The $1,000 catch-up at 55 is in the Code, not in the revenue procedure, because Congress never indexed it.',
+          ],
+        },
+        {
+          heading: 'Months and Medicare',
+          paragraphs: [
+            'Each month you are eligible on the first day is 1/12 of the annual amount. The last-month rule lets you use the full year if you are eligible on 1 December, but only if you remain eligible through the next 31 December. Enrolling in any part of Medicare ends eligibility for later months: enter those earlier months, and do not use the last-month rule after Medicare starts.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'What is the HSA contribution limit for 2026?',
+        answer: [
+          '$4,400 for self-only HDHP coverage and $8,750 for family coverage, plus $1,000 if you are 55 or older by year-end and still eligible. Employer contributions share that cap.',
+        ],
+      },
+      {
+        question: 'Does a bronze Marketplace plan let me contribute to an HSA?',
+        answer: [
+          'Only if that plan meets the IRS deductible and out-of-pocket tests for the year. Metal tier is not the test. Type the two numbers from the Summary of Benefits; the page will say whether they qualify.',
+        ],
+      },
+      {
+        question: 'Can my spouse and I both take the $1,000 catch-up?',
+        answer: [
+          'Yes, if each of you is 55 or older and each of you has your own HSA. Family coverage does not put $2,000 of catch-up into one account.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'HSA', definition: 'Health Savings Account. Contributions are capped per year and per eligible individual, not per household, except that family HDHP coverage uses the family base limit.' },
+      { term: 'HDHP', definition: 'High deductible health plan, defined by a minimum deductible and a maximum out-of-pocket amount the IRS publishes each year.' },
+      { term: 'Last-month rule', definition: 'A full-year contribution if you are HSA-eligible on 1 December, provided you stay eligible through the following 31 December.' },
+    ],
+    tips: [
+      'Add what your employer already deposited before you decide how much to put in from pay.',
+      'If you will enroll in Medicare this year, enter only the months before enrollment. Checking Medicare here turns off the last-month rule and, if you had 12 months filled in, resets the months to zero so you have to type the real count.',
+    ],
+    caveats: [
+      'Not tax advice, not a Form 8889, and not a determination that you are an eligible individual.',
+      'Over-contributions can be subject to a 6% excise tax if left uncorrected. This page does not compute that tax.',
+    ],
+  },
+  {
+    toolId: 'rmd',
+    guide: {
+      heading: 'How a lifetime RMD is read from Table III',
+      lede: 'The required minimum distribution for an IRA you own is last year’s ending balance divided by the Uniform Lifetime factor for your age this year. The table starts at 72. Whether you must take an RMD yet is a different rule: 73 or 75, from SECURE 2.0.',
+      sections: [
+        {
+          heading: 'The arithmetic IRS prints',
+          paragraphs: [
+            'Publication 590-B tells you to take the 31 December balance and divide by the Table III denominator next to your age as of your birthday in the distribution year. At age 75 the factor is 24.6, so $100,000 becomes $4,065. Each IRA is computed on its own; a 401(k) uses the same table but the plan usually pays it.',
+          ],
+        },
+        {
+          heading: 'What is deliberately missing',
+          paragraphs: [
+            'If the sole beneficiary is a spouse more than 10 years younger, Table II applies and this page stops. Inherited IRAs after the SECURE Act often follow a 10-year emptying rule that is not a Table III problem. A Roth IRA the original owner still holds has no lifetime RMD.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'At what age do RMDs start now?',
+        answer: [
+          '73 if you were born from 1951 through 1959, and 75 if you were born in 1960 or later. People born in 1950 or earlier already started at 72. The first RMD can be delayed until 1 April of the next year, which then puts two RMDs in that next year.',
+        ],
+      },
+      {
+        question: 'How is my RMD calculated for 2026?',
+        answer: [
+          'Take the IRA balance on 31 December 2025 and divide by the Table III factor for the age you turn in 2026. The page rounds that quotient to the nearest dollar, matching the IRS worked example.',
+        ],
+      },
+      {
+        question: 'Do Roth IRAs have RMDs?',
+        answer: [
+          'Not during the original owner’s lifetime. An inherited Roth IRA can. Mark the Roth box and the page will refuse Table III rather than print a number that does not apply.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'RMD', definition: 'Required minimum distribution. The smallest amount the tax rules say must come out of a tax-deferred account for the year.' },
+      { term: 'Uniform Lifetime Table', definition: 'IRS Publication 590-B Appendix B Table III. Used by unmarried owners and by married owners whose spouse is not more than 10 years younger or is not the sole beneficiary.' },
+      { term: 'SECURE 2.0', definition: 'The 2022 law that moved the required beginning age to 73, then to 75 for people born in 1960 or later.' },
+    ],
+    tips: [
+      'If you have more than one IRA, compute each separately, then add the RMDs. You may take the total from one IRA.',
+      'Taking more than the minimum does not credit next year. Next year’s factor and next year’s balance start over.',
+    ],
+    caveats: [
+      'Not tax, estate, or investment advice. Missing an RMD can trigger an excise tax this page does not compute.',
+      'Table II and inherited-IRA 10-year rules are out of scope on purpose.',
+    ],
+  },
 ];

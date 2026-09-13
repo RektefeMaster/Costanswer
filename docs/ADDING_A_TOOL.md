@@ -27,6 +27,10 @@ For an external source, create a provider adapter in `lib/data/` and an ingestio
 
 Required gates are source schema, units, expected geography/series, uniqueness, completeness, finite values, domain invariants, previous-period diff and secret scrubbing. CI tests use a recorded response; they do not depend on provider uptime.
 
+Then add a row to `data/source-registry.json` and to `lib/data/data-sources.ts`
+with the same tier. See [`docs/DATA_SOURCE_REGISTRY.md`](DATA_SOURCE_REGISTRY.md)
+for what a tier means and how the two files are asserted to agree.
+
 ## 4. Register the tool
 
 Add one file under `lib/tools/registry/` named for the tool id, exporting
@@ -41,7 +45,38 @@ The entry needs:
 - category and engine ID;
 - natural-language search aliases;
 - typed related-tool edges;
-- explicit quality score.
+- explicit quality score;
+- a **data manifest**, built with one of the four constructors in
+  `lib/tools/data-manifest.ts`.
+
+The manifest is the decision about what happens when a source is missing or out
+of date, and there are only four honest answers:
+
+| Constructor | Use it when | Fallback |
+| --- | --- | --- |
+| `requiresOfficialData` | The answer does not exist without the source. Tax tables, per-diem ceilings, filed plan premiums. | The page says the answer is unavailable |
+| `formulaWithDefault` | Arithmetic that seeds one field from official data. A mortgage rate, an electricity rate. | The reader types the figure |
+| `formulaWithBenchmark` | Arithmetic that prints official data beside the answer as context. | The context line is dropped |
+| `formulaOnly` | Solvable from its inputs alone. Most of the catalogue. | Nothing to lose |
+
+Reach for `formulaOnly` first and justify anything stronger. A tool that
+declares `requiresData: true` may not present a complete result when a required
+source is missing or stale, so declaring it lightly takes a working page off the
+site the next time a government website moves a file.
+
+If the page prints a dollar figure that no publisher supplies — a PMI rate, a
+closing-cost allowance, an affordability band — declare it in `modeled` too. It
+becomes a `MODELED` line on the receipt with the reason next to it, which is the
+difference between a placeholder a reader knows to replace and a number they
+plan around.
+
+`assertToolDataManifest` runs over the whole catalogue at import and rejects a
+manifest that contradicts itself: `requiresData` that does not match the
+required list, a graceful fallback on a tool that requires data, a staleness
+limit tighter than the provider's own release cycle, or `resultNature: 'exact'`
+on a tool that cannot answer without an outside table. The receipt on the page —
+`VERIFIED` / `OBSERVED` / `MODELED` / `USER ENTERED` — is generated from the
+manifest, so a tool cannot claim a source it does not read.
 
 Hubs, search, related links and the sitemap derive from this registry.
 

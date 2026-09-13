@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithDefault } from '../data-manifest';
 import { REFINANCE_ENGINE_ID } from '../../calculations/finance/version';
 
 export const tool: ToolDefinition = {
@@ -27,6 +28,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'planning-model',
+  data: formulaWithDefault({
+    optional: ['freddie-mac-pmms'],
+    note: 'The break-even month is the old payment, the new payment and the costs you enter. The survey average is only a default new rate.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 12, internalLinkValue: 10, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'mortgage-payment', type: 'sibling' },

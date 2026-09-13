@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'medicare-cost',
@@ -14,6 +15,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['medicare-rules'],
+    note: 'Part B and Part D amounts, the deductibles and the IRMAA brackets are set by CMS for the year. None can be derived.',
+  }),
   metaTitle: 'Medicare Cost Calculator 2026: Part B Premium, IRMAA & Deductibles',
   metaDescription: 'Calculate 2026 Medicare premiums from the published CMS tables, including the Part B and Part D income-related adjustment, deductibles, and where the income cliffs fall.',
   indexability: { ...launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'), reviewedAt: '2026-09-05', reviewValidUntil: '2027-03-05' },

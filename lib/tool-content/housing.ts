@@ -433,4 +433,109 @@ export const HOUSING_EDITORIAL: ToolEditorial[] = [
       'Not credit counseling or bankruptcy advice.',
     ],
   },
+  {
+    toolId: 'conforming-loan-limit',
+    guide: {
+      heading: 'How a county FHFA limit classifies a loan',
+      lede: 'The calculator looks up the FHFA conforming loan limit for the county and unit count you pick, then places your loan amount in one of three bands: conforming, high-balance conforming, or jumbo. The limit is on the loan, not the purchase price, and it is not a lender approval.',
+      sections: [
+        {
+          heading: 'Baseline, high-balance, and jumbo',
+          paragraphs: [
+            'Most U.S. counties sit at the national baseline FHFA sets from the house-price index. A loan at or under that baseline is conforming. In a high-cost county the limit is higher, up to 150% of the baseline on the mainland. A loan above the local baseline and at or under the county limit is still agency-eligible; it is called high-balance conforming and usually carries a loan-level price adjustment. Above the county limit the loan is jumbo, and Fannie Mae and Freddie Mac may not buy it. In Alaska, Hawaii, Guam and the U.S. Virgin Islands the local baseline is already 150% of the national figure, so a loan under that higher floor is ordinary conforming, not high-balance.',
+            'Putting more money down can pull an expensive house under the same county cap, because the cap applies to the financed amount. The page will show how much extra cash would do that, and the largest purchase price that still conforms at the down payment you typed.',
+          ],
+        },
+        {
+          heading: 'The calendar on the file',
+          paragraphs: [
+            'FHFA publishes a calendar year’s values in November. They apply to loans the agencies acquire in that calendar year, starting 1 January. Using a 2026 file on a loan that closed in 2025 is the wrong year’s rule.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'What is the 2026 conforming loan limit?',
+        answer: [
+          'The national baseline for a one-unit property is $832,750. High-cost counties go higher, up to $1,249,125 on the mainland. A few Hawaii counties sit above that ceiling because Alaska, Hawaii, Guam and the U.S. Virgin Islands are statutory special areas. Type the county; the page will not guess from a city name.',
+        ],
+      },
+      {
+        question: 'Is a high-balance loan a jumbo loan?',
+        answer: [
+          'No. High-balance conforming is still a conventional loan the agencies may buy. Jumbo starts the dollar after the county limit. Pricing and reserve requirements usually change at both steps, which is why the page names all three.',
+        ],
+      },
+      {
+        question: 'Does this apply to FHA or VA loans?',
+        answer: [
+          'No. FHA publishes its own county limits. A VA loan with full entitlement is not capped by the FHFA figure at all. Use this page for conventional conforming versus jumbo, then type the loan amount those programs actually allow on the mortgage calculator.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'Conforming loan', definition: 'A loan at or under the FHFA county limit, which Fannie Mae or Freddie Mac may buy. Not the same as being approved.' },
+      { term: 'High-balance conforming', definition: 'A conforming loan above the national baseline and at or under the county high-cost limit. Still agency-eligible, with its own price adjustment.' },
+      { term: 'Jumbo loan', definition: 'A loan above the county FHFA limit. The lender keeps it or sells it privately.' },
+      { term: 'County loan limit', definition: 'The maximum loan amount FHFA sets for one-, two-, three- and four-unit properties in that county for a calendar year.' },
+    ],
+    tips: [
+      'If the house is expensive, raise the down payment before you assume you need a jumbo product.',
+      'Compare the payment on the mortgage calculator after you know which band you are in. This page does not quote a rate.',
+    ],
+    caveats: [
+      'Not a lender decision, not a Good Faith Estimate, and not an FHA or VA limit.',
+      'A ZIP code is mapped through Census ZCTAs to a county. Some ZIPs cover more than one county; pick the one that actually contains the property.',
+    ],
+  },
+  {
+    toolId: 'va-funding-fee',
+    guide: {
+      heading: 'How the VA funding fee is read from the chart',
+      lede: 'The calculator multiplies your loan amount by the percentage VA published for that loan type, first or subsequent use, and, on a purchase, the down-payment step. It is a one-time fee, not monthly mortgage insurance, and marking yourself exempt here does not make VA agree.',
+      sections: [
+        {
+          heading: 'Purchase loans change at 5% and 10% down',
+          paragraphs: [
+            'First use under 5% down is 2.15%. At 5% or more it drops to 1.5%, and at 10% or more to 1.25%. After first use the zero-down rate is 3.3%; the 5% and 10% steps match first use. VA’s own example of a $200,000 house with $10,000 down is a $190,000 loan and a $2,850 fee.',
+            'Cash-out refinance ignores those down-payment steps: 2.15% first use, 3.3% after. IRRRL is 0.5%. Financing the fee adds that same dollar amount to the loan. VA computes the percentage on the loan without the fee included, then adds it — it does not compound.',
+          ],
+        },
+      ],
+    },
+    faq: [
+      {
+        question: 'How much is the VA funding fee on a first-use purchase with no down payment?',
+        answer: [
+          '2.15% of the loan amount, from the charts effective 7 April 2023. On a $350,000 loan that is $7,525, paid in cash or added to the note if you finance it. Financing does not increase the fee itself.',
+        ],
+      },
+      {
+        question: 'Who does not pay the VA funding fee?',
+        answer: [
+          'People receiving VA disability compensation, those eligible for it who take retirement or active-duty pay instead, DIC surviving spouses, some pre-discharge ratings, and active-duty members who document a Purple Heart by closing. This page will zero the fee if you mark an exemption. The lender and VA still have to accept it.',
+        ],
+      },
+      {
+        question: 'Is the VA funding fee the same as FHA MIP?',
+        answer: [
+          'No. FHA charges an upfront and an annual mortgage insurance premium from a different handbook. Conventional loans may charge PMI. This page is only the VA funding fee chart.',
+        ],
+      },
+    ],
+    glossary: [
+      { term: 'VA funding fee', definition: 'A one-time percentage of a VA-backed or VA direct loan, paid at closing or financed into the loan. It is not monthly mortgage insurance.' },
+      { term: 'First use', definition: 'The first VA-backed or VA direct home loan, except a prior loan used only to buy a manufactured home, which VA still treats as first use for these rates.' },
+      { term: 'IRRRL', definition: 'Interest Rate Reduction Refinance Loan, a VA streamline refinance. Its funding fee is 0.5% on the current chart.' },
+    ],
+    tips: [
+      'If you can put 5% or 10% down on a purchase, the chart steps down. Run both before you assume zero-down is cheaper overall.',
+      'A Certificate of Eligibility is a separate VA document. This page does not request one.',
+    ],
+    caveats: [
+      'Not a VA eligibility, occupancy, or residual-income decision.',
+      'Seller concessions, discount points, and other closing costs are outside this fee.',
+    ],
+  },
 ];

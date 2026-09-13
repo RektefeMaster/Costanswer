@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { SALARY_AFTER_TAX_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -27,6 +28,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'Take-home pay is gross minus published federal, state and FICA amounts. Without the tables the result is not an approximation, it is wrong.',
+  }),
   metaTitle: 'Salary After Tax Calculator (Federal, FICA & State, 2026)',
   metaDescription: 'Estimate U.S. take-home from a salary: federal income tax, FICA, and state wage tax when this site has a verified table. Not a filed return. Try Texas vs. California on the same gross pay.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { SELF_EMPLOYMENT_TAX_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -26,6 +27,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'The SE rates, the net-earnings factor and the wage base are published figures.',
+  }),
   metaTitle: 'Self-Employment Tax Calculator 2026: Schedule SE',
   metaDescription: 'Estimate 2026 Schedule SE tax from net profit, the 92.35% factor, and the Social Security wage base. Additional Medicare Tax is shown separately. Not a filed return.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),

@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaWithDefault } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'electricity-cost',
@@ -14,6 +15,10 @@ export const tool: ToolDefinition = {
   accent: 'amber',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: formulaWithDefault({
+    optional: ['eia-electricity'],
+    note: 'kWh × rate. The published state average seeds the rate field and a rate you type replaces it.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'appliance-electricity', type: 'next-decision' },

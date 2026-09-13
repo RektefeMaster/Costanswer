@@ -38,6 +38,10 @@ import currentTaxJson from '@/data/tax/2026.json';
 import acaSubsidyJson from '@/data/aca-subsidy/2026.json';
 import medicareJson from '@/data/medicare/2026.json';
 import currentUsdaJson from '@/data/usda-food/current.json';
+import currentFhfaJson from '@/data/fhfa-loan-limits/current.json';
+import currentHsaJson from '@/data/irs-hsa/2026.json';
+import currentVaFeeJson from '@/data/va-funding-fee/current.json';
+import currentRmdJson from '@/data/irs-rmd/current.json';
 import hudReleasesJson from '@/data/hud-fmr/releases.json';
 import hudFy2026Json from '@/data/hud-fmr/snapshots/hud-fmr-fy2026-revised-2026-05-21-v1.json';
 import hudFy2027Json from '@/data/hud-fmr/snapshots/hud-fmr-fy2027-v1.json';
@@ -63,6 +67,10 @@ import { acaSubsidySnapshotSchema, type AcaSubsidySnapshot } from './aca-subsidy
 import { medicareSnapshotSchema, type MedicareSnapshot } from './medicare';
 import { usdaFoodSnapshotSchema } from './usda-food';
 import { taxYearSnapshotSchema, type TaxYearSnapshot } from './tax/schema';
+import { fhfaLoanLimitSnapshotSchema, type FhfaLoanLimitSnapshot } from './fhfa-loan-limits';
+import { irsHsaSnapshotSchema, type IrsHsaSnapshot } from './irs-hsa';
+import { vaFundingFeeSnapshotSchema, type VaFundingFeeSnapshot } from './va-funding-fee';
+import { irsRmdSnapshotSchema, type IrsRmdSnapshot } from './irs-rmd';
 
 /** Manifest shape shared by every dataset; `period` narrows the cadence a feed publishes on. */
 function manifestSchema(period: z.ZodType<string> = z.string()) {
@@ -237,6 +245,34 @@ export function validateMedicareSnapshot(rawSnapshot: unknown): MedicareSnapshot
   return snapshot;
 }
 
+export function validateFhfaLoanLimitSnapshot(rawSnapshot: unknown): FhfaLoanLimitSnapshot {
+  const computed = assertNormalizedHash(rawSnapshot as object, 'Bundled FHFA loan limits');
+  const snapshot = fhfaLoanLimitSnapshotSchema.parse(rawSnapshot);
+  if (snapshot.normalizedSha256 !== computed) throw new Error('FHFA loan-limit snapshot hash does not match the parsed document.');
+  return snapshot;
+}
+
+export function validateIrsHsaSnapshot(rawSnapshot: unknown): IrsHsaSnapshot {
+  const computed = assertNormalizedHash(rawSnapshot as object, 'Bundled IRS HSA limits');
+  const snapshot = irsHsaSnapshotSchema.parse(rawSnapshot);
+  if (snapshot.normalizedSha256 !== computed) throw new Error('HSA snapshot hash does not match the parsed document.');
+  return snapshot;
+}
+
+export function validateVaFundingFeeSnapshot(rawSnapshot: unknown): VaFundingFeeSnapshot {
+  const computed = assertNormalizedHash(rawSnapshot as object, 'Bundled VA funding fee charts');
+  const snapshot = vaFundingFeeSnapshotSchema.parse(rawSnapshot);
+  if (snapshot.normalizedSha256 !== computed) throw new Error('VA funding-fee snapshot hash does not match the parsed document.');
+  return snapshot;
+}
+
+export function validateIrsRmdSnapshot(rawSnapshot: unknown): IrsRmdSnapshot {
+  const computed = assertNormalizedHash(rawSnapshot as object, 'Bundled IRS RMD tables');
+  const snapshot = irsRmdSnapshotSchema.parse(rawSnapshot);
+  if (snapshot.normalizedSha256 !== computed) throw new Error('RMD snapshot hash does not match the parsed document.');
+  return snapshot;
+}
+
 /**
  * Re-verify every snapshot the app reads at runtime, in one pass.
  *
@@ -287,6 +323,10 @@ export function verifyBundledSnapshots(): void {
   validateTaxYearSnapshot(currentTaxJson);
   validateAcaSubsidySnapshot(acaSubsidyJson);
   validateMedicareSnapshot(medicareJson);
+  validateFhfaLoanLimitSnapshot(currentFhfaJson);
+  validateIrsHsaSnapshot(currentHsaJson);
+  validateVaFundingFeeSnapshot(currentVaFeeJson);
+  validateIrsRmdSnapshot(currentRmdJson);
   validateCmsMarketplace(cmsIndexJson, cmsPremiumsJson);
   hudFmrSnapshotSchema.parse(hudFy2026Json);
   hudFmrSnapshotSchema.parse(hudFy2027Json);

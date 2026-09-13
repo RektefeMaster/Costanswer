@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { formulaOnly } from '../data-manifest';
 import { SQUARE_FOOTAGE_ENGINE_ID } from '../../calculations/education/formulas';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,7 @@ export const tool: ToolDefinition = {
   accent: 'amber',
   featured: true,
   resultNature: 'exact',
+  data: formulaOnly('Area is geometry.'),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'concrete', type: 'next-decision' },

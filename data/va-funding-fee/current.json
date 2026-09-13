@@ -1,0 +1,77 @@
+{
+  "schemaVersion": "1.0.0",
+  "snapshotId": "va-funding-fee-2023-04-07-v1",
+  "datasetId": "va-funding-fee",
+  "observationPeriod": "2026",
+  "effectiveFrom": "2023-04-07",
+  "fetchedAt": "2026-09-08T00:00:00.000Z",
+  "verifiedAt": "2026-09-08",
+  "sourceStatus": "verified",
+  "sourceUrl": "https://www.va.gov/housing-assistance/home-loans/funding-fee-and-closing-costs/",
+  "sourceDocumentationUrl": "https://www.va.gov/housing-assistance/home-loans/funding-fee-and-closing-costs/",
+  "attribution": "U.S. Department of Veterans Affairs, VA funding fee rate charts, effective April 7, 2023, confirmed still the published charts on 8 September 2026.",
+  "purchase": {
+    "firstUse": [
+      {
+        "minDownPaymentPercent": 0,
+        "ratePercent": 2.15
+      },
+      {
+        "minDownPaymentPercent": 5,
+        "ratePercent": 1.5
+      },
+      {
+        "minDownPaymentPercent": 10,
+        "ratePercent": 1.25
+      }
+    ],
+    "subsequent": [
+      {
+        "minDownPaymentPercent": 0,
+        "ratePercent": 3.3
+      },
+      {
+        "minDownPaymentPercent": 5,
+        "ratePercent": 1.5
+      },
+      {
+        "minDownPaymentPercent": 10,
+        "ratePercent": 1.25
+      }
+    ]
+  },
+  "cashOut": {
+    "firstUsePercent": 2.15,
+    "subsequentPercent": 3.3
+  },
+  "irrrlPercent": 0.5,
+  "nadlPurchasePercent": 1.25,
+  "nadlRefinancePercent": 0.5,
+  "manufacturedNotAffixedPercent": 1,
+  "assumptionPercent": 0.5,
+  "vendeePercent": 2.25,
+  "exemptionReasons": [
+    "Receiving VA compensation for a service-connected disability",
+    "Eligible for that compensation but receiving retirement or active-duty pay instead",
+    "Receiving Dependency and Indemnity Compensation as a surviving spouse",
+    "Service member with a proposed or memorandum rating before closing on a pre-discharge claim",
+    "Active-duty member who provides evidence of a Purple Heart on or before closing"
+  ],
+  "sources": [
+    {
+      "id": "va-funding-fee-page",
+      "name": "VA funding fee and loan closing costs",
+      "url": "https://www.va.gov/housing-assistance/home-loans/funding-fee-and-closing-costs/",
+      "publishedAt": "2026-01-15",
+      "detail": "Official rate charts effective 7 April 2023, including purchase, cash-out, IRRRL, NADL, manufactured-home, assumption and vendee rates, and the exemption list."
+    }
+  ],
+  "validationReport": [
+    "Purchase first-use rates are 2.15% under 5% down, 1.50% at 5% or more, and 1.25% at 10% or more.",
+    "Purchase subsequent-use is 3.30% under 5% down; 5% and 10% down match first-use.",
+    "Cash-out is 2.15% first use and 3.30% subsequent, with no down-payment step.",
+    "IRRRL 0.50%, NADL purchase 1.25%, NADL refinance 0.50%, manufactured not affixed 1.00%, assumptions 0.50%, vendee 2.25%.",
+    "VA’s worked example of a $190,000 first-use purchase at 5% down is 1.5% = $2,850."
+  ],
+  "normalizedSha256": "d7fd6b7b6e6ba94cf627bcb790da66d07bbbe235d7c55d88c550f045c911388e"
+}

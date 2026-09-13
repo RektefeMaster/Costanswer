@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { PER_DIEM_ENGINE_ID } from '../../calculations/travel/version';
 
 export const tool: ToolDefinition = {
@@ -30,6 +31,10 @@ export const tool: ToolDefinition = {
   accent: 'rose',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['gsa-perdiem'],
+    note: 'The lodging ceiling and M&IE tier for a destination are the rates GSA sets. A trip on or after 1 October takes the next fiscal year’s file, which is why the effective release matters as much as the newest one.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 13, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'business-days', type: 'sibling' },

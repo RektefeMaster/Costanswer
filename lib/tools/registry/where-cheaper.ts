@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 
 export const tool: ToolDefinition = {
   id: 'where-cheaper',
@@ -25,6 +26,10 @@ export const tool: ToolDefinition = {
   accent: 'violet',
   featured: true,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['eia-electricity', 'eia-gasoline', 'bls-grocery'],
+    note: 'The ranking is the published price series. There is no arithmetic here that survives losing them.',
+  }),
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'electricity-cost', type: 'uses-dataset' },

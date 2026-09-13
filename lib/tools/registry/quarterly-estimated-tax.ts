@@ -1,5 +1,6 @@
 import type { ToolDefinition } from '../types';
 import { launchIndexability } from '../indexability';
+import { requiresOfficialData } from '../data-manifest';
 import { QUARTERLY_ESTIMATED_TAX_ENGINE_ID } from '../../calculations/tax/version';
 
 export const tool: ToolDefinition = {
@@ -25,6 +26,10 @@ export const tool: ToolDefinition = {
   accent: 'mint',
   featured: false,
   resultNature: 'official-data-estimate',
+  data: requiresOfficialData({
+    required: ['us-tax'],
+    note: 'Safe-harbour percentages, the owed threshold and the due dates are all published rules.',
+  }),
   metaTitle: 'Quarterly Estimated Tax Calculator 2026 (Form 1040-ES)',
   metaDescription: 'Estimate 2026 quarterly federal estimated tax from Form 1040-ES safe harbors and due dates. Not a Form 2210 penalty calculation.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 15, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
