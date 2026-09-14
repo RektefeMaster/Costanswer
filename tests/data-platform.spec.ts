@@ -69,6 +69,8 @@ describe('dataset freshness policy', () => {
     expect(evaluateDatasetFreshness('us-tax', { observationPeriod: '2026' }, '2028-04-01')).toBe('stale');
     expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2027-02-04')).toBe('current');
     expect(evaluateDatasetFreshness('irs-retirement-limits', { observationPeriod: '2026' }, '2028-04-01')).toBe('stale');
+    expect(evaluateDatasetFreshness('irs-hsa-limits', { observationPeriod: '2026' }, '2027-02-04')).toBe('current');
+    expect(evaluateDatasetFreshness('irs-hsa-limits', { observationPeriod: '2026' }, '2028-04-01')).toBe('stale');
 
     // OMB issues metro delineation bulletins on no fixed schedule, so Bulletin
     // 23-01 stays current rather than aging into a warning nobody can act on.
