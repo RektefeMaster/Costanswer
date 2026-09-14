@@ -6,7 +6,7 @@ import { COST_OF_LIVING_ENGINE_ID } from '../../calculations/col/version';
 export const tool: ToolDefinition = {
   id: 'cost-of-living',
   path: '/money/cost-of-living',
-  title: 'Cost of Living: Compare Two U.S. Places',
+  title: 'Cost of Living Calculator',
   shortTitle: 'Cost of living',
   description: 'Estimated modeled monthly living costs for a U.S. city, metro, or state using HUD Fair Market Rent, USDA Food Plans, and official regional context. This is not a proprietary index.',
   category: 'money',

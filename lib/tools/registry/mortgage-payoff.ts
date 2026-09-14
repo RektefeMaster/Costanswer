@@ -6,7 +6,7 @@ import { MORTGAGE_PAYOFF_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'mortgage-payoff',
   path: '/money/mortgage-payoff',
-  title: 'When Will My Mortgage Be Paid Off?',
+  title: 'Mortgage Payoff Calculator',
   shortTitle: 'Mortgage payoff',
   description: 'See how extra principal changes the remaining payoff date and interest on the current mortgage balance.',
   category: 'money',

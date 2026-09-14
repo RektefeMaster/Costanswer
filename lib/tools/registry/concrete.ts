@@ -5,7 +5,7 @@ import { formulaWithBenchmark } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'concrete',
   path: '/home/concrete-calculator',
-  title: 'How Much Concrete Do I Need?',
+  title: 'Concrete Calculator',
   shortTitle: 'Concrete calculator',
   description: 'Cubic yards and bag counts for a rectangular slab. Waste is listed separately.',
   category: 'home',

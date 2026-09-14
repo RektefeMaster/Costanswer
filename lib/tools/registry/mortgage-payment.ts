@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'mortgage-payment',
   path: '/money/mortgage-payment',
-  title: 'How Much Is My Mortgage Payment?',
+  title: 'Mortgage Payment Calculator',
   shortTitle: 'Mortgage payment',
   description: 'Monthly principal and interest from the home price, down payment, term, and the most recent Freddie Mac national average rate. You can type a quote instead.',
   category: 'money',

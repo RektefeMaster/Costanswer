@@ -6,7 +6,7 @@ import { CAR_AFFORDABILITY_ENGINE_ID } from '../../calculations/vehicle/version'
 export const tool: ToolDefinition = {
   id: 'car-affordability',
   path: '/car/car-affordability',
-  title: 'How Much Car Can I Afford?',
+  title: 'Car Affordability Calculator',
   shortTitle: 'Car affordability',
   description: 'Monthly cash cost of a car (loan payment, fuel or charging, insurance, upkeep, registration) and how much of your take-home pay it would take. Depreciation is not included, so this is out-of-pocket cost, not total cost of ownership.',
   category: 'car',

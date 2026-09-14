@@ -112,7 +112,6 @@ export function SiteHeaderNav({
               {chrome('jobCosts', locale)}
             </Link>
             <Link className="mobile-search-link" href="/search" aria-current={searchCurrent}>{chrome('search', locale)}</Link>
-            {mobileLanguageSwitcher}
             {CATEGORY_IDS.map((categoryId) => (
               <Link
                 href={`/topics/${categoryId}`}
@@ -124,6 +123,7 @@ export function SiteHeaderNav({
               </Link>
             ))}
           </nav>
+          {mobileLanguageSwitcher}
         </details>
       </div>
     </header>

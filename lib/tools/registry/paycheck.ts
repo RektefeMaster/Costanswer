@@ -6,7 +6,7 @@ import { PAYCHECK_ENGINE_ID } from '../../calculations/tax/version';
 export const tool: ToolDefinition = {
   id: 'paycheck',
   path: '/money/paycheck',
-  title: 'How Much Is My Take-Home Paycheck?',
+  title: 'Estimated Paycheck Calculator',
   shortTitle: 'Paycheck',
   description: 'Estimate take-home pay per paycheck by spreading a full-year federal, FICA, and state tax estimate across your pay periods. Your employer withholds from a W-4 and IRS tables instead, so a real stub will differ.',
   category: 'money',

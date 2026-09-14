@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'road-trip-fuel',
   path: '/car/road-trip-fuel',
-  title: 'How Much Does a Road Trip Cost in Gas?',
+  title: 'Road Trip Fuel Cost Calculator',
   shortTitle: 'Road-trip fuel',
   description: 'Fuel cost for a drive from your miles, MPG, and the most recent EIA regular-gas average for your state or region. You can type a pump price instead.',
   category: 'car',

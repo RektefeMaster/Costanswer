@@ -6,7 +6,7 @@ import { APPLIANCE_ENERGY_ENGINE_ID } from '../../calculations/energy/version';
 export const tool: ToolDefinition = {
   id: 'appliance-electricity',
   path: '/home/appliance-electricity-cost',
-  title: 'How Much Does This Appliance Cost to Run?',
+  title: 'Appliance Electricity Cost Calculator',
   shortTitle: 'Appliance electricity',
   description: 'Estimate what a device costs to run from its wattage, hours of use, and the EIA average for your state. You can type the rate from your bill instead.',
   category: 'home',

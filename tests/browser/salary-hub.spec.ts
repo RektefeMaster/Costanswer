@@ -31,7 +31,7 @@ test('salary hub search, sort, and occupation links work like a directory', asyn
 
   await page.getByRole('link', { name: /Registered Nurse/ }).first().click();
   await expect(page).toHaveURL(/\/salary\/registered-nurse$/);
-  await expect(page.getByRole('heading', { name: /How much does a registered nurse make/i })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1, name: /How much does a registered nurse make/i })).toBeVisible();
 });
 
 test('salary hub stays usable on a phone and still shows pay', async ({ page }) => {

@@ -6,7 +6,7 @@ import { PER_DIEM_ENGINE_ID } from '../../calculations/travel/version';
 export const tool: ToolDefinition = {
   id: 'per-diem',
   path: '/everyday/per-diem',
-  title: 'GSA Per Diem Rates by City',
+  title: 'GSA Per Diem Trip Calculator',
   shortTitle: 'Per diem',
   description: 'Federal travel per diem for a trip in the continental U.S.: the GSA lodging ceiling for every night, meals and incidentals for every day, and a check of your actual room rate against the cap. Type a city or ZIP.',
   category: 'everyday',

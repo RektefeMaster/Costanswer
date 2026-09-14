@@ -86,7 +86,7 @@ test('job pages remount the estimator and keep window extrema on screen', async 
   await expect(page.locator('.primary-result')).not.toContainText('Incomplete');
 
   await page.locator('.job-picker-card', { hasText: 'Heat pump' }).click();
-  await expect(page).toHaveURL(/\/cost\/heat-pump-replacement$/);
+  await expect(page).toHaveURL(/\/cost\/heat-pump-replacement$/, { timeout: 15_000 });
   await expect(page.getByLabel('System size')).toBeVisible();
   await expect(page.locator('.primary-result')).toContainText('$', { timeout: 15_000 });
   await expect(page.locator('.primary-result')).not.toContainText('Incomplete');

@@ -6,7 +6,7 @@ import { AMORTIZATION_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'amortization',
   path: '/money/amortization',
-  title: 'Amortization Schedule Calculator',
+  title: 'Amortization Calculator',
   shortTitle: 'Amortization',
   description: 'See principal, interest, and remaining balance by payment for a fixed-rate loan. The payment uses the same engine as the Loan Calculator.',
   category: 'money',

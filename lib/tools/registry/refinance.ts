@@ -6,7 +6,7 @@ import { REFINANCE_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'refinance',
   path: '/money/refinance',
-  title: 'Should I Refinance My Mortgage?',
+  title: 'Mortgage Refinance Calculator',
   shortTitle: 'Refinance',
   description: 'Compare the mortgage you have with one you could replace it with: the new payment, how many months of savings it takes to cover closing costs, and whether a lower payment costs more interest overall.',
   category: 'money',

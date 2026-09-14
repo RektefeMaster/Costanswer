@@ -6,7 +6,7 @@ import { LOAN_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'loan',
   path: '/money/loan',
-  title: 'How Much Is My Loan Payment?',
+  title: 'Loan Calculator',
   shortTitle: 'Loan payment',
   description: 'Monthly payment, total interest, and payoff time for a fixed-rate loan. Add extra principal if you want to see how much sooner it ends.',
   category: 'money',
