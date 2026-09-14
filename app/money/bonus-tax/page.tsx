@@ -23,6 +23,7 @@ export default function BonusTaxPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="This estimates what your employer withholds, not what the bonus finally costs you in tax. The two are settled against each other on your return."
       methodology={[
         {

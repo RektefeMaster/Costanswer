@@ -14,7 +14,7 @@ export function ElectricityCostCalculator({ rates, snapshotId, observationPeriod
   const [monthlyKwh, setMonthlyKwh] = useState('900');
   const [customRate, setCustomRate] = useState('');
   const selected = rates.find((rate) => rate.stateCode === stateCode) ?? rates[0];
-  const effectiveRate = customRate.trim() === '' ? selected.priceCentsPerKwh : Number(customRate);
+  const effectiveRate = customRate.trim() === '' ? selected.priceCentsPerKwh : customRate.trim();
   const source = datasetSourceDisplay({
     datasetId: 'eia-electricity',
     observationPeriod,

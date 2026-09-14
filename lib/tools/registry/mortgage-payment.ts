@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'mortgage-payment',
   path: '/money/mortgage-payment',
-  title: 'Mortgage Payment Calculator',
+  title: 'How Much Is My Mortgage Payment?',
   shortTitle: 'Mortgage payment',
   description: 'Monthly principal and interest from the home price, down payment, term, and the most recent Freddie Mac national average rate. You can type a quote instead.',
   category: 'money',
@@ -34,8 +34,8 @@ export const tool: ToolDefinition = {
       why: 'A flat 0.5% of the original loan a year, applied only when the down payment is under 20%. No national PMI rate table exists — insurers price it on credit, loan-to-value and loan type — so this is a placeholder to replace with a real quote, never a figure to plan on.',
     }],
   }),
-  metaTitle: 'Mortgage Payment Calculator for U.S. 30-Year and 15-Year Fixed Loans',
-  metaDescription: 'Monthly principal and interest from price, down payment, term, and the latest Freddie Mac national average, or a rate you type. Taxes and insurance are optional. Not a lender quote.',
+  metaTitle: 'Mortgage Payment Calculator: Monthly P&I for 30-Year and 15-Year Loans',
+  metaDescription: 'Calculate monthly principal and interest from home price, down payment, term, and the latest Freddie Mac average — or your own rate. Taxes and insurance optional. Not a lender quote.',
   indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'home-affordability', type: 'next-decision' },

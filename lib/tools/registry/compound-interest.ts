@@ -24,6 +24,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'projection',
   data: formulaOnly('Compounding is defined by principal, rate, frequency and time.'),
+  metaTitle: 'Compound Interest Calculator: Growth With Regular Deposits',
+  metaDescription: 'Future value of a balance with compound interest and optional recurring deposits. Rate and schedule are yours — not market returns.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'investment', type: 'next-decision' },

@@ -7,3 +7,5 @@
  */
 export const SALARY_ROOT = '/salary' as const;
 export const SALARY_STATE_INDEX_PATH = '/salary/states' as const;
+export const SALARY_ES_ROOT = '/es/salario' as const;
+export const SALARY_ES_STATE_INDEX_PATH = '/es/salario/estados' as const;

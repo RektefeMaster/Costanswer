@@ -120,7 +120,7 @@ export function ChildTaxCreditCalculator() {
             reasons={[
               'Maximum and refundable cap from Revenue Procedure 2025-32',
               'Phase-out and earned-income worksheet from the 2026 Schedule 8812 draft',
-              'Part II-B for three or more children is not modelled',
+              'Part II-B for three or more children is not modeled',
             ]}
           />
           <CalculationReceipt

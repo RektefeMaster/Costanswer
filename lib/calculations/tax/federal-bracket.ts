@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { calculateFederalIncomeTax } from './federal';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from './types';
@@ -8,7 +8,7 @@ import { FEDERAL_BRACKET_ENGINE_ID } from './version';
 export const federalBracketInputSchema = z.object({
   income: finiteNumber('Income', 0, 100_000_000),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
   /**
    * Whether the figure entered is pay before deductions or taxable income.
    *
@@ -167,11 +167,11 @@ export function calculateFederalBracket(rawInput: unknown): CalculationResult<Fe
     assumptions: [
       `Federal income tax only, for tax year ${input.taxYear}. Social Security, Medicare and state income tax are not included.`,
       input.incomeBasis === 'gross'
-        ? `The ${formatMoney(standardDeduction)} standard deduction for ${FILING_STATUS_LABELS[input.filingStatus]} is applied. Itemised deductions are not modelled.`
-        : 'You entered taxable income, so no deduction is applied. That is the figure after the standard or itemised deduction has already come out.',
+        ? `The ${formatMoney(standardDeduction)} standard deduction for ${FILING_STATUS_LABELS[input.filingStatus]} is applied. Itemised deductions are not modeled.`
+        : 'You entered taxable income, so no deduction is applied. That is the figure after the standard or itemized deduction has already come out.',
       'Your bracket is the rate charged on your last dollar of taxable income. Every dollar below it is charged at the lower rates shown, which is why the tax is far less than the bracket times your income.',
       'Income exactly at a threshold sits in the lower band. Crossing into a higher bracket never lowers take-home pay, because only the amount above the threshold takes the higher rate.',
-      'Credits, other income, capital gains and the alternative minimum tax are not modelled.',
+      'Credits, other income, capital gains and the alternative minimum tax are not modeled.',
       `Source: ${snapshot.federal.sourceName}.`,
     ],
   };

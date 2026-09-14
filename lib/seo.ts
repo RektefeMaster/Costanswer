@@ -3,6 +3,8 @@ import { editorial } from './editorial';
 import { siteConfig } from './site-config';
 import { categories, evaluateToolIndexability, type ToolDefinition } from './tool-registry';
 import type { ToolEditorial } from './tool-content';
+import { hreflangLanguagesFor, localeFromPath } from './i18n/alternates';
+import type { Locale } from './i18n/locales';
 
 /**
  * The social preview card every page carries.
@@ -29,13 +31,19 @@ export function pageMetadata(
   path: `/${string}`,
   robots: Metadata['robots'] = { index: true, follow: true },
 ): Metadata {
+  const locale = localeFromPath(path);
+  const languages = hreflangLanguagesFor(path);
   return {
     title,
     description,
-    alternates: { canonical: path },
+    alternates: { canonical: path, languages },
     openGraph: {
       type: 'website',
       url: path,
+      locale: locale === 'es-US' ? 'es_US' : 'en_US',
+      ...(languages['es-US'] && languages['en-US']
+        ? { alternateLocale: locale === 'es-US' ? ['en_US'] : ['es_US'] }
+        : {}),
       title: `${title} | ${siteConfig.name}`,
       description,
       siteName: siteConfig.name,
@@ -146,13 +154,17 @@ export function breadcrumbJsonLd(items: Array<{ name: string; path: string }>) {
   };
 }
 
-export function faqPageJsonLd(entries: Array<{ question: string; answer: string[] }>, path: `/${string}` = '/faq') {
+export function faqPageJsonLd(
+  entries: Array<{ question: string; answer: string[] }>,
+  path: `/${string}` = '/faq',
+  inLanguage: Locale = localeFromPath(path),
+) {
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    name: 'Frequently asked questions',
+    name: inLanguage === 'es-US' ? 'Preguntas frecuentes' : 'Frequently asked questions',
     url: new URL(path, siteConfig.origin).toString(),
-    inLanguage: 'en-US',
+    inLanguage,
     mainEntity: entries.map((entry) => ({
       '@type': 'Question',
       name: entry.question,

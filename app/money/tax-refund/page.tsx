@@ -20,6 +20,7 @@ export default function TaxRefundPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="Withholding is the amount already taken out, not a W-4 projection. Publication 15-T tables are not in this snapshot."
       methodology={[
         {

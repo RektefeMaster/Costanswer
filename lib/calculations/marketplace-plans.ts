@@ -1,11 +1,10 @@
 import { z } from 'zod';
 import { CMS_METALS, type CmsMetal, type CmsSpread } from '@/lib/data/cms-marketplace';
-import { formatMoney, round, type CalculationResult } from './contracts';
+import { finiteNumber, wholeNumber, formatMoney, round, type CalculationResult } from './contracts';
 
 export const MARKETPLACE_PLANS_ENGINE_ID = 'marketplace-plan-cost-v1.0.0';
 
-const dollars = (label: string, maximum = 1_000_000) => z.number({ error: `${label} must be a number.` })
-  .finite(`${label} must be finite.`).min(0, `${label} cannot be negative.`).max(maximum, `${label} is too large.`);
+const dollars = (label: string, maximum = 1_000_000) => finiteNumber(label, 0, maximum);
 
 const metalInputSchema = z.object({
   metal: z.enum(CMS_METALS),
@@ -27,7 +26,7 @@ export const marketplacePlanCostInputSchema = z.object({
   monthlyPremiumTaxCredit: dollars('Premium tax credit', 100_000).default(0),
   /** Care the household expects to pay for before any deductible is met. */
   expectedAnnualCareSpend: dollars('Expected care spending', 1_000_000).default(0),
-  coverageMonths: z.number().int().min(1).max(12).default(12),
+  coverageMonths: wholeNumber('Coverage months', 1, 12).default(12),
 });
 export type MarketplacePlanCostInput = z.infer<typeof marketplacePlanCostInputSchema>;
 

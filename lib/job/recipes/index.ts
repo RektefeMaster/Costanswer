@@ -11,6 +11,7 @@ import { fenceInstall } from './fence-install';
 import { heatPumpReplacement } from './heat-pump-replacement';
 import { hvacReplacement } from './hvac-replacement';
 import { interiorPainting } from './interior-painting';
+import { kitchenRemodel } from './kitchen-remodel';
 import { sidingReplacement } from './siding-replacement';
 import { treeRemoval } from './tree-removal';
 import { waterHeaterReplacement } from './water-heater-replacement';
@@ -26,6 +27,7 @@ const recipes: Record<JobId, JobRecipe> = {
   'concrete-driveway': concreteDriveway,
   'interior-painting': interiorPainting,
   'bathroom-remodel': bathroomRemodel,
+  'kitchen-remodel': kitchenRemodel,
   'heat-pump-replacement': heatPumpReplacement,
   'window-replacement': windowReplacement,
   'exterior-door-replacement': exteriorDoorReplacement,

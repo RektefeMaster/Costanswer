@@ -4,8 +4,8 @@ import { costPageRobots } from '@/lib/job/publication';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata = pageMetadata(
-  'What should this job cost?',
-  'CostAnswer estimated ranges for fourteen residential jobs, from BLS wages, ECEC labor loading, FEMA equipment cost proxies, and named recipes.',
+  'Home Job Cost Estimates: Kitchen, HVAC, Bath, Deck & More',
+  'How much should a home project cost? CostAnswer ranges for fifteen residential jobs from BLS wages, ECEC labor loading, FEMA equipment proxies, and named recipes — not contractor quotes.',
   '/cost',
   costPageRobots('familyHub'),
 );
@@ -18,7 +18,7 @@ export default function CostHubPage() {
       path="/cost"
       pageId="job-cost-hub"
       methodology={[
-        { title: 'One engine', body: 'Fourteen recipes share the same labor, material, equipment, and markup math. There is no per-job calculator.' },
+        { title: 'One engine', body: 'Fifteen recipes share the same labor, material, equipment, and business-cost math. There is no per-job calculator.' },
         { title: 'Incomplete is a feature', body: 'If a critical material has no sourced baseline, we do not invent a complete low/expected/high range.' },
       ]}
     >

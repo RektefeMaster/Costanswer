@@ -1,18 +1,18 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, wholeNumber, formatMoney, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from './types';
 import { CHILD_TAX_CREDIT_ENGINE_ID } from './version';
 
 export const childTaxCreditInputSchema = z.object({
   modifiedAgi: finiteNumber('Modified adjusted gross income', 0, 100_000_000),
-  qualifyingChildren: z.number().int({ error: 'Qualifying children must be a whole number.' }).min(0).max(20),
-  otherDependents: z.number().int({ error: 'Other dependents must be a whole number.' }).min(0).max(20).default(0),
+  qualifyingChildren: wholeNumber('Qualifying children', 0, 20),
+  otherDependents: wholeNumber('Other dependents', 0, 20).default(0),
   earnedIncome: finiteNumber('Earned income', 0, 100_000_000),
   /** Form 1040 tax before this credit (Credit Limit Worksheet A / line 18). */
   taxBeforeThisCredit: finiteNumber('Tax before this credit', 0, 100_000_000),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
 });
 
 export type ChildTaxCreditInput = z.infer<typeof childTaxCreditInputSchema>;
@@ -41,7 +41,7 @@ function roundUpTo(value: number, multiple: number): number {
  * credit from Rev. Proc. 2025-32 §4.05 and the 2026 Schedule 8812 draft.
  *
  * Part II-B (three or more children / Puerto Rico / withheld Social Security)
- * is not modelled, so the refundable amount can be too low for those filers.
+ * is not modeled, so the refundable amount can be too low for those filers.
  */
 export function calculateChildTaxCredit(rawInput: unknown): CalculationResult<ChildTaxCreditValue> {
   const input = childTaxCreditInputSchema.parse(rawInput);
@@ -121,7 +121,7 @@ export function calculateChildTaxCredit(rawInput: unknown): CalculationResult<Ch
       'A qualifying child for this credit is under 17 with a Social Security number. This page takes the count you enter as given and does not test the other Schedule 8812 rules.',
       'Modified AGI is treated as the figure you enter. Puerto Rico exclusions, Form 2555, and Form 4563 additions are not applied; if those apply, MAGI is higher and this credit is overstated.',
       'Form 2555 filers cannot take the additional child tax credit. That bar is not applied here.',
-      'For three or more qualifying children, Part II-B of Schedule 8812 can raise the additional child tax credit using withheld Social Security and Medicare. That worksheet is not modelled, so the refundable amount can be too low for those filers.',
+      'For three or more qualifying children, Part II-B of Schedule 8812 can raise the additional child tax credit using withheld Social Security and Medicare. That worksheet is not modeled, so the refundable amount can be too low for those filers.',
       'This is not a filed return and not tax advice.',
     ],
   };

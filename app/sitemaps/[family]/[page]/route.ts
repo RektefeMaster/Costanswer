@@ -24,9 +24,12 @@ export async function GET(_request: Request, context: { params: Promise<{ family
 
   const rows = entries.map((entry) => {
     const location = new URL(entry.path, siteConfig.origin).toString();
-    return `<url><loc>${escapeXml(location)}</loc><lastmod>${entry.lastModified}</lastmod><changefreq>${entry.changeFrequency}</changefreq><priority>${entry.priority}</priority></url>`;
+    const links = (entry.alternates ?? [])
+      .map((alternate) => `<xhtml:link rel="alternate" hreflang="${escapeXml(alternate.hreflang)}" href="${escapeXml(new URL(alternate.path, siteConfig.origin).toString())}"/>`)
+      .join('');
+    return `<url><loc>${escapeXml(location)}</loc><lastmod>${entry.lastModified}</lastmod><changefreq>${entry.changeFrequency}</changefreq><priority>${entry.priority}</priority>${links}</url>`;
   }).join('');
-  const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${rows}</urlset>`;
+  const xml = `<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">${rows}</urlset>`;
   return new Response(xml, {
     headers: {
       'content-type': 'application/xml; charset=utf-8',

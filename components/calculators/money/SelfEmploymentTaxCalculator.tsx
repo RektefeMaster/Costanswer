@@ -32,7 +32,7 @@ export function SelfEmploymentTaxCalculator() {
         result: calculateSelfEmploymentTax({
           netProfit,
           socialSecurityWages,
-          medicareWages: medicareWages === '' ? undefined : Number(medicareWages),
+          medicareWages: medicareWages === '' ? undefined : medicareWages,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
         }),
@@ -107,7 +107,7 @@ export function SelfEmploymentTaxCalculator() {
             level="high"
             reasons={[
               'Arithmetic follows the 2026 Schedule SE draft and SSA wage base',
-              'Church employee income and optional methods are not modelled',
+              'Church employee income and optional methods are not modeled',
               'A filed return rounds each line to whole dollars',
             ]}
           />

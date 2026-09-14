@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('An age is calendar arithmetic between two dates.'),
+  metaTitle: 'Age Calculator: Years, Months, and Days Old',
+  metaDescription: 'Exact age from a birth date to today or another date. Calendar math — not a legal age determination.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'date', type: 'sibling' },

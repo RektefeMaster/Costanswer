@@ -4,8 +4,8 @@ import { costPageRobots } from '@/lib/job/publication';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata = pageMetadata(
-  'Check a contractor quote',
-  'Compare a contractor quote to a CostAnswer estimated range. Verdicts are never accusatory.',
+  'Check a Contractor Quote Against a CostAnswer Range',
+  'Compare a written bid to the same BLS-wage recipe engine as the estimate. Verdicts stay factual — never accusatory. Incomplete data blocks a grade.',
   '/cost/check-quote',
   costPageRobots('checkQuote'),
 );

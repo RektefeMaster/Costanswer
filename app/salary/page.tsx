@@ -24,8 +24,8 @@ import { siteConfig } from '@/lib/site-config';
 export async function generateMetadata(): Promise<Metadata> {
   const hub = salaryHubModel();
   return pageMetadata(
-    'What jobs pay in the U.S.',
-    `Median and percentile wages for ${formatNumber(hub.occupationCount)} occupations from the BLS ${oewsIndex.referenceLabel} survey, with take-home pay and local price levels for every state.`,
+    'U.S. Salary by Occupation: Median Pay and Take-Home',
+    `Median wages for ${formatNumber(hub.occupationCount)} U.S. jobs from the BLS ${oewsIndex.referenceLabel} survey — plus hourly pay, percentiles, and take-home after tax by state.`,
     salaryFamilyPath(),
     { index: isSalaryLevelIndexable('familyHub'), follow: true },
   );
@@ -57,7 +57,7 @@ export default function SalaryHubPage() {
           <div className="tool-hero-grid">
             <div>
               <p className="eyebrow"><span /> {`BLS ${oewsIndex.referenceLabel} · ${formatNumber(hub.occupationCount)} occupations`}</p>
-              <h1>What jobs pay in the U.S.</h1>
+              <h1>U.S. salaries by occupation</h1>
             </div>
             <div className="tool-intro">
               <p>

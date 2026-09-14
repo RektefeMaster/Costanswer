@@ -24,6 +24,7 @@ export default function ChildTaxCreditPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="The 2026 Schedule 8812 used for the phase-out worksheet is still a draft marked not for filing."
       methodology={[
         {

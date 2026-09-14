@@ -97,6 +97,12 @@ const htmlPaths = [
   '/salary/states/texas',
   '/salary/registered-nurse',
   '/salary/registered-nurse/texas',
+  '/es',
+  '/es/salario',
+  '/es/salario/estados',
+  '/es/salario/estados/texas',
+  '/es/salario/enfermero-registrado',
+  '/es/salario/enfermero-registrado/texas',
   '/cost',
   '/cost/estimate',
   '/cost/check-quote',
@@ -132,7 +138,7 @@ for (const path of htmlPaths) {
   }
 }
 
-for (const path of ['/sitemap.xml', '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/sitemaps/salary/1.xml', '/sitemaps/cost/1.xml', '/robots.txt', '/manifest.webmanifest']) {
+for (const path of ['/sitemap.xml', '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/sitemaps/salary/1.xml', '/sitemaps/salary-es/1.xml', '/sitemaps/pages-es/1.xml', '/sitemaps/cost/1.xml', '/robots.txt', '/manifest.webmanifest']) {
   const response = await fetchWithTimeout(path);
   if (response.status !== 200) throw new Error(`${path} returned HTTP ${response.status}`);
 }
@@ -242,6 +248,23 @@ if (nurseLeavesOpen) {
   throw new Error('A closed leaf must not be linked, or the crawl budget the wave protects is spent on it anyway.');
 }
 if (!leafHtml.includes('/salary/registered-nurse/oklahoma')) throw new Error('An occupation-in-state page must link its peer states.');
+
+const spanishLeafHtml = await (await fetchWithTimeout('/es/salario/enfermero-registrado/texas')).text();
+if (!spanishLeafHtml.includes('lang="es-US"')) throw new Error('Spanish salary pages must set html lang to es-US.');
+if (!spanishLeafHtml.includes('¿Cuánto gana')) throw new Error('Spanish salary pages must ask the question in US Spanish.');
+if (!spanishLeafHtml.includes('hreflang="en-US"')) throw new Error('Spanish salary pages must point back at the English twin.');
+if (spanishLeafHtml.includes('How much does a registered nurse')) throw new Error('A Spanish URL must not serve the English question as its heading.');
+
+const englishLeafHreflang = leafHtml.includes('hreflang="es-US"');
+if (!englishLeafHreflang) throw new Error('English salary leaves must point at the Spanish twin.');
+
+const sitemapIndexMustListSpanish = sitemapIndex.includes('/sitemaps/salary-es/') && sitemapIndex.includes('/sitemaps/pages-es/');
+if (!sitemapIndexMustListSpanish) throw new Error('Spanish sitemap families are missing from the sitemap index.');
+
+const spanishSitemap = await (await fetchWithTimeout('/sitemaps/salary-es/1.xml')).text();
+if (!spanishSitemap.includes('/es/salario/enfermero-registrado') || spanishSitemap.includes('/salary/registered-nurse<')) {
+  throw new Error('The Spanish salary sitemap mixed in English URLs or omitted the nurse page.');
+}
 
 const costSitemap = await (await fetchWithTimeout('/sitemaps/cost/1.xml')).text();
 if (!costSitemap.includes('/cost/hvac-replacement') || !costSitemap.includes('/cost/estimate') || !costSitemap.includes('/cost/check-quote')) {

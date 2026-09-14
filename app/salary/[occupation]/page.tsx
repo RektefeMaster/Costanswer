@@ -7,8 +7,9 @@ import { SiteHeader } from '@/components/site/SiteHeader';
 import { AdSlot } from '@/components/monetization/AdSlot';
 import { StatesForOccupationTable } from '@/components/salary/SalaryTables';
 import { OccupationNames, SalaryQuestions } from '@/components/salary/SalaryQuestions';
+import { SalaryNextSteps } from '@/components/salary/SalaryNextSteps';
 import { WagePanel, WageSources } from '@/components/salary/WageProfile';
-import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
+import { formatMoney } from '@/lib/calculations/contracts';
 import { occupationWageProfile } from '@/lib/calculations/salary';
 import { getOewsEstimate } from '@/lib/data/bls-oews-snapshot';
 import { getStateName, type StateCode } from '@/lib/location/states';
@@ -24,11 +25,12 @@ import {
 } from '@/lib/salary-pages';
 import {
   indefiniteArticle,
-  occupationHeadingName,
   occupationJsonLd,
+  occupationPageHeading,
   occupationPlural,
   occupationSingular,
   occupationTitleTag,
+  salaryDirectAnswer,
   salaryQuestions,
 } from '@/lib/salary-content';
 import { breadcrumbJsonLd, faqPageJsonLd, pageMetadata } from '@/lib/seo';
@@ -52,7 +54,7 @@ export async function generateMetadata({ params }: { params: Promise<{ occupatio
   const title = occupationTitleTag(occupation);
   const description = median === null
     ? `What ${occupation.displayTitle.toLowerCase()} earn across the United States, from the BLS ${profile.referenceLabel} wage survey, with pay by percentile and by state.`
-    : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} earns a median of ${formatMoney(median, 0)} a year in the U.S. BLS ${profile.referenceLabel} pay by percentile, and what the job pays in all 50 states.`;
+    : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} earns a median of ${formatMoney(median, 0)} a year in the U.S.${profile.wage.hourlyMedian === null ? '' : ` (${formatMoney(profile.wage.hourlyMedian)} an hour)`}. BLS ${profile.referenceLabel}, plus pay in all 50 states.`;
   return pageMetadata(title, description, salaryOccupationPath(occupation), {
     index: isSalaryLevelIndexable('occupation'),
     follow: true,
@@ -74,7 +76,7 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
   const best = ranked[0];
   const worst = ranked.at(-1);
 
-  const heading = occupationHeadingName(occupation);
+  const heading = occupationPageHeading(occupation);
   const path = salaryOccupationPath(occupation);
   const questions = salaryQuestions(profile);
   const breadcrumbs = [
@@ -108,15 +110,11 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
           <div className="tool-hero-grid">
             <div>
               <p className="eyebrow"><span /> {`United States · BLS ${profile.referenceLabel}`}</p>
-              <h1>{`${heading} Salary`}</h1>
+              <h1>{heading}</h1>
             </div>
             <div className="tool-intro">
               <OccupationNames profile={profile} />
-              <p>
-                {profile.employment.total === null
-                  ? `National pay for this occupation from the Bureau of Labor Statistics wage survey, by percentile and by state.`
-                  : `The Bureau of Labor Statistics counted ${formatNumber(profile.employment.total)} ${occupationPlural(occupation)} across the country. Pay varies more by state than most people expect, and the state that pays most is not always the one that leaves most.`}
-              </p>
+              <p className="direct-answer">{salaryDirectAnswer(profile)}</p>
             </div>
           </div>
         </header>
@@ -129,6 +127,7 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
           <div className="tool-main-column">
             <WagePanel result={result} tone="amber" />
             <AdSlot placement="in-content" />
+            <SalaryNextSteps />
             {best && worst && best.estimate.annual.median !== null && worst.estimate.annual.median !== null && (
               <section className="engine-notes" aria-labelledby="spread-title">
                 <h2 id="spread-title">{`Which state pays ${occupationPlural(occupation)} the most?`}</h2>

@@ -60,17 +60,12 @@ export function MarketplacePlansCalculator({ release }: { release: CmsReleaseSum
 
   const calculation = useMemo(() => {
     if (!priced) return { result: null, error: '' };
-    const credit = monthlyCredit.trim() === '' ? 0 : Number(monthlyCredit);
-    const care = expectedCare.trim() === '' ? 0 : Number(expectedCare);
-    if (!Number.isFinite(credit) || !Number.isFinite(care)) {
-      return { result: null, error: 'Enter a number for the credit and the care you expect to pay for.' };
-    }
     try {
       return {
         result: calculateMarketplacePlanCost({
           metals: priced.metals,
-          monthlyPremiumTaxCredit: credit,
-          expectedAnnualCareSpend: care,
+          monthlyPremiumTaxCredit: monthlyCredit.trim() === '' ? 0 : monthlyCredit,
+          expectedAnnualCareSpend: expectedCare.trim() === '' ? 0 : expectedCare,
         }),
         error: '',
       };
@@ -115,7 +110,7 @@ export function MarketplacePlansCalculator({ release }: { release: CmsReleaseSum
             <input id="plans-credit" type="number" min="0" step="50" value={monthlyCredit} onChange={(event) => setMonthlyCredit(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Care you expect to pay for in a year" htmlFor="plans-care" hint="Your own estimate, capped at each plan's out-of-pocket maximum. Not a prediction, and not a modelled coinsurance schedule.">
+        <Field label="Care you expect to pay for in a year" htmlFor="plans-care" hint="Your own estimate, capped at each plan's out-of-pocket maximum. Not a prediction, and not a modeled coinsurance schedule.">
           <InputShell prefix="$">
             <input id="plans-care" type="number" min="0" step="500" value={expectedCare} onChange={(event) => setExpectedCare(event.target.value)} />
           </InputShell>

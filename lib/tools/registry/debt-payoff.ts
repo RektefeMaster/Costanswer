@@ -6,7 +6,7 @@ import { DEBT_PAYOFF_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'debt-payoff',
   path: '/money/debt-payoff',
-  title: 'Debt Payoff Calculator',
+  title: 'How Long to Pay Off My Debt?',
   shortTitle: 'Debt payoff',
   description: 'Compare snowball and avalanche payoff plans on the same debts. See which order saves more interest and how extra payments change the date.',
   category: 'money',
@@ -25,6 +25,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Avalanche and snowball are orderings of the debts you list.'),
+  metaTitle: 'Debt Payoff Calculator: Avalanche vs Snowball Timeline',
+  metaDescription: 'Months and interest to clear debts with fixed payments. Compare avalanche and snowball order. Planning math, not credit advice.',
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'loan', type: 'sibling' },

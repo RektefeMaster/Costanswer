@@ -33,8 +33,8 @@ export function CapitalGainsCalculator() {
         result: calculateCapitalGains({
           otherTaxableIncome,
           longTermGains,
-          modifiedAgi: modifiedAgi === '' ? undefined : Number(modifiedAgi),
-          netInvestmentIncome: netInvestmentIncome === '' ? undefined : Number(netInvestmentIncome),
+          modifiedAgi: modifiedAgi === '' ? undefined : modifiedAgi,
+          netInvestmentIncome: netInvestmentIncome === '' ? undefined : netInvestmentIncome,
           filingStatus,
           taxYear: DEFAULT_TAX_YEAR,
         }),
@@ -113,7 +113,7 @@ export function CapitalGainsCalculator() {
             reasons={[
               '0% and 15% ceilings transcribed from Revenue Procedure 2025-32 §4.03',
               'NIIT thresholds from the IRS Q&A on IRC 1411',
-              'Collectibles, unrecaptured 1250 gain and the home-sale exclusion are not modelled',
+              'Collectibles, unrecaptured 1250 gain and the home-sale exclusion are not modeled',
             ]}
           />
           <CalculationReceipt

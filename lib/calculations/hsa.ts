@@ -29,6 +29,14 @@ export const hsaInputSchema = z.object({
   alreadyContributed: finiteNumber('Amount already contributed', 0, 100_000),
   planDeductible: finiteNumber('Plan deductible', 0, 100_000).optional(),
   planOutOfPocketMax: finiteNumber('Plan out-of-pocket maximum', 0, 100_000).optional(),
+}).superRefine((input, ctx) => {
+  if (input.enrolledInMedicare && input.monthsEligible >= 12) {
+    ctx.addIssue({
+      code: 'custom',
+      path: ['monthsEligible'],
+      message: 'If Medicare started this year, enter only the months before enrollment (at most 11).',
+    });
+  }
 });
 
 export type HsaInput = z.infer<typeof hsaInputSchema>;

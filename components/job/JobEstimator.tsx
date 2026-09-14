@@ -23,9 +23,17 @@ function isAbort(error: unknown): boolean {
   return (error instanceof DOMException || error instanceof Error) && error.name === 'AbortError';
 }
 
-export function JobEstimator({ jobId, mode }: { jobId: JobId; mode: 'estimate' | 'quote' }) {
+export function JobEstimator({
+  jobId,
+  mode,
+  initialZip = '75201',
+}: {
+  jobId: JobId;
+  mode: 'estimate' | 'quote';
+  initialZip?: string;
+}) {
   const job = JOB_CATALOG[jobId];
-  const [zip, setZip] = useState('75201');
+  const [zip, setZip] = useState(initialZip);
   const [fields, setFields] = useState(() => defaultFields(jobId));
   const [modifiers, setModifiers] = useState(() => defaultModifiers(jobId));
   const [quote, setQuote] = useState('');
@@ -34,9 +42,12 @@ export function JobEstimator({ jobId, mode }: { jobId: JobId; mode: 'estimate' |
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [formJobId, setFormJobId] = useState(jobId);
+  const [formInitialZip, setFormInitialZip] = useState(initialZip);
 
-  if (formJobId !== jobId) {
+  if (formJobId !== jobId || formInitialZip !== initialZip) {
     setFormJobId(jobId);
+    setFormInitialZip(initialZip);
+    setZip(initialZip);
     setFields(defaultFields(jobId));
     setModifiers(defaultModifiers(jobId));
     setQuote('');

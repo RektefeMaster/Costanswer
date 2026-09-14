@@ -158,6 +158,7 @@ function ingestBasket(): void {
   const lumber = readRaw('data/material-basket/raw/westchester-lumber-2026-pt-bom.txt');
   const tile = readRaw('data/material-basket/raw/pisd-rfp-2023-027-ceramic-tile.txt');
   const kohler = readRaw('data/material-basket/raw/kohler-highline-k3999-hadron-vanity.txt');
+  const kitchen = readRaw('data/material-basket/raw/homedepot-kitchen-cabinets-sink-2026-09-14.txt');
 
   requireContains('EIA CAC North extract', eiaCac, ['2,700', 'coil-only', '36 kBtu/h', 'Retail Equipment Cost (2022$)']);
   requireContains('EIA gas furnace North extract', eiaFurnace, ['Residential Gas-Fired Furnaces (North)', 'Retail Equipment Cost (2022$) 1,200', 'Typical Input Capacity (kBtu/h) 80']);
@@ -182,6 +183,7 @@ function ingestBasket(): void {
   requireContains('Westchester PT lumber BOM', lumber, ['$1.37', '$1.11', '$1.79', '$0.90', '$485.00 per MBF', '619 cents per sq ft', '1747 cents per linear foot']);
   requireContains('PISD ceramic tile award', tile, ['Line 9 Material Only - Ceramic Tile - Per Square Foot.', 'C&C Group, LLC $3.15 Recommended']);
   requireContains('Kohler manufacturer prices', kohler, ['Current Price $343.76', 'SKU K-3999-0', 'Current Price $1,043.39', 'SKU K-39605-ASB-0']);
+  requireContains('Home Depot kitchen cabinets and sink', kitchen, ['Current Price $239.00', 'KB30-SSW', 'Current Price $161.70', 'HKD-W2136', 'Current Price $328.17', 'QT-710-WH']);
 
   const components = [
     {
@@ -450,20 +452,62 @@ function ingestBasket(): void {
       regionalAdjustment: 'none' as const,
       critical: true,
     },
+    {
+      componentId: 'kitchen-base-cabinet',
+      unit: 'each' as const,
+      qualityTier: 'builder' as const,
+      baselinePriceCents: 23_900,
+      baselineDate: '2026-09-14',
+      baselineSource: {
+        name: 'Home Depot Hampton Bay Shaker 30-inch KB30-SSW current price $239.00 (2026-09-14)',
+        url: 'https://www.homedepot.com/p/Hampton-Bay-Shaker-30-in-W-x-24-in-D-x-34-5-in-H-Assembled-Base-Kitchen-Cabinet-in-Satin-White-with-Ball-Bearing-Drawer-Glides-KB30-SSW/204635906',
+      },
+      ppiSeriesId: 'WPU1241',
+      regionalAdjustment: 'none' as const,
+      critical: true,
+    },
+    {
+      componentId: 'kitchen-wall-cabinet',
+      unit: 'each' as const,
+      qualityTier: 'builder' as const,
+      baselinePriceCents: 16_170,
+      baselineDate: '2026-09-14',
+      baselineSource: {
+        name: 'Home Depot Hampton Bay Denver White HKD-W2136 current price $161.70 (2026-09-14)',
+        url: 'https://www.homedepot.com/p/Hampton-Bay-Denver-White-Painted-Shaker-Stock-Ready-to-Assemble-Wall-Kitchen-Cabinet-21-in-x36-in-x12-in-HKD-W2136/314302635',
+      },
+      ppiSeriesId: 'WPU1241',
+      regionalAdjustment: 'none' as const,
+      critical: true,
+    },
+    {
+      componentId: 'kitchen-sink',
+      unit: 'each' as const,
+      qualityTier: 'builder' as const,
+      baselinePriceCents: 32_817,
+      baselineDate: '2026-09-14',
+      baselineSource: {
+        name: 'Home Depot Karran QT-710-WH drop-in kitchen sink current price $328.17 (2026-09-14)',
+        url: 'https://www.homedepot.com/p/Karran-Drop-in-Quartz-Composite-33-in-Double-Bowl-Kitchen-Sink-in-White-QT-710-WH/304969642',
+      },
+      ppiSeriesId: 'WPU1241',
+      regionalAdjustment: 'none' as const,
+      critical: true,
+    },
   ];
 
   const sealed = sealNormalizedSnapshot({
     schemaVersion: '1.0.0',
     adapterVersion: 'material-basket-v1.0.0',
-    snapshotId: 'material-basket-sourced-v4',
+    snapshotId: 'material-basket-sourced-v5',
     datasetId: 'material-basket' as const,
     observationPeriod: '2026-09',
     fetchedAt,
     publishedAt: fetchedAt,
     attribution:
-      'Sourced national baselines: EIA Appendix A (CAC+furnace, ASHP blower-coil, gas and electric storage WH midpoints); NREL REMDB 200A panel and envelope intercepts (vinyl window, prehung doors, vinyl/wood siding, drywall board); NRMCA ready-mix; EPC interior latex; Westchester County lumber award deck/fence BOMs; Plano ISD ceramic tile materials-only; Kohler manufacturer current prices.',
+      'Sourced national baselines: EIA Appendix A (CAC+furnace, ASHP blower-coil, gas and electric storage WH midpoints); NREL REMDB 200A panel and envelope intercepts (vinyl window, prehung doors, vinyl/wood siding, drywall board); NRMCA ready-mix; EPC interior latex; Westchester County lumber award deck/fence BOMs; Plano ISD ceramic tile materials-only; Kohler manufacturer current prices; Home Depot stock kitchen cabinets and sink retail intercepts.',
     components,
-    rawSha256: sha256([eiaCac, eiaFurnace, eiaAshp, eiaGasWh, eiaElectricWh, nrelPanel, nrelEnvelope, nrmca, paint, lumber, tile, kohler].join('\n')),
+    rawSha256: sha256([eiaCac, eiaFurnace, eiaAshp, eiaGasWh, eiaElectricWh, nrelPanel, nrelEnvelope, nrmca, paint, lumber, tile, kohler, kitchen].join('\n')),
     validationReport: [
       'Each baseline is copied from a retained extract; missing critical recipe lines stay unpriced.',
       'NREL labor multipliers and RSMeans-tinged install adders are not used.',

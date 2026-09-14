@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'formula-estimate',
   data: formulaOnly('BMI is weight ÷ height², a published formula rather than a dataset.'),
+  metaTitle: 'BMI Calculator: Body Mass Index From Height and Weight',
+  metaDescription: 'Adult BMI from height and weight using the standard formula. Screening number — not a diagnosis.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'bmr', type: 'sibling' },

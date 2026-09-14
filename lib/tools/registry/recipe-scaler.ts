@@ -16,6 +16,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Scaling is a ratio applied to each quantity.'),
+  metaTitle: 'Recipe Scaler: Double or Halve Ingredient Amounts',
+  metaDescription: 'Scale recipe quantities up or down by servings. Kitchen fractions — not food-safety advice.',
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'unit-price', type: 'uses-engine' },

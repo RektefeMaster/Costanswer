@@ -20,6 +20,7 @@ export default function ElectricityCostPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'eia-electricity': electricitySource.periodLabel }}
       caution="EIA publishes a state average, not your utility rate. Type the rate from your bill when you want a number closer to what you pay."
       methodology={[
         { title: 'Start with monthly kWh', body: 'Your usage is multiplied by a cents per kWh rate and turned into dollars.' },

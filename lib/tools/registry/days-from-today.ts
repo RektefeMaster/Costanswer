@@ -27,6 +27,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Adding days to a date is calendar arithmetic.'),
+  metaTitle: 'Days From Today Calculator: Future and Past Dates',
+  metaDescription: 'What date is N days from today, or how many days until a date. Local calendar math.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'date', type: 'sibling' },

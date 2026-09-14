@@ -23,9 +23,16 @@ import { getRecipe, listRecipes } from '@/lib/job/recipes';
 import { validateRecipe } from '@/lib/job/recipe-validate';
 import { loadJobDatasets } from '@/lib/job/server-datasets';
 import { calibrate } from '@/lib/job/calibration';
+import { JOB_INDUSTRY } from '@/lib/job/business-rates';
 import { isCostLevelIndexable } from '@/lib/job/publication';
 import { costFamilySitemapPaths } from '@/lib/job/paths';
 import { paintWallSqFtFromRooms, resolveJobScope, toJobEstimateInput, type JobScopeFields } from '@/lib/job/scope';
+import {
+  costStateLeafIsOpen,
+  jobInStatePath,
+  jobStateWageRatio,
+  openCostStateLeaves,
+} from '@/lib/job/state-pages';
 import type {
   EcecSnapshot,
   FemaEquipmentSnapshot,
@@ -70,7 +77,11 @@ function reconstructCents(estimate: JobEstimate): number {
 
 /**
  * D.3 arithmetic in cents, independent of `calculateJobEstimate`.
- * Sequential rounding matches the engine: overhead, then markup, then contingency, then named modifiers.
+ *
+ * Sequential rounding matches the engine. Where the census describes the trade,
+ * business cost is a share of price — direct ÷ directShare — and no contingency
+ * is added; where it does not, the recipe's overhead, markup and contingency
+ * apply in that order. Named modifiers come last either way.
  */
 function handExpectedCents(
   jobId: JobId,
@@ -99,12 +110,20 @@ function handExpectedCents(
     equipment += Math.round(line.hoursPerUnit.value * units * rate.rateCents);
   }
   const direct = labor + materials.totalCents + equipment;
-  const overhead = Math.round(direct * recipe.overheadRate.value);
-  const subtotal = direct + overhead;
-  const profit = Math.round(subtotal * recipe.profitMarkupRate.value);
-  const afterProfit = subtotal + profit;
-  const contingency = Math.round(afterProfit * recipe.contingencyRate.value);
-  let current = afterProfit + contingency;
+  const mapping = JOB_INDUSTRY[jobId];
+  const industry = mapping ? datasets.census?.industries.find((row) => row.naics === mapping.naics) : undefined;
+  let current: number;
+  if (industry) {
+    const price = Math.round(direct / industry.directShare);
+    const overhead = Math.round(price * industry.overheadShare);
+    current = direct + overhead + (price - direct - overhead);
+  } else {
+    const overhead = Math.round(direct * recipe.overheadRate.value);
+    const subtotal = direct + overhead;
+    const profit = Math.round(subtotal * recipe.profitMarkupRate.value);
+    const afterProfit = subtotal + profit;
+    current = afterProfit + Math.round(afterProfit * recipe.contingencyRate.value);
+  }
   for (const spec of recipe.modifiers) {
     const option = spec.options.find((entry) => entry.id === selected[spec.id])
       ?? spec.options.find((entry) => entry.id === spec.defaultOptionId);
@@ -134,9 +153,9 @@ function defaultScopeFields(jobId: JobId): JobScopeFields {
 }
 
 describe('Job Cost Engine V1', () => {
-  it('has fourteen recipes whose every SourcedValue sourceId exists', () => {
-    expect(JOB_IDS).toHaveLength(14);
-    expect(listRecipes()).toHaveLength(14);
+  it('has fifteen recipes whose every SourcedValue sourceId exists', () => {
+    expect(JOB_IDS).toHaveLength(15);
+    expect(listRecipes()).toHaveLength(15);
     for (const recipe of listRecipes()) {
       expect(() => validateRecipe(recipe)).not.toThrow();
       expect(recipe.profitMarkupRate.value).toBeGreaterThan(0);
@@ -609,10 +628,13 @@ describe('Job Cost Engine V1', () => {
       'bath-tile',
       'toilet',
       'vanity',
+      'kitchen-base-cabinet',
+      'kitchen-wall-cabinet',
+      'kitchen-sink',
     ]));
     expect(priced).not.toContain('asphalt-shingles');
     expect(priced).not.toContain('chain-link-fence');
-    expect(basket?.snapshotId).toBe('material-basket-sourced-v4');
+    expect(basket?.snapshotId).toBe('material-basket-sourced-v5');
     const centsById = Object.fromEntries((basket?.components ?? []).map((component) => [component.componentId, component.baselinePriceCents]));
     expect(centsById['air-source-heat-pump']).toBe(427_000);
     expect(centsById['vinyl-window']).toBe(5_411);
@@ -622,6 +644,9 @@ describe('Job Cost Engine V1', () => {
     expect(centsById['vinyl-siding']).toBe(698);
     expect(centsById['wood-siding']).toBe(811);
     expect(centsById['drywall-board']).toBe(49);
+    expect(centsById['kitchen-base-cabinet']).toBe(23_900);
+    expect(centsById['kitchen-wall-cabinet']).toBe(16_170);
+    expect(centsById['kitchen-sink']).toBe(32_817);
     for (const recipe of listRecipes()) {
       for (const line of recipe.materials) {
         expect(priced, `${recipe.jobId}:${line.componentId}`).toContain(line.componentId);
@@ -672,13 +697,25 @@ describe('Job Cost Engine V1', () => {
   it('keeps removed roof and chain-link jobs out of search and the sitemap', () => {
     expect((JOB_IDS as readonly string[]).includes('roof-replacement')).toBe(false);
     const index = jobSearchIndex();
-    expect(index).toHaveLength(14);
+    expect(index).toHaveLength(15);
     expect(index.some((entry) => entry.path.includes('roof'))).toBe(false);
     const haystack = index.flatMap((entry) => [...entry.terms, entry.name.toLowerCase()]).join(' ');
     expect(haystack).not.toMatch(/roof|shingle|chain.?link/);
     const family = costFamilySitemapPaths();
     for (const jobId of JOB_IDS) expect(family).toContain(jobPath(jobId));
     expect(family).not.toContain('/cost/roof-replacement');
+  });
+
+  it('opens job×state leaves only when wages breach the recipe confidence band', () => {
+    const leaves = openCostStateLeaves();
+    expect(leaves.length).toBeGreaterThan(0);
+    for (const { jobId, state } of leaves) {
+      expect(costStateLeafIsOpen(jobId, state)).toBe(true);
+      const ratio = jobStateWageRatio(jobId, state);
+      expect(ratio).not.toBeNull();
+      expect(jobInStatePath(jobId, state)).toMatch(new RegExp(`^/cost/${jobId}/`));
+    }
+    expect(costFamilySitemapPaths().some((path) => path.includes('/cost/hvac-replacement/'))).toBe(true);
   });
 });
 

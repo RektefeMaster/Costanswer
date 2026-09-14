@@ -201,6 +201,38 @@ export type MaterialComponent = {
   critical: boolean;
 };
 
+export type CensusConstructionIndustry = {
+  naics: string;
+  label: string;
+  establishments: number;
+  netValueOfConstructionWorkThousands: number;
+  materialShare: number;
+  constructionWageShare: number;
+  constructionFringeShare: number;
+  equipmentRentalShare: number;
+  fuelAndPowerShare: number;
+  /** Materials, trade wages and their fringe, equipment rental and fuel, as a share of price. */
+  directShare: number;
+  overheadShare: number;
+  /** Residual operating surplus after every cost the census enumerates. */
+  profitShare: number;
+  directToPriceMultiplier: number;
+  averageConstructionWorkerHourlyWage: number;
+};
+
+export type CensusConstructionSnapshot = {
+  snapshotId: string;
+  datasetId: 'census-economic-census-construction';
+  observationPeriod: string;
+  fetchedAt: string;
+  publishedAt: string;
+  sourceUrl: string;
+  attribution: string;
+  disclaimer: string;
+  industries: CensusConstructionIndustry[];
+  normalizedSha256: string;
+};
+
 export type MaterialBasketSnapshot = {
   snapshotId: string;
   datasetId: 'material-basket';
@@ -217,6 +249,7 @@ export type JobDatasets = {
   ppi: PpiSnapshot | null;
   fema: FemaEquipmentSnapshot | null;
   basket: MaterialBasketSnapshot | null;
+  census: CensusConstructionSnapshot | null;
   wages: OewsWageInput[];
   rppAllItems: number | null;
 };
@@ -264,7 +297,18 @@ export type JobEstimate = {
   disposal: NamedMoneyStep | null;
   overhead: NamedMoneyStep;
   profitMarkup: NamedMoneyStep;
-  contingency: NamedMoneyStep;
+  /**
+   * Null when the observed census share is used.
+   *
+   * The observed direct-to-price multiplier is what contractors actually
+   * charged over a census year, so it already carries how they price risk on
+   * average. Adding a further allowance on top would put the expected figure
+   * above the market it was measured from; the uncertainty belongs in the
+   * range instead.
+   */
+  contingency: NamedMoneyStep | null;
+  /** Whether overhead and profit are observed or assumed, for the receipt. */
+  businessCostSource: 'census-observed' | 'recipe-modeled';
   modifiers: NamedMoneyStep[];
   unpricedCritical: string[];
   unpricedNonCritical: string[];

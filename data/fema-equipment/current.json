@@ -4,7 +4,7 @@
   "snapshotId": "fema-equipment-2025-v1",
   "datasetId": "fema-equipment",
   "observationPeriod": "2025",
-  "fetchedAt": "2026-09-07T21:17:23.562Z",
+  "fetchedAt": "2026-09-14T16:44:17.793Z",
   "publishedAt": "2025-07-01T00:00:00.000Z",
   "sourceUrl": "https://www.fema.gov/assistance/public/tools-resources/schedule-equipment-rates",
   "sourceDocumentationUrl": "https://www.fema.gov/assistance/public/tools-resources/schedule-equipment-rates",
@@ -53,5 +53,5 @@
     "6 rates transcribed from the 2025 schedule for recipes that name them.",
     "Each rate is greater than zero and has a known unit."
   ],
-  "normalizedSha256": "10e20c8aad6a35ffdf3621e325c862a0df3c3c132c7232cbe5de113548d9308d"
+  "normalizedSha256": "f19a8a973d3ed9a05d50dd0e695da3acd8013813ee636e3c20a0c0ea66624253"
 }

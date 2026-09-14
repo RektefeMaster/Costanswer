@@ -320,7 +320,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Is this what I will owe on my return?',
         answer: [
-          'No. This is wage income under the published schedules. Credits, itemised deductions, retirement contributions and any income that is not salary all change the answer, and none of them are modelled here.',
+          'No. This is wage income under the published schedules. Credits, itemised deductions, retirement contributions and any income that is not salary all change the answer, and none of them are modeled here.',
         ],
       },
     ],
@@ -412,7 +412,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
     ],
     caveats: [
       'Federal income tax only, and ordinary income only. Long-term capital gains use a separate rate schedule.',
-      'Credits, the alternative minimum tax and itemised deductions are not modelled.',
+      'Credits, the alternative minimum tax and itemised deductions are not modeled.',
       'This is not tax advice and not a filed return.',
     ],
   },
@@ -477,7 +477,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       'Quarterly estimated tax is how this bill is usually paid during the year.',
     ],
     caveats: [
-      'Church employee income, optional methods, ministers and Form 4361 are not modelled.',
+      'Church employee income, optional methods, ministers and Form 4361 are not modeled.',
       'A filed Schedule SE rounds to whole dollars.',
       'This is not income tax on the profit and not tax advice.',
     ],
@@ -609,7 +609,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
     ],
     caveats: [
       'The 2026 Schedule 8812 used for the phase-out worksheet is a draft marked not for filing.',
-      'Part II-B for three or more children is not modelled, so the refundable amount can be too low.',
+      'Part II-B for three or more children is not modeled, so the refundable amount can be too low.',
       'This is not a filed return and not tax advice.',
     ],
   },
@@ -674,7 +674,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       'Losses you already netted should be reflected in the gain figure you type; this page does not apply the $3,000 ordinary-income loss limit.',
     ],
     caveats: [
-      'Collectibles (28%) and unrecaptured section 1250 gain (25%) are not modelled.',
+      'Collectibles (28%) and unrecaptured section 1250 gain (25%) are not modeled.',
       'The section 121 home-sale exclusion is not applied.',
       'This is not a filed Form 8949 or Form 8960, and not tax advice.',
     ],
@@ -695,7 +695,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
         {
           heading: 'Equal installments assume even income',
           paragraphs: [
-            'This page splits whatever is still required into four equal payments on the Form 1040-ES dates. Income that arrives early in the year can still leave a penalty under the annualized income method even when the annual total is enough. That method is not modelled.',
+            'This page splits whatever is still required into four equal payments on the Form 1040-ES dates. Income that arrives early in the year can still leave a penalty under the annualized income method even when the annual total is enough. That method is not modeled.',
           ],
         },
         {
@@ -804,7 +804,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
       'Use the quarterly estimated tax page if the result is an amount owed and the income is not all from wages.',
     ],
     caveats: [
-      'Publication 15-T W-4 tables are not modelled. Withholding is the amount you enter.',
+      'Publication 15-T W-4 tables are not modeled. Withholding is the amount you enter.',
       'AGI is wages plus SE profit minus the deductible half of Schedule SE tax. Other adjustments are omitted, so credit phase-outs can be off.',
       'This is not a filed return and not tax advice.',
     ],

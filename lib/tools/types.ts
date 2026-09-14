@@ -133,7 +133,7 @@ export type ToolDefinition = {
   resultNature: ResultNature;
   /** Which official sources this tool depends on, and what happens without them. */
   data: ToolDataManifest;
-  /** Optional long-tail document title. The on-page H1 stays `title`. */
+  /** Optional long-tail document title for SERP. Prefer spoken query language. */
   metaTitle?: string;
   /** Optional long-tail meta description. Falls back to `description`. */
   metaDescription?: string;

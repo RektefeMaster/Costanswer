@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from './contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult, taxYearNumber } from './contracts';
 import { estimateAnnualTaxLiability } from './tax/annual';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from './tax/types';
 import { getStateName, isStateCode } from '@/lib/location/states';
@@ -37,7 +37,7 @@ const incomeSchema = z.discriminatedUnion('incomeMode', [
     incomeMode: z.literal('gross-salary'),
     annualGrossSalary: finiteNumber('Annual gross salary', 0, 100_000_000),
     filingStatus: z.enum(FILING_STATUSES),
-    taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+    taxYear: taxYearNumber,
   }),
 ]);
 

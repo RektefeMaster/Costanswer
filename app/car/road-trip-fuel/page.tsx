@@ -47,6 +47,7 @@ export default function RoadTripFuelPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'eia-gasoline': gasolineSource.periodLabel }}
       caution="This is fuel for the miles you enter. Tolls, food, and a tank that is not the EPA MPG number will change what you spend."
       methodology={[
         { title: 'Gallons', body: 'Trip miles divided by the MPG you enter. That is highway fuel, not a full travel budget.' },

@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('salary hub search, sort, and occupation links work like a directory', async ({ page }) => {
   await page.goto('/salary');
   await expect(page.locator('.salary-hub[data-hydrated="true"]')).toBeVisible({ timeout: 15_000 });
-  await expect(page.getByRole('heading', { name: 'What jobs pay in the U.S.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'U.S. salaries by occupation' })).toBeVisible();
   await expect(page.getByText('U.S. median job')).toBeVisible();
   await expect(page.getByRole('searchbox', { name: 'Search occupations' })).toBeVisible();
   await expect(page.getByRole('link', { name: /Registered Nurse/ }).first()).toContainText('$');
@@ -31,7 +31,7 @@ test('salary hub search, sort, and occupation links work like a directory', asyn
 
   await page.getByRole('link', { name: /Registered Nurse/ }).first().click();
   await expect(page).toHaveURL(/\/salary\/registered-nurse$/);
-  await expect(page.getByRole('heading', { name: /Registered Nurse Salary/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /How much does a registered nurse make/i })).toBeVisible();
 });
 
 test('salary hub stays usable on a phone and still shows pay', async ({ page }) => {

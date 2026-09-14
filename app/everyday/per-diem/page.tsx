@@ -37,6 +37,7 @@ export default function PerDiemPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'gsa-perdiem': perDiemSource.periodLabel }}
       caution="These are federal ceilings for a government trip, not an estimate of what a trip costs. Lodging is reimbursed at what you actually pay, up to the cap."
       methodology={[
         {

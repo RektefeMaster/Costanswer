@@ -18,6 +18,7 @@
  * back to the official title, which is accurate if less natural.
  */
 import type { OewsOccupation } from '@/lib/data/bls-oews';
+import { oewsIndex } from '@/lib/data/bls-oews-snapshot';
 
 export type OccupationNaming = {
   singular: string;
@@ -53,12 +54,12 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '13-1111': { singular: 'management analyst', aliases: ['management consultant'] },
   '13-1151': { singular: 'training and development specialist', aliases: ['corporate trainer'] },
   '13-1161': { singular: 'market research analyst', aliases: ['marketing specialist'] },
-  '13-2011': { singular: 'accountant or auditor', plural: 'accountants or auditors', aliases: ['accountant', 'CPA', 'auditor'] },
+  '13-2011': { singular: 'accountant or auditor', plural: 'accountants or auditors', aliases: ['accountant', 'CPA', 'auditor', 'bookkeeper'] },
   '13-2051': { singular: 'financial analyst', aliases: ['investment analyst'] },
   '15-1211': { singular: 'computer systems analyst', aliases: ['systems analyst'] },
   '15-1232': { singular: 'computer user support specialist', aliases: ['IT support', 'help desk technician'] },
   '15-1244': { singular: 'network and computer systems administrator', aliases: ['network administrator', 'sysadmin'] },
-  '15-1252': { singular: 'software developer', aliases: ['software engineer', 'programmer'] },
+  '15-1252': { singular: 'software developer', aliases: ['software engineer', 'programmer', 'SWE', 'developer'] },
   '15-1253': { singular: 'software quality assurance analyst', aliases: ['QA engineer', 'test engineer'] },
   '15-1254': { singular: 'web developer' },
   '15-2051': { singular: 'data scientist' },
@@ -74,7 +75,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '23-1011': { singular: 'lawyer', aliases: ['attorney'] },
   '23-2011': { singular: 'paralegal', aliases: ['legal assistant'] },
   '25-2011': { singular: 'preschool teacher' },
-  '25-2021': { singular: 'elementary school teacher', aliases: ['grade school teacher'] },
+  '25-2021': { singular: 'elementary school teacher', aliases: ['grade school teacher', 'elementary teacher', 'teacher'] },
   '25-2022': { singular: 'middle school teacher' },
   '25-2031': { singular: 'high school teacher', aliases: ['secondary school teacher'] },
   '25-2058': { singular: 'special education teacher' },
@@ -83,7 +84,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '25-9045': { singular: 'teaching assistant', aliases: ['teacher aide', 'paraprofessional'] },
   '27-1024': { singular: 'graphic designer' },
   '29-1051': { singular: 'pharmacist' },
-  '29-1141': { singular: 'registered nurse', aliases: ['RN', 'nurse'] },
+  '29-1141': { singular: 'registered nurse', aliases: ['RN', 'nurse', 'staff nurse'] },
   '29-1171': { singular: 'nurse practitioner', aliases: ['NP'] },
   '29-1215': { singular: 'family medicine physician', aliases: ['family doctor', 'GP', 'primary care doctor'] },
   '29-1214': { singular: 'emergency medicine physician', aliases: ['ER doctor', 'emergency room doctor'] },
@@ -94,7 +95,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '29-2052': { singular: 'pharmacy technician', aliases: ['pharmacy tech'] },
   '29-2061': { singular: 'licensed practical nurse', aliases: ['LPN', 'LVN', 'licensed vocational nurse'] },
   '29-2055': { singular: 'surgical technologist', aliases: ['surgical tech'] },
-  '31-1120': { singular: 'home health or personal care aide', aliases: ['home health aide', 'caregiver'] },
+  '31-1120': { singular: 'home health or personal care aide', plural: 'home health or personal care aides', aliases: ['home health aide', 'personal care aide', 'caregiver', 'HHA'] },
   '31-1131': { singular: 'nursing assistant', aliases: ['CNA', 'certified nursing assistant'] },
   '31-9091': { singular: 'dental assistant' },
   '31-9092': { singular: 'medical assistant' },
@@ -108,7 +109,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '35-2014': { singular: 'restaurant cook', aliases: ['line cook', 'cook'] },
   '35-2021': { singular: 'food preparation worker', aliases: ['food prep'] },
   '35-3011': { singular: 'bartender' },
-  '35-3023': { singular: 'fast food or counter worker', aliases: ['fast food worker'] },
+  '35-3023': { singular: 'fast food or counter worker', plural: 'fast food or counter workers', aliases: ['fast food worker', 'counter attendant'] },
   '35-3031': { singular: 'waiter or waitress', plural: 'waiters or waitresses', aliases: ['server'] },
   '35-9011': { singular: 'dining room attendant', aliases: ['busser', 'barback'] },
   '35-9021': { singular: 'dishwasher' },
@@ -122,9 +123,9 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '39-9031': { singular: 'personal trainer', aliases: ['fitness instructor'] },
   '39-9032': { singular: 'recreation worker' },
   '41-1011': { singular: 'retail supervisor', aliases: ['store manager', 'retail manager'] },
-  '41-2011': { singular: 'cashier' },
+  '41-2011': { singular: 'cashier', aliases: ['checkout clerk', 'cashier associate'] },
   '41-2021': { singular: 'counter or rental clerk' },
-  '41-2031': { singular: 'retail salesperson', aliases: ['sales associate', 'retail worker'] },
+  '41-2031': { singular: 'retail salesperson', aliases: ['retail sales associate', 'sales associate', 'store clerk'] },
   '41-3021': { singular: 'insurance sales agent', aliases: ['insurance agent'] },
   '41-3031': { singular: 'securities or financial services sales agent', aliases: ['financial advisor', 'stockbroker'] },
   '41-3091': { singular: 'services sales representative', aliases: ['sales rep'] },
@@ -133,7 +134,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '43-3021': { singular: 'billing clerk' },
   '43-3031': { singular: 'bookkeeper', aliases: ['bookkeeping clerk', 'accounting clerk'] },
   '43-3071': { singular: 'bank teller', aliases: ['teller'] },
-  '43-4051': { singular: 'customer service representative', aliases: ['customer service rep', 'call center agent'] },
+  '43-4051': { singular: 'customer service representative', aliases: ['CSR', 'customer service rep', 'call center agent', 'customer support'] },
   '43-4171': { singular: 'receptionist', aliases: ['front desk clerk'] },
   '43-5052': { singular: 'mail carrier', aliases: ['postal worker', 'mailman'] },
   '43-5061': { singular: 'production planning clerk' },
@@ -146,7 +147,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '47-2031': { singular: 'carpenter' },
   '47-2061': { singular: 'construction laborer', aliases: ['construction worker'] },
   '47-2073': { singular: 'heavy equipment operator', aliases: ['operating engineer'] },
-  '47-2111': { singular: 'electrician' },
+  '47-2111': { singular: 'electrician', aliases: ['journeyman electrician', 'licensed electrician'] },
   '47-2152': { singular: 'plumber', aliases: ['pipefitter', 'steamfitter'] },
   '49-1011': { singular: 'maintenance supervisor' },
   '49-3023': { singular: 'auto mechanic', aliases: ['automotive technician', 'car mechanic'] },
@@ -160,7 +161,7 @@ export const OCCUPATION_NAMING: Record<string, OccupationNaming> = {
   '51-9111': { singular: 'packaging machine operator' },
   '53-1047': { singular: 'transportation and material moving supervisor', aliases: ['warehouse supervisor'] },
   '53-3031': { singular: 'driver/sales worker', aliases: ['delivery driver'] },
-  '53-3032': { singular: 'truck driver', aliases: ['semi driver', 'tractor-trailer driver', 'CDL driver'] },
+  '53-3032': { singular: 'truck driver', aliases: ['CDL driver', 'OTR driver', 'trucker', 'semi driver', 'tractor-trailer driver'] },
   '53-3033': { singular: 'light truck driver', aliases: ['delivery driver', 'van driver'] },
   '53-3051': { singular: 'school bus driver' },
   '53-7051': { singular: 'forklift operator', aliases: ['industrial truck operator'] },
@@ -185,23 +186,58 @@ export function occupationSingular(occupation: Pick<OewsOccupation, 'code' | 'di
 const TITLE_BUDGET = 50;
 
 /**
- * The `<title>` for an occupation's salary page.
+ * The spoken question for this job — same wording as the page H1.
+ * Title-tag builders use a title-cased variant that still fits the SERP budget.
+ */
+export function occupationHowMuchQuestion(
+  occupation: Pick<OewsOccupation, 'code' | 'displayTitle'>,
+  stateName?: string,
+): string {
+  return occupationPageHeading(occupation, stateName);
+}
+
+/**
+ * Visible H1 — same words people type, sentence case.
+ * Curated singular keeps long SOC titles out of the first viewport.
+ */
+export function occupationPageHeading(
+  occupation: Pick<OewsOccupation, 'code' | 'displayTitle'>,
+  stateName?: string,
+): string {
+  const singular = occupationSingular(occupation);
+  const article = indefiniteArticle(singular);
+  if (stateName) return `How much does ${article} ${singular} make in ${stateName}?`;
+  return `How much does ${article} ${singular} make?`;
+}
+
+/**
+ * `<title>` for a national occupation page.
  *
- * "Registered Nurse Salary: How Much Do They Make?" is the phrase people
- * search, and it fits. "Grinding, Lapping, Polishing, and Buffing Machine Tool
- * Setters, Operators, and Tenders, Metal and Plastic Salary: How Much Do They
- * Make?" is 136 characters in which the word a searcher typed — *salary* —
- * arrives at character 105, past anything a listing will show.
- *
- * So the question is a bonus, dropped when it does not fit, and the name is
- * never shortened to make room. Shortening it would name a narrower job than
- * BLS surveyed, which is the rule the naming layer exists to hold; a long name
- * that a listing truncates is still the right name.
+ * Prefer the spoken query when it fits the SERP budget; otherwise keep the
+ * occupation name + "Salary" so the job still leads the listing.
  */
 export function occupationTitleTag(occupation: Pick<OewsOccupation, 'code' | 'displayTitle'>): string {
   const heading = occupationHeadingName(occupation);
-  const withQuestion = `${heading} Salary: How Much Do They Make?`;
-  return withQuestion.length <= TITLE_BUDGET ? withQuestion : `${heading} Salary`;
+  const singular = occupationSingular(occupation);
+  const article = indefiniteArticle(singular);
+  const withQuestion = `How Much Does ${article} ${heading} Make?`;
+  if (withQuestion.length <= TITLE_BUDGET) return withQuestion;
+  const short = `${heading} Salary`;
+  return short.length <= TITLE_BUDGET ? short : heading;
+}
+
+/** `<title>` for an occupation × state leaf. */
+export function occupationInStateTitleTag(
+  occupation: Pick<OewsOccupation, 'code' | 'displayTitle'>,
+  stateName: string,
+): string {
+  const heading = occupationHeadingName(occupation);
+  const singular = occupationSingular(occupation);
+  const article = indefiniteArticle(singular);
+  const withQuestion = `How Much Does ${article} ${heading} Make in ${stateName}?`;
+  if (withQuestion.length <= TITLE_BUDGET) return withQuestion;
+  const short = `${heading} Salary in ${stateName}`;
+  return short.length <= TITLE_BUDGET ? short : `${heading} in ${stateName}`;
 }
 
 const TITLE_CASE_MINOR_WORDS = new Set(['a', 'an', 'and', 'or', 'of', 'in', 'the', 'for', 'to', 'at', 'by', 'with']);
@@ -298,6 +334,28 @@ function percent(value: number, digits = 1): string {
   return `${formatNumber(Math.abs(value), { maximumFractionDigits: digits })}%`;
 }
 
+export function salaryDirectAnswer(profile: OccupationWageProfile): string {
+  const singular = occupationSingular(profile.occupation);
+  const article = indefiniteArticle(singular);
+  const Article = article === 'a' ? 'A' : 'An';
+  const inWhere = profile.area === 'US' ? 'in the United States' : `in ${profile.areaLabel}`;
+  const median = profile.wage.annualMedian;
+  const hourly = profile.wage.hourlyMedian;
+  if (median === null && hourly === null) {
+    return `BLS did not publish a median wage for ${singular} ${inWhere} in ${profile.referenceLabel}. The survey withholds a figure when it cannot publish one without identifying respondents.`;
+  }
+  if (median === null && hourly !== null) {
+    return `${Article} ${singular} ${inWhere} earns a median of ${formatMoney(hourly)} an hour, from the BLS occupational wage survey for ${profile.referenceLabel}. BLS publishes no annual figure because hours in a year vary too much for one to mean anything.`;
+  }
+  const net = profile.takeHome
+    ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after ${taxesOnWagesLabel(profile.takeHome)}`
+    : '';
+  const jobs = profile.employment.total === null
+    ? ''
+    : ` The survey counted ${formatNumber(profile.employment.total)} of these jobs ${inWhere} in ${profile.referenceLabel}.`;
+  return `${Article} ${singular} ${inWhere} earns a median of ${formatMoney(median!, 0)} a year${hourly === null ? '' : ` (${formatMoney(hourly)} an hour)`}${net}. Figure from the BLS Occupational Employment and Wage Statistics survey.${jobs}`;
+}
+
 export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[] {
   const singular = occupationSingular(profile.occupation);
   const article = indefiniteArticle(singular);
@@ -316,6 +374,24 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
         `Half earn more than that and half earn less. The figure comes from the Bureau of Labor Statistics occupational wage survey for ${profile.referenceLabel}.`,
       ],
     });
+    if (profile.wage.annualMean !== null) {
+      questions.push({
+        question: `What is the average ${singular} salary${inWhere}?`,
+        answer: [
+          `BLS’s mean (average) wage for ${plural} in ${where} is ${money(profile.wage.annualMean)} a year. The median is ${money(median)}.`,
+          'The mean sits higher when a smaller group of high earners pulls the average up. For a typical paycheck, the median is the better middle.',
+        ],
+      });
+    }
+    if (hourly !== null) {
+      questions.push({
+        question: `What is the hourly pay for ${article} ${singular}${inWhere}?`,
+        answer: [
+          `The median hourly wage is ${formatMoney(hourly)}. At a full-time year that lines up with about ${money(median)} a year.`,
+          `BLS ${profile.referenceLabel}; hourly and annual figures come from the same survey.`,
+        ],
+      });
+    }
   } else if (profile.wage.hourlyMedian !== null) {
     questions.push({
       question: `How much does ${article} ${singular} make an hour${inWhere}?`,
@@ -372,7 +448,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
       question: `What do the highest-paid ${plural} earn${inWhere}?`,
       answer: [
         `The top tenth earn ${money(top)} a year or more, against ${money(profile.wage.annual.p10 ?? median)} at the bottom tenth.`,
-        `Experience, specialism, employer and the part of ${where} someone works in all move a wage inside that range; the survey reports the spread, not the reason for it.`,
+        `Experience, specialty, employer and the part of ${where} someone works in all move a wage inside that range; the survey reports the spread, not the reason for it.`,
       ],
     });
   } else if (profile.wage.atOrAboveWageCap) {
@@ -424,12 +500,18 @@ export function occupationJsonLd(profile: OccupationWageProfile, url: string) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Occupation',
-    name: profile.occupation.displayTitle,
-    alternateName: [...new Set([profile.occupation.title, ...occupationAliases(profile.occupation)])]
-      .filter((name) => name !== profile.occupation.displayTitle),
+    name: occupationHeadingName(profile.occupation),
+    alternateName: [...new Set([
+      profile.occupation.displayTitle,
+      profile.occupation.title,
+      ...occupationAliases(profile.occupation),
+    ])]
+      .filter((name) => name !== occupationHeadingName(profile.occupation)),
     occupationalCategory: profile.occupation.code,
-    description: `Wages for ${profile.occupation.displayTitle.toLowerCase()} in ${profile.areaLabel}, from the BLS Occupational Employment and Wage Statistics survey for ${profile.referenceLabel}.`,
+    description: `Median and percentile wages for ${occupationSingular(profile.occupation)} in ${profile.areaLabel}, from the BLS Occupational Employment and Wage Statistics survey for ${profile.referenceLabel}.`,
+    inLanguage: 'en-US',
     url,
+    dateModified: `${oewsIndex.observationPeriod}-01`,
     ...(profile.area === 'US'
       ? { occupationLocation: { '@type': 'Country', name: 'United States' } }
       : { occupationLocation: { '@type': 'State', name: profile.areaLabel } }),

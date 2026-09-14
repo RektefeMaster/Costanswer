@@ -33,7 +33,7 @@ describe('refinance break-even', () => {
     expect(result.value.breakEvenMonths).toBe(Math.ceil(5_000 / result.value.monthlyChange));
     expect(result.value.cashOutlay).toBe(5_000);
     expect(result.value.newLoanAmount).toBe(290_000);
-    expect(result.calculationVersion).toBe('refinance-v1.0.0');
+    expect(result.calculationVersion).toBe('refinance-v1.1.0');
   });
 
   it('shows a lower payment that costs more interest, and refuses a break-even that does not exist', () => {

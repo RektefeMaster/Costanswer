@@ -2,12 +2,12 @@ import Link from 'next/link';
 import { JOB_CATALOG, JOB_IDS, jobPath, type JobId } from '@/lib/job/catalog';
 
 const FEATURED = [
-  'hvac-replacement',
-  'tree-removal',
-  'deck-build',
+  'kitchen-remodel',
   'bathroom-remodel',
-  'interior-painting',
+  'hvac-replacement',
   'water-heater-replacement',
+  'heat-pump-replacement',
+  'deck-build',
 ] as const satisfies readonly JobId[];
 const TONES = ['amber', 'blue', 'mint', 'rose', 'coral', 'violet'] as const;
 
@@ -16,14 +16,14 @@ export function JobCostPromo() {
     <section className="category-strip job-cost-promo" aria-labelledby="job-cost-promo-title">
       <div className="section-intro">
         <p className="eyebrow"><span /> Job costs</p>
-        <h2 id="job-cost-promo-title">What should this job cost?</h2>
+        <h2 id="job-cost-promo-title">How much should this remodel cost?</h2>
         <p className="section-lede">
-          Fourteen residential recipes on one engine. BLS wages, ECEC labor loading, and FEMA equipment cost proxies. If a critical material has no sourced price, the range stays incomplete.
+          Kitchen, bathroom, HVAC, water heater, and eleven other residential recipes on one engine — BLS wages, ECEC labor loading, FEMA equipment proxies. Not a contractor quote.
         </p>
         <ul className="topic-prompts">
           <li>
             <Link href="/cost">
-              <span>Browse the fourteen jobs</span>
+              <span>Browse the fifteen jobs</span>
               <span aria-hidden="true">→</span>
             </Link>
           </li>
@@ -58,7 +58,7 @@ export function JobCostPromo() {
               <span className="category-arrow" aria-hidden="true">↗</span>
             </span>
             <span className="category-copy">
-              <strong>All fourteen jobs</strong>
+              <strong>All fifteen jobs</strong>
               <small>Estimate or check a quote</small>
             </span>
           </Link>

@@ -19,6 +19,7 @@ export default function SalaryAfterTaxPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="This is an estimate of annual tax liability, not a prepared return. Credits, itemized deductions, and local taxes are left out."
       methodology={[
         { title: 'Federal income tax', body: 'Gross wages minus the IRS standard deduction for the filing status you choose, then the published federal brackets for that tax year.' },

@@ -7,6 +7,7 @@ import { readStoreJson } from '@/lib/data/store';
 import { getRecipe } from './recipes';
 import type { JobId } from './catalog';
 import type {
+  CensusConstructionSnapshot,
   EcecSnapshot,
   FemaEquipmentSnapshot,
   JobDatasets,
@@ -27,11 +28,12 @@ function hourlyFromEstimate(area: 'US' | StateCode, socCode: string): { hourly: 
 
 export async function loadJobDatasets(jobId: JobId, state: StateCode, stateFips: string, origin?: string): Promise<JobDatasets> {
   const recipe = getRecipe(jobId);
-  const [ecec, ppi, fema, basket] = await Promise.all([
+  const [ecec, ppi, fema, basket, census] = await Promise.all([
     readStoreJson<EcecSnapshot>('bls-ecec', origin),
     readStoreJson<PpiSnapshot>('bls-ppi', origin),
     readStoreJson<FemaEquipmentSnapshot>('fema-equipment', origin),
     readStoreJson<MaterialBasketSnapshot>('job-material-basket', origin),
+    readStoreJson<CensusConstructionSnapshot>('census-construction', origin),
   ]);
 
   const wages: OewsWageInput[] = recipe.crew.map((member) => {
@@ -53,6 +55,7 @@ export async function loadJobDatasets(jobId: JobId, state: StateCode, stateFips:
     ppi,
     fema,
     basket,
+    census,
     wages,
     rppAllItems: rpp?.value ?? null,
   };

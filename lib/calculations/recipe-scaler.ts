@@ -68,6 +68,15 @@ export function formatKitchenQuantity(value: number): string {
     }
   }
 
+  const approximated = whole + best.val;
+  // Tiny scaled-down amounts (e.g. 1 tsp → 0.1) round badly to kitchen
+  // fractions; keep a short decimal instead of overstating by 20%+.
+  if (value > 0 && Math.abs(approximated - value) / value > 0.12) {
+    const digits = value < 1 ? 2 : value < 10 ? 2 : 1;
+    const rounded = Math.round(value * 10 ** digits) / 10 ** digits;
+    return String(rounded);
+  }
+
   if (best.val === 1) {
     whole += 1;
     return `${whole}`;

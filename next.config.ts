@@ -80,13 +80,31 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        source: '/es/salario/:ocupacion/:estado',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
         source: '/salary/:occupation',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
         ],
       },
       {
+        source: '/es/salario/:ocupacion',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
         source: '/salary/states/:state',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/es/salario/estados/:estado',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
         ],

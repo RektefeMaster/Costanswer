@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Time arithmetic is defined by the units.'),
+  metaTitle: 'Time Calculator: Add and Subtract Hours and Minutes',
+  metaDescription: 'Add or subtract clock times and durations. Exact arithmetic — not a timesheet payroll engine.',
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'time-card', type: 'sibling' },

@@ -3,6 +3,11 @@ import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import { taxesOnWagesLabel, type OccupationWageProfile } from '@/lib/calculations/salary';
 import type { CalculationResult } from '@/lib/calculations/contracts';
 import { FILING_STATUS_LABELS } from '@/lib/calculations/tax/types';
+import { formatMoneyLocale, formatNumberLocale } from '@/lib/i18n/format';
+import type { Locale } from '@/lib/i18n/locales';
+import { stateAreaLabelEs } from '@/lib/location/states-es';
+import { occupationHeadingEs } from '@/lib/salary-content-es';
+import { wageUi } from '@/lib/salary/wage-ui';
 
 /**
  * The composed wage answer, rendered on the server.
@@ -15,50 +20,65 @@ import { FILING_STATUS_LABELS } from '@/lib/calculations/tax/types';
  */
 
 const PERCENTILE_ROWS = [
-  { key: 'p10', label: '10th percentile', note: 'Entry and lowest-paid' },
-  { key: 'p25', label: '25th percentile', note: null },
-  { key: 'median', label: 'Median', note: 'Half earn more, half less' },
-  { key: 'p75', label: '75th percentile', note: null },
-  { key: 'p90', label: '90th percentile', note: 'Most experienced and senior' },
+  { key: 'p10', labelKey: 'p10', noteKey: 'p10Note' },
+  { key: 'p25', labelKey: 'p25', noteKey: null },
+  { key: 'median', labelKey: 'median', noteKey: 'medianNote' },
+  { key: 'p75', labelKey: 'p75', noteKey: null },
+  { key: 'p90', labelKey: 'p90', noteKey: 'p90Note' },
 ] as const;
 
-function annualOrDash(value: number | null, capped: boolean): string {
-  if (value !== null) return formatMoney(value, 0);
-  return capped ? 'At or above the top code' : 'Not published';
+function placeLabel(profile: OccupationWageProfile, locale: Locale): string {
+  return locale === 'es-US' ? stateAreaLabelEs(profile.area) : profile.areaLabel;
 }
 
-function hourlyOrDash(value: number | null, capped: boolean): string {
-  if (value !== null) return formatMoney(value);
-  return capped ? 'At or above the top code' : 'Not published';
+function money(locale: Locale, value: number, digits = 0): string {
+  return locale === 'en-US' ? formatMoney(value, digits) : formatMoneyLocale(locale, value, digits);
 }
 
-export function WagePercentileTable({ profile }: { profile: OccupationWageProfile }) {
+function number(locale: Locale, value: number, options?: Intl.NumberFormatOptions): string {
+  return locale === 'en-US' ? formatNumber(value, options) : formatNumberLocale(locale, value, options);
+}
+
+function annualOrDash(locale: Locale, value: number | null, capped: boolean): string {
+  if (value !== null) return money(locale, value, 0);
+  return capped ? wageUi('capped', locale) : wageUi('unpublished', locale);
+}
+
+function hourlyOrDash(locale: Locale, value: number | null, capped: boolean): string {
+  if (value !== null) return money(locale, value);
+  return capped ? wageUi('capped', locale) : wageUi('unpublished', locale);
+}
+
+export function WagePercentileTable({ profile, locale = 'en-US' }: { profile: OccupationWageProfile; locale?: Locale }) {
+  const caption = locale === 'es-US'
+    ? `Lo que ganan ${profile.occupation.displayTitle} en ${profile.areaLabel}, ${profile.referenceLabel}`
+    : `What ${profile.occupation.displayTitle.toLowerCase()} earn in ${profile.areaLabel}, ${profile.referenceLabel}`;
   return (
     <div className="rank-table-wrap">
       <table className="rank-table">
-        <caption>{`What ${profile.occupation.displayTitle.toLowerCase()} earn in ${profile.areaLabel}, ${profile.referenceLabel}`}</caption>
+        <caption>{caption}</caption>
         <thead>
           <tr>
-            <th scope="col">Percentile</th>
-            <th scope="col">Annual</th>
-            <th scope="col">Hourly</th>
+            <th scope="col">{wageUi('percentile', locale)}</th>
+            <th scope="col">{wageUi('annual', locale)}</th>
+            <th scope="col">{wageUi('hourly', locale)}</th>
           </tr>
         </thead>
         <tbody>
           {PERCENTILE_ROWS.map((percentile) => (
             <tr className={percentile.key === 'median' ? 'is-home' : undefined} key={percentile.key}>
               <th scope="row">
-                {percentile.label}
-                {percentile.note && <small>{percentile.note}</small>}
+                {wageUi(percentile.labelKey, locale)}
+                {percentile.noteKey && <small>{wageUi(percentile.noteKey, locale)}</small>}
               </th>
-              <td>{annualOrDash(profile.wage.annual[percentile.key], profile.wage.atOrAboveWageCap)}</td>
-              <td>{hourlyOrDash(profile.wage.hourly[percentile.key], profile.wage.atOrAboveWageCap)}</td>
+              <td>{annualOrDash(locale, profile.wage.annual[percentile.key], profile.wage.atOrAboveWageCap)}</td>
+              <td>{hourlyOrDash(locale, profile.wage.hourly[percentile.key], profile.wage.atOrAboveWageCap)}</td>
             </tr>
           ))}
           <tr>
-            <th scope="row">Mean<small>The average, pulled up by the top</small></th>
-            <td>{annualOrDash(profile.wage.annualMean, profile.wage.atOrAboveWageCap)}</td>
-            <td>{hourlyOrDash(profile.wage.hourlyMean, profile.wage.atOrAboveWageCap)}</td>
+            <th scope="row">{wageUi('mean', locale)}<small>{wageUi('meanNote', locale)}</small></th>
+            <td>{annualOrDash(locale, profile.wage.annualMean, profile.wage.atOrAboveWageCap)}</td>
+            <td>{hourlyOrDash(locale, profile.wage.hourlyMean, profile.wage.atOrAboveWageCap)}</td>
           </tr>
         </tbody>
       </table>
@@ -66,57 +86,67 @@ export function WagePercentileTable({ profile }: { profile: OccupationWageProfil
   );
 }
 
-function headlineWage(profile: OccupationWageProfile): { label: string; value: string; note: string } {
+function headlineWage(profile: OccupationWageProfile, locale: Locale): { label: string; value: string; note: string } {
+  const place = placeLabel(profile, locale);
+  const label = locale === 'es-US' ? `Sueldo mediano · ${place}` : `Median pay · ${profile.areaLabel}`;
   if (profile.wage.annualMedian !== null) {
     return {
-      label: `Median pay · ${profile.areaLabel}`,
-      value: formatMoney(profile.wage.annualMedian, 0),
+      label,
+      value: money(locale, profile.wage.annualMedian, 0),
       note: profile.wage.hourlyMedian === null
-        ? 'A year. BLS publishes no hourly wage for this occupation.'
-        : `A year, or ${formatMoney(profile.wage.hourlyMedian)} an hour.`,
+        ? (locale === 'es-US' ? 'Al año. BLS no publica un sueldo por hora para esta ocupación.' : 'A year. BLS publishes no hourly wage for this occupation.')
+        : (locale === 'es-US' ? `Al año, o ${money(locale, profile.wage.hourlyMedian)} por hora.` : `A year, or ${money(locale, profile.wage.hourlyMedian)} an hour.`),
     };
   }
   if (profile.wage.hourlyMedian !== null) {
     return {
-      label: `Median pay · ${profile.areaLabel}`,
-      value: `${formatMoney(profile.wage.hourlyMedian)}/hr`,
-      note: 'BLS publishes only an hourly wage for this occupation.',
+      label,
+      value: `${money(locale, profile.wage.hourlyMedian)}/hr`,
+      note: locale === 'es-US' ? 'BLS publica solo un sueldo por hora para esta ocupación.' : 'BLS publishes only an hourly wage for this occupation.',
     };
   }
-  return { label: `Median pay · ${profile.areaLabel}`, value: 'Not published', note: 'BLS withheld this estimate.' };
+  return { label, value: wageUi('unpublished', locale), note: locale === 'es-US' ? 'BLS retuvo esta estimación.' : 'BLS withheld this estimate.' };
 }
 
-export function WageStatGrid({ profile }: { profile: OccupationWageProfile }) {
+export function WageStatGrid({ profile, locale = 'en-US' }: { profile: OccupationWageProfile; locale?: Locale }) {
   const items: Array<{ label: string; value: string; note?: string }> = [];
   if (profile.takeHome) {
     items.push({
-      label: 'Take-home a month',
-      value: formatMoney(profile.takeHome.monthly, 0),
-      note: `After ${taxesOnWagesLabel(profile.takeHome)} at ${formatNumber(profile.takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}`,
+      label: wageUi('takeHomeMonth', locale),
+      value: money(locale, profile.takeHome.monthly, 0),
+      note: locale === 'es-US'
+        ? `Después de ${taxesOnWagesLabel(profile.takeHome) === 'federal, state and FICA tax' ? 'impuestos federales, estatales y FICA' : 'impuestos federales y FICA'} al ${number(locale, profile.takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}`
+        : `After ${taxesOnWagesLabel(profile.takeHome)} at ${number(locale, profile.takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}`,
     });
   }
   if (profile.costAdjusted) {
     items.push({
-      label: 'Worth at national prices',
-      value: formatMoney(profile.costAdjusted.adjustedAnnualMedian, 0),
-      note: `Prices here sit at ${formatNumber(profile.costAdjusted.allItemsRpp, { maximumFractionDigits: 1 })} against 100`,
+      label: wageUi('worthNational', locale),
+      value: money(locale, profile.costAdjusted.adjustedAnnualMedian, 0),
+      note: locale === 'es-US'
+        ? `Los precios aquí están en ${number(locale, profile.costAdjusted.allItemsRpp, { maximumFractionDigits: 1 })} frente a 100`
+        : `Prices here sit at ${number(locale, profile.costAdjusted.allItemsRpp, { maximumFractionDigits: 1 })} against 100`,
     });
   }
   if (profile.versusNation) {
-    const direction = profile.versusNation.differencePercent >= 0 ? 'above' : 'below';
+    const direction = profile.versusNation.differencePercent >= 0 ? wageUi('above', locale) : wageUi('below', locale);
     items.push({
-      label: 'Against the nation',
-      value: `${formatNumber(Math.abs(profile.versusNation.differencePercent), { maximumFractionDigits: 1 })}% ${direction}`,
-      note: `National median ${formatMoney(profile.versusNation.nationalAnnualMedian, 0)}`,
+      label: wageUi('againstNation', locale),
+      value: `${number(locale, Math.abs(profile.versusNation.differencePercent), { maximumFractionDigits: 1 })}% ${direction}`,
+      note: locale === 'es-US'
+        ? `Mediana nacional ${money(locale, profile.versusNation.nationalAnnualMedian, 0)}`
+        : `National median ${money(locale, profile.versusNation.nationalAnnualMedian, 0)}`,
     });
   }
   if (items.length < 3 && profile.employment.total !== null) {
     items.push({
-      label: 'Jobs counted',
-      value: formatNumber(profile.employment.total),
+      label: wageUi('jobsCounted', locale),
+      value: number(locale, profile.employment.total),
       note: profile.employment.locationQuotient === null
-        ? 'Wage and salary jobs'
-        : `Concentration ${formatNumber(profile.employment.locationQuotient, { maximumFractionDigits: 2 })} against 1.00`,
+        ? (locale === 'es-US' ? 'Empleos asalariados' : 'Wage and salary jobs')
+        : (locale === 'es-US'
+          ? `Concentración ${number(locale, profile.employment.locationQuotient, { maximumFractionDigits: 2 })} frente a 1.00`
+          : `Concentration ${number(locale, profile.employment.locationQuotient, { maximumFractionDigits: 2 })} against 1.00`),
     });
   }
   if (items.length === 0) return null;
@@ -133,11 +163,11 @@ export function WageStatGrid({ profile }: { profile: OccupationWageProfile }) {
   );
 }
 
-export function WageResultDetails({ result }: { result: CalculationResult<OccupationWageProfile> }) {
+export function WageResultDetails({ result, locale = 'en-US' }: { result: CalculationResult<OccupationWageProfile>; locale?: Locale }) {
   return (
     <div className="result-details">
       <details open>
-        <summary>How we got this</summary>
+        <summary>{wageUi('howWeGotThis', locale)}</summary>
         <ol>
           {result.breakdown.map((step, index) => (
             <li key={`${index}-${step.label}`}>
@@ -148,11 +178,11 @@ export function WageResultDetails({ result }: { result: CalculationResult<Occupa
         </ol>
       </details>
       <details>
-        <summary>What we assumed</summary>
+        <summary>{wageUi('whatWeAssumed', locale)}</summary>
         <ul>{result.assumptions.map((assumption) => <li key={assumption}>{assumption}</li>)}</ul>
       </details>
       <details className="result-audit-details">
-        <summary>Technical details</summary>
+        <summary>{wageUi('technical', locale)}</summary>
         <p className="result-audit">
           <span>Method {result.calculationVersion}</span>
           <span>Data {result.datasetSnapshotIds.join(', ')}</span>
@@ -166,99 +196,135 @@ export function WagePanel({
   result,
   tone = 'mint',
   footnote,
+  locale = 'en-US',
 }: {
   result: CalculationResult<OccupationWageProfile>;
   tone?: 'mint' | 'amber' | 'blue' | 'violet';
   footnote?: string;
+  locale?: Locale;
 }) {
   const profile = result.value;
-  const headline = headlineWage(profile);
+  const headline = headlineWage(profile, locale);
+  const where = placeLabel(profile, locale);
+  const jobName = locale === 'es-US' ? occupationHeadingEs(profile.occupation) : profile.occupation.displayTitle;
+  const stamp = footnote
+    ?? `${wageUi('surveyStamp', locale)} · BLS ${profile.referenceLabel}`;
   return (
-    <section className="calculator-panel" aria-label={`${profile.occupation.displayTitle} pay in ${profile.areaLabel}`}>
+    <section className="calculator-panel" aria-label={locale === 'es-US' ? `Sueldo de ${jobName} en ${where}` : `${profile.occupation.displayTitle} pay in ${profile.areaLabel}`}>
       <div className="calculation-output">
         <div className={`primary-result result-${tone}`}>
           <p>{headline.label}</p>
           <strong>{headline.value}</strong>
           <span>{headline.note}</span>
         </div>
-        <WageStatGrid profile={profile} />
-        <WagePercentileTable profile={profile} />
-        {footnote && <p className="data-footnote">{footnote}</p>}
-        <WageResultDetails result={result} />
+        <WageStatGrid profile={profile} locale={locale} />
+        <WagePercentileTable profile={profile} locale={locale} />
+        <p className="data-footnote">{stamp}</p>
+        <WageResultDetails result={result} locale={locale} />
       </div>
     </section>
   );
 }
 
-export function TakeHomeSection({ profile }: { profile: OccupationWageProfile }) {
+export function TakeHomeSection({ profile, locale = 'en-US' }: { profile: OccupationWageProfile; locale?: Locale }) {
   if (!profile.takeHome) return null;
   const takeHome = profile.takeHome;
+  const filing = locale === 'es-US' ? 'soltero' : FILING_STATUS_LABELS[takeHome.filingStatus].toLowerCase();
+  const where = placeLabel(profile, locale);
   return (
     <section className="engine-notes" aria-labelledby="take-home-title">
-      <h2 id="take-home-title">What lands in the bank</h2>
+      <h2 id="take-home-title">{wageUi('takeHomeTitle', locale)}</h2>
       <p className="engine-notes-lede">
-        {`A ${formatMoney(takeHome.grossAnnual, 0)} salary in ${profile.areaLabel}, for one ${FILING_STATUS_LABELS[takeHome.filingStatus].toLowerCase()} filer taking the standard deduction in ${takeHome.taxYear}.`}
+        {locale === 'es-US'
+          ? `Un sueldo de ${money(locale, takeHome.grossAnnual, 0)} en ${where}, para un declarante ${filing} que toma la deducción estándar en ${takeHome.taxYear}.`
+          : `A ${formatMoney(takeHome.grossAnnual, 0)} salary in ${profile.areaLabel}, for one ${FILING_STATUS_LABELS[takeHome.filingStatus].toLowerCase()} filer taking the standard deduction in ${takeHome.taxYear}.`}
       </p>
       <ul>
-        <li><strong>Federal income tax.</strong> {formatMoney(takeHome.federalIncomeTax, 0)} a year.</li>
+        <li><strong>{wageUi('federalTax', locale)}</strong> {money(locale, takeHome.federalIncomeTax, 0)}{locale === 'es-US' ? ' al año.' : ' a year.'}</li>
         <li>
-          <strong>State income tax.</strong>{' '}
+          <strong>{wageUi('stateTax', locale)}</strong>{' '}
           {takeHome.stateTaxStatus === 'unsupported'
-            ? `Not modelled for ${profile.areaLabel}, so this figure covers federal and FICA only.`
+            ? (locale === 'es-US'
+              ? `No modelado para ${where}, así que esta cifra cubre solo federal y FICA.`
+              : `Not modeled for ${profile.areaLabel}, so this figure covers federal and FICA only.`)
             : takeHome.stateIncomeTax === 0
-              ? `${profile.areaLabel} levies no state income tax on wages.`
-              : `${formatMoney(takeHome.stateIncomeTax, 0)} a year.`}
+              ? (locale === 'es-US'
+                ? `${where} no cobra impuesto estatal sobre salarios.`
+                : `${profile.areaLabel} levies no state income tax on wages.`)
+              : `${money(locale, takeHome.stateIncomeTax, 0)}${locale === 'es-US' ? ' al año.' : ' a year.'}`}
         </li>
-        <li><strong>Social Security and Medicare.</strong> {formatMoney(takeHome.fica, 0)} a year.</li>
+        <li><strong>{wageUi('fica', locale)}</strong> {money(locale, takeHome.fica, 0)}{locale === 'es-US' ? ' al año.' : ' a year.'}</li>
         <li>
-          <strong>Left over.</strong> {formatMoney(takeHome.annual, 0)} a year, {formatMoney(takeHome.monthly, 0)} a month, an effective rate of {formatNumber(takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.
+          <strong>{wageUi('leftOver', locale)}</strong> {money(locale, takeHome.annual, 0)}{locale === 'es-US' ? ' al año, ' : ' a year, '}{money(locale, takeHome.monthly, 0)}{locale === 'es-US' ? ' al mes, una tasa efectiva de ' : ' a month, an effective rate of '}{number(locale, takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.
         </li>
       </ul>
       <p className="engine-notes-lede">
-        <Link href="/money/salary-after-tax">Run your own salary and filing status →</Link>
+        <Link href="/money/salary-after-tax">{wageUi('runOwn', locale)}</Link>
       </p>
     </section>
   );
 }
 
-export function WageSources({ profile }: { profile: OccupationWageProfile }) {
-  const sources = [
-    {
-      name: 'BLS Occupational Employment and Wage Statistics',
-      detail: `${profile.referenceLabel} estimates, cross-industry, wage and salary workers`,
-      href: 'https://www.bls.gov/oes/',
-      dateLabel: profile.referenceLabel,
-    },
-  ];
-  if (profile.takeHome) {
-    sources.push({
-      name: 'IRS and state revenue departments',
-      detail: `${profile.takeHome.taxYear} federal brackets, standard deduction, FICA and state schedules`,
-      href: 'https://www.irs.gov/pub/irs-drop/rp-25-32.pdf',
-      dateLabel: String(profile.takeHome.taxYear),
-    });
-  }
-  if (profile.costAdjusted) {
-    sources.push({
-      name: 'BEA Regional Price Parities',
-      detail: `Price level of ${profile.areaLabel} against a national 100`,
-      href: 'https://www.bea.gov/data/prices-inflation/regional-price-parities-state-and-metro-area',
-      dateLabel: String(profile.costAdjusted.referenceYear),
-    });
-  }
-  if (profile.versusHousehold) {
-    sources.push({
-      name: 'Census American Community Survey',
-      detail: `Median household income, ${profile.versusHousehold.surveyYears} 5-year estimates`,
-      href: 'https://www.census.gov/programs-surveys/acs',
-      dateLabel: profile.versusHousehold.surveyYears,
-    });
-  }
+export function WageSources({ profile, locale = 'en-US' }: { profile: OccupationWageProfile; locale?: Locale }) {
+  const where = placeLabel(profile, locale);
+  const sources = locale === 'es-US'
+    ? [
+        {
+          name: 'BLS Occupational Employment and Wage Statistics',
+          detail: `Estimaciones ${profile.referenceLabel}, todas las industrias, trabajadores asalariados`,
+          href: 'https://www.bls.gov/oes/',
+          dateLabel: profile.referenceLabel,
+        },
+        ...(profile.takeHome ? [{
+          name: 'IRS y departamentos de ingresos estatales',
+          detail: `Tramos federales ${profile.takeHome.taxYear}, deducción estándar, FICA y tablas estatales`,
+          href: 'https://www.irs.gov/pub/irs-drop/rp-25-32.pdf',
+          dateLabel: String(profile.takeHome.taxYear),
+        }] : []),
+        ...(profile.costAdjusted ? [{
+          name: 'BEA Regional Price Parities',
+          detail: `Nivel de precios de ${where} frente a un 100 nacional`,
+          href: 'https://www.bea.gov/data/prices-inflation/regional-price-parities-state-and-metro-area',
+          dateLabel: String(profile.costAdjusted.referenceYear),
+        }] : []),
+        ...(profile.versusHousehold ? [{
+          name: 'Census American Community Survey',
+          detail: `Ingreso mediano del hogar, estimaciones de 5 años ${profile.versusHousehold.surveyYears}`,
+          href: 'https://www.census.gov/programs-surveys/acs',
+          dateLabel: profile.versusHousehold.surveyYears,
+        }] : []),
+      ]
+    : [
+        {
+          name: 'BLS Occupational Employment and Wage Statistics',
+          detail: `${profile.referenceLabel} estimates, cross-industry, wage and salary workers`,
+          href: 'https://www.bls.gov/oes/',
+          dateLabel: profile.referenceLabel,
+        },
+        ...(profile.takeHome ? [{
+          name: 'IRS and state revenue departments',
+          detail: `${profile.takeHome.taxYear} federal brackets, standard deduction, FICA and state schedules`,
+          href: 'https://www.irs.gov/pub/irs-drop/rp-25-32.pdf',
+          dateLabel: String(profile.takeHome.taxYear),
+        }] : []),
+        ...(profile.costAdjusted ? [{
+          name: 'BEA Regional Price Parities',
+          detail: `Price level of ${profile.areaLabel} against a national 100`,
+          href: 'https://www.bea.gov/data/prices-inflation/regional-price-parities-state-and-metro-area',
+          dateLabel: String(profile.costAdjusted.referenceYear),
+        }] : []),
+        ...(profile.versusHousehold ? [{
+          name: 'Census American Community Survey',
+          detail: `Median household income, ${profile.versusHousehold.surveyYears} 5-year estimates`,
+          href: 'https://www.census.gov/programs-surveys/acs',
+          dateLabel: profile.versusHousehold.surveyYears,
+        }] : []),
+      ];
   return (
     <section className="sources-section" aria-labelledby="sources-title">
       <div>
-        <p className="eyebrow muted"><span /> Sources</p>
-        <h2 id="sources-title">Where this data comes from</h2>
+        <p className="eyebrow muted"><span /> {wageUi('sourcesKicker', locale)}</p>
+        <h2 id="sources-title">{wageUi('sourcesTitle', locale)}</h2>
       </div>
       <div className="source-list">
         {sources.map((source) => (

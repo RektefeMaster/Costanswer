@@ -78,10 +78,12 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
     };
   }, [covered, ages]);
 
-  const overrideBenchmark = benchmarkOverride.trim() === '' ? null : Number(benchmarkOverride);
+  const overrideBenchmarkRaw = benchmarkOverride.trim();
+  const planOverrideRaw = planOverride.trim();
+  const overrideBenchmark = overrideBenchmarkRaw === '' ? null : overrideBenchmarkRaw;
   const usedBenchmark = overrideBenchmark ?? quotes?.benchmark.premium ?? null;
   // Default the plan being priced to the cheapest Silver, the plan most people compare against.
-  const usedPlan = planOverride.trim() !== '' ? Number(planOverride) : quotes?.silver?.premium ?? usedBenchmark;
+  const usedPlan = planOverrideRaw !== '' ? planOverrideRaw : quotes?.silver?.premium ?? usedBenchmark;
 
   const calculation = useMemo(() => {
     if (usedBenchmark === null || usedPlan === null || usedPlan === undefined || resolvedStateCode === null) {

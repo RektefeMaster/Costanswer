@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from './types';
 import { SELF_EMPLOYMENT_TAX_ENGINE_ID } from './version';
@@ -16,7 +16,7 @@ export const selfEmploymentTaxInputSchema = z.object({
    */
   medicareWages: finiteNumber('Medicare wages from Form W-2', 0, 100_000_000).optional(),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
 });
 
 export type SelfEmploymentTaxInput = z.infer<typeof selfEmploymentTaxInputSchema>;
@@ -149,7 +149,7 @@ export function calculateSelfEmploymentTax(rawInput: unknown): CalculationResult
         ? 'Medicare wages were not entered, so Social Security wages were used for Form 8959. Additional Medicare Tax is understated once wages have passed the Social Security wage base.'
         : `Form 8959 Additional Medicare Tax uses combined Medicare wages and net SE earnings over the ${FILING_STATUS_LABELS[input.filingStatus]} threshold. It is not part of Schedule SE and is not included in the deductible half.`,
       'A filed Schedule SE rounds each line to whole dollars, so this estimate can differ by up to $0.50 per line.',
-      'Church employee income, the farm and nonfarm optional methods, ministers and Form 4361, Conservation Reserve Program payments, and QBI are not modelled. Omitting an optional method can understate Social Security credits; it does not invent extra tax here.',
+      'Church employee income, the farm and nonfarm optional methods, ministers and Form 4361, Conservation Reserve Program payments, and QBI are not modeled. Omitting an optional method can understate Social Security credits; it does not invent extra tax here.',
       'This is self-employment tax only — not income tax on the profit, and not state tax.',
       `Sources: ${fica.selfEmploymentSourceName}; ${fica.sourceName}; Additional Medicare Tax from the IRS Q&A.`,
     ],

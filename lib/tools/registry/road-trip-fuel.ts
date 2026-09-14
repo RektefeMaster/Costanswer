@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'road-trip-fuel',
   path: '/car/road-trip-fuel',
-  title: 'Road Trip Fuel Cost Calculator',
+  title: 'How Much Does a Road Trip Cost in Gas?',
   shortTitle: 'Road-trip fuel',
   description: 'Fuel cost for a drive from your miles, MPG, and the most recent EIA regular-gas average for your state or region. You can type a pump price instead.',
   category: 'car',
@@ -30,6 +30,8 @@ export const tool: ToolDefinition = {
     optional: ['eia-gasoline'],
     note: 'Miles ÷ MPG × price. The regional average price is a starting value, not a dependency.',
   }),
+  metaTitle: 'Road Trip Gas Cost Calculator: Miles, MPG, and Fuel Price',
+  metaDescription: 'Estimate fuel cost for a drive from distance, MPG, and gas price. Highway vs city MPG is your call. Not a trip planner.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 13, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'ev-vs-gas', type: 'sibling' },

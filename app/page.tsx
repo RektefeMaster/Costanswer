@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { CategoryArt } from '@/components/site/CategoryArt';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { HeroDemo } from '@/components/site/HeroDemo';
@@ -10,16 +11,26 @@ import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { categories, getTool, type CategoryId } from '@/lib/tool-registry';
 import { siteConfig } from '@/lib/site-config';
+import { pageMetadata } from '@/lib/seo';
 
 const categoryOrder: CategoryId[] = ['money', 'home', 'car', 'health', 'math', 'everyday', 'education', 'food', 'shopping'];
 const toneByCategory: Record<CategoryId, string> = {
   money: 'mint', home: 'amber', car: 'blue', everyday: 'rose', food: 'coral', shopping: 'violet', health: 'rose', math: 'violet', education: 'coral',
 };
 const exploreQuestions = [
-  { tool: getTool('hourly-to-salary'), label: 'How much is $28 an hour a year?' },
+  { tool: getTool('paycheck'), label: 'What’s my take-home paycheck after tax?' },
   { tool: getTool('mortgage-payment'), label: 'What’s a $400,000 mortgage this week?' },
-  { tool: getTool('where-cheaper'), label: 'Where are power, gas, and groceries cheaper?' },
+  { tool: getTool('home-affordability'), label: 'How much house can I afford?' },
+  { tool: getTool('salary-after-tax'), label: 'What’s $100k after tax in my state?' },
+  { tool: getTool('inflation'), label: 'What is $100 from 1990 worth today?' },
+  { tool: getTool('electricity-cost'), label: 'How much is my electric bill by state?' },
 ];
+
+export const metadata: Metadata = pageMetadata(
+  siteConfig.seoTitle,
+  siteConfig.description,
+  '/',
+);
 
 export default function Home() {
   return (

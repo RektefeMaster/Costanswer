@@ -25,6 +25,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Date arithmetic is defined by the calendar.'),
+  metaTitle: 'Date Calculator: Add or Subtract Days',
+  metaDescription: 'Find a date a set number of days before or after another date. Calendar arithmetic, not a deadline advisor.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'days-from-today', type: 'sibling' },

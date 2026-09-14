@@ -5,7 +5,7 @@ import { calculateScientific } from '@/lib/calculations/math-tools';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, PrimaryResult, ResultDetails } from '../CalculatorUI';
 
-const KEYS: Array<{ label: string; insert?: string; action?: 'clear' | 'delete' | 'equals'; className?: string; name: string }> = [
+const KEYS: Array<{ label: string; insert?: string; action?: 'clear' | 'delete' | 'equals' | 'ans'; className?: string; name: string }> = [
   { label: 'C', action: 'clear', name: 'Clear' },
   { label: '⌫', action: 'delete', name: 'Delete' },
   { label: '(', insert: '(', name: 'Open parenthesis' },
@@ -37,12 +37,13 @@ const KEYS: Array<{ label: string; insert?: string; action?: 'clear' | 'delete' 
   { label: 'π', insert: 'π', name: 'Pi' },
   { label: 'e', insert: 'e', name: 'Euler constant' },
   { label: '!', insert: '!', className: 'key-op', name: 'Factorial' },
-  { label: 'Ans', insert: '', action: 'equals', name: 'Result' },
+  { label: 'Ans', insert: '', action: 'ans', name: 'Insert last answer' },
 ];
 
 export function ScientificCalculator() {
   const [expression, setExpression] = useState('2 + 3 × 4');
   const [angleMode, setAngleMode] = useState<'radians' | 'degrees'>('degrees');
+  const [lastAnswer, setLastAnswer] = useState<string | null>(null);
   const calculation = useMemo(() => {
     try {
       return { result: calculateScientific({ expression, angleMode }), error: '' };
@@ -62,7 +63,17 @@ export function ScientificCalculator() {
     }
     if (key.action === 'equals') {
       if (calculation.result) {
-        setExpression(String(calculation.result.value.result));
+        const answer = String(calculation.result.value.result);
+        setLastAnswer(answer);
+        setExpression(answer);
+      }
+      return;
+    }
+    if (key.action === 'ans') {
+      if (lastAnswer !== null) {
+        setExpression((current) => `${current}${lastAnswer}`);
+      } else if (calculation.result) {
+        setExpression((current) => `${current}${calculation.result!.value.result}`);
       }
       return;
     }

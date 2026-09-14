@@ -38,6 +38,7 @@ export default function WhereCheaperPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'eia-electricity': electricitySource.periodLabel, 'eia-gasoline': gasolineSource.periodLabel, 'bls-grocery': grocerySource.periodLabel }}
       caution="Use this to compare places, then check a bill, pump, or receipt for the price you will pay. These are government averages, not store quotes."
       methodology={[
         { title: 'Pick a basket', body: 'Electricity, gasoline, a grocery sample, or home and car energy together. Both states use the same basket.' },

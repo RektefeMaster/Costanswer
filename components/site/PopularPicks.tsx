@@ -1,10 +1,9 @@
 import Link from 'next/link';
-import { calculateInflation } from '@/lib/calculations/inflation';
+import { calculateHomeAffordability } from '@/lib/calculations/home-affordability';
 import { calculateMortgage } from '@/lib/calculations/mortgage';
+import { calculatePaycheck } from '@/lib/calculations/tax/paycheck';
+import { DEFAULT_TAX_YEAR } from '@/lib/calculations/tax/version';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
-import { cpiPeriodBounds } from '@/lib/data/bls-cpi';
-import { cpiSnapshot } from '@/lib/data/cpi-snapshot';
-import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import { mortgageRateSnapshot } from '@/lib/data/mortgage-rate-snapshot';
 import { categories, getTool } from '@/lib/tool-registry';
 
@@ -12,12 +11,10 @@ function money(value: number) {
   return formatMoney(value, 0);
 }
 
-function formatMonthYear(period: string) {
-  const [year, month] = period.split('-').map(Number);
-  return new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })
-    .format(Date.UTC(year, month - 1, 1));
-}
-
+/**
+ * Homepage “try first” strip — mortgage (very high US volume), paycheck, and
+ * “how much house” (~200k/mo class intent). Live figures so the block is content.
+ */
 function featuredAnswers() {
   const rate = mortgageRateSnapshot.thirtyYearFixedPercent;
   const mortgage = calculateMortgage({
@@ -31,18 +28,30 @@ function featuredAnswers() {
     includePmiEstimate: false,
   }, mortgageRateSnapshot.snapshotId);
 
-  const lastPeriod = cpiPeriodBounds(cpiSnapshot.observations).lastPeriod;
-  const inflation = calculateInflation(
-    { amount: 100, startPeriod: '1990-01', endPeriod: lastPeriod },
-    { observations: cpiSnapshot.observations, snapshotId: cpiSnapshot.snapshotId },
-  );
+  const paycheck = calculatePaycheck({
+    payFrequency: 'biweekly',
+    amount: 3_000,
+    state: 'TX',
+    filingStatus: 'single',
+    taxYear: DEFAULT_TAX_YEAR,
+    dependents: 0,
+  });
 
-  const rankedPower = [...electricitySnapshot.states].sort((left, right) => left.priceCentsPerKwh - right.priceCentsPerKwh);
-  const cheapestPower = rankedPower[0];
-  const dearestPower = rankedPower.at(-1);
-  if (!cheapestPower || !dearestPower) {
-    throw new Error('Electricity snapshot is missing state rates.');
-  }
+  const afford = calculateHomeAffordability({
+    mode: 'how-much-house',
+    monthlyNetIncome: 6_000,
+    monthlyExistingDebt: 400,
+    monthlyOtherExpenses: 2_000,
+    downPayment: 60_000,
+    termYears: 30,
+    annualRatePercent: rate,
+    annualPropertyTax: 4_800,
+    annualHomeInsurance: 1_800,
+    monthlyHoa: 0,
+    includePmiEstimate: true,
+    maintenanceAnnualPercent: 1,
+    closingCostPercent: 3,
+  }, mortgageRateSnapshot.snapshotId);
 
   return [
     {
@@ -53,18 +62,18 @@ function featuredAnswers() {
       note: `30-year · ${formatNumber(rate, { maximumFractionDigits: 2 })}% Freddie Mac · P&I only`,
     },
     {
-      tool: getTool('inflation'),
-      question: 'What is $100 in 1990 worth today?',
-      answer: money(inflation.value.equivalentAmount),
-      unit: 'today',
-      note: `January 1990 → ${formatMonthYear(lastPeriod)} · CPI-U`,
+      tool: getTool('paycheck'),
+      question: 'What’s a $3,000 biweekly paycheck after tax in Texas?',
+      answer: money(paycheck.value.netPaycheck),
+      unit: 'net',
+      note: `Single · ${DEFAULT_TAX_YEAR} · federal, FICA, Texas (no state wage tax)`,
     },
     {
-      tool: getTool('where-cheaper'),
-      question: 'Where is residential power cheaper?',
-      answer: `${formatNumber(cheapestPower.priceCentsPerKwh, { maximumFractionDigits: 1 })}¢`,
-      unit: `/kWh in ${cheapestPower.stateName}`,
-      note: `vs ${formatNumber(dearestPower.priceCentsPerKwh, { maximumFractionDigits: 1 })}¢ in ${dearestPower.stateName}`,
+      tool: getTool('home-affordability'),
+      question: 'How much house on $6,000/mo take-home?',
+      answer: money(afford.value.comfortableHomePrice),
+      unit: 'comfortable',
+      note: `25% housing share · ${formatNumber(rate, { maximumFractionDigits: 2 })}% · $60k down`,
     },
   ] as const;
 }
@@ -86,7 +95,7 @@ export function PopularPicks() {
       <div className="popular-board">
         <div className="popular-board-topline">
           <span className="live-dot">Already run</span>
-          <span>Freddie Mac · BLS CPI-U · EIA</span>
+          <span>Freddie Mac · IRS · state wage tax</span>
         </div>
         <div className="popular-board-cols">
           {answers.map((pick, index) => (

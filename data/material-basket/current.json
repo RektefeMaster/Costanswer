@@ -1,12 +1,12 @@
 {
   "schemaVersion": "1.0.0",
   "adapterVersion": "material-basket-v1.0.0",
-  "snapshotId": "material-basket-sourced-v4",
+  "snapshotId": "material-basket-sourced-v5",
   "datasetId": "material-basket",
   "observationPeriod": "2026-09",
-  "fetchedAt": "2026-09-07T21:17:23.562Z",
-  "publishedAt": "2026-09-07T21:17:23.562Z",
-  "attribution": "Sourced national baselines: EIA Appendix A (CAC+furnace, ASHP blower-coil, gas and electric storage WH midpoints); NREL REMDB 200A panel and envelope intercepts (vinyl window, prehung doors, vinyl/wood siding, drywall board); NRMCA ready-mix; EPC interior latex; Westchester County lumber award deck/fence BOMs; Plano ISD ceramic tile materials-only; Kohler manufacturer current prices.",
+  "fetchedAt": "2026-09-14T16:44:17.793Z",
+  "publishedAt": "2026-09-14T16:44:17.793Z",
+  "attribution": "Sourced national baselines: EIA Appendix A (CAC+furnace, ASHP blower-coil, gas and electric storage WH midpoints); NREL REMDB 200A panel and envelope intercepts (vinyl window, prehung doors, vinyl/wood siding, drywall board); NRMCA ready-mix; EPC interior latex; Westchester County lumber award deck/fence BOMs; Plano ISD ceramic tile materials-only; Kohler manufacturer current prices; Home Depot stock kitchen cabinets and sink retail intercepts.",
   "components": [
     {
       "componentId": "split-system",
@@ -273,14 +273,56 @@
       "ppiSeriesId": "WPU1241",
       "regionalAdjustment": "none",
       "critical": true
+    },
+    {
+      "componentId": "kitchen-base-cabinet",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 23900,
+      "baselineDate": "2026-09-14",
+      "baselineSource": {
+        "name": "Home Depot Hampton Bay Shaker 30-inch KB30-SSW current price $239.00 (2026-09-14)",
+        "url": "https://www.homedepot.com/p/Hampton-Bay-Shaker-30-in-W-x-24-in-D-x-34-5-in-H-Assembled-Base-Kitchen-Cabinet-in-Satin-White-with-Ball-Bearing-Drawer-Glides-KB30-SSW/204635906"
+      },
+      "ppiSeriesId": "WPU1241",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "kitchen-wall-cabinet",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 16170,
+      "baselineDate": "2026-09-14",
+      "baselineSource": {
+        "name": "Home Depot Hampton Bay Denver White HKD-W2136 current price $161.70 (2026-09-14)",
+        "url": "https://www.homedepot.com/p/Hampton-Bay-Denver-White-Painted-Shaker-Stock-Ready-to-Assemble-Wall-Kitchen-Cabinet-21-in-x36-in-x12-in-HKD-W2136/314302635"
+      },
+      "ppiSeriesId": "WPU1241",
+      "regionalAdjustment": "none",
+      "critical": true
+    },
+    {
+      "componentId": "kitchen-sink",
+      "unit": "each",
+      "qualityTier": "builder",
+      "baselinePriceCents": 32817,
+      "baselineDate": "2026-09-14",
+      "baselineSource": {
+        "name": "Home Depot Karran QT-710-WH drop-in kitchen sink current price $328.17 (2026-09-14)",
+        "url": "https://www.homedepot.com/p/Karran-Drop-in-Quartz-Composite-33-in-Double-Bowl-Kitchen-Sink-in-White-QT-710-WH/304969642"
+      },
+      "ppiSeriesId": "WPU1241",
+      "regionalAdjustment": "none",
+      "critical": true
     }
   ],
-  "rawSha256": "b1a7f2bf0867403511778b8304d2d5525f38ca9ff229fcc4793a415b43b40986",
+  "rawSha256": "3894644187154960b050c862ae76c174222d25c897615e7ff0ba90266d80c696",
   "validationReport": [
     "Each baseline is copied from a retained extract; missing critical recipe lines stay unpriced.",
     "NREL labor multipliers and RSMeans-tinged install adders are not used.",
     "RPP is never applied to materials. Current price is baseline × PPI ratio, or 1.0 if the series is missing.",
     "Westchester lumber is a public procurement baseline, not a local NY multiplier."
   ],
-  "normalizedSha256": "3e2f844b91ed8d26e7f90b6943367881ad420525a4a9fc2148d652b5262fe544"
+  "normalizedSha256": "ff195770b45bf37fc3494513d9aecbd0b720bf8aceb3cc5f3a817de8af60e97e"
 }

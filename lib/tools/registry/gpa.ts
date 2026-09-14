@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('A GPA is a weighted mean of grade points.'),
+  metaTitle: 'GPA Calculator: Semester and Cumulative GPA',
+  metaDescription: 'Grade-point average from course credits and letter grades. School scales differ — check yours.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'grade', type: 'sibling' },

@@ -6,7 +6,7 @@ import { SQUARE_FOOTAGE_ENGINE_ID } from '../../calculations/education/formulas'
 export const tool: ToolDefinition = {
   id: 'square-footage',
   path: '/home/square-footage',
-  title: 'Square Footage Calculator',
+  title: 'How Many Square Feet Is This Space?',
   shortTitle: 'Square footage',
   description: 'Add rectangular rooms or spaces and get total area in square feet, with square meters from the shared conversion engine.',
   category: 'home',
@@ -27,6 +27,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Area is geometry.'),
+  metaTitle: 'Square Footage Calculator: Rooms and Floor Area',
+  metaDescription: 'Add room lengths and widths for total floor area. Planning figure — not a survey or appraisal.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'concrete', type: 'next-decision' },

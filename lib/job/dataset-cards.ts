@@ -1,5 +1,5 @@
 import { readStoreJsonSync } from '@/lib/data/store';
-import type { EcecSnapshot, FemaEquipmentSnapshot, MaterialBasketSnapshot, PpiSnapshot } from './types';
+import type { CensusConstructionSnapshot, EcecSnapshot, FemaEquipmentSnapshot, MaterialBasketSnapshot, PpiSnapshot } from './types';
 
 export type JobDatasetCard = {
   id: string;
@@ -46,6 +46,7 @@ export function jobCostDatasetCards(): JobDatasetCard[] {
   const ppi = readStoreJsonSync<PpiSnapshot>('bls-ppi');
   const fema = readStoreJsonSync<FemaEquipmentSnapshot>('fema-equipment');
   const basket = readStoreJsonSync<MaterialBasketSnapshot>('job-material-basket');
+  const census = readStoreJsonSync<CensusConstructionSnapshot>('census-construction');
   return [
     card(
       ecec,
@@ -67,6 +68,13 @@ export function jobCostDatasetCards(): JobDatasetCard[] {
       'FEMA Schedule of Equipment Rates',
       'A public cost proxy for ownership and operating cost. Not a contractor market rental quote. Operator labor is not in the rate.',
       fema?.sourceUrl ?? 'https://www.fema.gov/assistance/public/tools-resources/schedule-equipment-rates',
+    ),
+    card(
+      census ? { ...census, sourceUrl: census.sourceUrl } : null,
+      'census-economic-census-construction',
+      'Census Economic Census, construction cost structure',
+      'What each trade reported taking in and spending across a census year, which fixes overhead and profit as observed shares of price instead of rates we picked. A job whose trade the census does not describe keeps the modelled rate and says so.',
+      census?.sourceUrl ?? 'https://data.census.gov/table/ECNBASIC2022.EC2223BASIC',
     ),
     card(
       basket,

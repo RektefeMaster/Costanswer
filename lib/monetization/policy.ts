@@ -202,6 +202,12 @@ export const MONETIZATION_POLICIES: readonly MonetizationPolicy[] = Object.freez
     lead: { enabled: false, vertical: 'bath_remodeling' },
     intentSwitch: true,
   }),
+  policy('job-kitchen-remodel', 'home_services', 'low', {
+    ads: { enabled: true },
+    affiliate: { enabled: true, categories: ['tile_tools', 'paint_supplies'] },
+    lead: { enabled: false, vertical: 'kitchen_remodeling' },
+    intentSwitch: true,
+  }),
   policy('job-heat-pump-replacement', 'home_services', 'low', {
     ads: { enabled: true },
     affiliate: { enabled: true, categories: ['hvac_filters'] },

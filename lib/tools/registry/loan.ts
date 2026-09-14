@@ -6,7 +6,7 @@ import { LOAN_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'loan',
   path: '/money/loan',
-  title: 'Loan Calculator',
+  title: 'How Much Is My Loan Payment?',
   shortTitle: 'Loan payment',
   description: 'Monthly payment, total interest, and payoff time for a fixed-rate loan. Add extra principal if you want to see how much sooner it ends.',
   category: 'money',
@@ -30,6 +30,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('An instalment payment is a closed-form function of principal, rate and term.'),
+  metaTitle: 'Loan Payment Calculator: Monthly Cost and Total Interest',
+  metaDescription: 'Monthly payment, total interest, and payoff time for a fixed-rate U.S. loan. Add extra principal to see how much sooner it ends. Not a lender quote.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'mortgage-payment', type: 'sibling' },

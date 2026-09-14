@@ -37,28 +37,19 @@ export type SalaryPublicationState = 'indexable' | 'wave-1' | 'staged';
 /**
  * How far the family has been opened to search engines.
  *
- * Publishing 30,807 leaves at once on a young domain is the profile most
- * likely to be crawled slowly and left largely unindexed, so the leaves open
- * in waves rather than in one word. State wage tax stopped being the reason
- * when P2 closed 51/51; crawl behaviour is.
- *
- * `wave-1` opens the leaves under the occupations most people actually work
- * in — see `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT`. The rest stay closed, and
- * closed means *not linked either*: a `noindex` page that every occupation
- * page still links is a page Google crawls anyway, which spends exactly the
- * budget staging was meant to protect. `salaryLeafIsOpen` is the one answer
- * both the sitemap and the tables read, so the two cannot drift.
- *
- * Widening is a threshold change, measured against Search Console between
- * waves; `'indexable'` opens all 30,807 at once and is the last step, not the
- * first.
+ * Leaves used to open in employment waves so a young domain would not dump
+ * 30,000 URLs on Google at once. The bilingual corpus needs every occupation-
+ * in-state pair in both languages, so `occupationInState` is fully
+ * `indexable`. `salaryLeafIsOpen` is still the one answer both the sitemap and
+ * the tables read. `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT` remains if a later
+ * crawl-budget retreat has to close the long tail again.
  */
 export const SALARY_PUBLICATION: Record<SalaryLevel, SalaryPublicationState> = {
   familyHub: 'indexable',
   stateIndex: 'indexable',
   stateHub: 'indexable',
   occupation: 'indexable',
-  occupationInState: 'wave-1',
+  occupationInState: 'indexable',
 };
 
 /**
@@ -209,7 +200,18 @@ export function statesWithWageFor(occupation: Pick<OewsOccupation, 'code'>): Sta
  * Their codes are checked against the release in the family's tests, so a
  * reclassification shows up as a failing test rather than a dead footer link.
  */
-const FOOTER_OCCUPATION_CODES = ['29-1141', '15-1252', '53-3032', '47-2111', '25-2021', '13-2011'] as const;
+const FOOTER_OCCUPATION_CODES = [
+  '29-1141',
+  '15-1252',
+  '53-3032',
+  '47-2111',
+  '25-2021',
+  '13-2011',
+  '41-2011',
+  '43-4051',
+  '31-1120',
+  '41-2031',
+] as const;
 
 export const FOOTER_SALARY_OCCUPATIONS: OewsOccupation[] = FOOTER_OCCUPATION_CODES
   .map((code) => nationalSalaryOccupations().find((occupation) => occupation.code === code))

@@ -32,6 +32,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Conversion factors between units are definitions, not measurements.'),
+  metaTitle: 'Unit Conversion Calculator: Length, Weight, Volume',
+  metaDescription: 'Convert between common U.S. and metric units. Exact factors — not a lab calibration.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'square-footage', type: 'next-decision' },

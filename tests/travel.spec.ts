@@ -32,11 +32,11 @@ describe('GSA per diem dataset', () => {
     expect(resolveEffectivePerDiemRelease(releases, '2026-10-01').fiscalYear).toBe(2027);
   });
 
-  it('resolves the shipped catalog to FY2026 through 30 September 2026 and has no FY2027 rates on file', () => {
+  it('resolves the shipped catalog to FY2026 through 30 September 2026 and FY2027 from 1 October', () => {
     expect(resolveGsaPerDiemSnapshot('2026-09-07').fiscalYear).toBe(2026);
     expect(resolveGsaPerDiemSnapshot('2026-09-30').fiscalYear).toBe(2026);
-    expect(() => resolveGsaPerDiemSnapshot('2026-10-01')).toThrow(/No GSA per diem release is effective/);
-    expect(findEffectivePerDiemRelease(gsaPerDiemReleases, '2026-10-01')).toBeUndefined();
+    expect(resolveGsaPerDiemSnapshot('2026-10-01').fiscalYear).toBe(2027);
+    expect(findEffectivePerDiemRelease(gsaPerDiemReleases, '2026-10-01')?.fiscalYear).toBe(2027);
   });
 
   it('discovers next fiscal year before 1 October and ranks latestPublished by year, not fetch time', () => {

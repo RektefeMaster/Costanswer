@@ -28,8 +28,8 @@ export function MedicareCalculator() {
       annualMagi,
       partAQuarters,
       hasDrugCoverage,
-      monthlyDrugPlanPremium: hasDrugCoverage ? Number(monthlyDrugPlanPremium) : 0,
-      monthlyMedigapPremium: monthlyMedigapPremium.trim() === '' ? 0 : Number(monthlyMedigapPremium),
+      monthlyDrugPlanPremium: hasDrugCoverage ? monthlyDrugPlanPremium : 0,
+      monthlyMedigapPremium: monthlyMedigapPremium.trim() === '' ? 0 : monthlyMedigapPremium,
       coverageMonths,
     };
   }, [filingStatus, annualMagi, partAQuarters, hasDrugCoverage, monthlyDrugPlanPremium, monthlyMedigapPremium, coverageMonths]);

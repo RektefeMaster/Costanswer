@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getStateName, isStateCode, type StateCode } from '@/lib/location/states';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { calculateFederalIncomeTax } from './federal';
@@ -22,7 +22,7 @@ export const bonusTaxInputSchema = z.object({
   regularWagesToDate: finiteNumber('Regular wages paid so far this year', 0, 100_000_000),
   state: z.string().refine(isStateCode, 'Choose a U.S. state or D.C.'),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }).optional(),
+  taxYear: taxYearNumber.optional(),
 });
 
 export type BonusTaxInput = z.infer<typeof bonusTaxInputSchema>;

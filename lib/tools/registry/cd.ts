@@ -26,6 +26,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'projection',
   data: formulaOnly('A CD projection is compounding at the rate you were quoted.'),
+  metaTitle: 'CD Calculator: Certificate of Deposit Interest',
+  metaDescription: 'Interest earned on a CD from principal, APY, and term. Bank rates change — this is arithmetic on your inputs.',
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'interest', type: 'sibling' },

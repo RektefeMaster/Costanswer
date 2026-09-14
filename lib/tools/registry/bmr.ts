@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'formula-estimate',
   data: formulaOnly('BMR is the Mifflin–St Jeor equation applied to the inputs.'),
+  metaTitle: 'BMR Calculator: Basal Metabolic Rate (Mifflin–St Jeor)',
+  metaDescription: 'Estimate resting calorie burn from age, sex, height, and weight. Not a medical prescription.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'tdee', type: 'next-decision' },

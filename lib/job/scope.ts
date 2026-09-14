@@ -151,6 +151,7 @@ export function resolveJobScope(
     case 'tree-removal':
     case 'deck-build':
     case 'bathroom-remodel':
+    case 'kitchen-remodel':
     case 'drywall-install':
       units = requireUnits(jobId, fields);
       break;

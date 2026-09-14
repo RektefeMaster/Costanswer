@@ -20,6 +20,8 @@ export const tool: ToolDefinition = {
     required: ['irs-retirement-limits'],
     note: 'The elective-deferral limit and the catch-up amount cap every contribution this page projects. Without the published limits it would happily project an illegal contribution.',
   }),
+  metaTitle: '401(k) Calculator: Employee and Employer Match Growth',
+  metaDescription: 'Project a 401(k) with salary deferral, match, and a return you type. Uses contribution limits you enter — not plan advice.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'roth-ira', type: 'sibling' },

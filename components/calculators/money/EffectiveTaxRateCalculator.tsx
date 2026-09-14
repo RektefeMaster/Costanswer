@@ -69,7 +69,7 @@ export function EffectiveTaxRateCalculator() {
       policy?.status === 'supported' && policy.kind !== 'none' && policy.scheduleTaxYear !== Number(taxYear)
         ? `${getStateName(stateCode)} is on its ${policy.scheduleTaxYear} schedule, the latest the state has published`
         : null,
-      'Credits, itemised deductions and other income are not modelled',
+      'Credits, itemized deductions and other income are not modeled',
     ].filter((reason): reason is string => Boolean(reason))
     : [];
 

@@ -132,7 +132,7 @@ export function calculateMedicareCost(
       ? 'Drug plan and Medigap premiums are whatever the insurer charges and are entered by you. Any income adjustment on Part D is added to your plan premium and paid separately, usually to Medicare rather than the plan.'
       : 'No Part D or Medicare Advantage drug plan is enrolled in this scenario, so the Part D income adjustment is not in the total. It would be added if you enrol, even on a plan with a $0 premium.',
     'Medicare Advantage replaces the way Parts A and B pay rather than the Part B premium, which is still owed. Its own premium, network, and cost sharing are outside these tables.',
-    'Medicaid, a Medicare Savings Program, Extra Help, employer retiree coverage, and state pharmaceutical assistance can all reduce these amounts and are not modelled.',
+    'Medicaid, a Medicare Savings Program, Extra Help, employer retiree coverage, and state pharmaceutical assistance can all reduce these amounts and are not modeled.',
   ];
 
   return {

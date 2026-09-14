@@ -34,6 +34,7 @@ export default function QuarterlyEstimatedTaxPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="This is the required annual payment split four ways. It is not Form 2210 and it does not compute an underpayment penalty."
       methodology={[
         {

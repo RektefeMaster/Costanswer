@@ -5,7 +5,7 @@ import { requiresOfficialData } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'inflation',
   path: '/money/inflation',
-  title: 'Inflation Calculator',
+  title: 'What Is That Worth After Inflation?',
   shortTitle: 'Inflation',
   description: 'See what an amount in one U.S. month would buy in another, using the BLS CPI-U all-items index since 1913.',
   category: 'money',
@@ -28,6 +28,8 @@ export const tool: ToolDefinition = {
     required: ['bls-cpi'],
     note: 'The whole answer is a ratio of two published CPI-U index values.',
   }),
+  metaTitle: 'Inflation Calculator: CPI Buying Power Since 1913',
+  metaDescription: 'See what a U.S. dollar amount in one month would buy in another using BLS CPI-U. Official index ratios — not a forecast of next year’s prices.',
   indexability: launchIndexability({ searchIntentEvidence: 19, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'hourly-to-salary', type: 'sibling' },

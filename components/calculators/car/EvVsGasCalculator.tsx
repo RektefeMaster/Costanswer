@@ -48,9 +48,9 @@ export function EvVsGasCalculator({
     observationPeriod: gasolineObservationPeriod,
     sourceStatus: 'preliminary',
   });
-  const electricityRate = customElectricityRate.trim() ? Number(customElectricityRate) : selected.priceCentsPerKwh;
+  const electricityRate = customElectricityRate.trim() ? customElectricityRate.trim() : selected.priceCentsPerKwh;
   const usingCustomGasPrice = customGasPrice.trim() !== '';
-  const gasPrice = usingCustomGasPrice ? Number(customGasPrice) : selectedGas.dollarsPerGallon;
+  const gasPrice = usingCustomGasPrice ? customGasPrice.trim() : selectedGas.dollarsPerGallon;
 
   const calculation = useMemo(() => {
     try {

@@ -1,0 +1,55 @@
+import type { Locale } from '@/lib/i18n/locales';
+import { localized } from '@/lib/i18n/locales';
+
+export const WAGE_UI = {
+  percentile: localized({ 'en-US': 'Percentile', 'es-US': 'Percentil' }),
+  annual: localized({ 'en-US': 'Annual', 'es-US': 'Anual' }),
+  hourly: localized({ 'en-US': 'Hourly', 'es-US': 'Por hora' }),
+  p10: localized({ 'en-US': '10th percentile', 'es-US': 'Percentil 10' }),
+  p10Note: localized({ 'en-US': 'Entry and lowest-paid', 'es-US': 'Entrada y peor pagados' }),
+  p25: localized({ 'en-US': '25th percentile', 'es-US': 'Percentil 25' }),
+  median: localized({ 'en-US': 'Median', 'es-US': 'Mediana' }),
+  medianNote: localized({ 'en-US': 'Half earn more, half less', 'es-US': 'La mitad gana más, la mitad menos' }),
+  p75: localized({ 'en-US': '75th percentile', 'es-US': 'Percentil 75' }),
+  p90: localized({ 'en-US': '90th percentile', 'es-US': 'Percentil 90' }),
+  p90Note: localized({ 'en-US': 'Most experienced and senior', 'es-US': 'Más experiencia y puestos senior' }),
+  mean: localized({ 'en-US': 'Mean', 'es-US': 'Media' }),
+  meanNote: localized({ 'en-US': 'The average, pulled up by the top', 'es-US': 'El promedio, jalado por los de arriba' }),
+  capped: localized({ 'en-US': 'At or above the top code', 'es-US': 'En el tope de la encuesta o por encima' }),
+  unpublished: localized({ 'en-US': 'Not published', 'es-US': 'No publicado' }),
+  takeHomeMonth: localized({ 'en-US': 'Take-home a month', 'es-US': 'Neto al mes' }),
+  worthNational: localized({ 'en-US': 'Worth at national prices', 'es-US': 'Valor a precios nacionales' }),
+  againstNation: localized({ 'en-US': 'Against the nation', 'es-US': 'Frente al país' }),
+  jobsCounted: localized({ 'en-US': 'Jobs counted', 'es-US': 'Empleos contados' }),
+  howWeGotThis: localized({ 'en-US': 'How we got this', 'es-US': 'Cómo salió esta cifra' }),
+  whatWeAssumed: localized({ 'en-US': 'What we assumed', 'es-US': 'Qué asumimos' }),
+  technical: localized({ 'en-US': 'Technical details', 'es-US': 'Detalle técnico' }),
+  takeHomeTitle: localized({ 'en-US': 'What lands in the bank', 'es-US': 'Lo que llega a la cuenta' }),
+  federalTax: localized({ 'en-US': 'Federal income tax.', 'es-US': 'Impuesto federal sobre la renta.' }),
+  stateTax: localized({ 'en-US': 'State income tax.', 'es-US': 'Impuesto estatal sobre salarios.' }),
+  fica: localized({ 'en-US': 'Social Security and Medicare.', 'es-US': 'Social Security (Seguro Social) y Medicare.' }),
+  leftOver: localized({ 'en-US': 'Left over.', 'es-US': 'Lo que queda.' }),
+  runOwn: localized({ 'en-US': 'Run your own salary and filing status →', 'es-US': 'Calcule su sueldo y estado civil →' }),
+  sourcesTitle: localized({ 'en-US': 'Where this data comes from', 'es-US': 'De dónde salen estos datos' }),
+  sourcesKicker: localized({ 'en-US': 'Sources', 'es-US': 'Fuentes' }),
+  questionsKicker: localized({ 'en-US': 'Common questions', 'es-US': 'Preguntas frecuentes' }),
+  alsoCalled: localized({ 'en-US': 'Also called', 'es-US': 'También se le dice' }),
+  blsRecords: localized({ 'en-US': 'BLS records this occupation as', 'es-US': 'BLS registra esta ocupación como' }),
+  above: localized({ 'en-US': 'above', 'es-US': 'por encima' }),
+  below: localized({ 'en-US': 'below', 'es-US': 'por debajo' }),
+  state: localized({ 'en-US': 'State', 'es-US': 'Estado' }),
+  jobs: localized({ 'en-US': 'Jobs', 'es-US': 'Empleos' }),
+  medianAYear: localized({ 'en-US': 'Median a year', 'es-US': 'Mediana al año' }),
+  occupation: localized({ 'en-US': 'Occupation', 'es-US': 'Ocupación' }),
+  concentration: localized({ 'en-US': 'Concentration', 'es-US': 'Concentración' }),
+  nextStepsTitle: localized({ 'en-US': 'Run the numbers on your own pay', 'es-US': 'Calcule su propio sueldo' }),
+  nextStepsLede: localized({
+    'en-US': 'Same U.S. tax tables as the rest of the site. Change the salary, state, or filing status.',
+    'es-US': 'Las mismas tablas de impuestos de EE. UU. que el resto del sitio. Cambie el sueldo, el estado o el estado civil.',
+  }),
+  surveyStamp: localized({ 'en-US': 'Wage survey', 'es-US': 'Encuesta salarial' }),
+} as const;
+
+export function wageUi(key: keyof typeof WAGE_UI, locale: Locale): string {
+  return WAGE_UI[key][locale];
+}

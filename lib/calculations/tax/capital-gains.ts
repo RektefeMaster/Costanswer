@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { calculateProgressiveTax } from './brackets';
 import { FILING_STATUSES, FILING_STATUS_LABELS, type FilingStatus } from './types';
@@ -14,7 +14,7 @@ export const capitalGainsInputSchema = z.object({
   /** Defaults to the long-term gains. Interest, dividends and rental income that are NII should be added. */
   netInvestmentIncome: finiteNumber('Net investment income', 0, 100_000_000).optional(),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
 });
 
 export type CapitalGainsInput = z.infer<typeof capitalGainsInputSchema>;
@@ -40,7 +40,7 @@ export type CapitalGainsValue = {
  * plus the 3.8% Net Investment Income Tax.
  *
  * Collectibles (28%), unrecaptured §1250 gain (25%), qualified dividends mixed
- * with ordinary dividends, and the §121 home-sale exclusion are not modelled.
+ * with ordinary dividends, and the §121 home-sale exclusion are not modeled.
  */
 export function calculateCapitalGains(rawInput: unknown): CalculationResult<CapitalGainsValue> {
   const input = capitalGainsInputSchema.parse(rawInput);
@@ -113,7 +113,7 @@ export function calculateCapitalGains(rawInput: unknown): CalculationResult<Capi
       `Tax year ${input.taxYear}. The 0% and 15% long-term capital gains ceilings are from ${snapshot.federalCredits.sourceName} §4.03. Amounts above the 15% ceiling are taxed at 20%.`,
       'Long-term means a holding period of more than one year. Short-term gains are ordinary income and should be entered there, not here.',
       'Qualified dividends use the same 0%/15%/20% schedule. They are not a separate input; include them in the long-term gain figure only if they are actually qualified.',
-      'Collectibles (28%), unrecaptured section 1250 gain (25%), the net investment income of a trade or business, and the section 121 exclusion on a main home are not modelled.',
+      'Collectibles (28%), unrecaptured section 1250 gain (25%), the net investment income of a trade or business, and the section 121 exclusion on a main home are not modeled.',
       input.modifiedAgi === undefined
         ? `MAGI for the NIIT was taken as other taxable income plus the gains (${formatMoney(magi)}). That understates MAGI when the standard deduction or adjustments came off before taxable income, so the NIIT can be too low.`
         : `NIIT uses MAGI of ${formatMoney(magi)} and net investment income of ${formatMoney(nii)}. The tax is 3.8% of the smaller of those two figures once MAGI exceeds ${formatMoney(niitThreshold)}.`,

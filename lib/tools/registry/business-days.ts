@@ -29,6 +29,8 @@ export const tool: ToolDefinition = {
     optional: ['opm-federal-holidays'],
     note: 'Counting weekdays between two dates is a calendar operation. Without the federal holiday list the count still excludes weekends and says the holiday exclusion is unavailable.',
   }),
+  metaTitle: 'Business Days Calculator: Weekdays Between Dates',
+  metaDescription: 'Count U.S. weekdays between two dates. Federal holidays are optional — not every state holiday calendar.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 13, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'date', type: 'sibling' },

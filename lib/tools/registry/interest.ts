@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Simple interest is principal × rate × time.'),
+  metaTitle: 'Simple Interest Calculator: Principal × Rate × Time',
+  metaDescription: 'Interest and total for simple interest over a stated term. Not compound APY and not a bank quote.',
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'compound-interest', type: 'next-decision' },

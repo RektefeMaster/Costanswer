@@ -4,7 +4,7 @@
   "snapshotId": "bls-ppi-2026-07-v1",
   "datasetId": "bls-ppi",
   "observationPeriod": "2026-07",
-  "fetchedAt": "2026-09-07T21:17:23.562Z",
+  "fetchedAt": "2026-09-14T16:44:17.793Z",
   "publishedAt": "2026-07-01T00:00:00.000Z",
   "sourceUrl": "https://api.bls.gov/publicAPI/v2/timeseries/data/",
   "sourceDocumentationUrl": "https://www.bls.gov/ppi/",
@@ -2716,5 +2716,5 @@
     "12 commodity series with positive monthly indexes.",
     "Missing series are frozen at ratio 1.0 and labelled at estimate time."
   ],
-  "normalizedSha256": "b9bc3a70a5ab9a6109fe5b0950fd492709aa4568ce73d2a372e441683927507f"
+  "normalizedSha256": "b43d15b6e870f524ea0d0e6e42af1fccf913038ddae08f8825087a1e116bf3bc"
 }

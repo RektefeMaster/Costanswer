@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { calculateLoanLimit } from '@/lib/calculations/loan-limit';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { countyFromView, type LoanLimitCountyView } from '@/lib/data/fhfa-loan-limits';
@@ -51,18 +51,27 @@ export function LoanLimitCalculator({
     return () => controller.abort();
   }, [defaultCounty.state]);
 
+  const stateListAbort = useRef<AbortController | null>(null);
+
   const loadState = (nextState: string) => {
     setState(nextState);
     setListError('');
-    fetch(`/api/loan-limit/lookup?state=${encodeURIComponent(nextState)}`)
+    stateListAbort.current?.abort();
+    const controller = new AbortController();
+    stateListAbort.current = controller;
+    fetch(`/api/loan-limit/lookup?state=${encodeURIComponent(nextState)}`, { signal: controller.signal })
       .then(async (response) => (response.ok ? await response.json() as { counties?: LoanLimitCountyView[] } : {}))
       .then((body) => {
+        if (controller.signal.aborted) return;
         const next = body.counties ?? [];
         setCounties(next);
         setCountyFips(next[0]?.fips ?? '');
         if (next.length === 0) setListError('No counties loaded for that state. Try another, or a ZIP code.');
       })
-      .catch(() => setListError('The county list could not be loaded. Try again, or pick another state.'));
+      .catch((error: unknown) => {
+        if (controller.signal.aborted || (error instanceof DOMException && error.name === 'AbortError')) return;
+        setListError('The county list could not be loaded. Try again, or pick another state.');
+      });
   };
 
   const zipQuery = /^\d{5}$/.test(zip.trim());

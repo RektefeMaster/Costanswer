@@ -22,6 +22,12 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
           'Only if you enter the final as an item with its weight and leave earned unknown. This page computes a weighted average of known items, not a solver for a missing exam unless you rearrange the inputs yourself.',
         ],
       },
+      {
+        question: 'Do plus/minus grades change the result?',
+        answer: [
+          'Only if you enter numeric scores or map letters yourself. The letter labels on this page use a simple 90/80/70/60 convenience scale, not every school’s plus/minus cutoffs.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Weight', definition: 'How much an item counts in the average, as you typed it.' },
@@ -53,6 +59,12 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
         question: 'Is this a weighted GPA?',
         answer: [
           'No. It is unweighted 4.0 convenience points. For a weighted GPA, your school’s extra points are not in this engine.',
+        ],
+      },
+      {
+        question: 'Can I mix semester and cumulative GPA?',
+        answer: [
+          'Enter every course you want in the average with its credits. The page does not keep a separate transcript store — it averages what you type now.',
         ],
       },
     ],
@@ -88,6 +100,12 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
           'Only if the unit price is lower after conversion. Type both packages. A warehouse size can still lose to a sale on a smaller box.',
         ],
       },
+      {
+        question: 'How do I compare ounces to pounds?',
+        answer: [
+          'Convert both packages to the same unit first (16 oz = 1 lb), then run the unit price. The page ranks after that shared unit.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Unit price', definition: 'Price divided by quantity in a shared unit.' },
@@ -120,6 +138,12 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
           'Pick gasoline and two states. The snapshot may use a state series or a PADD region. California often sits well above the U.S. average; that is the data, not a ranking of places to live.',
         ],
       },
+      {
+        question: 'Is this the same as cost of living?',
+        answer: [
+          'No. This page compares three official price families — electricity, gasoline, and selected grocery staples. Rent, wages, and taxes are on the cost-of-living calculator.',
+        ],
+      },
     ],
     glossary: [
       { term: 'BLS APU', definition: 'Average Price series for selected urban prices. Coverage is item-specific.' },
@@ -150,6 +174,12 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
         question: 'How do I double a recipe?',
         answer: [
           'Set desired servings to twice the original. Amounts round to 1/16. Spices may still need tasting.',
+        ],
+      },
+      {
+        question: 'Will bake time double if I double the recipe?',
+        answer: [
+          'Not reliably. Quantities scale; oven time and pan size often do not. Taste and check doneness.',
         ],
       },
     ],

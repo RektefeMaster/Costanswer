@@ -5,7 +5,7 @@ import { formulaWithBenchmark } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'concrete',
   path: '/home/concrete-calculator',
-  title: 'Concrete Calculator',
+  title: 'How Much Concrete Do I Need?',
   shortTitle: 'Concrete calculator',
   description: 'Cubic yards and bag counts for a rectangular slab. Waste is listed separately.',
   category: 'home',
@@ -19,7 +19,9 @@ export const tool: ToolDefinition = {
     optional: ['quikrete-concrete-yields'],
     note: 'Volume is geometry from your dimensions. Without a published bag yield the cubic-yard answer stands and the bag count is dropped.',
   }),
-  indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
+  metaTitle: 'Concrete Calculator: Cubic Yards and Bag Count for a Slab',
+  metaDescription: 'How much concrete do you need for a rectangular slab? Get cubic yards and bag counts, with waste listed separately. For driveways, patios, and sidewalks.',
+  indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, implementationConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'electricity-cost', type: 'sibling' },
     { toolId: 'square-footage', type: 'next-decision' },

@@ -13,17 +13,17 @@ import { nationalSalaryOccupations, salaryFamilyPath, salaryOccupationPath, sala
  * links. It is also the crawl path: without it and the footer, 31,000 pages
  * hang off a hub nothing points at.
  */
-const PROMOTED_CODES = ['29-1141', '15-1252', '53-3032', '25-2021', '47-2111', '31-1131', '13-2011', '43-6014'] as const;
+const PROMOTED_CODES = ['29-1141', '41-2011', '43-4051', '15-1252', '53-3032', '25-2021', '47-2111', '13-2011'] as const;
 const PROMO_TONES = ['mint', 'amber', 'blue', 'rose', 'coral', 'violet', 'mint', 'amber'] as const;
 const PROMO_ART: Record<(typeof PROMOTED_CODES)[number], SalaryArtKind> = {
   '29-1141': 'nurse',
+  '41-2011': 'admin',
+  '43-4051': 'admin',
   '15-1252': 'developer',
   '53-3032': 'truck',
   '25-2021': 'teacher',
   '47-2111': 'electrician',
-  '31-1131': 'aide',
   '13-2011': 'accountant',
-  '43-6014': 'admin',
 };
 
 export function SalaryPromo() {

@@ -20,6 +20,7 @@ export default function ApplianceElectricityPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'eia-electricity': electricitySource.periodLabel }}
       caution="Wattage is the number you type or an example starting point, not a lab rating for a specific model. EIA publishes a state average, not your utility rate."
       methodology={[
         { title: 'Turn watts into kWh', body: 'Watts ÷ 1,000 × hours is energy for the hours you run the device that day.' },

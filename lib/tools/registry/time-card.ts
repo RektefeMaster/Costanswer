@@ -24,6 +24,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('A timesheet total is the sum of the shifts entered.'),
+  metaTitle: 'Time Card Calculator: Hours Worked From Clock-In',
+  metaDescription: 'Total hours from punch times. Overtime rules vary by employer — this is duration math.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'time', type: 'sibling' },

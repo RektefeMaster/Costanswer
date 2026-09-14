@@ -62,6 +62,12 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
           'Type the dryer’s watts, hours per load, loads per week, and a rate. The page annualizes from that pattern. It will not read a model number.',
         ],
       },
+      {
+        question: 'Should I use the EIA state rate or my bill?',
+        answer: [
+          'Your bill’s effective cents per kWh is better when you have it. EIA is a statewide residential average for planning when you do not.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Watt', definition: 'Power. 1,000 watts for one hour is 1 kWh.' },
@@ -94,6 +100,12 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
         question: 'How many 80 lb bags for a 10×10 slab?',
         answer: [
           'It depends on thickness. A 4-inch slab is a different volume than a 6-inch slab. Type all three dimensions. The page will not assume 4 inches for you.',
+        ],
+      },
+      {
+        question: 'Is this ready-mix yards or bag count?',
+        answer: [
+          'Both. Volume is cubic yards for a rectangular pour; bag count uses the packaged yield for the bag weight you pick, with waste called out separately.',
         ],
       },
     ],
@@ -130,6 +142,12 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
           'Only if you add them as spaces. The engine does not infer a floor plan.',
         ],
       },
+      {
+        question: 'Is this the same as a listing’s living area?',
+        answer: [
+          'No. Listings and appraisals follow their own finished-area rules. This page only sums the rectangles you enter.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Square foot', definition: 'Length in feet times width in feet for a rectangle.' },
@@ -164,6 +182,12 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
           'No. This page is energy cost only. Credits have eligibility rules this engine does not apply.',
         ],
       },
+      {
+        question: 'Does this include insurance or depreciation?',
+        answer: [
+          'No. It is energy cost per the miles, efficiency, and rates you enter — not total cost of ownership.',
+        ],
+      },
     ],
     glossary: [
       { term: 'kWh/100 miles', definition: 'A common EV efficiency measure. Lower is less electricity per mile.' },
@@ -196,6 +220,12 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
         question: 'Is highway MPG or city MPG the right input?',
         answer: [
           'Use the MPG you expect on that trip. EPA combined is a compromise and often optimistic on a loaded car in hills.',
+        ],
+      },
+      {
+        question: 'Does the gas price change when I cross state lines?',
+        answer: [
+          'Not automatically. The page uses one price — an EIA average for the geography you pick, or a pump price you type. Split the trip if you want two rates.',
         ],
       },
     ],

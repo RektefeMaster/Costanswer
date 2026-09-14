@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, wholeNumber, formatMoney, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { calculateFederalIncomeTax } from './federal';
 import { calculateChildTaxCredit } from './child-tax-credit';
@@ -11,13 +11,13 @@ import { TAX_REFUND_ENGINE_ID } from './version';
 export const taxRefundInputSchema = z.object({
   grossIncome: finiteNumber('Gross income', 0, 100_000_000),
   netSelfEmploymentProfit: finiteNumber('Net self-employment profit', -10_000_000, 100_000_000).default(0),
-  qualifyingChildren: z.number().int({ error: 'Qualifying children must be a whole number.' }).min(0).max(20).default(0),
-  otherDependents: z.number().int({ error: 'Other dependents must be a whole number.' }).min(0).max(20).default(0),
+  qualifyingChildren: wholeNumber('Qualifying children', 0, 20).default(0),
+  otherDependents: wholeNumber('Other dependents', 0, 20).default(0),
   federalWithholding: finiteNumber('Federal income tax withheld', 0, 100_000_000),
   estimatedTaxPayments: finiteNumber('Estimated tax payments already made', 0, 100_000_000).default(0),
   investmentIncome: finiteNumber('Investment income', 0, 100_000_000).default(0),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
 });
 
 export type TaxRefundInput = z.infer<typeof taxRefundInputSchema>;
@@ -147,13 +147,13 @@ export function calculateTaxRefund(rawInput: unknown): CalculationResult<TaxRefu
       },
     ],
     assumptions: [
-      `Tax year ${input.taxYear}. Federal income tax uses the standard deduction and ordinary brackets from ${snapshot.federal.sourceName}. Itemised deductions, IRA/401(k) adjustments, AMT and other credits are not modelled, so tax can be too high.`,
+      `Tax year ${input.taxYear}. Federal income tax uses the standard deduction and ordinary brackets from ${snapshot.federal.sourceName}. Itemised deductions, IRA/401(k) adjustments, AMT and other credits are not modeled, so tax can be too high.`,
       'Withholding is the amount you enter from Form W-2 box 2 (and 1099 withholding). This page does not apply Publication 15-T tables or a Form W-4, because those tables are not in the snapshot.',
       input.netSelfEmploymentProfit !== 0
         ? `Self-employment profit is added to wages, then the deductible one-half of Schedule SE tax (${formatMoney(se.value.deductibleHalf)}) comes off as an AGI adjustment. W-2 Social Security wages were taken as $0, so the Social Security wage base is treated as fully available to the profit — if you also have W-2 wages, SE tax here can be too high.`
         : 'No self-employment profit was entered, so Schedule SE tax is $0 and AGI is the gross income you typed.',
       'EITC earned income is wages plus 92.35% of a positive SE profit, even when that figure is under $400 and Schedule SE is not filed. A Schedule C loss reduces earned income. Other adjustments are not subtracted, which can mis-time a credit phase-out.',
-      'Additional Medicare Tax is included only on net SE earnings from this page. W-2 Medicare wages are not an input, so Additional Medicare on a high-wage job is omitted and tax can be too low. NIIT, state tax and local tax are not modelled.',
+      'Additional Medicare Tax is included only on net SE earnings from this page. W-2 Medicare wages are not an input, so Additional Medicare on a high-wage job is omitted and tax can be too low. NIIT, state tax and local tax are not modeled.',
       'This is not a filed return and not tax advice. A real refund also depends on credits and income this page does not ask for.',
     ],
   };

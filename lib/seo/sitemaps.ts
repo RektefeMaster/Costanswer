@@ -18,6 +18,14 @@ import {
   salaryStatePath,
   statesWithWageFor,
 } from '@/lib/salary-pages';
+import {
+  salaryFamilyPathEs,
+  salaryOccupationInStatePathEs,
+  salaryOccupationPathEs,
+  salaryStateIndexPathEs,
+  salaryStatePathEs,
+} from '@/lib/salary-es-pages';
+import { hreflangLanguagesFor } from '@/lib/i18n/alternates';
 import { STATE_CODES } from '@/lib/location/states';
 import { costFamilySitemapPaths } from '@/lib/job/paths';
 
@@ -33,12 +41,13 @@ export const SITEMAP_URL_LIMIT = 50_000;
  */
 const SITEMAP_FAMILY_PAGE_SIZE: Partial<Record<SitemapFamilyId, number>> = {
   salary: 10_000,
+  'salary-es': 10_000,
 };
 
 function familyPageSize(family: SitemapFamilyId): number {
   return SITEMAP_FAMILY_PAGE_SIZE[family] ?? SITEMAP_URL_LIMIT;
 }
-export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary', 'cost'] as const;
+export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary', 'cost', 'pages-es', 'salary-es'] as const;
 export type SitemapFamilyId = (typeof SITEMAP_FAMILY_IDS)[number];
 
 export type SitemapEntry = {
@@ -46,6 +55,7 @@ export type SitemapEntry = {
   lastModified: string;
   changeFrequency: 'weekly' | 'monthly';
   priority: number;
+  alternates?: Array<{ hreflang: string; path: string }>;
 };
 
 const CONTENT_RELEASE_DATE = PUBLISHING_SNAPSHOT_INSTANT;
@@ -110,17 +120,65 @@ function salaryEntries(): SitemapEntry[] {
       });
     }
   }
-  return entries;
+  return entries.map(withHreflang);
+}
+
+function salaryEntriesEs(): SitemapEntry[] {
+  const lastModified = oewsIndex.publishedAt > CONTENT_RELEASE_DATE ? oewsIndex.publishedAt : CONTENT_RELEASE_DATE;
+  const entries: SitemapEntry[] = [];
+  if (isSalaryLevelIndexable('familyHub')) {
+    entries.push({ path: salaryFamilyPathEs(), lastModified, changeFrequency: 'monthly', priority: 0.8 });
+  }
+  if (isSalaryLevelIndexable('stateIndex')) {
+    entries.push({ path: salaryStateIndexPathEs(), lastModified, changeFrequency: 'monthly', priority: 0.7 });
+  }
+  if (isSalaryLevelIndexable('stateHub')) {
+    for (const state of STATE_CODES) {
+      entries.push({ path: salaryStatePathEs(state), lastModified, changeFrequency: 'monthly', priority: 0.7 });
+    }
+  }
+  if (isSalaryLevelIndexable('occupation')) {
+    for (const occupation of nationalSalaryOccupations()) {
+      entries.push({ path: salaryOccupationPathEs(occupation), lastModified, changeFrequency: 'monthly', priority: 0.6 });
+    }
+  }
+  for (const occupation of occupationsWithOpenLeaves()) {
+    for (const state of statesWithWageFor(occupation)) {
+      entries.push({
+        path: salaryOccupationInStatePathEs(occupation, state),
+        lastModified,
+        changeFrequency: 'monthly',
+        priority: 0.5,
+      });
+    }
+  }
+  return entries.map(withHreflang);
+}
+
+function withHreflang(entry: SitemapEntry): SitemapEntry {
+  return {
+    ...entry,
+    alternates: Object.entries(hreflangLanguagesFor(entry.path)).map(([hreflang, path]) => ({ hreflang, path })),
+  };
 }
 
 export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
   return {
-    pages: ['/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/disclosure', '/contact', '/faq'].map((path) => ({
-      path: path as `/${string}`,
+    pages: ['/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/disclosure', '/contact', '/faq'].map((path) => {
+      const entry: SitemapEntry = {
+        path: path as `/${string}`,
+        lastModified: CONTENT_RELEASE_DATE,
+        changeFrequency: path === '/' ? 'weekly' : 'monthly',
+        priority: path === '/' ? 1 : 0.5,
+      };
+      return path === '/' ? withHreflang(entry) : entry;
+    }),
+    'pages-es': [withHreflang({
+      path: '/es',
       lastModified: CONTENT_RELEASE_DATE,
-      changeFrequency: path === '/' ? 'weekly' : 'monthly',
-      priority: path === '/' ? 1 : 0.5,
-    })),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    })],
     topics: CATEGORY_IDS.filter(isCategoryHubIndexable).map((category) => ({
       path: `/topics/${category}`,
       lastModified: getToolsByCategory(category)
@@ -131,6 +189,7 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
     })),
     /** Whatever `SALARY_PUBLICATION` has opened, hubs first, then the leaves. */
     salary: salaryEntries(),
+    'salary-es': salaryEntriesEs(),
     /** Job Cost family. Setting COST_PUBLICATION to staged empties this list. */
     cost: costFamilySitemapPaths().map((path) => ({
       path,

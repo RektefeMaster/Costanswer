@@ -66,4 +66,17 @@ describe('child tax credit', () => {
     expect(joint.value.phaseOutReduction).toBe(0);
     expect(joint.value.creditAfterPhaseOut).toBe(2_200);
   });
+
+  it('accepts children and dependents as form strings', () => {
+    const { value } = calculateChildTaxCredit({
+      modifiedAgi: '50000',
+      qualifyingChildren: '1',
+      otherDependents: '0',
+      earnedIncome: '50000',
+      taxBeforeThisCredit: '5000',
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    expect(value.totalCredit).toBe(2_200);
+  });
 });

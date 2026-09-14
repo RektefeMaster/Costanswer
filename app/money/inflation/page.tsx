@@ -22,6 +22,7 @@ export default function InflationPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'bls-cpi': cpiSource.periodLabel }}
       caution="This is the average urban price level, not your grocery bill or a raise. BLS can revise a recent month."
       methodology={[
         { title: 'Same index, two months', body: 'The calculator looks up CPI-U all items for the starting month and the ending month. Months BLS did not publish, such as October 2025, are left off the list.' },

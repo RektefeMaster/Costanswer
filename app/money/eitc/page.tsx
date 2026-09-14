@@ -20,6 +20,7 @@ export default function EitcPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="This uses the Revenue Procedure amounts, not the IRS $50 lookup tables, and it does not test age or residency."
       methodology={[
         {

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { calculateHourlySalary } from '@/lib/calculations/hourly-salary';
-import { finiteNumber, formatMoney, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getStateName, isStateCode } from '@/lib/location/states';
 import { estimateAnnualTaxLiability, sharedAssumptions } from './annual';
 import { FILING_STATUSES, PAY_FREQUENCIES, type PayFrequency } from './types';
@@ -10,11 +10,11 @@ const paycheckBaseSchema = z.object({
   payFrequency: z.enum(PAY_FREQUENCIES),
   amount: finiteNumber('Pay amount', 0, 100_000_000).optional(),
   hourlyRate: finiteNumber('Hourly rate', 0.01, 10_000).optional(),
-  hoursPerWeek: finiteNumber('Hours per week', 0, 168).optional(),
+  hoursPerWeek: finiteNumber('Hours per week', 0.01, 168).optional(),
   weeksPerYear: finiteNumber('Weeks per year', 1, 53).optional(),
   state: z.string().refine(isStateCode, 'Choose a U.S. state or D.C.'),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
   dependents: finiteNumber('Dependents', 0, 20).optional(),
 });
 

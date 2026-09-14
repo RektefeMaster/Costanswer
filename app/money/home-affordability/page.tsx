@@ -20,6 +20,7 @@ export default function HomeAffordabilityPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'freddie-mac-pmms': mortgageSource.periodLabel }}
       caution="This is a planning screen on take-home pay, not a lender approval. Credit, local taxes, insurance, and the quote you actually get can move the answer a long way."
       methodology={[
         {

@@ -1458,7 +1458,7 @@
         "materials"
       ],
       "geography": "national",
-      "version": "material-basket-sourced-v4",
+      "version": "material-basket-sourced-v5",
       "updateFrequency": "on source change",
       "formats": [
         "json"

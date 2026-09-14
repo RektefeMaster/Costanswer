@@ -1,5 +1,6 @@
 import { JOB_IDS, jobPath } from './catalog';
 import { isCostLevelIndexable } from './publication';
+import { openCostStateLeaves, jobInStatePath, COST_STATE_PUBLICATION } from './state-pages';
 
 export function costFamilySitemapPaths(): Array<`/${string}`> {
   const paths: Array<`/${string}`> = [];
@@ -8,6 +9,11 @@ export function costFamilySitemapPaths(): Array<`/${string}`> {
   if (isCostLevelIndexable('checkQuote')) paths.push('/cost/check-quote');
   if (isCostLevelIndexable('jobPage')) {
     for (const jobId of JOB_IDS) paths.push(jobPath(jobId));
+  }
+  if (COST_STATE_PUBLICATION === 'indexable') {
+    for (const { jobId, state } of openCostStateLeaves()) {
+      paths.push(jobInStatePath(jobId, state));
+    }
   }
   return paths;
 }

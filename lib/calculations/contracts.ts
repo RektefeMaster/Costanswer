@@ -32,6 +32,24 @@ export const finiteNumber = (label: string, minimum: number, maximum: number) =>
     .min(minimum, `${label} must be at least ${minimum}.`)
     .max(maximum, `${label} must be no more than ${maximum}.`));
 
+/**
+ * Whole counts from form controls (`<input type="number">` / `<select>` strings).
+ * Rejects blanks and non-integers the same way `finiteNumber` rejects bad money.
+ */
+export const wholeNumber = (label: string, minimum: number, maximum: number) =>
+  z.preprocess((value) => {
+    if (typeof value === 'string' && /^[+-]?\d+$/.test(value.trim())) {
+      return Number(value.trim());
+    }
+    return value;
+  }, z.number({ error: `${label} must be a number.` })
+    .int(`${label} must be a whole number.`)
+    .min(minimum, `${label} must be at least ${minimum}.`)
+    .max(maximum, `${label} must be no more than ${maximum}.`));
+
+/** Tax / loan year from `<select>` option strings (`"2026"`). */
+export const taxYearNumber = wholeNumber('Tax year', 1990, 2100);
+
 export function round(value: number, digits = 2): number {
   if (!Number.isFinite(value)) throw new Error('Rounded value must be finite.');
   if (!Number.isInteger(digits) || digits < 0 || digits > 12) throw new Error('Rounding digits must be an integer from 0 to 12.');

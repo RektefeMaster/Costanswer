@@ -19,6 +19,7 @@ export default function PaycheckPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="This splits an annual tax estimate across pay periods. It is not the IRS withholding method your employer uses."
       methodology={[
         { title: 'Same tax engine', body: 'Paycheck uses the Salary After Tax primitives. It does not copy tax math into this screen.' },

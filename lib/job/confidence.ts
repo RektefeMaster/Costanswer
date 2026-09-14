@@ -33,6 +33,15 @@ export function deriveConfidence(input: {
   missingWages: string[];
   oldestBaselineDate: string | null;
   extremeModifierCount: number;
+  /**
+   * True when the census supplied this trade's overhead and profit.
+   *
+   * Those two rates were the largest assumption in the model — together they
+   * moved the answer by 34 to 65 per cent — so when they stop being assumptions
+   * they must stop costing the estimate confidence. The recipe still carries
+   * them as a fallback, and the fallback still lowers confidence.
+   */
+  businessCostObserved: boolean;
   asOf: string;
 }): { level: ConfidenceLevel | null; reasons: string[] } {
   if (input.unpricedCritical.length > 0 || input.missingWages.length > 0) {
@@ -52,7 +61,9 @@ export function deriveConfidence(input: {
   let level: ConfidenceLevel = 'high';
   const reasons: string[] = [];
 
-  for (const source of Object.values(input.recipe.sources)) {
+  const supersededByObservation = new Set(input.businessCostObserved ? ['overhead', 'markup', 'contingency'] : []);
+  for (const [sourceId, source] of Object.entries(input.recipe.sources)) {
+    if (supersededByObservation.has(sourceId)) continue;
     const drop = impactOf(source);
     if (!drop) continue;
     level = worse(level, drop);

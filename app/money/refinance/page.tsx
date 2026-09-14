@@ -21,6 +21,7 @@ export default function RefinancePage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'freddie-mac-pmms': rateSource.periodLabel }}
       caution="This compares two loans on principal and interest. Whether you qualify, and what a lender actually charges, only a loan estimate can tell you."
       methodology={[
         {

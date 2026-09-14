@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('A scientific calculator evaluates the expression entered.'),
+  metaTitle: 'Scientific Calculator: Trig, Logs, and Powers',
+  metaDescription: 'Browser scientific calculator for everyday STEM math. Degrees/radians as you set.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percentage', type: 'sibling' },

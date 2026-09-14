@@ -11,6 +11,7 @@ const COMPLETE_QUERIES: Record<string, string> = {
   'concrete-driveway': 'units=400&thickness=four&finish=broom&access=normal',
   'interior-painting': 'rooms=4&roomFloorSqFt=144&prep=standard&coats=two&height=eight&occupied=empty',
   'bathroom-remodel': 'units=1&size=standard&finish=builder&layout=same',
+  'kitchen-remodel': 'units=1&size=standard&finish=stock&layout=same',
   'heat-pump-replacement': 'units=1&tons=3&efficiency=standard&access=normal&ducts=reuse',
   'window-replacement': 'windows=8&typicalWindowSqFt=15&stories=one&removal=standard&access=normal',
   'exterior-door-replacement': 'units=1&material=fiberglass&access=normal&hardware=reuse',
@@ -23,7 +24,7 @@ test('job cost hub, estimate, and tree-removal complete range', async ({ page })
   await expect(page.getByRole('heading', { level: 1, name: 'What should this job cost?' })).toBeVisible();
   const picker = page.locator('.job-picker-wrap[data-hydrated="true"]');
   await expect(picker).toBeVisible({ timeout: 15_000 });
-  await expect(picker.locator('.job-picker-card')).toHaveCount(14);
+  await expect(picker.locator('.job-picker-card')).toHaveCount(15);
   await expect(picker.locator('.job-picker-card', { hasText: 'Tree removal' })).toBeVisible();
   await page.getByRole('searchbox', { name: 'Find a job' }).fill('tree');
   await expect(picker.locator('.job-picker-card', { hasText: 'Tree removal' })).toBeVisible();

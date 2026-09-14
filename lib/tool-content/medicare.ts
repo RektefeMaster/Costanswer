@@ -57,6 +57,6 @@ export const MEDICARE_EDITORIAL: ToolEditorial[] = [{
     'These are published premiums and deductibles, not a bill. Enrollment, plan availability, and any late-enrollment penalty are decided by Medicare and SSA.',
     'The 20% Part B coinsurance has no annual cap, so no total cost of care can be produced from these tables.',
     'Drug plan and Medigap premiums are set by insurers and are entered by you; they appear in no federal table.',
-    'Medicaid, Medicare Savings Programs, Extra Help, employer retiree coverage, and state pharmaceutical assistance can all reduce these amounts and are not modelled.',
+    'Medicaid, Medicare Savings Programs, Extra Help, employer retiree coverage, and state pharmaceutical assistance can all reduce these amounts and are not modeled.',
   ],
 }];

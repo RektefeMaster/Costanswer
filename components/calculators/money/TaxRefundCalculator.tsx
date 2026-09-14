@@ -136,7 +136,7 @@ export function TaxRefundCalculator() {
             reasons={[
               'Income tax, EITC and child credits use the 2026 official amounts',
               'Withholding is what you type — Publication 15-T W-4 tables are not in the snapshot',
-              'Adjustments, itemised deductions and other credits are not modelled, so tax can be too high',
+              'Adjustments, itemized deductions and other credits are not modeled, so tax can be too high',
             ]}
           />
           <CalculationReceipt

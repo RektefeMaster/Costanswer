@@ -1,5 +1,6 @@
 import { formatMoney, type BreakdownStep, type CalculationResult } from '@/lib/calculations/contracts';
 import { JOB_CATALOG } from './catalog';
+import { priceBusinessCost } from './business-rates';
 import { calibrate } from './calibration';
 import { confidenceBand, deriveConfidence } from './confidence';
 import { FEMA_PROXY_NOTE, priceEquipment } from './equipment';
@@ -39,13 +40,25 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
   const laborMaterialEquipment = labor.totalCents + materials.totalCents + equipment.totalCents;
   const disposal = priceDisposal(recipe.disposal);
   const permit = pricePermit(recipe.permit, laborMaterialEquipment);
-  const directCents = laborMaterialEquipment + (disposal?.cents ?? 0) + (permit?.cents ?? 0);
-  const overheadCents = Math.round(directCents * recipe.overheadRate.value);
-  const subtotalCents = directCents + overheadCents;
-  const profitCents = Math.round(subtotalCents * recipe.profitMarkupRate.value);
-  const afterProfit = subtotalCents + profitCents;
-  const contingencyCents = Math.round(afterProfit * recipe.contingencyRate.value);
-  const beforeModifiers = afterProfit + contingencyCents;
+  /*
+   * Business cost applies to the work, not to the pass-throughs. A permit fee
+   * and a dump ticket are the same number whoever files them; the census puts
+   * licences and disposal in the overhead it already measures, so marking them
+   * up here would charge for them twice.
+   */
+  const business = priceBusinessCost({
+    recipe,
+    jobId: input.jobId,
+    directCents: laborMaterialEquipment,
+    census: datasets.census,
+  });
+  const afterProfit = laborMaterialEquipment + business.overhead.cents + business.profit.cents;
+  const contingencyCents = business.contingencyRate === null ? 0 : Math.round(afterProfit * business.contingencyRate);
+  const contingency: NamedMoneyStep | null = business.contingencyRate === null
+    ? null
+    : { id: 'contingency', label: 'Contingency', cents: contingencyCents, detail: `${(business.contingencyRate * 100).toFixed(0)}% of the marked-up subtotal for unmodeled site variation.` };
+  const passThroughCents = (disposal?.cents ?? 0) + (permit?.cents ?? 0);
+  const beforeModifiers = afterProfit + contingencyCents + passThroughCents;
   const modifiers = applyModifiers(recipe, input.modifiers, beforeModifiers);
   const expectedCents = beforeModifiers + sumCents(modifiers.steps.map((step) => step.cents));
 
@@ -59,8 +72,10 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
     missingWages: labor.missingWages,
     oldestBaselineDate: materials.oldestBaselineDate,
     extremeModifierCount: modifiers.extremeCount,
+    businessCostObserved: business.source === 'census-observed',
     asOf,
   });
+  confidence.reasons = [...new Set([...confidence.reasons, ...business.notes])];
 
   let range: JobEstimate['range'] = null;
   if (!incomplete && confidence.level) {
@@ -91,6 +106,7 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
     datasets.ppi?.snapshotId,
     datasets.fema?.snapshotId,
     datasets.basket?.snapshotId,
+    business.snapshotId,
   ].filter((id): id is string => Boolean(id));
 
   const estimate: JobEstimate = calibrate({
@@ -110,9 +126,10 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
     equipment: equipment.steps,
     permit,
     disposal,
-    overhead: { id: 'overhead', label: 'Business overhead', cents: overheadCents, detail: `${(recipe.overheadRate.value * 100).toFixed(0)}% of direct cost. Does not re-include ECEC labor burden.` },
-    profitMarkup: { id: 'profit-markup', label: 'Profit markup', cents: profitCents, detail: `${(recipe.profitMarkupRate.value * 100).toFixed(0)}% markup on (direct + overhead), not a profit margin.` },
-    contingency: { id: 'contingency', label: 'Contingency', cents: contingencyCents },
+    overhead: business.overhead,
+    profitMarkup: business.profit,
+    contingency,
+    businessCostSource: business.source,
     modifiers: modifiers.steps,
     unpricedCritical: materials.unpricedCritical,
     unpricedNonCritical: materials.unpricedNonCritical,
@@ -129,7 +146,7 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
     ...(estimate.disposal ? [moneyStep(estimate.disposal)] : []),
     moneyStep(estimate.overhead),
     moneyStep(estimate.profitMarkup),
-    moneyStep(estimate.contingency),
+    ...(estimate.contingency ? [moneyStep(estimate.contingency)] : []),
     ...estimate.modifiers.map(moneyStep),
   ];
 
@@ -141,7 +158,7 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
     estimate.disposal?.cents ?? 0,
     estimate.overhead.cents,
     estimate.profitMarkup.cents,
-    estimate.contingency.cents,
+    estimate.contingency?.cents ?? 0,
     ...estimate.modifiers.map((step) => step.cents),
   ]);
   if (estimate.status === 'complete' && estimate.range && Math.abs(reconstruction - estimate.range.expectedCents) > 100) {
@@ -156,7 +173,9 @@ export function calculateJobEstimate(input: JobEstimateInput, datasets: JobDatas
     assumptions: [
       estimate.geographyNote,
       estimate.femaProxyNote,
-      'Profit is a markup on cost, not a margin on the selling price.',
+      business.source === 'census-observed'
+        ? `Overhead and profit are the shares this trade reported across the ${datasets.census?.observationPeriod} Economic Census, applied to price rather than marked up on cost. ${datasets.census?.disclaimer ?? ''}`.trim()
+        : 'Profit is a markup on cost, not a margin on the selling price.',
       ...estimate.completenessReasons,
     ],
   };

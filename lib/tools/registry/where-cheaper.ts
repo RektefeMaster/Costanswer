@@ -30,6 +30,8 @@ export const tool: ToolDefinition = {
     required: ['eia-electricity', 'eia-gasoline', 'bls-grocery'],
     note: 'The ranking is the published price series. There is no arithmetic here that survives losing them.',
   }),
+  metaTitle: 'Cheapest States for Electricity, Gas, and Groceries',
+  metaDescription: 'Rank U.S. states on EIA electricity, EIA gasoline, and BLS grocery staples. Government averages — not store ads or rent.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'electricity-cost', type: 'uses-dataset' },

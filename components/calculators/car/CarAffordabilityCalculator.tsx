@@ -128,13 +128,13 @@ export function CarAffordabilityCalculator({
             powertrain: 'gas' as const,
             annualMiles,
             mpg,
-            dollarsPerGallon: customGasPrice.trim() === '' ? selected.dollarsPerGallon : Number(customGasPrice),
+            dollarsPerGallon: customGasPrice.trim() === '' ? selected.dollarsPerGallon : customGasPrice.trim(),
           }
         : {
             powertrain: 'ev' as const,
             annualMiles,
             kwhPer100Miles,
-            electricityCentsPerKwh: customElectricityRate.trim() === '' ? selected.priceCentsPerKwh : Number(customElectricityRate),
+            electricityCentsPerKwh: customElectricityRate.trim() === '' ? selected.priceCentsPerKwh : customElectricityRate.trim(),
             chargingLossPercent,
           };
       const shared = {

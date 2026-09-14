@@ -68,13 +68,13 @@ export function RmdCalculator() {
         <Field
           label={`Age as of your birthday in ${year}`}
           htmlFor="rmd-age"
-          hint={ageDisagrees ? `Birth year ${birthYear} is age ${impliedAge} in ${year}. IRS uses that birthday age; the table still uses ${age}.` : undefined}
+          hint={ageDisagrees ? `Birth year ${birthYear} is age ${impliedAge} in ${year}. The table uses ${impliedAge}, not the ${age} typed above.` : undefined}
         >
           <InputShell>
             <input id="rmd-age" type="number" min="18" max="120" step="1" inputMode="numeric" value={age} onChange={(event) => setAge(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Birth year" htmlFor="rmd-birth" hint="Used only to pick 73 or 75 as the starting age">
+        <Field label="Birth year" htmlFor="rmd-birth" hint={`Sets the Table III age in ${year} (${year} − birth year) and whether RMDs start at 73 or 75`}>
           <InputShell>
             <input id="rmd-birth" type="number" min="1900" max="2020" step="1" inputMode="numeric" value={birthYear} onChange={(event) => setBirthYear(event.target.value)} />
           </InputShell>

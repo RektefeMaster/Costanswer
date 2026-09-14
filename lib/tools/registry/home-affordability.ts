@@ -32,8 +32,8 @@ export const tool: ToolDefinition = {
       why: 'Comfortable, reasonable and stretched are CostAnswer thresholds on housing and total-debt ratios. They are not a lender’s underwriting rule and no lender has agreed to them.',
     }],
   }),
-  metaTitle: 'Home Affordability Calculator Using Take-Home Pay',
-  metaDescription: 'See whether a U.S. house fits take-home pay, or a comfortable / stretch / aggressive price from net pay, debts, and the national average mortgage rate. Not a lender DTI.',
+  metaTitle: 'How Much House Can I Afford? Calculator from Take-Home Pay',
+  metaDescription: 'Estimate how much house you can afford from monthly take-home pay, debts, and the national average mortgage rate — comfortable, stretch, and aggressive bands. Not a lender DTI.',
   indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 15, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'mortgage-payment', type: 'uses-engine' },

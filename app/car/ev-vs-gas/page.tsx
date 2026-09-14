@@ -41,6 +41,7 @@ export default function EvVsGasPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'eia-electricity': electricitySource.periodLabel, 'eia-gasoline': gasolineSource.periodLabel }}
       caution="This is driving energy, not the full cost of owning a car. The sticker price, insurance, and upkeep can matter more than fuel."
       methodology={[
         { title: 'Yearly gallons', body: 'Miles divided by MPG gives gallons. Times the pump price gives yearly gasoline cost. The price starts at the latest EIA weekly average for your state or PADD region, and a station price you type replaces it.' },

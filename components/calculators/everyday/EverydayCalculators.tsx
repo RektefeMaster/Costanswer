@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   calculateDateDifference,
   calculateDateOffset,
@@ -10,6 +10,7 @@ import {
   calculateTimeCard,
 } from '@/lib/calculations/everyday';
 import { calculationErrorMessage } from '@/lib/calculations/error';
+import { localCalendarDateIso } from '@/lib/datetime/local-calendar-date';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 import { pluralize } from '@/lib/plural';
 
@@ -156,6 +157,7 @@ export function DateCalculator() {
 }
 
 export function DaysFromTodayCalculator({ today }: { today: string }) {
+  const [todayDate, setTodayDate] = useState(today);
   const [mode, setMode] = useState<'from-today' | 'ago' | 'until'>('from-today');
   const [days, setDays] = useState('30');
   const [targetDate, setTargetDate] = useState(() => {
@@ -167,17 +169,28 @@ export function DaysFromTodayCalculator({ today }: { today: string }) {
       return today;
     }
   });
+  const todaySynced = useRef(false);
+
+  useEffect(() => {
+    const localDate = localCalendarDateIso();
+    if (localDate === today || todaySynced.current) return;
+    todaySynced.current = true;
+    setTodayDate(localDate);
+    const parts = localDate.split('-').map(Number);
+    const d = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2] + 30));
+    setTargetDate(d.toISOString().slice(0, 10));
+  }, [today]);
 
   const calculation = useMemo(() => {
     try {
       if (mode === 'until') {
-        return { diffResult: calculateDateDifference({ startDate: today, endDate: targetDate }), result: null, error: '' };
+        return { diffResult: calculateDateDifference({ startDate: todayDate, endDate: targetDate }), result: null, error: '' };
       }
-      return { diffResult: null, result: calculateDaysFromToday({ days, direction: mode }, () => today), error: '' };
+      return { diffResult: null, result: calculateDaysFromToday({ days, direction: mode }, () => todayDate), error: '' };
     } catch (error) {
       return { diffResult: null, result: null, error: calculationErrorMessage(error) };
     }
-  }, [mode, days, targetDate, today]);
+  }, [mode, days, targetDate, todayDate]);
 
   return (
     <CalculatorPanel
@@ -186,7 +199,7 @@ export function DaysFromTodayCalculator({ today }: { today: string }) {
       toolId="days-from-today"
       category="everyday"
       calculationState={(calculation.result || calculation.diffResult) ? 'complete' : 'invalid'}
-      calculationSignature={`${today}|${days}|${targetDate}|${mode}`}
+      calculationSignature={`${todayDate}|${days}|${targetDate}|${mode}`}
     >
       <div className="mode-tabs" role="group" aria-label="Direction">
         <button type="button" aria-pressed={mode === 'from-today'} className={mode === 'from-today' ? 'active' : ''} onClick={() => setMode('from-today')}>From today</button>
@@ -226,7 +239,7 @@ export function DaysFromTodayCalculator({ today }: { today: string }) {
             tone="rose"
           />
           <StatGrid items={[
-            { label: 'Today', value: today },
+            { label: 'Today', value: todayDate },
             { label: 'Target date', value: targetDate },
           ]} />
           <ResultDetails breakdown={calculation.diffResult.breakdown} assumptions={calculation.diffResult.assumptions} calculationVersion={calculation.diffResult.calculationVersion} datasetSnapshotIds={calculation.diffResult.datasetSnapshotIds} />

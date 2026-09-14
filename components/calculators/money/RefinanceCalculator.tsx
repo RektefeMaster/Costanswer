@@ -17,6 +17,7 @@ export function RefinanceCalculator({
   const [currentRatePercent, setCurrentRatePercent] = useState('7.5');
   const [currentTermYears, setCurrentTermYears] = useState('30');
   const [monthsAlreadyPaid, setMonthsAlreadyPaid] = useState('36');
+  const [currentMonthlyPayment, setCurrentMonthlyPayment] = useState('');
   const [newRatePercent, setNewRatePercent] = useState(String(rates.thirtyYearFixedPercent));
   const [newTermYears, setNewTermYears] = useState('30');
   const [closingCosts, setClosingCosts] = useState('5000');
@@ -39,6 +40,7 @@ export function RefinanceCalculator({
           currentRatePercent,
           currentTermYears,
           monthsAlreadyPaid,
+          currentMonthlyPayment: currentMonthlyPayment.trim() === '' ? undefined : currentMonthlyPayment,
           newRatePercent,
           newTermYears,
           closingCosts,
@@ -49,7 +51,7 @@ export function RefinanceCalculator({
     } catch (error) {
       return { result: null, error: calculationErrorMessage(error) };
     }
-  }, [currentBalance, currentRatePercent, currentTermYears, monthsAlreadyPaid, newRatePercent, newTermYears, closingCosts, financeClosingCosts]);
+  }, [currentBalance, currentRatePercent, currentTermYears, monthsAlreadyPaid, currentMonthlyPayment, newRatePercent, newTermYears, closingCosts, financeClosingCosts]);
 
   const value = calculation.result?.value;
 
@@ -60,7 +62,7 @@ export function RefinanceCalculator({
       toolId="refinance"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
-      calculationSignature={JSON.stringify([currentBalance, currentRatePercent, currentTermYears, monthsAlreadyPaid, newRatePercent, newTermYears, closingCosts, financeClosingCosts])}
+      calculationSignature={JSON.stringify([currentBalance, currentRatePercent, currentTermYears, monthsAlreadyPaid, currentMonthlyPayment, newRatePercent, newTermYears, closingCosts, financeClosingCosts])}
     >
       <div className="data-callout">
         <span>FREDDIE MAC PMMS</span>
@@ -85,8 +87,11 @@ export function RefinanceCalculator({
           <Field label="Original term" htmlFor="refi-current-term">
             <InputShell suffix="years"><input id="refi-current-term" type="number" min="1" max="50" step="1" inputMode="numeric" value={currentTermYears} onChange={(event) => setCurrentTermYears(event.target.value)} /></InputShell>
           </Field>
-          <Field label="Payments already made" htmlFor="refi-paid" hint="Used to work out the payment you are on now">
+          <Field label="Payments already made" htmlFor="refi-paid" hint="With the original term, used to infer your current P&I assuming no extra principal. Type your statement payment below if you paid ahead.">
             <InputShell suffix="months"><input id="refi-paid" type="number" min="0" max="600" step="1" inputMode="numeric" value={monthsAlreadyPaid} onChange={(event) => setMonthsAlreadyPaid(event.target.value)} /></InputShell>
+          </Field>
+          <Field label="Current monthly P&I (optional)" htmlFor="refi-payment" hint="From your statement. Leave blank to infer from rate and original term.">
+            <InputShell prefix="$"><input id="refi-payment" type="number" min="0" step="1" inputMode="decimal" value={currentMonthlyPayment} onChange={(event) => setCurrentMonthlyPayment(event.target.value)} /></InputShell>
           </Field>
         </section>
         <section>

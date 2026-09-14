@@ -3,6 +3,9 @@ import './globals.css';
 import { SiteAnalytics } from '@/components/analytics/SiteAnalytics';
 import { AdvertisingScript } from '@/components/monetization/AdvertisingScript';
 import { AttributionCapture } from '@/components/monetization/AttributionCapture';
+import { chrome } from '@/lib/i18n/chrome';
+import { htmlLang } from '@/lib/i18n/locales';
+import { requestLocale } from '@/lib/i18n/request-locale';
 import { siteConfig } from '@/lib/site-config';
 
 export const viewport = {
@@ -42,11 +45,12 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
 };
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const locale = await requestLocale();
   return (
-    <html lang="en">
+    <html lang={htmlLang(locale)}>
       <body>
-        <a className="skip-link" href="#main-content">Skip to main content</a>
+        <a className="skip-link" href="#main-content">{chrome('skip', locale)}</a>
         {/*
           Captured once per tab, in the layout, so the landing page recorded is
           the page the visit actually started on. Renders nothing, blocks

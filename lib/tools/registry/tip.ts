@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('A tip is a percentage of the bill.'),
+  metaTitle: 'Tip Calculator: 15%, 18%, 20% and Split Check',
+  metaDescription: 'Tip amount and per-person share from bill total and tip percent. Pre-tax or after-tax is your choice.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percentage', type: 'uses-engine' },

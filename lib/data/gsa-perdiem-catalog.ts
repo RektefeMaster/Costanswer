@@ -5,7 +5,9 @@
  */
 import type { GsaPerDiemSnapshot } from './gsa-perdiem';
 import gsaPerdiemConusFy2026V1 from '@/data/gsa-perdiem/snapshots/gsa-perdiem-conus-fy2026-v1.json';
+import gsaPerdiemConusFy2027V1 from '@/data/gsa-perdiem/snapshots/gsa-perdiem-conus-fy2027-v1.json';
 
 export const gsaPerDiemSnapshotDocuments = [
   gsaPerdiemConusFy2026V1,
+  gsaPerdiemConusFy2027V1,
 ] as unknown as GsaPerDiemSnapshot[];

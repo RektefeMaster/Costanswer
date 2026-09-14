@@ -28,6 +28,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Percentage arithmetic is exact.'),
+  metaTitle: 'Percentage Calculator: What Is X% of Y?',
+  metaDescription: 'Find a percent of a number, or what percent one number is of another. Exact arithmetic.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 21, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percent-change', type: 'sibling' },

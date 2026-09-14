@@ -57,4 +57,16 @@ describe('earned income credit', () => {
     expect(single).toBeGreaterThan(0);
     expect(joint).toBeGreaterThan(single);
   });
+
+  it('accepts qualifying-children strings from the form select', () => {
+    const { value } = calculateEitc({
+      earnedIncome: '13020',
+      adjustedGrossIncome: '13020',
+      qualifyingChildren: '1',
+      investmentIncome: '0',
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    expect(value.credit).toBe(4_427);
+  });
 });

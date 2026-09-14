@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Percentage change is (new − old) ÷ old.'),
+  metaTitle: 'Percent Change Calculator: Increase or Decrease',
+  metaDescription: 'Percent increase or decrease between two numbers. Exact math — not a market forecast.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percentage', type: 'sibling' },

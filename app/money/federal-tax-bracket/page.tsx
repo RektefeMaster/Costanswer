@@ -26,6 +26,7 @@ export default function FederalTaxBracketPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="Your bracket is a rate on your last dollar of taxable income, not on all of it. This page shows federal income tax only."
       methodology={[
         {

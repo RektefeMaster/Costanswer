@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'random',
   data: formulaOnly('A random draw takes a range and nothing else.'),
+  metaTitle: 'Random Number Generator: Fair Integer in a Range',
+  metaDescription: 'Pick a random integer between two bounds. For games and raffles — not cryptographic security.',
   indexability: launchIndexability({ searchIntentEvidence: 16, uniqueDataOrFunction: 21, answerDepth: 13, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percentage', type: 'sibling' },

@@ -28,7 +28,7 @@ export function RoadTripFuelCalculator({
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [customPrice, setCustomPrice] = useState('');
   const selected = prices.find((price) => price.stateCode === stateCode) ?? prices[0];
-  const dollarsPerGallon = customPrice.trim() === '' ? selected.dollarsPerGallon : Number(customPrice);
+  const dollarsPerGallon = customPrice.trim() === '' ? selected.dollarsPerGallon : customPrice.trim();
 
   const calculation = useMemo(() => {
     try {

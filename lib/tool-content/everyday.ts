@@ -75,6 +75,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
           'No. Only weekends and optional U.S. federal holidays from the OPM rules in the snapshot.',
         ],
       },
+      {
+        question: 'Do weekends count as business days?',
+        answer: [
+          'No. Saturdays and Sundays are skipped. Optional federal holidays follow the OPM rules in the snapshot, not every state holiday.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Business day', definition: 'A weekday that is not skipped as a federal holiday when that option is on.' },
@@ -109,6 +115,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
           'Use days-from-today for “today plus N,” or this page if the start date is not today. Weekends are included.',
         ],
       },
+      {
+        question: 'Does January 31 plus one month become March 3?',
+        answer: [
+          'No. Month ends clamp to the last valid day of the target month (February 28 or 29), not a rollover into the next month.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Clamp', definition: 'If a month does not have the same day number, the engine uses the last valid day of that month.' },
@@ -139,6 +151,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
         question: 'What day is 30 days from today?',
         answer: [
           'Type 30. The weekday is included. If you need to skip weekends and federal holidays, switch tools.',
+        ],
+      },
+      {
+        question: 'Can I count days until a future date?',
+        answer: [
+          'Yes — use a negative offset or the target-date mode on the form. Weekends still count unless you switch to business days.',
         ],
       },
     ],
@@ -173,6 +191,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
           'Enter birth date and as-of date. The page prints completed units, not a rounded “about 34.”',
         ],
       },
+      {
+        question: 'Does this work for a February 29 birthday?',
+        answer: [
+          'Yes. Leap-day birthdays use this engine’s completion rule so the age stays on a real calendar. Some programs use a different convention.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Completed age', definition: 'How many full years, then leftover months, then leftover days, under this engine’s leap-day rule.' },
@@ -203,6 +227,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
         question: 'Can I subtract two clock times?',
         answer: [
           'Convert each to a duration from midnight first, or use the time-card calculator for shifts. This page adds durations, not “3:15 PM minus 11:40 AM” as civil times.',
+        ],
+      },
+      {
+        question: 'Can I add hours across midnight?',
+        answer: [
+          'You are adding durations, not civil clock times. For a shift that crosses midnight, use the time-card calculator.',
         ],
       },
     ],
@@ -237,6 +267,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
           'No. It totals hours. Whether those hours are overtime is a wage-and-hour question this page does not answer.',
         ],
       },
+      {
+        question: 'How are overnight shifts handled?',
+        answer: [
+          'A shift that starts at night and ends in the morning is treated as crossing midnight, not as a negative duration.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Unpaid break', definition: 'Time subtracted from the shift. Paid breaks should be left at zero.' },
@@ -269,6 +305,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
           'Only if that is the number you typed as the subtotal. The page does not split tax out of a total.',
         ],
       },
+      {
+        question: 'Can I split the check evenly?',
+        answer: [
+          'Yes. Enter how many people share the total after tip. Uneven splits are not modeled — divide outside the page if needed.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Gratuity', definition: 'The tip amount. Not a legal wage for the worker; that is employment law.' },
@@ -299,6 +341,12 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
         question: 'Can I use this to pick a raffle winner?',
         answer: [
           'You can, but you should not treat it as a certified drawing. Use a process your group agrees is fair.',
+        ],
+      },
+      {
+        question: 'Are these numbers cryptographically secure?',
+        answer: [
+          'No. Ordinary runtime randomness for casual picks. Do not use this for passwords, keys, or audited drawings.',
         ],
       },
     ],

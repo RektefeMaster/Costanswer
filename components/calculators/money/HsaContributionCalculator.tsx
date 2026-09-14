@@ -66,9 +66,9 @@ export function HsaContributionCalculator() {
             <input id="hsa-age" type="number" min="16" max="120" step="1" inputMode="numeric" value={age} onChange={(event) => setAge(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Months eligible this year" htmlFor="hsa-months" hint={enrolledInMedicare ? 'Count only months before Medicare enrollment. Last-month rule cannot apply after that.' : 'Covered by a qualifying HDHP on the first day of the month'}>
+        <Field label="Months eligible this year" htmlFor="hsa-months" hint={enrolledInMedicare ? 'Count only months before Medicare enrollment (at most 11). Last-month rule cannot apply after that.' : 'Covered by a qualifying HDHP on the first day of the month'}>
           <InputShell suffix="months">
-            <input id="hsa-months" type="number" min="0" max="12" step="1" inputMode="numeric" value={monthsEligible} onChange={(event) => setMonthsEligible(event.target.value)} disabled={lastMonthRule && !enrolledInMedicare} />
+            <input id="hsa-months" type="number" min="0" max={enrolledInMedicare ? 11 : 12} step="1" inputMode="numeric" value={monthsEligible} onChange={(event) => setMonthsEligible(event.target.value)} disabled={lastMonthRule && !enrolledInMedicare} />
           </InputShell>
         </Field>
         <Field label="Already contributed this year" htmlFor="hsa-in" hint="Employee, employer, and anyone else, combined">

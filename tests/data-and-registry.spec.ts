@@ -541,7 +541,7 @@ describe('tool editorial content', () => {
       expect(content.guide.heading.length).toBeGreaterThan(20);
       expect(content.guide.lede.length).toBeGreaterThan(80);
       expect(content.guide.sections.length).toBeGreaterThan(0);
-      expect(content.faq.length).toBeGreaterThanOrEqual(1);
+      expect(content.faq.length).toBeGreaterThanOrEqual(2);
       expect(content.glossary.length).toBeGreaterThanOrEqual(1);
       expect(content.tips.length).toBeGreaterThanOrEqual(1);
       expect(content.caveats.length).toBeGreaterThanOrEqual(1);
@@ -577,9 +577,17 @@ describe('tool editorial content', () => {
 
   it('keeps long-tail meta titles from replacing the on-page product name', () => {
     const mortgage = getTool('mortgage-payment');
-    expect(mortgage.title).toBe('Mortgage Payment Calculator');
+    expect(mortgage.title).toBe('How Much Is My Mortgage Payment?');
     expect(mortgage.metaTitle).toMatch(/30-Year/);
     expect(toolMetadata(mortgage).title).toBe(mortgage.metaTitle);
+  });
+
+  it('gives every published tool a spoken SERP meta title and description', () => {
+    for (const tool of tools) {
+      expect(tool.metaTitle?.trim().length, tool.id).toBeGreaterThan(10);
+      expect(tool.metaDescription?.trim().length, tool.id).toBeGreaterThan(40);
+      expect(getToolEditorial(tool.id).faq.length, tool.id).toBeGreaterThanOrEqual(2);
+    }
   });
 });
 

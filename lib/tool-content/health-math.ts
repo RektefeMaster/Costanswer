@@ -247,6 +247,12 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
           '30, using the first mode. A sale price of 15% off 200 is a different question; use the wording on the page that matches “off.”',
         ],
       },
+      {
+        question: 'How do I find what percent 40 is of 200?',
+        answer: [
+          'Use the “X is what percent of Y” mode: 40 ÷ 200 × 100 = 20%. The page does that arithmetic exactly.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Percent', definition: 'A ratio times 100. This page does not add tax or round to currency unless the display does.' },
@@ -277,6 +283,12 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
         question: 'How do I calculate a percentage increase?',
         answer: [
           'Enter the original and the new value. The sign shows increase versus decrease. Zero as a baseline is not defined.',
+        ],
+      },
+      {
+        question: 'Is percent change the same as percentage points?',
+        answer: [
+          'No. A rate moving from 10% to 12% is a 2 percentage-point rise, but a 20% percent change. This page computes percent change between two numbers.',
         ],
       },
     ],
@@ -311,6 +323,12 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
           'Whichever mode is selected. Check the control before you trust a trig result.',
         ],
       },
+      {
+        question: 'Is this a graphing or CAS calculator?',
+        answer: [
+          'No. It evaluates ordinary expressions with powers, logs, and trig. It will not solve equations symbolically or plot graphs.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Order of operations', definition: 'The usual precedence the keypad follows, including parentheses.' },
@@ -343,6 +361,12 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
           '5/6 exactly. The decimal form is additional display, not a rounded substitute for the fraction.',
         ],
       },
+      {
+        question: 'Will results stay as fractions?',
+        answer: [
+          'Yes when the operation stays rational. The page simplifies; it does not force a decimal unless you ask for one in the UI.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Mixed number', definition: 'A whole part plus a proper fraction equal to the same rational.' },
@@ -373,6 +397,12 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
         question: 'How do I convert kg to lbs?',
         answer: [
           'Pick mass, kilograms to pounds. The factor is the same one used anywhere else on the site that converts mass.',
+        ],
+      },
+      {
+        question: 'Are these exact conversion factors?',
+        answer: [
+          'They use the standard factors in the engine (for example, international pound and inch definitions). Not a lab calibration certificate.',
         ],
       },
     ],

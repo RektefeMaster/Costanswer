@@ -94,8 +94,10 @@ export function salaryHubPayNote(occupation: Pick<SalaryHubOccupation, 'medianAn
 export function normalizeSalaryQuery(query: string): string {
   return query
     .toLowerCase()
+    .normalize('NFD')
+    .replace(/\p{M}/gu, '')
     .replace(/[^a-z0-9]+/g, ' ')
-    .replace(/\b(salary|salaries|pay|wage|wages|job|jobs|make|earn|earns)\b/g, ' ')
+    .replace(/\b(salary|salaries|pay|wage|wages|job|jobs|make|earn|earns|sueldo|sueldos|salario|salarios|gana|ganan|cuanto|cuánto)\b/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -103,6 +105,8 @@ export function normalizeSalaryQuery(query: string): string {
 const QUERY_STOPWORDS = new Set([
   'a', 'an', 'the', 'and', 'or', 'of', 'in', 'on', 'for', 'to', 'how', 'much',
   'does', 'do', 'did', 'what', 'is', 'are', 'my', 'me', 'at', 'by', 'with', 'from',
+  'el', 'la', 'los', 'las', 'un', 'una', 'de', 'del', 'en', 'por', 'para', 'que',
+  'es', 'se', 'al', 'le', 'lo', 'su', 'sus', 'mi', 'como',
 ]);
 
 function escapeSearchToken(token: string): string {

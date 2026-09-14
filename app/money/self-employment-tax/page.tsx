@@ -22,6 +22,7 @@ export default function SelfEmploymentTaxPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="This is Schedule SE tax, not income tax on the profit. A filed return rounds each line to whole dollars."
       methodology={[
         {
@@ -38,7 +39,7 @@ export default function SelfEmploymentTaxPage() {
         },
         {
           title: 'What is left out',
-          body: 'Church employee income, the farm and nonfarm optional methods, ministers and Form 4361, and QBI are not modelled. Income tax on the profit is a separate calculation.',
+          body: 'Church employee income, the farm and nonfarm optional methods, ministers and Form 4361, and QBI are not modeled. Income tax on the profit is a separate calculation.',
         },
       ]}
       sources={[

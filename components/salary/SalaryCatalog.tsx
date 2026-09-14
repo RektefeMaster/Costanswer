@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { formatNumber } from '@/lib/calculations/contracts';
+import type { Locale } from '@/lib/i18n/locales';
 import { salaryHubPayLabel, salaryHubPayNote, type SalaryHubGroup, type SalaryHubOccupation } from '@/lib/salary-hub-view';
 
 export function SalaryOccupationList({
@@ -23,12 +24,12 @@ export function SalaryOccupationList({
   );
 }
 
-export function SalaryFeatured({ featured }: { featured: readonly SalaryHubOccupation[] }) {
+export function SalaryFeatured({ featured, locale = 'en-US' }: { featured: readonly SalaryHubOccupation[]; locale?: Locale }) {
   if (featured.length === 0) return null;
   return (
     <section className="salary-hub-featured" aria-labelledby="salary-featured-title">
-      <p className="eyebrow muted"><span /> Common jobs</p>
-      <h2 id="salary-featured-title">Start with a job people actually search</h2>
+      <p className="eyebrow muted"><span /> {locale === 'es-US' ? 'Trabajos comunes' : 'Common jobs'}</p>
+      <h2 id="salary-featured-title">{locale === 'es-US' ? 'Empiece por un trabajo que la gente busca' : 'Start with a job people actually search'}</h2>
       <ul className="salary-hub-featured-grid">
         {featured.map((occupation) => (
           <li key={occupation.code}>

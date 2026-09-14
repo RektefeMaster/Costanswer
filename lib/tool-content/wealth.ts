@@ -62,6 +62,12 @@ export const WEALTH_EDITORIAL: ToolEditorial[] = [
           'Simple interest never earns interest on interest. Over several years that gap grows.',
         ],
       },
+      {
+        question: 'Is this compound interest?',
+        answer: [
+          'No. This is simple interest: principal × rate × time. For compounding and recurring deposits, use the compound interest calculator.',
+        ],
+      },
     ],
     glossary: [
       { term: 'Simple interest', definition: 'Principal × rate × time. The principal never changes in the formula.' },
@@ -132,6 +138,12 @@ export const WEALTH_EDITORIAL: ToolEditorial[] = [
         question: 'What return should I type?',
         answer: [
           'There is no CostAnswer default that is “the market.” Pick an assumption you can defend, then try a lower one. This is not advice to expect any particular return.',
+        ],
+      },
+      {
+        question: 'Where does the return rate come from?',
+        answer: [
+          'You type it. The page does not forecast markets or pull a historical average into the result.',
         ],
       },
     ],
@@ -206,6 +218,12 @@ export const WEALTH_EDITORIAL: ToolEditorial[] = [
         question: 'Can I contribute to a Roth IRA?',
         answer: [
           'This page will not say. Eligibility depends on earned income and MAGI. Use IRS Publication 590-A or a tax professional.',
+        ],
+      },
+      {
+        question: 'Does this check Roth IRA income limits?',
+        answer: [
+          'It illustrates growth from contributions and a return you enter. Income-phaseout eligibility is not determined here — check current IRS rules.',
         ],
       },
     ],

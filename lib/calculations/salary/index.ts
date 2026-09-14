@@ -202,7 +202,7 @@ function buildAssumptions(profile: OccupationWageProfile): string[] {
       `Take-home assumes one ${profile.takeHome.taxYear} filer, filing single, taking the standard deduction, with no dependents, pre-tax retirement contributions or local income tax.`,
     );
     if (profile.takeHome.stateTaxStatus === 'unsupported') {
-      assumptions.push(`${profile.areaLabel} state income tax is not modelled, so the take-home figure covers federal and FICA only.`);
+      assumptions.push(`${profile.areaLabel} state income tax is not modeled, so the take-home figure covers federal and FICA only.`);
     }
   }
   if (profile.wage.basis === 'annual-only') {

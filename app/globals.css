@@ -831,6 +831,23 @@ input, select { font-variant-numeric: tabular-nums; }
 .engine-notes li:last-child { margin-bottom: 0; }
 .engine-notes strong { color: var(--ink); }
 .engine-notes a { color: #207767; font-weight: 650; }
+.salary-next-steps {
+  list-style: none;
+  margin: 16px 0 0;
+  padding: 0;
+}
+.salary-next-steps li {
+  margin: 0 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.salary-next-steps li:last-child { margin-bottom: 0; }
+.salary-next-steps small {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
 .author-byline h2 { font-size: 22px; }
 .author-byline > p { margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }
 .author-byline-links { font-weight: 650; }

@@ -5,7 +5,7 @@ import { formulaOnly } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'unit-price',
   path: '/shopping/unit-price',
-  title: 'Unit Price Calculator',
+  title: 'Which Package Is Cheaper per Unit?',
   shortTitle: 'Unit price',
   description: 'See which package is cheaper per ounce, pound, or item, even if the labels use different units.',
   category: 'shopping',
@@ -27,6 +27,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Price per unit is price ÷ quantity, once the units are normalised.'),
+  metaTitle: 'Unit Price Calculator: Compare Cost Per Ounce or Pound',
+  metaDescription: 'Divide package price by size to see which option is cheaper per unit. Store shelf math — not a coupon engine.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'recipe-scaler', type: 'uses-engine' },

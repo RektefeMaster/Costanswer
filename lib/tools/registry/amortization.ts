@@ -6,7 +6,7 @@ import { AMORTIZATION_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'amortization',
   path: '/money/amortization',
-  title: 'Amortization Calculator',
+  title: 'Amortization Schedule Calculator',
   shortTitle: 'Amortization',
   description: 'See principal, interest, and remaining balance by payment for a fixed-rate loan. The payment uses the same engine as the Loan Calculator.',
   category: 'money',
@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('A schedule is the closed-form payment applied period by period.'),
+  metaTitle: 'Amortization Schedule Calculator: Payment Breakdown',
+  metaDescription: 'Month-by-month principal and interest for a fixed-rate loan. See how the balance falls. Not a loan offer.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'loan', type: 'uses-engine' },

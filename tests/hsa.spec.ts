@@ -44,6 +44,9 @@ describe('2026 HSA limits', () => {
       coverage: 'family', age: 66, monthsEligible: 0, enrolledInMedicare: true, lastMonthRule: false, alreadyContributed: 0,
     });
     expect(medicareNone.value.annualLimit).toBe(0);
+    expect(() => calculateHsaContribution({
+      coverage: 'self-only', age: 40, monthsEligible: 12, enrolledInMedicare: true, lastMonthRule: false, alreadyContributed: 0,
+    })).toThrow(/months before enrollment/i);
   });
 
   it('zeros the cap when the plan fails the HDHP test', () => {

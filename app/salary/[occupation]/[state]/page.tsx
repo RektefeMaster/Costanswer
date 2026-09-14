@@ -7,9 +7,10 @@ import { SiteHeader } from '@/components/site/SiteHeader';
 import { AdSlot } from '@/components/monetization/AdSlot';
 import { StatesForOccupationTable } from '@/components/salary/SalaryTables';
 import { OccupationNames, SalaryQuestions } from '@/components/salary/SalaryQuestions';
+import { SalaryNextSteps } from '@/components/salary/SalaryNextSteps';
 import { TakeHomeSection, WagePanel, WageSources } from '@/components/salary/WageProfile';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
-import { occupationWageProfile, taxesOnWagesLabel } from '@/lib/calculations/salary';
+import { occupationWageProfile } from '@/lib/calculations/salary';
 import { getOewsEstimate } from '@/lib/data/bls-oews-snapshot';
 import { getStateName } from '@/lib/location/states';
 import {
@@ -24,10 +25,12 @@ import {
 } from '@/lib/salary-pages';
 import {
   indefiniteArticle,
-  occupationHeadingName,
+  occupationInStateTitleTag,
   occupationJsonLd,
+  occupationPageHeading,
   occupationPlural,
   occupationSingular,
+  salaryDirectAnswer,
   salaryQuestions,
 } from '@/lib/salary-content';
 import { breadcrumbJsonLd, faqPageJsonLd, pageMetadata } from '@/lib/seo';
@@ -61,12 +64,12 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const profile = result.value;
   const stateName = getStateName(state);
   const median = profile.wage.annualMedian;
-  const heading = occupationHeadingName(occupation);
+  const hourly = profile.wage.hourlyMedian;
   const singular = occupationSingular(occupation);
-  const title = `${heading} Salary in ${stateName}`;
+  const title = occupationInStateTitleTag(occupation, stateName);
   const description = median === null
     ? `What ${occupation.displayTitle.toLowerCase()} earn in ${stateName}, from the BLS ${profile.referenceLabel} wage survey, with pay by percentile and take-home after tax.`
-    : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} in ${stateName} earns a median of ${formatMoney(median, 0)} a year${profile.takeHome ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after tax` : ''}. BLS ${profile.referenceLabel} pay by percentile, plus what it buys locally.`;
+    : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} in ${stateName} earns a median of ${formatMoney(median, 0)} a year${hourly === null ? '' : ` (${formatMoney(hourly)} an hour)`}${profile.takeHome ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after tax` : ''}. BLS ${profile.referenceLabel}.`;
   return pageMetadata(title, description, salaryOccupationInStatePath(occupation, state), {
     // Per occupation, not per level: leaves open in waves, and the same
     // predicate decides whether anything links to this page.
@@ -88,7 +91,7 @@ export default async function OccupationInStatePage({ params }: { params: Promis
     .filter((row): row is { peer: typeof state; estimate: NonNullable<typeof row.estimate> } => Boolean(row.estimate))
     .map(({ peer, estimate }) => ({ state: peer, estimate }));
 
-  const heading = occupationHeadingName(occupation);
+  const heading = occupationPageHeading(occupation, stateName);
   const questions = salaryQuestions(profile);
   const breadcrumbs = [
     { name: siteConfig.name, path: '/' },
@@ -122,15 +125,11 @@ export default async function OccupationInStatePage({ params }: { params: Promis
           <div className="tool-hero-grid">
             <div>
               <p className="eyebrow"><span /> {`${stateName} · BLS ${profile.referenceLabel}`}</p>
-              <h1>{`${heading} Salary in ${stateName}`}</h1>
+              <h1>{heading}</h1>
             </div>
             <div className="tool-intro">
               <OccupationNames profile={profile} />
-              <p>
-                {profile.employment.total === null
-                  ? `What the Bureau of Labor Statistics measured for this occupation in ${stateName}, by percentile, with what the median leaves after tax.`
-                  : `The Bureau of Labor Statistics counted ${formatNumber(profile.employment.total)} ${occupation.displayTitle.toLowerCase()} working in ${stateName}. Here is what they are paid, what the median leaves after ${taxesOnWagesLabel(profile.takeHome)}, and what that is worth against local prices.`}
-              </p>
+              <p className="direct-answer">{salaryDirectAnswer(profile)}</p>
             </div>
           </div>
         </header>
@@ -144,6 +143,7 @@ export default async function OccupationInStatePage({ params }: { params: Promis
             <WagePanel result={result} />
             <AdSlot placement="in-content" />
             <TakeHomeSection profile={profile} />
+            <SalaryNextSteps />
             {profile.costAdjusted && profile.wage.annualMedian !== null && (
               <section className="engine-notes" aria-labelledby="cost-title">
                 <h2 id="cost-title">{`What ${formatMoney(profile.wage.annualMedian, 0)} is worth in ${stateName}`}</h2>

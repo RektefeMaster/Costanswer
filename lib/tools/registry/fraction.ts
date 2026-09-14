@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'exact',
   data: formulaOnly('Fraction arithmetic is exact.'),
+  metaTitle: 'Fraction Calculator: Add, Subtract, Multiply, Divide',
+  metaDescription: 'Exact fraction arithmetic with simplified results. Not a decimal approximation engine.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'percentage', type: 'sibling' },

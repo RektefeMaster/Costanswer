@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, round, type BreakdownStep, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, round, type BreakdownStep, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { estimateAnnualTaxLiability } from '@/lib/calculations/tax/annual';
 import { FILING_STATUSES } from '@/lib/calculations/tax/types';
 import { COST_OF_LIVING_ENGINE_ID } from './col/version';
@@ -32,7 +32,7 @@ const incomeSchema = z.discriminatedUnion('incomeMode', [
     incomeMode: z.literal('gross-salary'),
     annualGrossSalary: finiteNumber('Annual gross salary', 0, 100_000_000),
     filingStatus: z.enum(FILING_STATUSES),
-    taxYear: z.number().int().optional(),
+    taxYear: taxYearNumber.optional(),
   }),
 ]);
 

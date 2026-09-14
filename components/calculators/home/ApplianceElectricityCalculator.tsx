@@ -48,7 +48,7 @@ export function ApplianceElectricityCalculator({
   const [customRate, setCustomRate] = useState('');
   const selected = rates.find((rate) => rate.stateCode === stateCode) ?? rates[0];
   const usingManualRate = customRate.trim() !== '';
-  const effectiveRate = usingManualRate ? Number(customRate) : selected.priceCentsPerKwh;
+  const effectiveRate = usingManualRate ? customRate.trim() : selected.priceCentsPerKwh;
   const source = datasetSourceDisplay({
     datasetId: 'eia-electricity',
     observationPeriod,

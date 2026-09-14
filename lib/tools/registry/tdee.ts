@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'formula-estimate',
   data: formulaOnly('TDEE is BMR × activity factor.'),
+  metaTitle: 'TDEE Calculator: Daily Calories by Activity Level',
+  metaDescription: 'Total daily energy expenditure from BMR and an activity multiplier you pick. Planning estimate, not a meal plan.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'bmr', type: 'uses-engine' },

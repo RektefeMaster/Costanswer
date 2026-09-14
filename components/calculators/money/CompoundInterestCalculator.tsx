@@ -37,7 +37,7 @@ export function CompoundInterestCalculator() {
   const [annualRatePercent, setAnnualRatePercent] = useState('5');
   const [years, setYears] = useState('10');
   const [contribution, setContribution] = useState('0');
-  const [compounding, setCompounding] = useState<CompoundingFrequency>('annually');
+  const [compounding, setCompounding] = useState<CompoundingFrequency>('monthly');
   const [contributionFrequency, setContributionFrequency] = useState<CompoundingFrequency>('monthly');
 
   const calculation = useMemo(() => {

@@ -24,7 +24,8 @@ export default function EffectiveTaxRatePage() {
   return (
     <ToolPage
       tool={tool}
-      caution="This is a rate on wage income under this year's published schedules. It is not what a filed return will say once credits, other income and itemised deductions are in play."
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
+      caution="This is a rate on wage income under this year's published schedules. It is not what a filed return will say once credits, other income and itemized deductions are in play."
       methodology={[
         {
           title: 'Effective rate is measured against gross pay',
@@ -40,7 +41,7 @@ export default function EffectiveTaxRatePage() {
         },
         {
           title: 'What is left out',
-          body: 'Credits, itemised deductions, retirement contributions, self-employment tax and income other than wages are not modelled. Local income taxes are named where a state has them but never estimated. Where a state schedule in this snapshot is a year behind, the page says so.',
+          body: 'Credits, itemized deductions, retirement contributions, self-employment tax and income other than wages are not modeled. Local income taxes are named where a state has them but never estimated. Where a state schedule in this snapshot is a year behind, the page says so.',
         },
       ]}
       sources={[

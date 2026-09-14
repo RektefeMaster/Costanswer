@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'formula-estimate',
   data: formulaOnly('Calorie targets are BMR scaled by an activity factor and a deficit you choose.'),
+  metaTitle: 'Calorie Calculator: Daily Needs for Weight Goals',
+  metaDescription: 'Daily calorie target from TDEE and a modest surplus or deficit you set. Not medical or diet advice.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'tdee', type: 'uses-engine' },

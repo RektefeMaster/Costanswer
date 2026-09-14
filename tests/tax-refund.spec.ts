@@ -137,4 +137,17 @@ describe('tax refund', () => {
     });
     expect(withLoss.value.refundableCredits).toBeLessThan(wagesOnly.value.refundableCredits);
   });
+
+  it('accepts children and dependents as form strings', () => {
+    const { value } = calculateTaxRefund({
+      grossIncome: '40000',
+      qualifyingChildren: '1',
+      otherDependents: '0',
+      federalWithholding: '2000',
+      filingStatus: 'single',
+      taxYear: 2026,
+    });
+    expect(value.refund).toBeGreaterThanOrEqual(0);
+    expect(value.amountOwed).toBeGreaterThanOrEqual(0);
+  });
 });

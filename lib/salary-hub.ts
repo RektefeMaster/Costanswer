@@ -10,11 +10,15 @@ import { type OewsEstimate, type OewsOccupation } from '@/lib/data/bls-oews';
 import { getOewsEstimate, getOewsEstimatesForArea, getOewsOccupation } from '@/lib/data/bls-oews-snapshot';
 import { STATE_CODES } from '@/lib/location/states';
 import { occupationHeadingName } from '@/lib/salary-content';
+import { occupationHeadingEs } from '@/lib/salary-content-es';
+import { majorGroupTitleEs, occupationSearchTermsEs } from '@/lib/salary-naming-es';
+import type { Locale } from '@/lib/i18n/locales';
 import {
   nationalSalaryOccupations,
   occupationSearchTerms,
   salaryOccupationPath,
 } from '@/lib/salary-pages';
+import { salaryOccupationPathEs } from '@/lib/salary-es-pages';
 import {
   FEATURED_SALARY_CODES,
   flattenSalaryHub,
@@ -26,25 +30,25 @@ import {
 
 export * from '@/lib/salary-hub-view';
 
-function toHubOccupation(occupation: OewsOccupation, estimate: OewsEstimate | undefined): SalaryHubOccupation {
+function toHubOccupation(occupation: OewsOccupation, estimate: OewsEstimate | undefined, locale: Locale): SalaryHubOccupation {
   return {
     code: occupation.code,
-    path: salaryOccupationPath(occupation),
-    name: occupationHeadingName(occupation),
-    haystack: occupationSearchTerms(occupation).join(' '),
+    path: locale === 'es-US' ? salaryOccupationPathEs(occupation) : salaryOccupationPath(occupation),
+    name: locale === 'es-US' ? occupationHeadingEs(occupation) : occupationHeadingName(occupation),
+    haystack: (locale === 'es-US' ? occupationSearchTermsEs(occupation) : occupationSearchTerms(occupation)).join(' '),
     medianAnnual: estimate?.annual.median ?? null,
     medianHourly: estimate?.hourly.median ?? null,
     employment: estimate?.employment ?? null,
   };
 }
 
-export function salaryHubModel(): SalaryHubModel {
+export function salaryHubModel(locale: Locale = 'en-US'): SalaryHubModel {
   const occupations = nationalSalaryOccupations();
   const estimatesByCode = new Map(getOewsEstimatesForArea('US').map((estimate) => [estimate.occCode, estimate]));
   const groups = new Map<string, SalaryHubOccupation[]>();
 
   for (const occupation of occupations) {
-    const member = toHubOccupation(occupation, estimatesByCode.get(occupation.code));
+    const member = toHubOccupation(occupation, estimatesByCode.get(occupation.code), locale);
     const list = groups.get(occupation.majorCode) ?? [];
     list.push(member);
     groups.set(occupation.majorCode, list);
@@ -52,11 +56,15 @@ export function salaryHubModel(): SalaryHubModel {
 
   const grouped: SalaryHubGroup[] = [...groups.entries()]
     .map(([majorCode, members]) => {
-      const title = getOewsOccupation(majorCode)?.title ?? 'Other occupations';
+      const englishTitle = getOewsOccupation(majorCode)?.title ?? 'Other occupations';
+      const named = locale === 'es-US' ? majorGroupTitleEs(majorCode, englishTitle) : {
+        title: englishTitle,
+        shortTitle: majorGroupShortTitle(englishTitle),
+      };
       return {
         majorCode,
-        title,
-        shortTitle: majorGroupShortTitle(title),
+        title: named.title,
+        shortTitle: named.shortTitle,
         members,
       };
     })

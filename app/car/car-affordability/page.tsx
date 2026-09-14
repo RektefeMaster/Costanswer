@@ -63,6 +63,7 @@ export default function CarAffordabilityPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'eia-gasoline': gasolineSource.periodLabel, 'eia-electricity': electricitySource.periodLabel }}
       caution="This is cash out of pocket on take-home pay, not a lender approval. The price, insurance, and upkeep are numbers you supply, and depreciation is left out entirely."
       methodology={[
         {

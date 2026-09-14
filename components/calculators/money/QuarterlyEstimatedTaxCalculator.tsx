@@ -143,7 +143,7 @@ export function QuarterlyEstimatedTaxCalculator() {
             level="high"
             reasons={[
               'Safe harbors and due dates transcribed from 2026 Form 1040-ES',
-              'Equal installments only — the annualized income method is not modelled',
+              'Equal installments only — the annualized income method is not modeled',
               'This is not a Form 2210 penalty calculation',
             ]}
           />

@@ -17,6 +17,8 @@ export const tool: ToolDefinition = {
   featured: true,
   resultNature: 'formula-estimate',
   data: formulaOnly('The Navy method is a published equation on circumference measurements.'),
+  metaTitle: 'Body Fat Calculator: U.S. Navy Circumference Method',
+  metaDescription: 'Estimate body-fat percent from Navy circumference formulas. Not DEXA or a clinical measurement.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: 'bmi', type: 'sibling' },

@@ -58,6 +58,7 @@ export default function CostOfLivingPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'hud-fmr': hudSource.periodLabel, 'census-acs5': acsSource.periodLabel, 'bea-rpp': beaSource.periodLabel, 'usda-food-plans': usdaSource.periodLabel }}
       caution="This is an estimated modeled monthly living cost. It is not everything it costs to live in a place, not average asking rent, and not a proprietary cost-of-living score."
       methodology={[
         {

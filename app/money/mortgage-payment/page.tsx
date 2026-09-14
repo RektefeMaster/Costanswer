@@ -20,6 +20,7 @@ export default function MortgagePaymentPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'freddie-mac-pmms': mortgageSource.periodLabel }}
       caution="This is a national average, not a lender quote. Credit, points, taxes, insurance, and fees can change the payment by a lot."
       methodology={[
         { title: 'Loan amount', body: 'Home price minus the down payment is the amount that is amortized.' },

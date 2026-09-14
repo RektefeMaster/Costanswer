@@ -6,7 +6,7 @@ import { SALARY_AFTER_TAX_ENGINE_ID } from '../../calculations/tax/version';
 export const tool: ToolDefinition = {
   id: 'salary-after-tax',
   path: '/money/salary-after-tax',
-  title: 'Salary After Tax Calculator',
+  title: 'How Much Is My Salary After Tax?',
   shortTitle: 'Salary after tax',
   description: 'Estimate federal income tax, FICA, and state income tax on a U.S. salary, then see take-home by year, month, and paycheck.',
   category: 'money',
@@ -32,8 +32,8 @@ export const tool: ToolDefinition = {
     required: ['us-tax'],
     note: 'Take-home pay is gross minus published federal, state and FICA amounts. Without the tables the result is not an approximation, it is wrong.',
   }),
-  metaTitle: 'Salary After Tax Calculator (Federal, FICA & State, 2026)',
-  metaDescription: 'Estimate U.S. take-home from a salary: federal income tax, FICA, and state wage tax when this site has a verified table. Not a filed return. Try Texas vs. California on the same gross pay.',
+  metaTitle: 'Salary After Tax Calculator: Take-Home by State (2026)',
+  metaDescription: 'See how much of a U.S. salary you keep after federal income tax, FICA, and state wage tax. Yearly, monthly, and per paycheck. Not a filed return — try Texas vs. California on the same gross.',
   indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'paycheck', type: 'next-decision' },

@@ -109,20 +109,13 @@ describe('what the salary family submits to search', () => {
     expect(new Set(entries.map((entry) => entry.path)).size).toBe(entries.length);
   });
 
-  it('opens wave 1 at the size the threshold describes, and no wider', () => {
-    /*
-     * A threshold is only a reviewed decision if moving it is visible. These
-     * two numbers are what a change to SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT
-     * actually does to the corpus, so raising or lowering it arrives with its
-     * page-count diff attached rather than silently.
-     */
+  it('opens every occupation-in-state page that has a published wage', () => {
     const open = occupationsWithOpenLeaves();
     const leaves = open.reduce((total, occupation) => total + statesWithWageFor(occupation).length, 0);
-    expect(SALARY_PUBLICATION.occupationInState).toBe('wave-1');
-    expect(open).toHaveLength(90);
-    expect(leaves).toBe(4_562);
-    // The whole corpus is far larger; the wave is the point.
-    expect(oewsPageWorthyPairs().length).toBeGreaterThan(30_000);
+    expect(SALARY_PUBLICATION.occupationInState).toBe('indexable');
+    expect(open).toHaveLength(nationalSalaryOccupations().length);
+    expect(leaves).toBe(oewsPageWorthyPairs().length);
+    expect(leaves).toBeGreaterThan(30_000);
   });
 
   it('never links a leaf it does not submit, or submits one nothing links', () => {
@@ -153,24 +146,10 @@ describe('what the salary family submits to search', () => {
     expect(sitemapPagePaths().filter(({ family }) => family === 'salary')).toHaveLength(pages.length);
   });
 
-  it('withholds a closed leaf from search without touching its route', () => {
-    // A closed leaf is still a real address the family builds; it is simply
-    // not submitted, not indexable, and not linked. That is what makes opening
-    // the next wave a threshold change rather than a routing change.
-    const submitted = new Set(getSitemapFamilies().salary.map((entry) => entry.path));
-    const closed = nationalSalaryOccupations().find((occupation) => !salaryLeafIsOpen(occupation));
-    expect(closed).toBeDefined();
-    const state = statesWithWageFor(closed!)[0];
-    expect(state).toBeDefined();
-    expect(submitted.has(salaryOccupationInStatePath(closed!, state!))).toBe(false);
+  it('still has a real address for every published pair, including any later staging', () => {
     expect(oewsPageWorthyPairs().length).toBeGreaterThan(30_000);
-  });
-
-  it('keeps the whole corpus behind the wave rather than in it', () => {
-    const leafPaths = getSitemapFamilies().salary
-      .filter((entry) => entry.path.split('/').length === 4 && !entry.path.startsWith('/salary/states'));
-    expect(leafPaths.length).toBeGreaterThan(0);
-    expect(leafPaths.length).toBeLessThan(oewsPageWorthyPairs().length / 5);
+    const submitted = new Set(getSitemapFamilies().salary.map((entry) => entry.path));
+    expect(submitted.size).toBe(getSitemapFamilies().salary.length);
   });
 
   it('dates the family from the release it was built from', () => {
@@ -274,8 +253,8 @@ describe('the questions each page answers', () => {
       estimatedSalary: { currency: 'USD', duration: 'P1Y', median: 95_970, percentile90: 127_950 },
     });
     expect(schema.alternateName).toContain('RN');
-    // The heading already says "Registered Nurse"; repeating it as an
-    // alternate name would only pad the markup.
-    expect(schema.alternateName).not.toContain('Registered Nurses');
+    // Spoken heading is "Registered Nurse"; BLS's plural title stays as an alternate.
+    expect(schema.name).toBe('Registered Nurse');
+    expect(schema.alternateName).toContain('Registered Nurses');
   });
 });

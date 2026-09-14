@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'electricity-cost',
   path: '/home/electricity-cost',
-  title: 'Electricity Cost Calculator by State',
+  title: 'How Much Is My Electric Bill by State?',
   shortTitle: 'Electricity cost',
   description: 'A monthly electric bill from your kWh and the EIA average for your state. You can type the rate from your bill instead.',
   category: 'home',
@@ -19,6 +19,8 @@ export const tool: ToolDefinition = {
     optional: ['eia-electricity'],
     note: 'kWh × rate. The published state average seeds the rate field and a rate you type replaces it.',
   }),
+  metaTitle: 'Electric Bill Calculator by State (EIA Average)',
+  metaDescription: 'Estimate a monthly electric bill from kWh and EIA residential averages by state — or type your utility’s effective rate. Not your tariff.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 15, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'appliance-electricity', type: 'next-decision' },

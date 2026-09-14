@@ -20,6 +20,8 @@ export const tool: ToolDefinition = {
     required: ['irs-retirement-limits'],
     note: 'The contribution limit and the income phase-out range are published each year. Whether a household may contribute at all is decided by them.',
   }),
+  metaTitle: 'Roth IRA Calculator: Growth After Contribution Limits',
+  metaDescription: 'Illustrate Roth growth with contribution limits you set against IRS rules you enter. Not eligibility or tax advice.',
   indexability: launchIndexability({ searchIntentEvidence: 17, uniqueDataOrFunction: 22, answerDepth: 14, provenanceAndFreshness: 10, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'not-required'),
   relationships: [
     { toolId: '401k', type: 'sibling' },

@@ -25,6 +25,7 @@ export default function CapitalGainsPage() {
   return (
     <ToolPage
       tool={tool}
+      sourcePeriods={{ 'us-tax': taxSource.periodLabel }}
       caution="Short-term gains are ordinary income. Collectibles and unrecaptured 1250 gain use different rates that this page does not apply."
       methodology={[
         {

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult } from '@/lib/calculations/contracts';
+import { finiteNumber, formatMoney, formatNumber, round, type CalculationResult, taxYearNumber } from '@/lib/calculations/contracts';
 import { getStateName, isStateCode } from '@/lib/location/states';
 import { getTaxYearSnapshot } from '@/lib/data/tax/snapshot';
 import { estimateAnnualTaxLiability, sharedAssumptions } from './annual';
@@ -11,7 +11,7 @@ export const effectiveTaxRateInputSchema = z.object({
   annualGrossSalary: finiteNumber('Annual gross salary', 0, 100_000_000),
   state: z.string().refine(isStateCode, 'Choose a U.S. state or D.C.'),
   filingStatus: z.enum(FILING_STATUSES),
-  taxYear: z.number().int({ error: 'Tax year must be a whole number.' }),
+  taxYear: taxYearNumber,
   dependents: finiteNumber('Dependents', 0, 20).optional(),
 });
 

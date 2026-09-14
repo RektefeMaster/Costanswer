@@ -4,7 +4,7 @@
   "snapshotId": "bls-ecec-2026-03-v1",
   "datasetId": "bls-ecec",
   "observationPeriod": "2026-03",
-  "fetchedAt": "2026-09-07T21:17:23.562Z",
+  "fetchedAt": "2026-09-14T16:44:17.793Z",
   "publishedAt": "2026-06-12T00:00:00.000Z",
   "sourceUrl": "https://www.bls.gov/news.release/ecec.t04.htm",
   "sourceDocumentationUrl": "https://www.bls.gov/news.release/ecec.toc.htm",
@@ -19,5 +19,5 @@
     "Loading factor 1.4415 = total compensation / wages and salaries.",
     "This loading is a national industry model, not a local contractor wage."
   ],
-  "normalizedSha256": "cb32f903ebecaf835c74b5e632bc19af630ca843d4c0e0ee8ec1bf364f19ee15"
+  "normalizedSha256": "6e52825d94e6d89807ff223f320d06768db816c43f614213ed3a5a64886f359b"
 }

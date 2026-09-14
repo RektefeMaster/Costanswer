@@ -8,6 +8,8 @@ export const refinanceInputSchema = z.object({
   currentRatePercent: finiteNumber('Current interest rate', 0, 25),
   currentTermYears: finiteNumber('Original term', 1, 50).refine(Number.isInteger, 'Original term must be a whole number of years.'),
   monthsAlreadyPaid: finiteNumber('Months already paid', 0, 600).refine(Number.isInteger, 'Payments already made must be a whole number of months.'),
+  /** Statement P&I. When omitted, payment is inferred from rate and original term with no extra principal. */
+  currentMonthlyPayment: finiteNumber('Current monthly payment', 0.01, 1_000_000).optional(),
   newRatePercent: finiteNumber('New interest rate', 0, 25),
   newTermYears: finiteNumber('New term', 1, 50).refine(Number.isInteger, 'New term must be a whole number of years.'),
   closingCosts: finiteNumber('Closing costs', 0, 1_000_000),
@@ -51,12 +53,15 @@ export function calculateRefinance(rawInput: unknown): CalculationResult<Refinan
   const paid = input.monthsAlreadyPaid;
   const monthsLeft = currentPaymentCount - paid;
 
-  // The balance is what the reader typed; the payment is the one that amortizes
-  // the original loan, so it has to be derived from the original principal.
+  // The balance is what the reader typed. Prefer a statement payment when given;
+  // otherwise reconstruct the amortizing payment that produced this balance with
+  // no extra principal.
   const originalPrincipal = paid === 0
     ? input.currentBalance
     : originalPrincipalFromRemaining(input.currentBalance, input.currentRatePercent, currentPaymentCount, paid);
-  const currentMonthlyPayment = monthlyPrincipalAndInterest(originalPrincipal, input.currentRatePercent, currentPaymentCount);
+  const inferredPayment = monthlyPrincipalAndInterest(originalPrincipal, input.currentRatePercent, currentPaymentCount);
+  const currentMonthlyPayment = input.currentMonthlyPayment ?? inferredPayment;
+  const paymentWasEntered = input.currentMonthlyPayment !== undefined;
   const currentRemainingInterest = currentMonthlyPayment * monthsLeft - input.currentBalance;
 
   const newLoanAmount = input.financeClosingCosts ? input.currentBalance + input.closingCosts : input.currentBalance;
@@ -92,7 +97,9 @@ export function calculateRefinance(rawInput: unknown): CalculationResult<Refinan
       {
         label: 'Payment you have now',
         value: formatMoney(currentMonthlyPayment),
-        detail: `${formatNumber(input.currentRatePercent, { maximumFractionDigits: 3 })}% with ${monthsLeft} payments left`,
+        detail: paymentWasEntered
+          ? `${formatNumber(input.currentRatePercent, { maximumFractionDigits: 3 })}% · statement P&I with ${monthsLeft} payments left`
+          : `${formatNumber(input.currentRatePercent, { maximumFractionDigits: 3 })}% inferred with ${monthsLeft} payments left`,
       },
       {
         label: 'Payment after refinancing',
@@ -119,6 +126,9 @@ export function calculateRefinance(rawInput: unknown): CalculationResult<Refinan
     ],
     assumptions: [
       'Both loans are fixed-rate and are compared on principal and interest only. Property tax, insurance, HOA, and PMI are unchanged by refinancing and are left out.',
+      paymentWasEntered
+        ? 'Current payment came from the statement figure you entered.'
+        : 'Current payment was inferred from the original term and rate with no extra principal. If you paid ahead, enter your statement P&I.',
       'Break-even is closing costs divided by the monthly saving. It ignores what that money could have earned elsewhere, and assumes you keep the loan that long.',
       input.financeClosingCosts
         ? 'Closing costs are rolled into the new balance. That does not avoid them: you borrow them and pay interest on them, and break-even still counts the full amount.'

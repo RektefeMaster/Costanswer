@@ -152,7 +152,7 @@ export function FederalTaxBracketCalculator() {
             reasons={[
               `Brackets and the standard deduction are transcribed from ${snapshot.federal.sourceName}`,
               'Federal income tax only — Social Security, Medicare and state tax are not included',
-              'Credits, capital gains and itemised deductions are not modelled',
+              'Credits, capital gains and itemized deductions are not modeled',
             ]}
           />
           <CalculationReceipt
