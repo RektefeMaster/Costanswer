@@ -126,7 +126,7 @@ export function MedicareCalculator() {
           <PrimaryResult
             label="Monthly premium total"
             value={formatMoney(value.monthlyTotal)}
-            note={`${formatMoney(value.coveragePeriodTotal)} over ${input?.coverageMonths ?? 12} month${(input?.coverageMonths ?? 12) === 1 ? '' : 's'} · ${value.irmaaApplies ? 'includes an income adjustment' : 'standard premium'}`}
+            note={`${formatMoney(value.coveragePeriodTotal)} over ${Number(input?.coverageMonths ?? 12)} month${Number(input?.coverageMonths ?? 12) === 1 ? '' : 's'} · ${value.irmaaApplies ? 'includes an income adjustment' : 'standard premium'}`}
           />
 
           {/*

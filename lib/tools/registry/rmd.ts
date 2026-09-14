@@ -29,7 +29,7 @@ export const tool: ToolDefinition = {
   }),
   metaTitle: 'RMD Calculator Using the IRS Uniform Lifetime Table',
   metaDescription: 'Divide last year’s IRA balance by the IRS Table III factor for your age in 2026. Starting ages follow SECURE 2.0. Not Table II, and not an inherited-IRA 10-year rule.',
-  indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, implementationConfidence: 5 }, 'verified'),
+  indexability: launchIndexability({ searchIntentEvidence: 20, uniqueDataOrFunction: 24, answerDepth: 14, provenanceAndFreshness: 14, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: '401k', type: 'sibling' },
     { toolId: 'roth-ira', type: 'sibling' },
