@@ -22,6 +22,7 @@ import {
 export { occupationAliasesEs, occupationPluralEs, occupationSingularEs };
 
 const LOCALE = 'es-US' as const;
+const NO_STATE_INCOME_TAX_AREAS = new Set<string>(['AK', 'FL', 'NH', 'NV', 'SD', 'TN', 'TX', 'WA', 'WY']);
 
 function money(value: number): string {
   return formatMoneyLocale(LOCALE, value, 0);
@@ -171,7 +172,9 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
         `Eso es después de ${taxesEs(profile)}, una tasa efectiva de ${formatNumberLocale(LOCALE, takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.`,
         takeHome.stateIncomeTax > 0
           ? `${where} se lleva ${money(takeHome.stateIncomeTax)} en impuesto estatal sobre salarios.`
-          : 'El impuesto estatal estimado es $0 para estos ingresos y esta situación fiscal. Eso no significa que el estado no tenga impuesto sobre la renta.',
+          : NO_STATE_INCOME_TAX_AREAS.has(profile.area)
+            ? `${where} no cobra impuesto estatal sobre salarios, así que no se retiene nada.`
+            : 'El impuesto estatal estimado es $0 para estos ingresos y esta situación fiscal. Eso no significa que el estado no tenga impuesto sobre la renta.',
       ],
     });
   }
