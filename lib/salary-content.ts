@@ -421,7 +421,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
         `That is after ${taxesOnWagesLabel(takeHome)}, an effective rate of ${formatNumber(takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.`,
         takeHome.stateIncomeTax > 0
           ? `${profile.areaLabel} takes ${money(takeHome.stateIncomeTax)} of it in state income tax.`
-          : `Estimated state income tax is $0 for this income and filing setup. A zero estimate does not mean the state has no income tax.`,
+          : `${profile.areaLabel} levies no state income tax on wages, so nothing is withheld for it.`,
       ],
     });
   }
