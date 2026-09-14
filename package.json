@@ -31,7 +31,6 @@
     "data:oews": "tsx scripts/ingest-bls-oews.ts",
     "data:oews:rebuild": "tsx scripts/ingest-bls-oews.ts --rebuild",
     "data:job": "tsx scripts/ingest-job-cost-data.ts",
-    "data:census-construction": "tsx scripts/ingest-census-construction.ts",
     "data:fhfa": "tsx scripts/ingest-fhfa-loan-limits.ts",
     "data:official-tables": "tsx scripts/ingest-official-money-tables.ts",
     "data:pmms": "tsx scripts/ingest-freddie-mac-pmms.ts",

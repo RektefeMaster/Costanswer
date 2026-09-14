@@ -388,6 +388,32 @@ export default function DataSourcesPage() {
           ))}
         </ul>
       </section>
+      <section className="dataset-summary">
+        <h2>Pinned official rule tables</h2>
+        <p>These are transcribed rule books with no weekly or monthly release to miss. Freshness is “still the figure in force,” not a cadence check.</p>
+        <ul>
+          <li>
+            <span className="freshness-pill freshness-current">In force</span>
+            <strong>VA funding fee charts</strong>
+            <small>Effective {vaFundingFeeSnapshot.effectiveFrom} · verified {vaFundingFeeSnapshot.verifiedAt}</small>
+          </li>
+          <li>
+            <span className="freshness-pill freshness-current">In force</span>
+            <strong>IRS Uniform Lifetime Table (RMD)</strong>
+            <small>Distribution year {irsRmdSnapshot.distributionYear} · verified {irsRmdSnapshot.verifiedAt}</small>
+          </li>
+          <li>
+            <span className="freshness-pill freshness-current">In force</span>
+            <strong>2026 ACA premium tax credit rules</strong>
+            <small>Coverage year {acaSubsidySnapshot.coverageYear} · verified {acaSubsidySnapshot.verifiedAt}</small>
+          </li>
+          <li>
+            <span className="freshness-pill freshness-current">In force</span>
+            <strong>2026 Medicare premiums and IRMAA</strong>
+            <small>Coverage year {medicareSnapshot.coverageYear} · verified {medicareSnapshot.verifiedAt}</small>
+          </li>
+        </ul>
+      </section>
       <section className="dataset-card">
         <p><span className="status-dot" /> Current copy</p>
         <h2>Freddie Mac weekly mortgage rate averages</h2>
