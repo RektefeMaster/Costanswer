@@ -376,15 +376,18 @@ export function CalculationReceipt({
     if (typeof document !== 'undefined') {
       const root = document.querySelector('.calculator-panel') || document.querySelector('form') || document.querySelector('main');
       if (root) {
-        const els = root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input:not([type=hidden]), select');
-        els.forEach((el) => {
-          const lbl = el.labels?.[0]?.innerText
-            || el.getAttribute('aria-label')
-            || el.name
-            || el.id;
-          const val = el.value;
-          if (lbl && val !== undefined && val !== '') {
-            inputsGathered.push(`${lbl.replace(/\s+/g, ' ').trim()}: ${val}`);
+        const els = root.querySelectorAll('input:not([type=hidden]), select');
+        els.forEach((node) => {
+          if (node instanceof HTMLInputElement || node instanceof HTMLSelectElement) {
+            const hasLabels = 'labels' in node ? (node as HTMLInputElement).labels : null;
+            const lbl = hasLabels?.[0]?.innerText
+              || node.getAttribute('aria-label')
+              || node.name
+              || node.id;
+            const val = node.value;
+            if (lbl && val !== undefined && val !== '') {
+              inputsGathered.push(`${lbl.replace(/\s+/g, ' ').trim()}: ${val}`);
+            }
           }
         });
       }
