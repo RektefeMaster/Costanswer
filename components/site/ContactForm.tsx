@@ -34,13 +34,18 @@ export function ContactForm({ inboxEmail = 'hello@costanswer.com' }: { inboxEmai
     const qMethod = params.get('method') || params.get('methodVersion');
     const qData = params.get('data') || params.get('dataSnapshot');
     const qMessage = params.get('message');
-    if (qKind && CONTACT_KINDS.some((k) => k.id === qKind)) {
-      setKind(qKind as ContactKind);
-    }
-    if (qUrl) setPageUrl(qUrl);
-    if (qMethod) setMethodVersion(qMethod);
-    if (qData) setDataSnapshot(qData);
-    if (qMessage) setMessage(qMessage);
+
+    const timer = setTimeout(() => {
+      if (qKind && CONTACT_KINDS.some((k) => k.id === qKind)) {
+        setKind(qKind as ContactKind);
+      }
+      if (qUrl) setPageUrl(qUrl);
+      if (qMethod) setMethodVersion(qMethod);
+      if (qData) setDataSnapshot(qData);
+      if (qMessage) setMessage(qMessage);
+    }, 0);
+
+    return () => clearTimeout(timer);
   }, []);
 
   const parsed = useMemo(

@@ -73,7 +73,6 @@ export function salaryTitleEs(profile: OccupationWageProfile): string {
 export function salaryDescriptionEs(profile: OccupationWageProfile): string {
   const singular = occupationSingularEs(profile.occupation);
   const article = occupationArticleEs(profile.occupation);
-  const where = whereLabel(profile);
   const median = profile.wage.annualMedian;
   const hourlyMedian = profile.wage.hourlyMedian;
   if (median === null) {
