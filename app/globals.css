@@ -1034,8 +1034,12 @@ input, select { font-variant-numeric: tabular-nums; }
 .confidence-low { border-left-color: #9a3412; background: rgba(154,52,18,.07); }
 .confidence-low > span { color: #9a3412; }
 
-.receipt-copy { margin-top: 14px; padding: 9px 16px; border: 1px solid var(--line); border-radius: 8px; background: #f6f7f6; font-size: 12px; font-weight: 700; cursor: pointer; }
+.receipt-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+.receipt-copy { padding: 9px 16px; border: 1px solid var(--line); border-radius: 8px; background: #f6f7f6; font-size: 12px; font-weight: 700; cursor: pointer; }
 .receipt-copy:hover { background: #eef0ee; }
+.receipt-report { padding: 9px 16px; border: 1px solid var(--line); border-radius: 8px; background: transparent; font-size: 12px; font-weight: 600; color: rgba(16,42,42,.75); cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+.receipt-report:hover { background: #fdf2f2; color: #991b1b; border-color: #fecaca; }
+.receipt-report svg { flex: none; }
 
 @media (max-width: 600px) {
   .advanced-section, .reverse-solve, .confidence-chip, .scenario-compare { margin-left: 20px; margin-right: 20px; }
@@ -1191,6 +1195,12 @@ input, select { font-variant-numeric: tabular-nums; }
 .result-audit-details summary::-webkit-details-marker { display: none; }
 .result-audit-details summary::after { content: '+'; float: right; font-size: 15px; font-weight: 400; }
 .result-audit-details[open] summary::after { content: '\2212'; }
+.result-audit-help { margin: 0; padding: 0 30px 16px; font-size: 11px; line-height: 1.5; color: rgba(16,42,42,.68); }
+.result-audit-help a { color: var(--ink); text-decoration: underline; font-weight: 600; }
+.wage-report-box { margin-top: 18px; padding: 12px 16px; background: #f6f7f6; border-radius: 8px; font-size: 12px; border: 1px solid var(--line); }
+.wage-report-box p { margin: 0; color: rgba(16,42,42,.75); }
+.wage-report-link { color: #0f766e; font-weight: 700; text-decoration: underline; margin-left: 4px; }
+.wage-report-link:hover { color: #0d5f58; }
 .data-footnote { margin: 0; padding: 16px 25px; border-bottom: 1px solid var(--line); color: rgba(16,42,42,.68); font-size: 10px; line-height: 1.5; }
 .rank-table-wrap { overflow-x: auto; border-bottom: 1px solid var(--line); }
 .rank-table { width: 100%; border-collapse: collapse; }

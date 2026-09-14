@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
   CONTACT_KINDS,
   composeContactBody,
@@ -16,7 +16,7 @@ const HINTS: Record<ContactKind, string> = {
   suggestion: 'Copy, layout, a missing state, a stale source. One change per note is easier to act on.',
 };
 
-export function ContactForm({ inboxEmail }: { inboxEmail?: string }) {
+export function ContactForm({ inboxEmail = 'hello@costanswer.com' }: { inboxEmail?: string }) {
   const [kind, setKind] = useState<ContactKind>('request');
   const [message, setMessage] = useState('');
   const [pageUrl, setPageUrl] = useState('');
@@ -25,6 +25,23 @@ export function ContactForm({ inboxEmail }: { inboxEmail?: string }) {
   const [replyEmail, setReplyEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const qKind = params.get('kind');
+    const qUrl = params.get('url') || params.get('pageUrl');
+    const qMethod = params.get('method') || params.get('methodVersion');
+    const qData = params.get('data') || params.get('dataSnapshot');
+    const qMessage = params.get('message');
+    if (qKind && CONTACT_KINDS.some((k) => k.id === qKind)) {
+      setKind(qKind as ContactKind);
+    }
+    if (qUrl) setPageUrl(qUrl);
+    if (qMethod) setMethodVersion(qMethod);
+    if (qData) setDataSnapshot(qData);
+    if (qMessage) setMessage(qMessage);
+  }, []);
 
   const parsed = useMemo(
     () => parseContactDraft({
@@ -67,12 +84,12 @@ export function ContactForm({ inboxEmail }: { inboxEmail?: string }) {
     if (!inboxEmail) {
       const copied = await copyDraft();
       if (copied) {
-        setStatus('There is no public inbox on the site yet. The note is copied so you can keep it until one is listed.');
+        setStatus('The note is copied to your clipboard. Send it directly to hello@costanswer.com.');
       }
       return;
     }
     window.location.href = composeContactMailto(inboxEmail, parsed.draft);
-    setStatus('If your mail app did not open, copy the note and send it to the address above.');
+    setStatus(`Opening your mail app to send to ${inboxEmail}. If it did not open, copy the note below and send directly.`);
   }
 
   const correction = kind === 'correction';

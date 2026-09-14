@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { InfoPage } from '@/components/site/InfoPage';
 import { ga4MeasurementId } from '@/lib/analytics-provider';
-import { integrationConfig } from '@/lib/integration-config';
+import { integrationConfig, siteContactEmail } from '@/lib/integration-config';
 import { resolveFlag } from '@/lib/monetization/flags';
 import { PrivacyChoices } from '@/components/monetization/PrivacyChoices';
 import { DEFAULT_CONTACT_RETENTION_DAYS, DEFAULT_LEAD_RETENTION_DAYS } from '@/lib/monetization/leads/service';
@@ -163,9 +163,7 @@ export default function PrivacyPage() {
 
       <h2 id="corrections">Corrections and requests</h2>
       <p>
-        {integrationConfig.publicContactEmail
-          ? <>This policy, a wrong figure, a calculator request, a complaint, or a suggestion: <a href={`mailto:${integrationConfig.publicContactEmail}`}>{integrationConfig.publicContactEmail}</a>.</>
-          : <>No public contact address is listed yet. Analytics and advertising stay off until one is. The contact form still prepares a note you can copy.</>}
+        This policy, a wrong figure, a calculator request, a complaint, or a suggestion: <a href={`mailto:${siteContactEmail}`}><strong>{siteContactEmail}</strong></a>.
         {' '}The form and what to copy from Technical details are on the <Link href="/contact">contact</Link> page.
       </p>
     </InfoPage>

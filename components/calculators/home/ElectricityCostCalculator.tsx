@@ -69,7 +69,7 @@ export function ElectricityCostCalculator({ rates, snapshotId, observationPeriod
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Estimated monthly electric bill" value={money(calculation.result.value.monthlyEnergyCost)} note={`${monthlyKwh || 0} kWh at ${effectiveRate.toFixed(2)}¢/kWh`} tone="amber" />
+          <PrimaryResult label="Estimated monthly electric bill" value={money(calculation.result.value.monthlyEnergyCost)} note={`${monthlyKwh || 0} kWh at ${Number(effectiveRate).toFixed(2)}¢/kWh`} tone="amber" />
           <StatGrid items={[
             { label: 'Yearly estimate', value: money(calculation.result.value.annualEnergyCost), note: 'Same usage × 12' },
             { label: 'Daily average', value: money(calculation.result.value.dailyEnergyCost), note: 'Yearly estimate ÷ 365' },

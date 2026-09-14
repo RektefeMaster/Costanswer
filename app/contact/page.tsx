@@ -1,13 +1,13 @@
 import Link from 'next/link';
 import { ContactForm } from '@/components/site/ContactForm';
 import { InfoPage } from '@/components/site/InfoPage';
-import { integrationConfig } from '@/lib/integration-config';
+import { siteContactEmail } from '@/lib/integration-config';
 import { formatPublishingDateLong, PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata = pageMetadata(
   'Contact',
-  'Report a wrong figure on CostAnswer, request a calculator, or send a complaint or suggestion. Copy the Method and Data lines for a correction.',
+  'Report a wrong figure on CostAnswer, request a calculator, or send a complaint or suggestion to hello@costanswer.com.',
   '/contact',
 );
 
@@ -20,35 +20,34 @@ const CONTENTS = [
 ];
 
 export default function ContactPage() {
-  const email = integrationConfig.publicContactEmail;
-  const effective = formatPublishingDateLong(integrationConfig.privacyEffectiveDate ?? PUBLISHING_SNAPSHOT_DATE);
+  const email = siteContactEmail;
+  const effective = formatPublishingDateLong(PUBLISHING_SNAPSHOT_DATE);
 
   return (
     <InfoPage
       eyebrow="Contact"
       title="Contact"
-      intro="Wrong figures, calculator requests, complaints, and suggestions go here. It is not a place to get a second opinion on a loan, a tax return, or a diagnosis."
+      intro="Wrong figures, calculator requests, complaints, and suggestions go here. Direct inbox: hello@costanswer.com. It is not a place to get a second opinion on a loan, a tax return, or a diagnosis."
       effective={effective}
       contents={CONTENTS}
       currentPolicy="/contact"
     >
-      <h2 id="write">Write</h2>
-      {email
-        ? (
-          <p>
-            <a href={`mailto:${email}`}>{email}</a>
-            . Same address as on the privacy page. The form below opens a message to that address. Nothing is
-            posted to CostAnswer to store.
-          </p>
-        )
-        : (
-          <p>
-            There is no public inbox on the site yet. Ads and analytics stay off until there is one, because
-            both need a dated privacy policy and an address people can actually write to. The form still
-            prepares the note so you can copy it; when an address exists, it will be listed here and the same
-            form will open your mail app.
-          </p>
-        )}
+      <h2 id="write">Write to us</h2>
+      <p>
+        Direct email: <a href={`mailto:${email}`}><strong>{email}</strong></a>
+      </p>
+      <p>
+        We welcome your input! You can reach out directly to <a href={`mailto:${email}`}>{email}</a> or use the form below for:
+      </p>
+      <ul>
+        <li><strong>Calculation corrections & wrong figures:</strong> if an engine produces an unexpected result or differs from an official agency table. You can also click <em>Report incorrect result</em> on any calculator to send a complete diagnostic with one click.</li>
+        <li><strong>New calculator & feature requests:</strong> tell us which tools, formulas, or datasets you would like added to the catalogue.</li>
+        <li><strong>Broken pages or technical bugs:</strong> any issue with inputs, layout, or device responsiveness.</li>
+        <li><strong>General suggestions & feedback:</strong> anything we can do to make CostAnswer faster and more useful.</li>
+      </ul>
+      <p>
+        The form below opens your mail app with your note pre-filled to <a href={`mailto:${email}`}>{email}</a>. Nothing is posted to CostAnswer servers to store.
+      </p>
 
       <ContactForm inboxEmail={email} />
 
@@ -65,7 +64,7 @@ export default function ContactPage() {
       </p>
 
       <h2 id="wrong-figures">Wrong figures</h2>
-      <p>Open Technical details under the answer and copy the two lines there into the form.</p>
+      <p>You can use the <strong>Report incorrect result</strong> button directly under any calculation result to send a pre-filled diagnostic snapshot, or copy the details into the form below:</p>
       <ul>
         <li>The page URL</li>
         <li>The Method version</li>

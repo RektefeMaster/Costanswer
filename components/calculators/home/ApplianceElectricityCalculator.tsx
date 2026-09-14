@@ -183,7 +183,7 @@ export function ApplianceElectricityCalculator({
           <PrimaryResult
             label="Estimated monthly electricity cost"
             value={money(calculation.result.value.monthlyCost)}
-            note={`${kwh(calculation.result.value.kwhPerMonth)} at ${effectiveRate.toFixed(2)}¢/kWh`}
+            note={`${kwh(calculation.result.value.kwhPerMonth)} at ${Number(effectiveRate).toFixed(2)}¢/kWh`}
             tone="amber"
           />
           <StatGrid items={[

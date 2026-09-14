@@ -17,13 +17,11 @@
   // `dist/server/wrangler.json` — with main, the assets directory, cache and
   // observability all filled in — and that is what `npm run deploy` deploys.
   "$schema": "node_modules/wrangler/config-schema.json",
-  // Worker name `costanswer`. costanswer.com is not a zone on this account yet
-  // (unregistered as of 2026-09-07). After it is, add:
-  // "routes": [
-  //   { "pattern": "costanswer.com", "custom_domain": true },
-  //   { "pattern": "www.costanswer.com", "custom_domain": true }
-  // ]
   "name": "costanswer",
+  "routes": [
+    { "pattern": "costanswer.com", "custom_domain": true },
+    { "pattern": "www.costanswer.com", "custom_domain": true }
+  ],
   "account_id": "d1a5f19dd2081a3862da14682c9d76e0",
   // The newest date the installed workerd supports. Set it to today and the
   // runtime refuses to start at all — "requires compatibility date 2026-09-07,

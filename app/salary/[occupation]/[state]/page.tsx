@@ -24,12 +24,11 @@ import {
   statesWithWageFor,
 } from '@/lib/salary-pages';
 import {
-  indefiniteArticle,
+  occupationEarningsClause,
   occupationInStateTitleTag,
   occupationJsonLd,
   occupationPageHeading,
   occupationPlural,
-  occupationSingular,
   salaryDirectAnswer,
   salaryQuestions,
 } from '@/lib/salary-content';
@@ -65,11 +64,10 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const stateName = getStateName(state);
   const median = profile.wage.annualMedian;
   const hourly = profile.wage.hourlyMedian;
-  const singular = occupationSingular(occupation);
   const title = occupationInStateTitleTag(occupation, stateName);
   const description = median === null
     ? `What ${occupation.displayTitle.toLowerCase()} earn in ${stateName}, from the BLS ${profile.referenceLabel} wage survey, with pay by percentile and take-home after tax.`
-    : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} in ${stateName} earns a median of ${formatMoney(median, 0)} a year${hourly === null ? '' : ` (${formatMoney(hourly)} an hour)`}${profile.takeHome ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after tax` : ''}. BLS ${profile.referenceLabel}.`;
+    : `${occupationEarningsClause(occupation, ` in ${stateName}`)} a median of ${formatMoney(median, 0)} a year${hourly === null ? '' : ` (${formatMoney(hourly)} an hour)`}${profile.takeHome ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after tax` : ''}. BLS ${profile.referenceLabel}.`;
   return pageMetadata(title, description, salaryOccupationInStatePath(occupation, state), {
     // Per occupation, not per level: leaves open in waves, and the same
     // predicate decides whether anything links to this page.

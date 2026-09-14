@@ -24,11 +24,10 @@ import {
   statesWithWageFor,
 } from '@/lib/salary-pages';
 import {
-  indefiniteArticle,
+  occupationEarningsClause,
   occupationJsonLd,
   occupationPageHeading,
   occupationPlural,
-  occupationSingular,
   occupationTitleTag,
   salaryDirectAnswer,
   salaryQuestions,
@@ -50,11 +49,10 @@ export async function generateMetadata({ params }: { params: Promise<{ occupatio
   if (!result) return {};
   const profile = result.value;
   const median = profile.wage.annualMedian;
-  const singular = occupationSingular(occupation);
   const title = occupationTitleTag(occupation);
   const description = median === null
     ? `What ${occupation.displayTitle.toLowerCase()} earn across the United States, from the BLS ${profile.referenceLabel} wage survey, with pay by percentile and by state.`
-    : `${indefiniteArticle(singular) === 'a' ? 'A' : 'An'} ${singular} earns a median of ${formatMoney(median, 0)} a year in the U.S.${profile.wage.hourlyMedian === null ? '' : ` (${formatMoney(profile.wage.hourlyMedian)} an hour)`}. BLS ${profile.referenceLabel}, plus pay in all 50 states.`;
+    : `${occupationEarningsClause(occupation)} a median of ${formatMoney(median, 0)} a year in the U.S.${profile.wage.hourlyMedian === null ? '' : ` (${formatMoney(profile.wage.hourlyMedian)} an hour)`}. BLS ${profile.referenceLabel}, plus pay in all 50 states.`;
   return pageMetadata(title, description, salaryOccupationPath(occupation), {
     index: isSalaryLevelIndexable('occupation'),
     follow: true,

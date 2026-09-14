@@ -66,10 +66,11 @@ export function toolMetadata(tool: ToolDefinition): Metadata {
   return {
     title,
     description,
-    alternates: { canonical: tool.path },
+    alternates: { canonical: tool.path, languages: hreflangLanguagesFor(tool.path) },
     openGraph: {
       type: 'website',
       url: tool.path,
+      locale: 'en_US',
       title: `${title} | ${siteConfig.name}`,
       description,
       siteName: siteConfig.name,

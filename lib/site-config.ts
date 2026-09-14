@@ -30,4 +30,5 @@ export const siteConfig = {
   tagline: 'Practical calculators with transparent math and real sources.',
   description: 'Free U.S. calculators for money, home, car, health, math and everyday questions. Every answer shows the formula it used and the dated official source behind it.',
   origin: configuredOrigin ?? 'http://localhost:3000',
+  contactEmail: 'hello@costanswer.com',
 } as const;

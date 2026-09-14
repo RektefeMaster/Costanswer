@@ -96,7 +96,7 @@ export function RoadTripFuelCalculator({
           <PrimaryResult
             label="Estimated fuel cost"
             value={money(calculation.result.value.tripCost)}
-            note={`${calculation.result.value.gallons} gallons at ${money(dollarsPerGallon, 3)}`}
+            note={`${calculation.result.value.gallons} gallons at ${money(Number(dollarsPerGallon), 3)}`}
             tone="blue"
           />
           <StatGrid items={[

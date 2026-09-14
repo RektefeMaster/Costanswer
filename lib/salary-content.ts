@@ -176,6 +176,17 @@ export function occupationSingular(occupation: Pick<OewsOccupation, 'code' | 'di
   return OCCUPATION_NAMING[occupation.code]?.singular ?? occupation.displayTitle;
 }
 
+/** Keep official plural job titles grammatical without inventing a singular name. */
+export function occupationEarningsClause(occupation: Pick<OewsOccupation, 'code' | 'displayTitle'>, place = ''): string {
+  if (hasCuratedName(occupation)) {
+    const singular = occupationSingular(occupation);
+    const article = indefiniteArticle(singular) === 'a' ? 'A' : 'An';
+    return `${article} ${singular}${place} earns`;
+  }
+  const plural = occupationPlural(occupation);
+  return `${plural.charAt(0).toUpperCase()}${plural.slice(1)}${place} earn`;
+}
+
 /**
  * How long the informative half of a page title may be.
  *
@@ -206,6 +217,7 @@ export function occupationPageHeading(
 ): string {
   const singular = occupationSingular(occupation);
   const article = indefiniteArticle(singular);
+  if (!hasCuratedName(occupation)) return `How much do ${occupationPlural(occupation)} make${stateName ? ` in ${stateName}` : ''}?`;
   if (stateName) return `How much does ${article} ${singular} make in ${stateName}?`;
   return `How much does ${article} ${singular} make?`;
 }
@@ -220,7 +232,7 @@ export function occupationTitleTag(occupation: Pick<OewsOccupation, 'code' | 'di
   const heading = occupationHeadingName(occupation);
   const singular = occupationSingular(occupation);
   const article = indefiniteArticle(singular);
-  const withQuestion = `How Much Does ${article} ${heading} Make?`;
+  const withQuestion = hasCuratedName(occupation) ? `How Much Does ${article} ${heading} Make?` : `How Much Do ${heading} Make?`;
   if (withQuestion.length <= TITLE_BUDGET) return withQuestion;
   const short = `${heading} Salary`;
   return short.length <= TITLE_BUDGET ? short : heading;
@@ -234,7 +246,7 @@ export function occupationInStateTitleTag(
   const heading = occupationHeadingName(occupation);
   const singular = occupationSingular(occupation);
   const article = indefiniteArticle(singular);
-  const withQuestion = `How Much Does ${article} ${heading} Make in ${stateName}?`;
+  const withQuestion = hasCuratedName(occupation) ? `How Much Does ${article} ${heading} Make in ${stateName}?` : `How Much Do ${heading} Make in ${stateName}?`;
   if (withQuestion.length <= TITLE_BUDGET) return withQuestion;
   const short = `${heading} Salary in ${stateName}`;
   return short.length <= TITLE_BUDGET ? short : `${heading} in ${stateName}`;
@@ -336,8 +348,6 @@ function percent(value: number, digits = 1): string {
 
 export function salaryDirectAnswer(profile: OccupationWageProfile): string {
   const singular = occupationSingular(profile.occupation);
-  const article = indefiniteArticle(singular);
-  const Article = article === 'a' ? 'A' : 'An';
   const inWhere = profile.area === 'US' ? 'in the United States' : `in ${profile.areaLabel}`;
   const median = profile.wage.annualMedian;
   const hourly = profile.wage.hourlyMedian;
@@ -345,7 +355,7 @@ export function salaryDirectAnswer(profile: OccupationWageProfile): string {
     return `BLS did not publish a median wage for ${singular} ${inWhere} in ${profile.referenceLabel}. The survey withholds a figure when it cannot publish one without identifying respondents.`;
   }
   if (median === null && hourly !== null) {
-    return `${Article} ${singular} ${inWhere} earns a median of ${formatMoney(hourly)} an hour, from the BLS occupational wage survey for ${profile.referenceLabel}. BLS publishes no annual figure because hours in a year vary too much for one to mean anything.`;
+    return `${occupationEarningsClause(profile.occupation, ` ${inWhere}`)} a median of ${formatMoney(hourly)} an hour, from the BLS occupational wage survey for ${profile.referenceLabel}. BLS publishes no annual figure because hours in a year vary too much for one to mean anything.`;
   }
   const net = profile.takeHome
     ? `, about ${formatMoney(profile.takeHome.monthly, 0)} a month after ${taxesOnWagesLabel(profile.takeHome)}`
@@ -353,7 +363,7 @@ export function salaryDirectAnswer(profile: OccupationWageProfile): string {
   const jobs = profile.employment.total === null
     ? ''
     : ` The survey counted ${formatNumber(profile.employment.total)} of these jobs ${inWhere} in ${profile.referenceLabel}.`;
-  return `${Article} ${singular} ${inWhere} earns a median of ${formatMoney(median!, 0)} a year${hourly === null ? '' : ` (${formatMoney(hourly)} an hour)`}${net}. Figure from the BLS Occupational Employment and Wage Statistics survey.${jobs}`;
+  return `${occupationEarningsClause(profile.occupation, ` ${inWhere}`)} a median of ${formatMoney(median!, 0)} a year${hourly === null ? '' : ` (${formatMoney(hourly)} an hour)`}${net}. Figure from the BLS Occupational Employment and Wage Statistics survey.${jobs}`;
 }
 
 export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[] {
@@ -368,7 +378,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
   if (median !== null) {
     const hourly = profile.wage.hourlyMedian;
     questions.push({
-      question: `How much does ${article} ${singular} make${inWhere}?`,
+      question: occupationPageHeading(profile.occupation, profile.area === 'US' ? undefined : profile.areaLabel),
       answer: [
         `The median wage for ${plural} in ${where} is ${money(median)} a year${hourly === null ? '' : `, or ${formatMoney(hourly)} an hour`}.`,
         `Half earn more than that and half earn less. The figure comes from the Bureau of Labor Statistics occupational wage survey for ${profile.referenceLabel}.`,
@@ -385,7 +395,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
     }
     if (hourly !== null) {
       questions.push({
-        question: `What is the hourly pay for ${article} ${singular}${inWhere}?`,
+        question: `What is the hourly pay for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
         answer: [
           `The median hourly wage is ${formatMoney(hourly)}. At a full-time year that lines up with about ${money(median)} a year.`,
           `BLS ${profile.referenceLabel}; hourly and annual figures come from the same survey.`,
@@ -394,7 +404,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
     }
   } else if (profile.wage.hourlyMedian !== null) {
     questions.push({
-      question: `How much does ${article} ${singular} make an hour${inWhere}?`,
+      question: `What is the hourly pay for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
       answer: [
         `The median hourly wage for ${plural} in ${where} is ${formatMoney(profile.wage.hourlyMedian)}, from the Bureau of Labor Statistics survey for ${profile.referenceLabel}.`,
         'BLS publishes no annual figure for this occupation, because the hours worked in a year vary too much for one to mean anything.',
@@ -405,13 +415,13 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
   if (profile.takeHome) {
     const takeHome = profile.takeHome;
     questions.push({
-      question: `What is the take-home pay for ${article} ${singular}${inWhere}?`,
+      question: `What is the take-home pay for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
       answer: [
-        `On the median wage of ${money(takeHome.grossAnnual)}, one filer taking the standard deduction keeps about ${money(takeHome.annual)} a year, or roughly ${money(takeHome.monthly)} a month.`,
+        `On the median wage of ${money(takeHome.grossAnnual)}, a single filer taking the ${takeHome.taxYear} standard deduction keeps an estimated ${money(takeHome.annual)} a year, or roughly ${money(takeHome.monthly)} a month.`,
         `That is after ${taxesOnWagesLabel(takeHome)}, an effective rate of ${formatNumber(takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.`,
         takeHome.stateIncomeTax > 0
           ? `${profile.areaLabel} takes ${money(takeHome.stateIncomeTax)} of it in state income tax.`
-          : `${profile.areaLabel} levies no state income tax on wages, so nothing is withheld for it.`,
+          : `Estimated state income tax is $0 for this income and filing setup. A zero estimate does not mean the state has no income tax.`,
       ],
     });
   }
@@ -447,7 +457,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
     questions.push({
       question: `What do the highest-paid ${plural} earn${inWhere}?`,
       answer: [
-        `The top tenth earn ${money(top)} a year or more, against ${money(profile.wage.annual.p10 ?? median)} at the bottom tenth.`,
+        `The top tenth earn ${money(top)} a year or more.${profile.wage.annual.p10 === null ? ' BLS did not publish the 10th-percentile wage.' : ` The 10th-percentile wage is ${money(profile.wage.annual.p10)}.`}`,
         `Experience, specialty, employer and the part of ${where} someone works in all move a wage inside that range; the survey reports the spread, not the reason for it.`,
       ],
     });
@@ -456,7 +466,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
       question: `What do the highest-paid ${plural} earn${inWhere}?`,
       answer: [
         `BLS reports the top of this occupation only as "at or above the survey's top code", so the highest wages are not published as a number.`,
-        'That happens where enough people earn above the cap that publishing a figure would identify them.',
+        'An at-or-above value is a reporting threshold, not an exact salary. It does not establish the highest salary someone can earn.',
       ],
     });
   }

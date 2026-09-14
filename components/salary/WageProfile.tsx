@@ -320,6 +320,27 @@ export function WageSources({ profile, locale = 'en-US' }: { profile: Occupation
           dateLabel: profile.versusHousehold.surveyYears,
         }] : []),
       ];
+  const isEs = locale === 'es-US';
+  const mailSubject = isEs
+    ? `CostAnswer Reporte: ${profile.occupation.displayTitle} (${profile.areaLabel})`
+    : `CostAnswer Wage Report: ${profile.occupation.displayTitle} (${profile.areaLabel})`;
+
+  const mailBody = [
+    isEs ? '[Describa aquí qué cifra parece incorrecta o qué tabla oficial esperaba]' : '[Describe what looks wrong or what official source table you expected]',
+    '',
+    '=== WAGE PROFILE DIAGNOSTIC ===',
+    `Occupation: ${profile.occupation.displayTitle} (${profile.occupation.code})`,
+    `Area: ${profile.areaLabel} (${profile.area})`,
+    `Data Period: ${profile.referenceLabel}`,
+    `Median Annual: ${profile.wage.annualMedian ? `$${profile.wage.annualMedian.toLocaleString('en-US')}` : 'Unpublished'}`,
+    `Median Hourly: ${profile.wage.hourlyMedian ? `$${profile.wage.hourlyMedian.toFixed(2)}` : 'Unpublished'}`,
+    `Tax Year: ${profile.takeHome?.taxYear ?? 'N/A'}`,
+    `BEA Reference: ${profile.costAdjusted?.referenceYear ?? 'N/A'}`,
+    `ACS Survey: ${profile.versusHousehold?.surveyYears ?? 'N/A'}`,
+  ].join('\n');
+
+  const mailtoHref = `mailto:hello@costanswer.com?subject=${encodeURIComponent(mailSubject)}&body=${encodeURIComponent(mailBody)}`;
+
   return (
     <section className="sources-section" aria-labelledby="sources-title">
       <div>
@@ -333,6 +354,15 @@ export function WageSources({ profile, locale = 'en-US' }: { profile: Occupation
             <span>{source.dateLabel} ↗</span>
           </a>
         ))}
+      </div>
+      <div className="wage-report-box">
+        <p>
+          {isEs ? '¿Encontró alguna discrepancia con los datos oficiales?' : 'Notice a discrepancy with official data?'}
+          {' '}
+          <a href={mailtoHref} className="wage-report-link">
+            {isEs ? 'Reportar error a hello@costanswer.com ↗' : 'Report an issue to hello@costanswer.com ↗'}
+          </a>
+        </p>
       </div>
     </section>
   );

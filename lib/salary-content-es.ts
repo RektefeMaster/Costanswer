@@ -168,11 +168,11 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
     questions.push({
       question: `¿Cuánto queda neto para ${article} ${singular} ${place}?`,
       answer: [
-        `Sobre la mediana de ${money(takeHome.grossAnnual)}, un declarante soltero con la deducción estándar se queda con unos ${money(takeHome.annual)} al año, o ${money(takeHome.monthly)} al mes.`,
+        `Sobre la mediana de ${money(takeHome.grossAnnual)}, un declarante soltero con la deducción estándar de ${takeHome.taxYear} se queda con unos ${money(takeHome.annual)} al año, o ${money(takeHome.monthly)} al mes.`,
         `Eso es después de ${taxesEs(profile)}, una tasa efectiva de ${formatNumberLocale(LOCALE, takeHome.effectiveTaxRate, { style: 'percent', maximumFractionDigits: 1 })}.`,
         takeHome.stateIncomeTax > 0
           ? `${where} se lleva ${money(takeHome.stateIncomeTax)} en impuesto estatal sobre salarios.`
-          : `${where} no cobra impuesto estatal sobre salarios, así que no se retiene nada por ese concepto.`,
+          : 'El impuesto estatal estimado es $0 para estos ingresos y esta situación fiscal. Eso no significa que el estado no tenga impuesto sobre la renta.',
       ],
     });
   }
@@ -208,7 +208,7 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
     questions.push({
       question: `¿Cuánto ganan los ${plural} mejor pagados ${place}?`,
       answer: [
-        `El diez por ciento de arriba gana ${money(top)} al año o más, frente a ${money(profile.wage.annual.p10 ?? median)} en el diez por ciento de abajo.`,
+        `El 10 % con mayores sueldos gana ${money(top)} al año o más.${profile.wage.annual.p10 === null ? ' BLS no publicó el salario del percentil 10.' : ` El salario del percentil 10 es ${money(profile.wage.annual.p10)}.`}`,
         `La experiencia, la especialidad, el empleador y la zona de ${where} mueven el sueldo dentro de ese rango; la encuesta reporta la dispersión, no la causa.`,
       ],
     });
@@ -217,7 +217,7 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
       question: `¿Cuánto ganan los ${plural} mejor pagados ${place}?`,
       answer: [
         'BLS reporta la parte alta de esta ocupación solo como “igual o por encima del tope de la encuesta”, así que los sueldos más altos no salen como número.',
-        'Eso ocurre cuando hay suficientes personas por encima del tope como para que publicar una cifra las identificara.',
+        'Ese valor indica un umbral de publicación, no un sueldo exacto ni el salario máximo que alguien puede ganar.',
       ],
     });
   }

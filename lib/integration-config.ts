@@ -53,4 +53,8 @@ function parseOptionalEmail(value: string | undefined): string | undefined {
   return email;
 }
 
+export const DEFAULT_CONTACT_EMAIL = 'hello@costanswer.com';
+
 export const integrationConfig = parseIntegrationConfig(process.env);
+
+export const siteContactEmail = integrationConfig.publicContactEmail ?? DEFAULT_CONTACT_EMAIL;

@@ -347,6 +347,8 @@ export function CalculationReceipt({
     ?? (dock?.dock ? { label: dock.dock.label, value: dock.dock.value } : null)
     ?? { label: 'Result', value: breakdown[breakdown.length - 1]?.value ?? '' };
 
+  const [reportStatus, setReportStatus] = useState<string | null>(null);
+
   const copyReceipt = async () => {
     const text = receiptText({
       title: title ?? 'CostAnswer result',
@@ -362,6 +364,80 @@ export function CalculationReceipt({
     } catch {
       setCopied(false);
     }
+  };
+
+  const reportIncorrectResult = async () => {
+    const isEs = typeof document !== 'undefined' && (document.documentElement.lang === 'es' || window.location.pathname.startsWith('/es'));
+    const pageUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const toolTitle = title ?? (typeof document !== 'undefined' ? document.title.split('|')[0]?.trim() : 'Calculator');
+
+    // Collect user-entered form inputs from the nearest panel or container
+    const inputsGathered: string[] = [];
+    if (typeof document !== 'undefined') {
+      const root = document.querySelector('.calculator-panel') || document.querySelector('form') || document.querySelector('main');
+      if (root) {
+        const els = root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input:not([type=hidden]), select');
+        els.forEach((el) => {
+          const lbl = el.labels?.[0]?.innerText
+            || el.getAttribute('aria-label')
+            || el.name
+            || el.id;
+          const val = el.value;
+          if (lbl && val !== undefined && val !== '') {
+            inputsGathered.push(`${lbl.replace(/\s+/g, ' ').trim()}: ${val}`);
+          }
+        });
+      }
+    }
+
+    const stepsText = breakdown.map((s) => `  • ${s.label}: ${s.value}${s.detail ? ` (${s.detail})` : ''}`).join('\n');
+    const assumptionsText = assumptions.map((a) => `  • ${a}`).join('\n');
+    const inputsText = inputsGathered.length > 0 ? inputsGathered.map((i) => `  • ${i}`).join('\n') : '  (Default/standard inputs)';
+    const dataSnapshotText = datasetSnapshotIds.length > 0 ? datasetSnapshotIds.join(', ') : 'Manual inputs / fixed rules';
+
+    const subject = isEs
+      ? `CostAnswer Reporte: ${toolTitle} (${resolvedHeadline.value})`
+      : `CostAnswer Error Report: ${toolTitle} (${resolvedHeadline.value})`;
+
+    const promptText = isEs
+      ? '[Por favor describa qué cifra parece incorrecta o qué resultado esperaba aquí]'
+      : '[Please describe what looks wrong or what result you expected here]';
+
+    const body = [
+      promptText,
+      '',
+      '=== DIAGNOSTIC REPORT ===',
+      `Tool: ${toolTitle}`,
+      `URL: ${pageUrl}`,
+      `Primary Result: ${resolvedHeadline.label}: ${resolvedHeadline.value}`,
+      `Method Version: ${calculationVersion}`,
+      `Data Snapshot: ${dataSnapshotText}`,
+      '',
+      'User Inputs:',
+      inputsText,
+      '',
+      'Calculation Steps:',
+      stepsText,
+      '',
+      'Assumptions:',
+      assumptionsText,
+    ].join('\n');
+
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(body);
+      }
+    } catch {
+      // ignore clipboard error
+    }
+
+    const mailto = `mailto:hello@costanswer.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    if (typeof window !== 'undefined') {
+      window.location.href = mailto;
+    }
+
+    setReportStatus(isEs ? 'Abriendo correo a hello@costanswer.com… (Copiado)' : 'Opening email to hello@costanswer.com… (Copied)');
+    setTimeout(() => setReportStatus(null), 4000);
   };
 
   return (
@@ -392,10 +468,28 @@ export function CalculationReceipt({
           <span>Method {calculationVersion}</span>
           <span>{datasetSnapshotIds.length > 0 ? `Data ${datasetSnapshotIds.join(', ')}` : 'Data Manual inputs / fixed rules'}</span>
         </p>
+        <p className="result-audit-help">
+          Discrepancy in the numbers? You can click <em>Report incorrect result</em> below or email <a href="mailto:hello@costanswer.com">hello@costanswer.com</a> with the Method and Data lines.
+        </p>
       </details>
-      <button type="button" className="receipt-copy" onClick={copyReceipt}>
-        {copied ? 'Copied the working' : 'Copy result and working'}
-      </button>
+      <div className="receipt-actions">
+        <button type="button" className="receipt-copy" onClick={copyReceipt}>
+          {copied ? 'Copied the working' : 'Copy result and working'}
+        </button>
+        <button
+          type="button"
+          className="receipt-report"
+          onClick={reportIncorrectResult}
+          title="Report an incorrect result or formula discrepancy with prefilled diagnostics"
+        >
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>{reportStatus ?? 'Report incorrect result'}</span>
+        </button>
+      </div>
     </div>
   );
 }

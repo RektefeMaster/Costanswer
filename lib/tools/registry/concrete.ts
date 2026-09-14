@@ -21,7 +21,7 @@ export const tool: ToolDefinition = {
   }),
   metaTitle: 'Concrete Calculator: Cubic Yards and Bag Count for a Slab',
   metaDescription: 'How much concrete do you need for a rectangular slab? Get cubic yards and bag counts, with waste listed separately. For driveways, patios, and sidewalks.',
-  indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, implementationConfidence: 5 }, 'verified'),
+  indexability: launchIndexability({ searchIntentEvidence: 18, uniqueDataOrFunction: 23, answerDepth: 14, provenanceAndFreshness: 12, internalLinkValue: 9, mobileAndPerformance: 9, maintenanceConfidence: 5 }, 'verified'),
   relationships: [
     { toolId: 'electricity-cost', type: 'sibling' },
     { toolId: 'square-footage', type: 'next-decision' },
