@@ -728,7 +728,13 @@ input, select { font-variant-numeric: tabular-nums; }
   columns: 2;
   column-gap: 16px;
 }
-.footer-salary-links a { break-inside: avoid; }
+/*
+ * Block-level, and stated with enough weight to outrank the coarse-pointer
+ * rule that makes footer links inline-flex: inside a multi-column box an
+ * inline-flex link flows as inline text, which ran the whole salary list
+ * together across the line on a phone instead of stacking it.
+ */
+.site-footer .footer-salary-links a { display: flex; break-inside: avoid; }
 .footer-nav-meta {
   display: flex;
   flex-direction: column;
