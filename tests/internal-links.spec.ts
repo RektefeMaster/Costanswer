@@ -174,6 +174,10 @@ describe('internal link analytics', () => {
  */
 describe('internal link surfaces render', () => {
   const html = (node: Parameters<typeof renderToStaticMarkup>[0], locale: 'en-US' | 'es-US' = 'en-US') =>
+    // `children` goes in the props object because this file is .ts, so there is
+    // no JSX, and LocaleProvider declares children as required: the positional
+    // form of createElement does not typecheck against it.
+    // eslint-disable-next-line react/no-children-prop
     renderToStaticMarkup(createElement(LocaleProvider, { locale, children: node }));
 
   it('gives every next step an anchor, a destination and a tracking hook', () => {

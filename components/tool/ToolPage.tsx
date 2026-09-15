@@ -76,10 +76,13 @@ const RESULT_NOTES: Record<ResultNature, { heading: string; body: string }> = {
   },
 };
 
-export async function ToolPage({ tool, children, methodology, sources = [], caution, sourcePeriods }: ToolPageProps) {
+export async function ToolPage({ tool: toolProp, children, methodology, sources = [], caution, sourcePeriods }: ToolPageProps) {
   const locale = await requestLocale();
   const t = (text: string) => siteText(text, locale);
-  tool = localizedTool(tool, locale);
+  // Localized copy goes in a local, not back into the prop: reassigning a prop
+  // is what `react-hooks/immutability` rejects, and it had CI red on every
+  // push. Same value, same call, one name for the localized tool.
+  const tool = localizedTool(toolProp, locale);
   const category = locale === 'es-US' ? { ...categories[tool.category], ...CATEGORY_ES[tool.category] } : categories[tool.category];
   /*
    * Built from the tool's own data manifest rather than hand-listed per page,
