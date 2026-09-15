@@ -29,6 +29,8 @@ import { hreflangLanguagesFor } from '@/lib/i18n/alternates';
 import { STATE_CODES } from '@/lib/location/states';
 import { costFamilySitemapPaths } from '@/lib/job/paths';
 
+import { ANNUAL_SALARIES, HOURLY_RATES, hourlyToSlug, salaryToSlug } from '@/lib/matrices/wage-matrix-data';
+
 export const SITEMAP_URL_LIMIT = 50_000;
 /**
  * URLs per sitemap file, per family.
@@ -47,7 +49,7 @@ const SITEMAP_FAMILY_PAGE_SIZE: Partial<Record<SitemapFamilyId, number>> = {
 function familyPageSize(family: SitemapFamilyId): number {
   return SITEMAP_FAMILY_PAGE_SIZE[family] ?? SITEMAP_URL_LIMIT;
 }
-export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary', 'cost', 'pages-es', 'salary-es'] as const;
+export const SITEMAP_FAMILY_IDS = ['pages', 'topics', 'tools', 'salary', 'cost', 'pages-es', 'salary-es', 'wage-matrix'] as const;
 export type SitemapFamilyId = (typeof SITEMAP_FAMILY_IDS)[number];
 
 export type SitemapEntry = {
@@ -162,6 +164,24 @@ function withHreflang(entry: SitemapEntry): SitemapEntry {
   };
 }
 
+function wageMatrixEntries(): SitemapEntry[] {
+  const lastModified = taxSnapshot.publishedAt > CONTENT_RELEASE_DATE ? taxSnapshot.publishedAt : CONTENT_RELEASE_DATE;
+  return [
+    ...HOURLY_RATES.map((rate) => ({
+      path: `/money/hourly-to-salary/${hourlyToSlug(rate)}` as `/${string}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+    ...ANNUAL_SALARIES.map((salary) => ({
+      path: `/money/salary-after-tax/${salaryToSlug(salary)}` as `/${string}`,
+      lastModified,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+  ];
+}
+
 export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
   return {
     pages: ['/', '/about', '/methodology', '/methodology/data', '/privacy', '/terms', '/disclosure', '/contact', '/faq'].map((path) => {
@@ -211,6 +231,7 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
       changeFrequency: 'monthly',
       priority: tool.featured ? 0.9 : 0.7,
     })),
+    'wage-matrix': wageMatrixEntries(),
   };
 }
 

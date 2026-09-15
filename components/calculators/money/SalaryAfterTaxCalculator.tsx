@@ -15,11 +15,11 @@ function money(value: number) {
   return value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 2 });
 }
 
-export function SalaryAfterTaxCalculator() {
+export function SalaryAfterTaxCalculator({ initialSalary }: { initialSalary?: string } = {}) {
   const locale = useLocale();
   const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
-  const [annualGrossSalary, setAnnualGrossSalary] = useState('100000');
+  const [annualGrossSalary, setAnnualGrossSalary] = useState(initialSalary ?? '100000');
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [filingStatus, setFilingStatus] = useState<(typeof FILING_STATUSES)[number]>('single');
   const [taxYear, setTaxYear] = useState(String(DEFAULT_TAX_YEAR));

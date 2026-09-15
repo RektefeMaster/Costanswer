@@ -7,10 +7,10 @@ import { calculateHourlySalary } from '@/lib/calculations/hourly-salary';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 
-export function HourlySalaryCalculator() {
+export function HourlySalaryCalculator({ initialRate }: { initialRate?: string } = {}) {
   const locale = useLocale();
   const t = (text: string) => siteText(text, locale);
-  const [hourlyRate, setHourlyRate] = useState('28');
+  const [hourlyRate, setHourlyRate] = useState(initialRate ?? '28');
   const [regularHours, setRegularHours] = useState('40');
   const [overtimeHours, setOvertimeHours] = useState('0');
   const [overtimeMultiplier, setOvertimeMultiplier] = useState('1.5');

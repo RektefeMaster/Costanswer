@@ -61,6 +61,24 @@ export function pageMetadata(
   };
 }
 
+/**
+ * Builds a search-intent calibrated SERP title.
+ *
+ * Evergreen queries (mathematical equivalences like "$30 an Hour Is How Much a Year?")
+ * must not carry a year tag, because math does not change year to year.
+ * Freshness-sensitive queries (tax, take-home, state schedules) carry "(2026)".
+ */
+export function buildSerpTitle(
+  baseTitle: string,
+  intent: 'evergreen' | 'tax-freshness' | 'annual-survey' = 'evergreen',
+  year = 2026,
+): string {
+  if (intent === 'tax-freshness' || intent === 'annual-survey') {
+    return `${baseTitle} (${year})`;
+  }
+  return baseTitle;
+}
+
 export function toolMetadata(tool: ToolDefinition): Metadata {
   const indexable = evaluateToolIndexability(tool).indexable;
   const title = tool.metaTitle ?? tool.title;
