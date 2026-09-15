@@ -91,12 +91,13 @@ input, select { font-variant-numeric: tabular-nums; }
   gap: 16px;
   min-width: 0;
 }
-.brand { display: flex; align-items: center; gap: 11px; font-weight: 820; font-size: 18px; letter-spacing: -0.04em; }
-.brand > span:last-child > span { color: #207767; }
-.brand-mark {
-  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%;
-  background: var(--ink); color: var(--accent); font-family: Georgia, serif; font-style: italic;
-}
+/*
+ * The brand is one image now, so the only thing left to set is how tall it is.
+ * Height drives it everywhere — the intrinsic ratio is declared on the element,
+ * so `width: auto` follows from it and the header never reflows mid-load.
+ */
+.brand { display: flex; align-items: center; }
+.brand-lockup { display: block; width: auto; height: var(--brand-height, 40px); }
 .top-nav { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 22px; font-size: 13px; font-weight: 650; }
 .top-nav a { position: relative; display: inline-flex; align-items: center; gap: 7px; line-height: 1; }
 .top-nav a, .header-search { transition: color .2s ease; }
@@ -631,8 +632,7 @@ input, select { font-variant-numeric: tabular-nums; }
     --section-y: 56px;
   }
   .site-header { height: 64px; }
-  .brand { font-size: 16px; gap: 8px; }
-  .brand-mark { width: 30px; height: 30px; }
+  .brand { --brand-height: 32px; }
   .hero { min-height: auto; gap: 36px; padding-block: 36px 48px; }
   .hero h1 { font-size: clamp(32px, 9.5vw, 48px); }
   .hero-rotate, .hero-noun { height: 1em; min-height: 1em; line-height: 1; }
@@ -691,8 +691,9 @@ input, select { font-variant-numeric: tabular-nums; }
   align-items: start;
 }
 .footer-inner > * { min-width: 0; }
-.brand-footer { width: fit-content; font-size: 21px; }
-.brand-footer .brand-mark { background: var(--accent); color: var(--ink); }
+/* The footer signature runs larger than the header's; it is the only brand
+ * mark on a dark ground and has a whole column to sit in. */
+.brand-footer { --brand-height: 44px; width: fit-content; }
 .footer-lead p {
   max-width: 34em;
   margin: 14px 0 0;
@@ -710,20 +711,30 @@ input, select { font-variant-numeric: tabular-nums; }
   text-transform: uppercase;
 }
 .site-footer nav { display: flex; flex-direction: column; align-items: stretch; font-size: 14px; }
-.footer-topics,
-.footer-salary-links {
+.footer-topics {
   display: grid;
   width: 100%;
-}
-.footer-topics {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   column-gap: 18px;
 }
+/*
+ * Flowed, not gridded. A two-line entry — Home Health or Personal Care Aide,
+ * Customer Service Representative — makes its grid row taller and leaves the
+ * cell beside it half empty, which read as holes punched through the column.
+ * Multi-column flow lets the short links close up behind the tall ones.
+ */
 .footer-salary-links {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+  columns: 2;
   column-gap: 16px;
 }
-.footer-nav-legal { grid-column: 4; }
+.footer-salary-links a { break-inside: avoid; }
+.footer-nav-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  min-width: 0;
+}
 .site-footer nav a {
   min-height: 32px;
   max-width: 100%;
@@ -1816,11 +1827,18 @@ input, select { font-variant-numeric: tabular-nums; }
 .dataset-links { display: flex; gap: 22px; margin-top: 25px; }
 
 @media (max-width: 920px) {
-  .footer-inner { grid-template-columns: minmax(0, 1.2fr) minmax(0, .85fr) minmax(0, .7fr); gap: 24px 28px; }
-  .footer-lead { grid-column: 1 / -1; }
-  .footer-nav-legal { grid-column: 3; }
+  /*
+   * A tablet is too narrow for four columns and too wide for one. Topics takes
+   * its own full-width band, and the salaries list — far the longest of the
+   * four — is given two thirds of the row so it runs beside the site links
+   * rather than 600px past the bottom of them.
+   */
+  .footer-inner { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .footer-lead, .footer-nav-topics { grid-column: 1 / -1; }
+  .footer-nav-salary { grid-column: 1 / 3; }
+  .footer-nav-meta { grid-column: 3; }
   .footer-topics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .footer-salary-links { grid-template-columns: 1fr; }
+  .footer-salary-links { columns: 2; }
   .info-page-doc > header { grid-template-columns: 1fr; gap: 18px; }
   .info-doc-grid { grid-template-columns: 1fr; }
   .info-doc-rail { position: static; grid-template-columns: 1fr 1fr; }
@@ -1844,10 +1862,10 @@ input, select { font-variant-numeric: tabular-nums; }
 @media (max-width: 680px) {
   .site-footer { padding-top: 36px; }
   .footer-inner { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 28px 20px; }
-  .footer-lead, .footer-nav-topics, .footer-nav-salary { grid-column: 1 / -1; }
-  .footer-nav-legal { grid-column: auto; }
-  .footer-topics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .footer-salary-links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-lead, .footer-nav-topics, .footer-nav-salary, .footer-nav-meta { grid-column: 1 / -1; }
+  .footer-nav-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 20px; align-items: start; }
+  .footer-topics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-salary-links { columns: 2; }
   .footer-lead p { font-size: 16px; }
   .footer-legal { margin-top: 20px; }
   .tool-hero { padding-inline: 0; padding-top: 28px; padding-bottom: 40px; }
@@ -2832,7 +2850,7 @@ input, select { font-variant-numeric: tabular-nums; }
 .mobile-nav-dialog[open] { animation: nav-sheet-enter .2s ease-out; }
 .mobile-nav-sheet { display: flex; flex-direction: column; height: 100%; padding-top: env(safe-area-inset-top, 0px); }
 .mobile-nav-heading { display: flex; align-items: center; justify-content: space-between; flex: none; padding: 22px 24px 18px; border-bottom: 1px solid var(--line); }
-.mobile-nav-eyebrow { margin: 0 0 5px; font-size: 11px; font-weight: 750; letter-spacing: .03em; color: #207767; }
+.mobile-nav-brand { height: 22px; width: auto; margin-bottom: 8px; }
 .mobile-nav-heading h2 { margin: 0; font-family: Georgia, serif; font-size: 32px; font-weight: 400; letter-spacing: -.04em; line-height: 1.1; }
 .mobile-nav-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: transparent; color: var(--ink); cursor: pointer; }
 .mobile-nav-close:hover { background: rgba(16,42,42,.06); }
@@ -2867,6 +2885,7 @@ input, select { font-variant-numeric: tabular-nums; }
 @media (max-width: 1180px) {
   :root { --header-height: 72px; }
   .site-header { height: var(--header-height); grid-template-columns: minmax(0, 1fr) auto; gap: 12px; }
+  .brand { --brand-height: 36px; }
   .site-header .top-nav, .site-header .header-search { display: none; }
   .mobile-menu-trigger { display: flex; }
 }
@@ -2874,8 +2893,8 @@ input, select { font-variant-numeric: tabular-nums; }
   :root { --header-height: 68px; }
   .site-header { height: var(--header-height); gap: 8px; }
   .header-end { gap: 8px; }
-  .brand { font-size: 17px; gap: 8px; white-space: nowrap; }
-  .brand-mark { width: 32px; height: 32px; flex: none; }
+  .brand { --brand-height: 32px; }
+  .brand-footer { --brand-height: 38px; }
   .language-picker > summary { padding: 0 9px; gap: 5px; }
   .language-globe { display: none; }
   .language-popover { right: -52px; }
@@ -2910,9 +2929,12 @@ input, select { font-variant-numeric: tabular-nums; }
   .tool-hero h1, .topic-hero h1 { font-size: clamp(32px, 8vw, 42px); line-height: 1.08; overflow-wrap: break-word; }
   .tool-hero, .topic-hero { padding-top: 28px; }
 }
+@media (max-width: 400px) {
+  .footer-topics { grid-template-columns: 1fr; }
+  .footer-salary-links { columns: 1; }
+}
 @media (max-width: 360px) {
-  .brand { font-size: 15px; gap: 6px; }
-  .brand-mark { width: 28px; height: 28px; }
+  .brand { --brand-height: 28px; }
   .mobile-nav-heading { padding: 18px 16px 16px; }
   .mobile-nav-content { padding-inline: 16px; }
   .mobile-nav-featured a { padding: 14px 12px; }
@@ -3592,6 +3614,20 @@ input, select { font-variant-numeric: tabular-nums; }
   box-shadow: 0 6px 20px rgba(32, 119, 103, 0.08);
 }
 
+.salary-step-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(32, 119, 103, 0.12);
+  color: #0f766e;
+  margin-bottom: 8px;
+}
+
 .salary-step-title {
   font-size: 15px;
   font-weight: 750;
@@ -3788,8 +3824,13 @@ input, select { font-variant-numeric: tabular-nums; }
   .take-home-metric-card.is-primary .metric-value {
     font-size: 22px;
   }
-  .salary-next-steps-grid {
+  .salary-next-steps-grid,
+  .state-cluster-tools {
     grid-template-columns: 1fr;
+  }
+  .state-cluster-hourly-pills .state-cluster-pill {
+    flex: 1 1 100%;
+    justify-content: space-between;
   }
   .editorial-tips-grid,
   .editorial-caveats-grid,
@@ -4395,6 +4436,72 @@ input, select { font-variant-numeric: tabular-nums; }
   color: #0f766e;
 }
 
+.matrix-directory-section {
+  margin-top: 36px;
+  padding-top: 32px;
+  border-top: 1px solid var(--line);
+}
+.matrix-directory-header {
+  margin-bottom: 18px;
+}
+.matrix-directory-header h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.matrix-directory-lede {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 720px;
+}
 
-
-
+/*
+ * The take-home cluster on a state hub reuses `.related-section` for its frame,
+ * so it sits flush with the occupation tables above it rather than announcing
+ * itself as a different kind of block. Only the parts the frame has no rule for
+ * are declared here.
+ */
+.state-cluster-subhead {
+  font-size: 16px;
+  font-weight: 750;
+  color: var(--text);
+  margin: 24px 0 12px;
+}
+.state-cluster-hourly-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.state-cluster-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--text);
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.15s ease;
+}
+.state-cluster-pill:hover {
+  border-color: #207767;
+  background: #edf2e3;
+  transform: translateY(-2px);
+}
+.state-cluster-pill span {
+  font-weight: 800;
+  color: #0f766e;
+}
+.state-cluster-pill strong {
+  font-weight: 700;
+  color: var(--text);
+}
+.state-cluster-tools {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}

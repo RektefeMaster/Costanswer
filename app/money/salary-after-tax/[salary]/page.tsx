@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { TrackedNextStep } from '@/components/analytics/LinkSurface';
 import { breadcrumbJsonLd, faqPageJsonLd, pageMetadata, buildSerpTitle } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
 import { SalaryAfterTaxCalculator } from '@/components/calculators/money/SalaryAfterTaxCalculator';
@@ -378,6 +379,9 @@ export default async function SalaryMatrixPage({ params }: Props) {
                   </tbody>
                 </table>
               </div>
+              <TrackedNextStep href="/money/paycheck" target="paycheck">
+                Run this against your own W-4 and pre-tax deductions &rarr;
+              </TrackedNextStep>
             </article>
 
             {/* Long-Term Compound Wealth & Retirement Projection */}
@@ -409,6 +413,9 @@ export default async function SalaryMatrixPage({ params }: Props) {
               <p className="matrix-footnote">
                 Assumes disciplined monthly index fund investing with 7% annualized real return. Employer retirement matching accelerates these figures.
               </p>
+              <TrackedNextStep href="/money/401k" target="retirement">
+                Put a real contribution rate and employer match against it &rarr;
+              </TrackedNextStep>
             </article>
 
             {/* Top 6 States Quick Comparison Cards */}
@@ -582,11 +589,9 @@ export default async function SalaryMatrixPage({ params }: Props) {
                   </table>
                 </div>
 
-                <p className="matrix-cta-link">
-                  <Link href="/money/home-affordability">
-                    Explore exact home affordability scenarios and mortgage stress tests →
-                  </Link>
-                </p>
+                <TrackedNextStep href="/money/home-affordability" target="housing">
+                  Explore exact home affordability scenarios and mortgage stress tests &rarr;
+                </TrackedNextStep>
               </div>
             </article>
 

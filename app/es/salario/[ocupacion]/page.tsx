@@ -113,7 +113,7 @@ export default async function SpanishOccupationPage({ params }: { params: Promis
           <div className="tool-main-column">
             <WagePanel result={result} tone="amber" locale="es-US" />
             <AdSlot placement="in-content" />
-            <SalaryNextSteps locale="es-US" />
+            <SalaryNextSteps locale="es-US" annualMedian={profile.wage.annualMedian} hourlyMedian={profile.wage.hourlyMedian} />
             {best && worst && best.estimate.annual.median !== null && worst.estimate.annual.median !== null && (
               <section className="engine-notes" aria-labelledby="spread-title">
                 <h2 id="spread-title">{`¿En qué estado se paga más a ${occupationPluralEs(occupation)}?`}</h2>

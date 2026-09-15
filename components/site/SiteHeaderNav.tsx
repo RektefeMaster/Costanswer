@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
 import { categories, CATEGORY_IDS, HEADER_CATEGORY_IDS, type CategoryId } from '@/lib/categories';
 import { CategoryChip, NavChip } from '@/components/site/CategoryArt';
+import { BrandLockup } from '@/components/site/BrandLockup';
 import { chrome } from '@/lib/i18n/chrome';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { CATEGORY_ES } from '@/lib/i18n/site-copy';
@@ -56,8 +57,7 @@ export function SiteHeaderNav({
     <header className="site-header-bar">
       <div className="site-header">
         <Link className="brand" href={homeHref} aria-label={`${siteConfig.name} ${spanish ? 'Inicio' : 'home'}`}>
-          <span className="brand-mark" aria-hidden="true">C</span>
-          <span>Cost<span>Answer</span></span>
+          <BrandLockup priority />
         </Link>
         <nav className="top-nav" aria-label={spanish ? 'Navegación principal' : 'Primary navigation'}>
           {HEADER_CATEGORY_IDS.map((categoryId) => (
@@ -112,7 +112,7 @@ export function SiteHeaderNav({
           <div className="mobile-nav-sheet">
             <div className="mobile-nav-heading">
               <div>
-                <p className="mobile-nav-eyebrow">CostAnswer</p>
+                <BrandLockup className="mobile-nav-brand" alt={siteConfig.name} />
                 <h2 id="mobile-menu-title">{spanish ? 'Explorar' : 'Explore'}</h2>
               </div>
               <button type="button" className="mobile-nav-close" onClick={closeMenu} aria-label={spanish ? 'Cerrar el menú' : 'Close navigation'} autoFocus>

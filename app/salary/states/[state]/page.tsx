@@ -6,6 +6,7 @@ import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { AdSlot } from '@/components/monetization/AdSlot';
 import { OccupationsInStateTable } from '@/components/salary/SalaryTables';
+import { StateEconomicCluster } from '@/components/salary/StateEconomicCluster';
 import { WagePanel, WageSources } from '@/components/salary/WageProfile';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import { occupationWageProfile, taxesOnWagesLabel } from '@/lib/calculations/salary';
@@ -166,6 +167,16 @@ export default async function StateSalaryPage({ params }: { params: Promise<{ st
                 />
               </section>
             )}
+
+            {/*
+              Last in the column, after the tables, on purpose. The tables are
+              this page's own link engine: a reader who finds their occupation
+              leaves through one of those rows. This block is the exit for the
+              reader who did not, and it answers the question the tables cannot:
+              what any of these wages actually leaves once the state has taken
+              its share.
+            */}
+            <StateEconomicCluster state={state} stateName={name} medianWage={profile.wage.annualMedian} />
           </div>
           <aside className="tool-rail" aria-label="About this page">
             <div className="rail-card">

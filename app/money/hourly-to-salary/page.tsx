@@ -1,12 +1,15 @@
 import { HourlySalaryCalculator } from '@/components/calculators/money/HourlySalaryCalculator';
+import { HourlyMatrixDirectory } from '@/components/matrices/WageMatrixDirectory';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { localizedToolMetadata } from '@/lib/i18n/metadata';
+import { requestLocale } from '@/lib/i18n/request-locale';
 
 const tool = getTool('hourly-to-salary');
 export function generateMetadata() { return localizedToolMetadata(tool); }
 
-export default function HourlyToSalaryPage() {
+export default async function HourlyToSalaryPage() {
+  const locale = await requestLocale();
   return (
     <ToolPage
       tool={tool}
@@ -21,6 +24,7 @@ export default function HourlyToSalaryPage() {
       ]}
     >
       <HourlySalaryCalculator />
+      <HourlyMatrixDirectory locale={locale} />
     </ToolPage>
   );
 }

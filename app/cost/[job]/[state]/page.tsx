@@ -21,6 +21,7 @@ import {
   representativeZipForState,
 } from '@/lib/job/state-pages';
 import { getStateName, type StateCode } from '@/lib/location/states';
+import { salaryStatePath } from '@/lib/salary-pages';
 import { stateSlug } from '@/lib/salary-pages';
 import { pageMetadata } from '@/lib/seo';
 
@@ -126,6 +127,15 @@ export default async function JobCostInStatePage({ params }: { params: Promise<P
         <Link href={jobPath(job)}>National {meta.shortTitle.toLowerCase()} page</Link>
         {' · '}
         <Link href="/cost/check-quote">Check a contractor quote</Link>
+        {/*
+          The labour half of this estimate is built from this state's BLS wages,
+          and the state salary hub is where those wages are published. It is the
+          only honest bridge between the cost corpus and the salary corpus: the
+          catalog carries a trade label, not an SOC code, so a link to a named
+          occupation would be a guess.
+        */}
+        {' · '}
+        <Link href={salaryStatePath(state)}>{`BLS wages in ${stateName}`}</Link>
         {jobRelatedTools(job).map((tool) => (
           <span key={tool.href}>
             {' · '}

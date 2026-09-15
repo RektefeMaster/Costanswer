@@ -334,7 +334,8 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
     '/topics/money', '/topics/home', '/topics/car', '/topics/everyday', '/topics/food', '/topics/shopping', '/topics/health', '/topics/math', '/topics/education',
     '/search?q=concrete', '/methodology', '/methodology/data', '/about', '/privacy', '/terms', '/contact', '/faq', '/sitemap.xml',
     '/sitemaps/pages/1.xml', '/sitemaps/topics/1.xml', '/sitemaps/tools/1.xml', '/robots.txt',
-    '/manifest.webmanifest', '/favicon.svg',
+    '/manifest.webmanifest', '/favicon.ico', '/apple-touch-icon.png', '/icon-192.png', '/icon-512.png', '/icon-512-maskable.png',
+    '/brand/costanswer-lockup.png', '/brand/costanswer-lockup-light.png',
   ];
   for (const path of paths) expect((await request.get(path)).status(), path).toBe(200);
 
@@ -392,9 +393,11 @@ test('critical routes, metadata, sitemap gates, and security headers stay cohere
   expect(toolSitemap).toContain('<lastmod>2026-09-05T00:00:00.000Z</lastmod>');
 
   const manifest = await (await request.get('/manifest.webmanifest')).json();
-  expect(manifest.icons).toContainEqual({ src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' });
+  expect(manifest.icons).toContainEqual({ src: '/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' });
+  expect(manifest.icons).toContainEqual({ src: '/icon-512-maskable.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' });
   const rootHtml = await (await request.get('/')).text();
-  expect(rootHtml).toContain('href="/favicon.svg"');
+  expect(rootHtml).toContain('href="/favicon.ico"');
+  expect(rootHtml).toContain('href="/apple-touch-icon.png"');
 });
 
 test('the remaining calculator classes recalculate and explain their results', async ({ page }) => {

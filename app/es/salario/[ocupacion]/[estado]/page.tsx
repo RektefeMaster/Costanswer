@@ -119,7 +119,7 @@ export default async function SpanishOccupationInStatePage({ params }: { params:
             <WagePanel result={result} locale="es-US" />
             <AdSlot placement="in-content" />
             <TakeHomeSection profile={profile} locale="es-US" />
-            <SalaryNextSteps locale="es-US" />
+            <SalaryNextSteps locale="es-US" annualMedian={profile.wage.annualMedian} hourlyMedian={profile.wage.hourlyMedian} state={state} />
             {cost && (
               <section className="engine-notes" aria-labelledby="cost-title">
                 <h2 id="cost-title">{cost.heading}</h2>

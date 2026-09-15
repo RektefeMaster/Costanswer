@@ -25,6 +25,8 @@ export const CHROME = {
   disclosure: localized({ 'en-US': 'Disclosure', 'es-US': 'Divulgación' }),
   whatJobsPay: localized({ 'en-US': 'What jobs pay', 'es-US': 'Lo que pagan los trabajos' }),
   payByState: localized({ 'en-US': 'Pay by state', 'es-US': 'Sueldo por estado' }),
+  takeHomePay: localized({ 'en-US': 'Take-home pay', 'es-US': 'Sueldo neto' }),
+  hourlyToSalary: localized({ 'en-US': 'Hourly to salary', 'es-US': 'De por hora a sueldo anual' }),
   calculatorsEn: localized({ 'en-US': 'Calculators', 'es-US': 'Calculadoras (inglés)' }),
   footerLegal: localized({
     'en-US': 'Independently published calculators, not a licensed advisory firm. Estimates for informational use. Not legal, tax, medical, or financial advice.',

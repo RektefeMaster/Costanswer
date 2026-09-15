@@ -160,6 +160,17 @@ export function organizationJsonLd() {
     '@type': 'Organization',
     name: siteConfig.name,
     url: siteConfig.origin,
+    /*
+     * The lockup at its stored size. Google reads this for the knowledge panel
+     * and for the little publisher icon beside a result, and without it both
+     * fall back to whatever it can scrape off the page.
+     */
+    logo: {
+      '@type': 'ImageObject',
+      url: new URL('/brand/costanswer-lockup.png', siteConfig.origin).toString(),
+      width: 564,
+      height: 120,
+    },
     description: editorial.identity,
     knowsAbout: 'U.S. calculators with tested formulas and dated official data',
   };

@@ -39,8 +39,21 @@ export const metadata: Metadata = {
     description: siteConfig.description,
     images: ['/og.png'],
   },
+  /*
+   * A real icon set, not the placeholder "C".
+   *
+   * `/favicon.ico` carries 16, 32 and 48 for the browsers that ask for the
+   * root path before they read any markup; the two PNGs are what a modern tab
+   * actually picks; `apple-touch-icon` is the home-screen tile, full bleed
+   * because iOS rounds and masks it itself.
+   */
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: '16x16 32x32 48x48' },
+      { url: '/favicon-32x32.png', type: 'image/png', sizes: '32x32' },
+      { url: '/favicon-16x16.png', type: 'image/png', sizes: '16x16' },
+    ],
+    apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
   },
   robots: { index: true, follow: true },
   manifest: '/manifest.webmanifest',

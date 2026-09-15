@@ -125,7 +125,7 @@ export default async function OccupationPage({ params }: { params: Promise<{ occ
           <div className="tool-main-column">
             <WagePanel result={result} tone="amber" />
             <AdSlot placement="in-content" />
-            <SalaryNextSteps />
+            <SalaryNextSteps annualMedian={profile.wage.annualMedian} hourlyMedian={profile.wage.hourlyMedian} />
             {best && worst && best.estimate.annual.median !== null && worst.estimate.annual.median !== null && (
               <section className="engine-notes" aria-labelledby="spread-title">
                 <h2 id="spread-title">{`Which state pays ${occupationPlural(occupation)} the most?`}</h2>

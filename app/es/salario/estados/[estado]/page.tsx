@@ -6,6 +6,7 @@ import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { AdSlot } from '@/components/monetization/AdSlot';
 import { OccupationsInStateTable } from '@/components/salary/SalaryTables';
+import { SalaryNextSteps } from '@/components/salary/SalaryNextSteps';
 import { WagePanel, WageSources } from '@/components/salary/WageProfile';
 import { formatMoneyLocale, formatNumberLocale } from '@/lib/i18n/format';
 import { occupationWageProfile } from '@/lib/calculations/salary';
@@ -13,7 +14,7 @@ import { getOewsEstimatesForArea, getOewsOccupation } from '@/lib/data/bls-oews-
 import type { OewsEstimate, OewsOccupation } from '@/lib/data/bls-oews';
 import { STATE_CODES } from '@/lib/location/states';
 import { getStateNameEs } from '@/lib/location/states-es';
-import { isSalaryLevelIndexable, stateFromSlug, stateSlug } from '@/lib/salary-pages';
+import { isSalaryLevelIndexable, salaryStatePath, stateFromSlug, stateSlug } from '@/lib/salary-pages';
 import { salaryFamilyPathEs, salaryStateIndexPathEs, salaryStatePathEs } from '@/lib/salary-es-pages';
 import { breadcrumbJsonLd, pageMetadata } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
@@ -154,6 +155,21 @@ export default async function SpanishStateSalaryPage({ params }: { params: Promi
                 />
               </section>
             )}
+
+            {/*
+              The English hub carries `StateEconomicCluster` here instead. That
+              block links into the wage bracket pages, which are authored in
+              English and carry no Spanish alternate, so the Spanish hub takes
+              the localized next steps: same position, destinations a Spanish
+              reader can actually read.
+            */}
+            <SalaryNextSteps
+              locale="es-US"
+              annualMedian={profile.wage.annualMedian}
+              hourlyMedian={profile.wage.hourlyMedian}
+              state={state}
+              currentPath={salaryStatePath(state)}
+            />
           </div>
           <aside className="tool-rail" aria-label="Sobre esta página">
             <div className="rail-card">

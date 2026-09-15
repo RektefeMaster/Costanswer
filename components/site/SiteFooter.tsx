@@ -15,6 +15,7 @@ import { CATEGORY_ES, siteText } from '@/lib/i18n/site-copy';
 import { chrome } from '@/lib/i18n/chrome';
 import { requestLocale } from '@/lib/i18n/request-locale';
 import { LanguageSwitcher } from '@/components/site/LanguageSwitcher';
+import { BrandLockup } from '@/components/site/BrandLockup';
 
 export async function SiteFooter() {
   const locale = await requestLocale();
@@ -30,8 +31,7 @@ export async function SiteFooter() {
       <div className="footer-inner">
         <div className="footer-lead">
           <Link className="brand brand-footer" href={homeHref} aria-label={`${siteConfig.name} home`}>
-            <span className="brand-mark" aria-hidden="true">C</span>
-            <span>Cost<span>Answer</span></span>
+            <BrandLockup tone="reverse" />
           </Link>
           <p>{locale === 'es-US' ? 'Sueldos y calculadoras de EE. UU. con la cifra oficial y la cuenta a la vista.' : siteConfig.tagline}</p>
           <LanguageSwitcher />
@@ -49,6 +49,15 @@ export async function SiteFooter() {
           <div className="footer-salary-links">
             <Link href={salaryRoot}>{chrome('whatJobsPay', locale)}</Link>
             <Link href={stateIndex}>{chrome('payByState', locale)}</Link>
+            {/*
+              The two wage bracket hubs. Forty-three bracket pages hang off
+              them and, before this, nothing in the site chrome pointed at
+              either, so both hubs sat one link deep from the home page and the
+              brackets sat two. Salaries is the right column for them: a reader
+              scanning it is already asking what work pays.
+            */}
+            <Link href="/money/salary-after-tax">{chrome('takeHomePay', locale)}</Link>
+            <Link href="/money/hourly-to-salary">{chrome('hourlyToSalary', locale)}</Link>
             {FOOTER_SALARY_OCCUPATIONS.map((occupation) => (
               <Link href={occupationHref(occupation)} key={occupation.code}>{occupationName(occupation)}</Link>
             ))}
@@ -59,20 +68,29 @@ export async function SiteFooter() {
             <Link href="/cost/tree-removal">{t(JOB_CATALOG['tree-removal'].shortTitle)}</Link>
           </div>
         </nav>
-        <nav className="footer-nav-site" aria-labelledby="footer-site-heading">
-          <p id="footer-site-heading" className="footer-kicker">{chrome('theSite', locale)}</p>
-          <Link href="/about">{chrome('about', locale)}</Link>
-          <Link href="/faq">{chrome('faq', locale)}</Link>
-          <Link href="/methodology">{chrome('methodology', locale)}</Link>
-          <Link href="/methodology/data">{chrome('dataSources', locale)}</Link>
-          <Link href="/contact">{chrome('contact', locale)}</Link>
-        </nav>
-        <nav className="footer-nav-legal" aria-labelledby="footer-legal-heading">
-          <p id="footer-legal-heading" className="footer-kicker">{chrome('legal', locale)}</p>
-          <Link href="/terms">{chrome('terms', locale)}</Link>
-          <Link href="/privacy">{chrome('privacy', locale)}</Link>
-          <Link href="/disclosure">{chrome('disclosure', locale)}</Link>
-        </nav>
+        {/*
+          The site and legal columns are one grid cell, not two.
+          Placed separately they were auto-flowed into the same column on a
+          second grid row, and that row starts below the salaries column — so
+          legal fell half a footer's height away from the heading above it,
+          with a stretch of empty ground between them.
+        */}
+        <div className="footer-nav-meta">
+          <nav className="footer-nav-site" aria-labelledby="footer-site-heading">
+            <p id="footer-site-heading" className="footer-kicker">{chrome('theSite', locale)}</p>
+            <Link href="/about">{chrome('about', locale)}</Link>
+            <Link href="/faq">{chrome('faq', locale)}</Link>
+            <Link href="/methodology">{chrome('methodology', locale)}</Link>
+            <Link href="/methodology/data">{chrome('dataSources', locale)}</Link>
+            <Link href="/contact">{chrome('contact', locale)}</Link>
+          </nav>
+          <nav className="footer-nav-legal" aria-labelledby="footer-legal-heading">
+            <p id="footer-legal-heading" className="footer-kicker">{chrome('legal', locale)}</p>
+            <Link href="/terms">{chrome('terms', locale)}</Link>
+            <Link href="/privacy">{chrome('privacy', locale)}</Link>
+            <Link href="/disclosure">{chrome('disclosure', locale)}</Link>
+          </nav>
+        </div>
       </div>
       <p className="footer-legal">
         © {new Date().getUTCFullYear()} {siteConfig.name}. {chrome('footerLegal', locale)}

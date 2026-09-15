@@ -1,7 +1,9 @@
 import { SalaryAfterTaxCalculator } from '@/components/calculators/money/SalaryAfterTaxCalculator';
+import { SalaryMatrixDirectory } from '@/components/matrices/WageMatrixDirectory';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
 import { localizedToolMetadata } from '@/lib/i18n/metadata';
+import { requestLocale } from '@/lib/i18n/request-locale';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 
@@ -15,7 +17,8 @@ const taxSource = datasetSourceDisplay({
   verifiedAt: taxSnapshot.verifiedAt,
 });
 
-export default function SalaryAfterTaxPage() {
+export default async function SalaryAfterTaxPage() {
+  const locale = await requestLocale();
   return (
     <ToolPage
       tool={tool}
@@ -32,6 +35,7 @@ export default function SalaryAfterTaxPage() {
       ]}
     >
       <SalaryAfterTaxCalculator />
+      <SalaryMatrixDirectory locale={locale} />
     </ToolPage>
   );
 }

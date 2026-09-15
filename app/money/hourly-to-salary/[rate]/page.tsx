@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { JsonLd } from '@/components/seo/JsonLd';
+import { TrackedNextStep } from '@/components/analytics/LinkSurface';
 import { breadcrumbJsonLd, faqPageJsonLd, pageMetadata, buildSerpTitle } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
 import { HourlySalaryCalculator } from '@/components/calculators/money/HourlySalaryCalculator';
@@ -427,6 +428,9 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
                   </tbody>
                 </table>
               </div>
+              <TrackedNextStep href="/money/paycheck" target="paycheck">
+                Run this against your own W-4 and pre-tax deductions &rarr;
+              </TrackedNextStep>
             </article>
 
             {/* Long-Term Compound Wealth & Retirement Projection */}
@@ -458,6 +462,9 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
               <p className="matrix-footnote">
                 Assumes monthly contributions invested in low-cost, diversified index funds compounding at 7% real annual return. Employer 401(k) matches accelerate these totals significantly.
               </p>
+              <TrackedNextStep href="/money/401k" target="retirement">
+                Put a real contribution rate and employer match against it &rarr;
+              </TrackedNextStep>
             </article>
 
             {/* Top 6 States Quick Comparison Cards */}
@@ -630,11 +637,9 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
                   </table>
                 </div>
 
-                <p className="matrix-cta-link">
-                  <Link href="/money/home-affordability">
-                    Calculate your exact home affordability with today&apos;s mortgage rates →
-                  </Link>
-                </p>
+                <TrackedNextStep href="/money/home-affordability" target="housing">
+                  Calculate your exact home affordability with today&apos;s mortgage rates &rarr;
+                </TrackedNextStep>
               </div>
             </article>
 

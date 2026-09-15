@@ -141,7 +141,7 @@ export default async function OccupationInStatePage({ params }: { params: Promis
             <WagePanel result={result} />
             <AdSlot placement="in-content" />
             <TakeHomeSection profile={profile} />
-            <SalaryNextSteps />
+            <SalaryNextSteps annualMedian={profile.wage.annualMedian} hourlyMedian={profile.wage.hourlyMedian} state={state} />
             {profile.costAdjusted && profile.wage.annualMedian !== null && (
               <section className="engine-notes" aria-labelledby="cost-title">
                 <h2 id="cost-title">{`What ${formatMoney(profile.wage.annualMedian, 0)} is worth in ${stateName}`}</h2>

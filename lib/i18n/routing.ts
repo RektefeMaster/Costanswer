@@ -18,6 +18,16 @@ export function localizedHref(href: string, locale: Locale): string {
   if (locale === 'en-US') return base + suffix;
   if (base === '/salary') return '/es/salario' + suffix;
   if (base === '/salary/states') return '/es/salario/estados' + suffix;
+  /*
+   * State hubs carry the same slug in both languages, so the Spanish address is
+   * a pure rewrite and belongs here. Occupation slugs are authored per language
+   * and need the OEWS index to translate, which this module cannot import: it
+   * is pulled into every client bundle through `LocalizedLink`. Those keep
+   * falling through to the generic `/es` prefix and are corrected by
+   * `bilingualSalaryPair` where the data is already loaded.
+   */
+  const stateHub = base.match(/^\/salary\/states\/([^/]+)$/);
+  if (stateHub) return `/es/salario/estados/${stateHub[1]}` + suffix;
   return (base === '/' ? '/es' : `/es${base}`) + suffix;
 }
 

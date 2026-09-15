@@ -8,6 +8,7 @@ export const ANALYTICS_EVENTS = [
   'result_interaction',
   'search',
   'related_tool_click',
+  'internal_link_click',
   'share',
   'advanced_opened',
   'compare_used',
@@ -33,6 +34,27 @@ type ToolContext = { toolId: string; category: CategoryId };
 export const ANALYTICS_LOCALES = ['en-US', 'es-US'] as const;
 export type AnalyticsLocale = (typeof ANALYTICS_LOCALES)[number];
 
+/**
+ * Where on a page an internal link sat when it was clicked.
+ *
+ * Placement is the whole experiment: the same five links earn very different
+ * click-through depending on whether they sit under the answer, in the rail, or
+ * in a directory at the foot of the page. Without this field the network is one
+ * undifferentiated number and there is no way to learn which position works.
+ */
+export const LINK_SURFACES = [
+  /** Directly under the answer on a salary or occupation page. */
+  'answer-next-step',
+  /** The take-home and wage benchmark cluster on a state hub. */
+  'state-cluster',
+  /** The full bracket table at the foot of a wage matrix root tool. */
+  'matrix-directory',
+  /** The financial next steps above the FAQ on a wage matrix leaf. */
+  'matrix-next-step',
+] as const;
+
+export type LinkSurface = (typeof LINK_SURFACES)[number];
+
 /** What the Job Cost quote checker concluded. Never the quoted amount. */
 export const QUOTE_VERDICTS = ['within', 'below', 'above', 'unassessable'] as const;
 
@@ -43,6 +65,12 @@ export type AnalyticsPayloads = {
   result_interaction: ToolContext & { interaction: 'math_toggle' | 'assumptions_toggle' | 'search_result_click' };
   search: { resultType: 'matched' | 'empty' };
   related_tool_click: ToolContext & { relatedToolId: string };
+  /**
+   * A link in the internal traffic network. `target` is the step's stable id
+   * (`take-home`, `housing`), never the salary bracket it resolved to, so one
+   * step reads as one funnel rather than as fifty thousand.
+   */
+  internal_link_click: { surface: LinkSurface; target: string };
   share: ToolContext & { interaction: 'native_share' | 'copy_link' };
   /** Which collapsed section, by its stable id — never its contents. */
   advanced_opened: ToolContext & { section: string };
@@ -92,6 +120,7 @@ const eventFields: Record<AnalyticsEventName, Record<string, FieldCheck>> = {
    * between them for no gain.
    */
   related_tool_click: { ...TOOL_CONTEXT, relatedToolId: boundedId },
+  internal_link_click: { surface: oneOf(LINK_SURFACES), target: boundedId },
   share: { ...TOOL_CONTEXT, interaction: oneOf(['native_share', 'copy_link']) },
   advanced_opened: { ...TOOL_CONTEXT, section: boundedId },
   compare_used: TOOL_CONTEXT,
