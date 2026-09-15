@@ -9,7 +9,7 @@ import { ConfidenceChip } from './ConfidenceChip';
 
 function rangeText(estimate: JobEstimate): string {
   if (!estimate.range) return 'Incomplete';
-  return `${formatMoney(estimate.range.lowCents / 100, 0)}–${formatMoney(estimate.range.highCents / 100, 0)}`;
+  return `${formatMoney(estimate.range.lowCents / 100, 0)} to ${formatMoney(estimate.range.highCents / 100, 0)}`;
 }
 
 export function JobResult({ result }: { result: CalculationResult<JobEstimate> }) {
@@ -22,7 +22,7 @@ export function JobResult({ result }: { result: CalculationResult<JobEstimate> }
         value={rangeText(estimate)}
         note={incomplete
           ? `No complete range until these critical materials have a sourced baseline: ${materialList(estimate.unpricedCritical) || 'unknown'}. Labor and priced lines may still be shown.`
-          : `Expected ${estimate.range ? formatMoney(estimate.range.expectedCents / 100, 0) : '—'}`}
+          : `Expected ${estimate.range ? formatMoney(estimate.range.expectedCents / 100, 0) : 'none'}`}
         tone="amber"
       />
       <ConfidenceChip incomplete={incomplete} level={estimate.confidence} reasons={estimate.confidenceReasons} />

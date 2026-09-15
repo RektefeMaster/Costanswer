@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateMortgagePayoff } from '@/lib/calculations/mortgage-payoff';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -8,6 +10,8 @@ import { pluralize } from '@/lib/plural';
 import { money } from '../finance-format';
 
 export function MortgagePayoffCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [currentPrincipal, setCurrentPrincipal] = useState('250000');
   const [annualRatePercent, setAnnualRatePercent] = useState('6');
   const [remainingMonths, setRemainingMonths] = useState('300');
@@ -34,11 +38,11 @@ export function MortgagePayoffCalculator() {
   return (
     <CalculatorPanel title="Mortgage payoff" intro="How extra principal changes remaining interest and the payoff date." toolId="mortgage-payoff" category="money" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([currentPrincipal, annualRatePercent, remainingMonths, extraMonthlyPayment, startDate])}>
       <div className="calc-form-grid">
-        <Field label="Current principal" htmlFor="mp-bal"><InputShell prefix="$"><input id="mp-bal" type="number" min="1" step="1000" inputMode="decimal" value={currentPrincipal} onChange={(event) => setCurrentPrincipal(event.target.value)} /></InputShell></Field>
-        <Field label="Interest rate" htmlFor="mp-rate"><InputShell suffix="%"><input id="mp-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>
-        <Field label="Remaining term" htmlFor="mp-term"><InputShell suffix="months"><input id="mp-term" type="number" min="1" max="480" step="1" inputMode="numeric" value={remainingMonths} onChange={(event) => setRemainingMonths(event.target.value)} /></InputShell></Field>
-        <Field label="Extra monthly principal" htmlFor="mp-extra"><InputShell prefix="$"><input id="mp-extra" type="number" min="0" step="25" inputMode="decimal" value={extraMonthlyPayment} onChange={(event) => setExtraMonthlyPayment(event.target.value)} /></InputShell></Field>
-        <Field label="Next payment date" htmlFor="mp-start"><span className="input-shell"><input id="mp-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
+        <Field label={t("Current principal")} htmlFor="mp-bal"><InputShell prefix="$"><input id="mp-bal" type="number" min="1" step="1000" inputMode="decimal" value={currentPrincipal} onChange={(event) => setCurrentPrincipal(event.target.value)} /></InputShell></Field>
+        <Field label={t("Interest rate")} htmlFor="mp-rate"><InputShell suffix="%"><input id="mp-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>
+        <Field label={t("Remaining term")} htmlFor="mp-term"><InputShell suffix={t("months")}><input id="mp-term" type="number" min="1" max="480" step="1" inputMode="numeric" value={remainingMonths} onChange={(event) => setRemainingMonths(event.target.value)} /></InputShell></Field>
+        <Field label={t("Extra monthly principal")} htmlFor="mp-extra"><InputShell prefix="$"><input id="mp-extra" type="number" min="0" step="25" inputMode="decimal" value={extraMonthlyPayment} onChange={(event) => setExtraMonthlyPayment(event.target.value)} /></InputShell></Field>
+        <Field label={t("Next payment date")} htmlFor="mp-start"><span className="input-shell"><input id="mp-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (

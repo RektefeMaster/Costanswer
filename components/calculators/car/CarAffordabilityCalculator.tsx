@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import {
   EXAMPLE_MONTHLY_INSURANCE,
@@ -74,6 +76,8 @@ export function CarAffordabilityCalculator({
   electricity: SnapshotMeta;
   taxYear: number;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [mode, setMode] = useState<CarAffordabilityMode>('this-car');
   const [powertrain, setPowertrain] = useState<Powertrain>('gas');
   const [incomeMode, setIncomeMode] = useState<CarIncomeMode>('take-home');
@@ -224,29 +228,29 @@ export function CarAffordabilityCalculator({
         <button type="button" aria-pressed={mode === 'this-car'} className={mode === 'this-car' ? 'active' : ''} onClick={() => setMode('this-car')}>Can I afford this car?</button>
         <button type="button" aria-pressed={mode === 'how-much-car'} className={mode === 'how-much-car' ? 'active' : ''} onClick={() => setMode('how-much-car')}>How much car?</button>
       </div>
-      <div className="mode-tabs" role="group" aria-label="Powertrain">
+      <div className="mode-tabs" role="group" aria-label={t("Powertrain")}>
         <button type="button" aria-pressed={powertrain === 'gas'} className={powertrain === 'gas' ? 'active' : ''} onClick={() => setPowertrain('gas')}>Gasoline</button>
         <button type="button" aria-pressed={powertrain === 'ev'} className={powertrain === 'ev' ? 'active' : ''} onClick={() => setPowertrain('ev')}>Electric</button>
       </div>
-      <div className="mode-tabs" role="group" aria-label="Income">
+      <div className="mode-tabs" role="group" aria-label={t("Income")}>
         <button type="button" aria-pressed={incomeMode === 'take-home'} className={incomeMode === 'take-home' ? 'active' : ''} onClick={() => setIncomeMode('take-home')}>I know my take-home</button>
         <button type="button" aria-pressed={incomeMode === 'gross-salary'} className={incomeMode === 'gross-salary' ? 'active' : ''} onClick={() => setIncomeMode('gross-salary')}>Estimate from salary</button>
       </div>
       <div className="calc-form-grid">
         {incomeMode === 'take-home' ? (
-          <Field label="Monthly take-home pay" htmlFor="car-take-home" hint="After taxes and deductions. Not gross salary.">
+          <Field label={t("Monthly take-home pay")} htmlFor="car-take-home" hint={t("After taxes and deductions. Not gross salary.")}>
             <InputShell prefix="$">
               <input id="car-take-home" type="number" min="0" step="100" inputMode="decimal" value={monthlyTakeHome} onChange={(event) => setMonthlyTakeHome(event.target.value)} />
             </InputShell>
           </Field>
         ) : (
           <>
-            <Field label="Annual gross salary" htmlFor="car-salary" hint={`Take-home is estimated for tax year ${taxYear}.`}>
+            <Field label={t("Annual gross salary")} htmlFor="car-salary" hint={`Take-home is estimated for tax year ${taxYear}.`}>
               <InputShell prefix="$">
                 <input id="car-salary" type="number" min="0" step="1000" inputMode="decimal" value={annualGrossSalary} onChange={(event) => setAnnualGrossSalary(event.target.value)} />
               </InputShell>
             </Field>
-            <Field label="Filing status" htmlFor="car-filing-status">
+            <Field label={t("Filing status")} htmlFor="car-filing-status">
               <span className="input-shell select-shell">
                 <select id="car-filing-status" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as FilingStatus)}>
                   {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -255,7 +259,7 @@ export function CarAffordabilityCalculator({
             </Field>
           </>
         )}
-        <Field label="State" htmlFor="car-state" hint={incomeMode === 'gross-salary' ? 'Sets the energy price and the state income tax' : 'Sets the energy price'}>
+        <Field label={t("State")} htmlFor="car-state" hint={incomeMode === 'gross-salary' ? 'Sets the energy price and the state income tax' : 'Sets the energy price'}>
           <span className="input-shell select-shell">
             <select
               id="car-state"
@@ -271,7 +275,7 @@ export function CarAffordabilityCalculator({
           </span>
         </Field>
         {mode === 'this-car' && (
-          <Field label="Vehicle price" htmlFor="car-price" hint="The number you are quoted. We do not look up market prices.">
+          <Field label={t("Vehicle price")} htmlFor="car-price" hint="The number you are quoted. We do not look up market prices.">
             <InputShell prefix="$">
               <input id="car-price" type="number" min="1" step="500" inputMode="decimal" value={vehiclePrice} onChange={(event) => setVehiclePrice(event.target.value)} />
             </InputShell>
@@ -284,57 +288,57 @@ export function CarAffordabilityCalculator({
         hint="Every one of these has a working default. Fill in the ones you know."
       >
         <div className="calc-form-grid">
-          <Field label="Down payment" htmlFor="car-down" hint="Cash you hand over at signing">
+          <Field label={t("Down payment")} htmlFor="car-down" hint="Cash you hand over at signing">
             <InputShell prefix="$">
               <input id="car-down" type="number" min="0" step="500" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Trade-in value" htmlFor="car-trade-in" hint="Optional. Credited like a down payment, but not cash.">
+          <Field label={t("Trade-in value")} htmlFor="car-trade-in" hint="Optional. Credited like a down payment, but not cash.">
             <InputShell prefix="$">
               <input id="car-trade-in" type="number" min="0" step="500" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Sales tax and fees" htmlFor="car-fees" hint="Optional. Added to the amount financed.">
+          <Field label={t("Sales tax and fees")} htmlFor="car-fees" hint="Optional. Added to the amount financed.">
             <InputShell prefix="$">
               <input id="car-fees" type="number" min="0" step="100" inputMode="decimal" value={salesTaxAndFees} onChange={(event) => setSalesTaxAndFees(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Interest rate" htmlFor="car-rate" hint="Your quoted rate. There is no car-loan rate feed here.">
+          <Field label={t("Interest rate")} htmlFor="car-rate" hint="Your quoted rate. There is no car-loan rate feed here.">
             <InputShell suffix="%">
               <input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Loan term" htmlFor="car-term" hint="Use 0 for a cash purchase">
-            <InputShell suffix="months">
+          <Field label={t("Loan term")} htmlFor="car-term" hint="Use 0 for a cash purchase">
+            <InputShell suffix={t("months")}>
               <input id="car-term" type="number" min="0" max="120" step="6" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Miles driven per year" htmlFor="car-miles">
-            <InputShell suffix="miles">
+          <Field label={t("Miles driven per year")} htmlFor="car-miles">
+            <InputShell suffix={t("miles")}>
               <input id="car-miles" type="number" min="0" step="1000" inputMode="decimal" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} />
             </InputShell>
           </Field>
           {powertrain === 'gas' ? (
             <>
-              <Field label="Fuel economy" htmlFor="car-mpg">
+              <Field label={t("Fuel economy")} htmlFor="car-mpg">
                 <InputShell suffix="MPG">
                   <input id="car-mpg" type="number" min="1" max="200" step="1" inputMode="decimal" value={mpg} onChange={(event) => setMpg(event.target.value)} />
                 </InputShell>
               </Field>
               <Field label="Pump price (optional)" htmlFor="car-gas-price" hint="Leave blank to use the EIA average">
-                <InputShell prefix="$" suffix="/ gal">
+                <InputShell prefix="$" suffix={t("/ gal")}>
                   <input id="car-gas-price" type="number" min="0" max="20" step="0.01" inputMode="decimal" placeholder={selected.dollarsPerGallon.toFixed(3)} value={customGasPrice} onChange={(event) => setCustomGasPrice(event.target.value)} />
                 </InputShell>
               </Field>
             </>
           ) : (
             <>
-              <Field label="EV efficiency" htmlFor="car-kwh-100" hint="Battery energy per 100 miles">
+              <Field label={t("EV efficiency")} htmlFor="car-kwh-100" hint={t("Battery energy per 100 miles")}>
                 <InputShell suffix="kWh / 100 mi">
                   <input id="car-kwh-100" type="number" min="5" max="100" step="1" inputMode="decimal" value={kwhPer100Miles} onChange={(event) => setKwhPer100Miles(event.target.value)} />
                 </InputShell>
               </Field>
-              <Field label="Charging loss" htmlFor="car-charging-loss" hint="Added on top of battery energy">
+              <Field label={t("Charging loss")} htmlFor="car-charging-loss" hint="Added on top of battery energy">
                 <InputShell suffix="%">
                   <input id="car-charging-loss" type="number" min="0" max="30" step="1" inputMode="decimal" value={chargingLossPercent} onChange={(event) => setChargingLossPercent(event.target.value)} />
                 </InputShell>
@@ -346,18 +350,18 @@ export function CarAffordabilityCalculator({
               </Field>
             </>
           )}
-          <Field label="Insurance" htmlFor="car-insurance" hint="Your premium. The starting number is a placeholder, not a quote.">
-            <InputShell prefix="$" suffix="/ month">
+          <Field label={t("Insurance")} htmlFor="car-insurance" hint="Your premium. The starting number is a placeholder, not a quote.">
+            <InputShell prefix="$" suffix={t("/ month")}>
               <input id="car-insurance" type="number" min="0" step="10" inputMode="decimal" value={monthlyInsurance} onChange={(event) => setMonthlyInsurance(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Maintenance and repairs" htmlFor="car-maintenance" hint="A budget you choose, not a service schedule.">
-            <InputShell prefix="$" suffix="/ month">
+          <Field label={t("Maintenance and repairs")} htmlFor="car-maintenance" hint="A budget you choose, not a service schedule.">
+            <InputShell prefix="$" suffix={t("/ month")}>
               <input id="car-maintenance" type="number" min="0" step="10" inputMode="decimal" value={monthlyMaintenance} onChange={(event) => setMonthlyMaintenance(event.target.value)} />
             </InputShell>
           </Field>
           <Field label="Registration and yearly fees" htmlFor="car-registration" hint="Optional. State fee tables are not modeled.">
-            <InputShell prefix="$" suffix="/ year">
+            <InputShell prefix="$" suffix={t("/ year")}>
               <input id="car-registration" type="number" min="0" step="10" inputMode="decimal" value={annualRegistration} onChange={(event) => setAnnualRegistration(event.target.value)} />
             </InputShell>
           </Field>
@@ -426,7 +430,7 @@ export function CarAffordabilityCalculator({
       {calculation.result && howMuch && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated maximum vehicle price"
+            label={t("Estimated maximum vehicle price")}
             value={howMuch.comfortablePrice > 0 ? roundedGuidelineMoney(howMuch.comfortablePrice) : 'None'}
             note={`Rounded, from our guideline. With ${money(Number(downPayment) || 0, 0)} down, ${money(howMuch.monthlyOperatingCost)} a month in running costs, and ${money(howMuch.monthlyTakeHome)} take-home`}
             tone="blue"

@@ -64,7 +64,7 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Can I mix semester and cumulative GPA?',
         answer: [
-          'Enter every course you want in the average with its credits. The page does not keep a separate transcript store — it averages what you type now.',
+          'Enter every course you want in the average with its credits. The page does not keep a separate transcript store; it averages what you type now.',
         ],
       },
     ],
@@ -141,7 +141,7 @@ export const EDUCATION_SHOPPING_FOOD_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Is this the same as cost of living?',
         answer: [
-          'No. This page compares three official price families — electricity, gasoline, and selected grocery staples. Rent, wages, and taxes are on the cost-of-living calculator.',
+          'No. This page compares three official price families: electricity, gasoline, and selected grocery staples. Rent, wages, and taxes are on the cost-of-living calculator.',
         ],
       },
     ],

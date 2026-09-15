@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateChildTaxCredit } from '@/lib/calculations/tax/child-tax-credit';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -20,6 +22,8 @@ import {
 const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 
 export function ChildTaxCreditCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [modifiedAgi, setModifiedAgi] = useState('50000');
   const [qualifyingChildren, setQualifyingChildren] = useState('1');
@@ -66,17 +70,17 @@ export function ChildTaxCreditCalculator() {
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Modified AGI" htmlFor="ctc-magi">
+        <Field label={t("Modified AGI")} htmlFor="ctc-magi">
           <InputShell prefix="$">
             <input id="ctc-magi" type="number" min="0" step="1000" inputMode="decimal" value={modifiedAgi} onChange={(event) => setModifiedAgi(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Qualifying children under 17" htmlFor="ctc-children">
+        <Field label={t("Qualifying children under 17")} htmlFor="ctc-children">
           <InputShell>
             <input id="ctc-children" type="number" min="0" max="20" step="1" inputMode="numeric" value={qualifyingChildren} onChange={(event) => setQualifyingChildren(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Earned income" htmlFor="ctc-earned" hint="Used only for the additional child tax credit">
+        <Field label={t("Earned income")} htmlFor="ctc-earned" hint="Used only for the additional child tax credit">
           <InputShell prefix="$">
             <input id="ctc-earned" type="number" min="0" step="1000" inputMode="decimal" value={earnedIncome} onChange={(event) => setEarnedIncome(event.target.value)} />
           </InputShell>
@@ -86,7 +90,7 @@ export function ChildTaxCreditCalculator() {
             <input id="ctc-tax" type="number" min="0" step="100" inputMode="decimal" value={taxBeforeThisCredit} onChange={(event) => setTaxBeforeThisCredit(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Filing status" htmlFor="ctc-filing">
+        <Field label={t("Filing status")} htmlFor="ctc-filing">
           <span className="input-shell select-shell">
             <select id="ctc-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -94,8 +98,8 @@ export function ChildTaxCreditCalculator() {
           </span>
         </Field>
       </div>
-      <AdvancedSection id="other-dependents" title="Other dependents">
-        <Field label="Other dependents" htmlFor="ctc-other" hint="$500 each, not refundable">
+      <AdvancedSection id="other-dependents" title={t("Other dependents")}>
+        <Field label={t("Other dependents")} htmlFor="ctc-other" hint="$500 each, not refundable">
           <InputShell>
             <input id="ctc-other" type="number" min="0" max="20" step="1" inputMode="numeric" value={otherDependents} onChange={(event) => setOtherDependents(event.target.value)} />
           </InputShell>
@@ -124,7 +128,7 @@ export function ChildTaxCreditCalculator() {
             ]}
           />
           <CalculationReceipt
-            title={`Child tax credit — ${value.qualifyingChildren} children, ${snapshot.taxYear}`}
+            title={`Child tax credit: ${value.qualifyingChildren} children, ${snapshot.taxYear}`}
             headline={{ label: 'Total credit', value: money(value.totalCredit) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

@@ -1,12 +1,12 @@
 import { SalaryAfterTaxCalculator } from '@/components/calculators/money/SalaryAfterTaxCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 
 const tool = getTool('salary-after-tax');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 const taxSource = datasetSourceDisplay({
   datasetId: 'us-tax',
   observationPeriod: String(taxSnapshot.taxYear),

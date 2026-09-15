@@ -3,10 +3,10 @@ import { ToolPage } from '@/components/tool/ToolPage';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('federal-tax-bracket');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const taxSource = datasetSourceDisplay({
   datasetId: 'us-tax',
@@ -31,11 +31,11 @@ export default function FederalTaxBracketPage() {
       methodology={[
         {
           title: 'A bracket is a rate on a slice',
-          body: `Taxable income is cut into bands and each band is charged at its own rate — the first ${money(firstBand.notOver ?? 0)} for a single filer at ${Math.round(firstBand.rate * 100)}%, and so on up to ${topRate}. Your bracket is the rate on the final slice. Nothing below it is charged at that rate, which is the whole reason the tax owed is far less than the bracket times your income.`,
+          body: `Taxable income is cut into bands and each band is charged at its own rate: the first ${money(firstBand.notOver ?? 0)} for a single filer at ${Math.round(firstBand.rate * 100)}%, and so on up to ${topRate}. Your bracket is the rate on the final slice. Nothing below it is charged at that rate, which is the whole reason the tax owed is far less than the bracket times your income.`,
         },
         {
           title: 'Before or after the deduction',
-          body: `Both readings of "income" are common and they land in different brackets, so the page asks which one you mean rather than guessing. Enter pay before deductions and the ${money(taxSnapshot.federal.standardDeductionByFilingStatus.single)} single standard deduction comes off first; enter taxable income — line 15 of Form 1040 — and it is used as given.`,
+          body: `Both readings of "income" are common and they land in different brackets, so the page asks which one you mean rather than guessing. Enter pay before deductions and the ${money(taxSnapshot.federal.standardDeductionByFilingStatus.single)} single standard deduction comes off first; enter taxable income (line 15 of Form 1040) and it is used as given.`,
         },
         {
           title: 'Income exactly on a threshold',

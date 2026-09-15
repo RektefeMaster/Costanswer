@@ -54,7 +54,7 @@ const V1: ConsentVersion = {
       heading: 'Before we send your request',
       points: [
         'CostAnswer will send the details on this form to {{PARTNER}}, who works with local service professionals.',
-        'They, or professionals they work with, may contact you by phone, text or email about this project — including at the number you give us.',
+        'They, or professionals they work with, may contact you by phone, text or email about this project, including at the number you give us.',
         'Asking for estimates does not commit you to hiring anyone, and you can stop the conversation at any time.',
         'CostAnswer is paid a referral fee for sending this request. That fee does not change your price and did not change the estimate above.',
         'The estimate on this page is our own calculation. It is not a quote, and a professional may price the work differently.',

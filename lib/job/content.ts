@@ -125,4 +125,97 @@ const JOB_FAQ_EXTRAS: Partial<Record<JobId, JobFaq[]>> = {
       ],
     },
   ],
+  'concrete-driveway': [
+    {
+      question: 'How thick should a concrete driveway be?',
+      answer: [
+        'Standard passenger vehicle driveways require a minimum of 4 inches of 4,000 PSI concrete over a well-compacted gravel base.',
+        'For heavier vehicles, RVs, or delivery trucks, a 5 to 6-inch slab reinforced with rebar or wire mesh is strongly recommended to prevent cracking.',
+      ],
+    },
+  ],
+  'deck-build': [
+    {
+      question: 'Does this deck estimate include stairs and railings?',
+      answer: [
+        'The default recipe includes standard perimeter code-compliant railings for elevated decks.',
+        'Custom multi-flight staircases, built-in bench seating, pergolas, or composite brand-name decking require additional materials and labor.',
+      ],
+    },
+  ],
+  'fence-install': [
+    {
+      question: 'Are fence posts set in concrete in this estimate?',
+      answer: [
+        'Yes. Post hole digging and setting each fence post in concrete with proper frost-depth embedment is included in the trade labor and material baseline.',
+      ],
+    },
+  ],
+  'electrical-panel-upgrade': [
+    {
+      question: 'Is a 200-amp panel upgrade necessary for EV charging and heat pumps?',
+      answer: [
+        'In many older homes with 100-amp service, adding a Level 2 EV charger (30–50A) alongside electric heat pumps and induction ranges exceeds the existing capacity.',
+        'Upgrading to a modern 200-amp panel ensures code compliance, provides additional breaker slots, and avoids main-breaker overloads.',
+      ],
+    },
+  ],
 };
+
+export type JobRelatedTool = { label: string; href: `/${string}` };
+
+export function jobRelatedTools(jobId: JobId): JobRelatedTool[] {
+  switch (jobId) {
+    case 'concrete-driveway':
+      return [
+        { label: 'Concrete volume & bags calculator', href: '/home/concrete-calculator' },
+        { label: 'Square footage calculator', href: '/home/square-footage' },
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+    case 'hvac-replacement':
+    case 'heat-pump-replacement':
+      return [
+        { label: 'Electricity cost by state', href: '/home/electricity-cost' },
+        { label: 'Appliance electricity consumption', href: '/home/appliance-electricity-cost' },
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+    case 'electrical-panel-upgrade':
+    case 'water-heater-replacement':
+      return [
+        { label: 'Electricity cost by state', href: '/home/electricity-cost' },
+        { label: 'Appliance electricity consumption', href: '/home/appliance-electricity-cost' },
+      ];
+    case 'kitchen-remodel':
+    case 'bathroom-remodel':
+      return [
+        { label: 'Square footage calculator', href: '/home/square-footage' },
+        { label: 'Home affordability calculator', href: '/money/home-affordability' },
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+    case 'deck-build':
+    case 'fence-install':
+      return [
+        { label: 'Square footage calculator', href: '/home/square-footage' },
+        { label: 'Concrete volume & bags calculator', href: '/home/concrete-calculator' },
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+    case 'interior-painting':
+    case 'drywall-install':
+    case 'siding-replacement':
+    case 'window-replacement':
+    case 'exterior-door-replacement':
+      return [
+        { label: 'Square footage calculator', href: '/home/square-footage' },
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+    case 'tree-removal':
+      return [
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+    default:
+      return [
+        { label: 'Home affordability calculator', href: '/money/home-affordability' },
+        { label: 'Home improvement loan calculator', href: '/money/loan' },
+      ];
+  }
+}

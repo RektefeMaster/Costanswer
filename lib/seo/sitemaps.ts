@@ -173,12 +173,20 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
       };
       return path === '/' ? withHreflang(entry) : entry;
     }),
-    'pages-es': [withHreflang({
-      path: '/es',
-      lastModified: CONTENT_RELEASE_DATE,
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    })],
+    'pages-es': [
+      withHreflang({
+        path: '/es',
+        lastModified: CONTENT_RELEASE_DATE,
+        changeFrequency: 'weekly',
+        priority: 0.9,
+      }),
+      ...tools.filter((tool) => evaluateToolIndexability(tool).indexable).map((tool) => withHreflang({
+        path: `/es${tool.path}` as `/${string}`,
+        lastModified: toolLastModified(tool),
+        changeFrequency: 'monthly',
+        priority: tool.featured ? 0.85 : 0.65,
+      })),
+    ],
     topics: CATEGORY_IDS.filter(isCategoryHubIndexable).map((category) => ({
       path: `/topics/${category}`,
       lastModified: getToolsByCategory(category)
@@ -197,7 +205,7 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
       changeFrequency: 'weekly' as const,
       priority: path === '/cost' ? 0.8 : 0.7,
     })),
-    tools: tools.filter((tool) => evaluateToolIndexability(tool).indexable).map((tool) => ({
+    tools: tools.filter((tool) => evaluateToolIndexability(tool).indexable).map((tool) => withHreflang({
       path: tool.path,
       lastModified: toolLastModified(tool),
       changeFrequency: 'monthly',
@@ -205,6 +213,7 @@ export function getSitemapFamilies(): Record<SitemapFamilyId, SitemapEntry[]> {
     })),
   };
 }
+
 
 export function getSitemapPage(family: SitemapFamilyId, oneBasedPage: number): SitemapEntry[] | null {
   const pages = paginateSitemapEntries(getSitemapFamilies()[family], familyPageSize(family));

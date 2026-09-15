@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { InfoPage } from '@/components/site/InfoPage';
 import { SITE_FAQ } from '@/lib/site-faq';

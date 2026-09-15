@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import type { ElectricityStateRate } from '@/lib/data/eia-electricity';
 import type { EiaGasolineSnapshot } from '@/lib/data/eia-gasoline';
@@ -131,6 +133,8 @@ export function WhereCheaperCalculator({
   gasoline: EiaGasolineSnapshot;
   grocery: BlsGrocerySnapshot;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [kind, setKind] = useState<BasketKind>('grocery');
   const [homeState, setHomeState] = useState<StateCode>('TX');
   const [compareState, setCompareState] = useState<StateCode>('CA');
@@ -204,7 +208,7 @@ export function WhereCheaperCalculator({
       calculationSignature={JSON.stringify([kind, homeState, compareState, monthlyKwh, monthlyGallons])}
     >
       <div className="place-bar">
-        <Field label="Your state" htmlFor="home-state">
+        <Field label={t("Your state")} htmlFor="home-state">
           <span className="input-shell select-shell">
             <select id="home-state" value={homeState} onChange={(event) => setHomeState(event.target.value as StateCode)}>
               {stateOptions.map((row) => <option value={row.stateCode} key={`home-${row.stateCode}`}>{row.stateName}</option>)}
@@ -214,7 +218,7 @@ export function WhereCheaperCalculator({
         <button type="button" className="place-swap" onClick={() => { setHomeState(compareState); setCompareState(homeState); }} aria-label="Swap the two states">
           Swap
         </button>
-        <Field label="Compare with" htmlFor="compare-state">
+        <Field label={t("Compare with")} htmlFor="compare-state">
           <span className="input-shell select-shell">
             <select id="compare-state" value={compareState} onChange={(event) => setCompareState(event.target.value as StateCode)}>
               {stateOptions.map((row) => <option value={row.stateCode} key={`compare-${row.stateCode}`}>{row.stateName}</option>)}
@@ -253,14 +257,14 @@ export function WhereCheaperCalculator({
       {(showEnergy || showFuel) && (
         <div className="calc-form-grid compact-grid">
           {showEnergy && (
-            <Field label="Monthly electricity" htmlFor="cheaper-kwh">
+            <Field label={t("Monthly electricity")} htmlFor="cheaper-kwh">
               <InputShell suffix="kWh">
                 <input id="cheaper-kwh" type="number" min="0" step="10" inputMode="decimal" value={monthlyKwh} onChange={(event) => setMonthlyKwh(event.target.value)} />
               </InputShell>
             </Field>
           )}
           {showFuel && (
-            <Field label="Monthly gasoline" htmlFor="cheaper-gallons">
+            <Field label={t("Monthly gasoline")} htmlFor="cheaper-gallons">
               <InputShell suffix="gal">
                 <input id="cheaper-gallons" type="number" min="0" step="1" inputMode="decimal" value={monthlyGallons} onChange={(event) => setMonthlyGallons(event.target.value)} />
               </InputShell>

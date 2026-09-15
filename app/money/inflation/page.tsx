@@ -4,10 +4,10 @@ import { cpiSnapshot } from '@/lib/data/cpi-snapshot';
 import { cpiPeriodBounds } from '@/lib/data/bls-cpi';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('inflation');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 const bounds = cpiPeriodBounds(cpiSnapshot.observations);
 const cpiSource = datasetSourceDisplay({
   datasetId: 'bls-cpi',

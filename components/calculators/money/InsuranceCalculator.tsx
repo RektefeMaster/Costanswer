@@ -1,6 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
+import Link from '@/components/i18n/LocalizedLink';
 import { useMemo, useState } from 'react';
 import { calculateInsuranceBudget } from '@/lib/calculations/insurance';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -31,6 +33,8 @@ function PremiumInput({ id, label, amount, setAmount, frequency, setFrequency, h
 }
 
 export function InsuranceCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [housingType, setHousingType] = useState<Housing>('homeowners');
   const [includeAuto, setIncludeAuto] = useState(true);
@@ -56,7 +60,7 @@ export function InsuranceCalculator() {
       {([['homeowners', 'I own my home'], ['renters', 'I rent my home'], ['none', 'Auto only']] as const).map(([value, label]) => <button type="button" key={value} aria-pressed={housingType === value} className={housingType === value ? 'active' : ''} onClick={() => { setHousingType(value); if (value === 'none') setIncludeAuto(true); }}>{label}</button>)}
     </div>
     <div className="calc-form-grid insurance-core-inputs">
-      <Field label="State" htmlFor="insurance-state" hint="State averages; your address is not collected.">
+      <Field label={t("State")} htmlFor="insurance-state" hint="State averages; your address is not collected.">
         <span className="input-shell select-shell"><select id="insurance-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>{STATE_CODES.map((code) => <option key={code} value={code}>{US_STATES[code]}</option>)}</select></span>
       </Field>
       <div className="calc-field">
@@ -93,7 +97,7 @@ export function InsuranceCalculator() {
       ]} />
 
       <ResultDetails breakdown={result.breakdown} assumptions={result.assumptions} calculationVersion={result.calculationVersion} datasetSnapshotIds={result.datasetSnapshotIds} />
-      {housingType === 'homeowners' && <p className="insurance-next-step">Planning a purchase? Enter <strong>{formatMoney(result.value.housingAnnual)} per year</strong> as homeowners insurance in the <Link href="/money/mortgage-payment">mortgage calculator →</Link></p>}
+      {housingType === 'homeowners' && <p className="insurance-next-step">Planning a purchase? Enter <strong>{formatMoney(result.value.housingAnnual)} {t("per year")}</strong> as homeowners insurance in the <Link href="/money/mortgage-payment">mortgage calculator →</Link></p>}
     </div>}
       <div className="insurance-cushion">
         <Field label="Optional budget cushion" htmlFor="insurance-buffer" hint="Your planning scenario; not a predicted price range.">
@@ -101,7 +105,7 @@ export function InsuranceCalculator() {
         </Field>
         <p>
           <span>With your cushion</span>
-          <strong>{result ? formatMoney(result.value.monthlyWithBuffer) : '—'}<small> / month</small></strong>
+          <strong>{result ? formatMoney(result.value.monthlyWithBuffer) : '$0'}<small> {t("/ month")}</small></strong>
           <span>{result ? `${formatMoney(result.value.annualWithBuffer)} per year` : 'Enter a complete budget first'}</span>
         </p>
       </div>

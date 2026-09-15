@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import type { ReactNode } from 'react';
 import { AdSlot } from '@/components/monetization/AdSlot';
 import { AffiliateOffers } from '@/components/monetization/AffiliateOffers';
@@ -98,12 +98,17 @@ export async function CostPage({
               <section className="editorial-section" aria-labelledby="job-faq-title">
                 <p className="eyebrow muted"><span /> Common questions</p>
                 <h2 id="job-faq-title">Before you call a contractor</h2>
-                <div className="editorial-faq">
+                <div className="editorial-faq-list">
                   {faqs.map((entry) => (
-                    <article key={entry.question}>
-                      <h3>{entry.question}</h3>
-                      {entry.answer.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-                    </article>
+                    <details key={entry.question} className="editorial-faq-details">
+                      <summary className="editorial-faq-summary">
+                        <span>{entry.question}</span>
+                        <span className="editorial-faq-chevron" aria-hidden="true">↓</span>
+                      </summary>
+                      <div className="editorial-faq-body">
+                        {entry.answer.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+                      </div>
+                    </details>
                   ))}
                 </div>
               </section>

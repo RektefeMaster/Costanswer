@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   calculateCostOfLivingFromCoverage,
@@ -53,6 +55,8 @@ type CoverageState =
 const NO_MATCHES: LocationSearchHit[] = [];
 
 export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: LocationCoverage }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [query, setQuery] = useState('Austin, TX');
   const [selected, setSelected] = useState<LocationSearchHit | null>(AUSTIN);
   const [coverage, setCoverage] = useState<CoverageState>({ status: 'ready', value: initialCoverage });
@@ -217,7 +221,7 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
         </div>
       )}
       <div className="calc-form-grid">
-        <Field label="Location" htmlFor="col-location" hint="Search a U.S. city, metro, or state. Duplicate names stay listed until you pick one.">
+        <Field label={t("Location")} htmlFor="col-location" hint="Search a U.S. city, metro, or state. Duplicate names stay listed until you pick one.">
           <InputShell>
             <input
               id="col-location"
@@ -254,7 +258,7 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
           )}
         </Field>
         {value?.coverage.stateAmbiguous && (
-          <Field label="Residential state" htmlFor="col-state" hint="This metro crosses state lines. Tax, electricity, and fuel need the state you live in.">
+          <Field label={t("Residential state")} htmlFor="col-state" hint="This metro crosses state lines. Tax, electricity, and fuel need the state you live in.">
             <span className="input-shell select-shell">
               <select id="col-state" value={residentialState} onChange={(event) => { setResidentialState(event.target.value as StateCode | ''); setCountyGeoid(''); }}>
                 <option value="">Choose a state</option>
@@ -265,7 +269,7 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
         )}
         {value?.coverage.countyChoices.length ? (
           <Field
-            label="County"
+            label={t("County")}
             htmlFor="col-county"
             hint={value.coverage.hud.status === 'ambiguous' ? value.coverage.hud.message : 'Pick the county you live in, or enter housing cost manually.'}
           >
@@ -279,19 +283,19 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
             </span>
           </Field>
         ) : null}
-        <Field label="Bedrooms" htmlFor="col-bedrooms">
+        <Field label={t("Bedrooms")} htmlFor="col-bedrooms">
           <span className="input-shell select-shell">
             <select id="col-bedrooms" value={bedrooms} onChange={(event) => setBedrooms(event.target.value as ColBedroom)}>
               {COL_BEDROOMS.map((size) => <option key={size} value={size}>{BEDROOM_LABELS[size]}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Adults" htmlFor="col-adults">
+        <Field label={t("Adults")} htmlFor="col-adults">
           <InputShell>
             <input id="col-adults" type="number" min="0" max="12" step="1" inputMode="numeric" value={adults} onChange={(event) => setAdults(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Children" htmlFor="col-children" hint="Food plan uses USDA ages 6–8 for children.">
+        <Field label={t("Children")} htmlFor="col-children" hint="Food plan uses USDA ages 6–8 for children.">
           <InputShell>
             <input id="col-children" type="number" min="0" max="12" step="1" inputMode="numeric" value={children} onChange={(event) => setChildren(event.target.value)} />
           </InputShell>
@@ -303,7 +307,7 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
             </select>
           </span>
         </Field>
-        <Field label="Housing" htmlFor="col-housing-mode" hint="HUD FMR is a gross-rent benchmark, including most tenant-paid utilities.">
+        <Field label={t("Housing")} htmlFor="col-housing-mode" hint="HUD FMR is a gross-rent benchmark, including most tenant-paid utilities.">
           <span className="input-shell select-shell">
             <select id="col-housing-mode" value={housingMode} onChange={(event) => setHousingMode(event.target.value as 'hud' | 'manual')}>
               <option value="hud">HUD Fair Market Rent benchmark</option>
@@ -312,13 +316,13 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
           </span>
         </Field>
         {housingMode === 'manual' && (
-          <Field label="Monthly housing cost" htmlFor="col-manual-housing">
+          <Field label={t("Monthly housing cost")} htmlFor="col-manual-housing">
             <InputShell prefix="$">
               <input id="col-manual-housing" type="number" min="0" step="50" inputMode="decimal" value={manualHousing} onChange={(event) => setManualHousing(event.target.value)} />
             </InputShell>
           </Field>
         )}
-        <Field label="Transportation" htmlFor="col-transport">
+        <Field label={t("Transportation")} htmlFor="col-transport">
           <span className="input-shell select-shell">
             <select id="col-transport" value={transportMode} onChange={(event) => setTransportMode(event.target.value as typeof transportMode)}>
               <option value="none">No personal vehicle</option>
@@ -337,13 +341,13 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
         )}
         {(transportMode === 'gas' || transportMode === 'ev') && (
           <>
-            <Field label="Annual miles" htmlFor="col-miles">
+            <Field label={t("Annual miles")} htmlFor="col-miles">
               <InputShell>
                 <input id="col-miles" type="number" min="0" step="500" inputMode="numeric" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} />
               </InputShell>
             </Field>
             {transportMode === 'gas' && (
-              <Field label="Miles per gallon" htmlFor="col-mpg">
+              <Field label={t("Miles per gallon")} htmlFor="col-mpg">
                 <InputShell>
                   <input id="col-mpg" type="number" min="1" step="1" inputMode="decimal" value={mpg} onChange={(event) => setMpg(event.target.value)} />
                 </InputShell>
@@ -358,17 +362,17 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
             )}
           </>
         )}
-        <Field label="Income" htmlFor="col-income-mode">
+        <Field label={t("Income")} htmlFor="col-income-mode">
           <span className="input-shell select-shell">
             <select id="col-income-mode" value={incomeMode} onChange={(event) => setIncomeMode(event.target.value as typeof incomeMode)}>
               <option value="none">Skip income</option>
-              <option value="take-home">Monthly take-home</option>
-              <option value="gross-salary">Annual gross salary</option>
+              <option value="take-home">{t("Monthly take-home")}</option>
+              <option value="gross-salary">{t("Annual gross salary")}</option>
             </select>
           </span>
         </Field>
         {incomeMode === 'take-home' && (
-          <Field label="Monthly take-home" htmlFor="col-takehome">
+          <Field label={t("Monthly take-home")} htmlFor="col-takehome">
             <InputShell prefix="$">
               <input id="col-takehome" type="number" min="0" step="100" inputMode="decimal" value={monthlyTakeHome} onChange={(event) => setMonthlyTakeHome(event.target.value)} />
             </InputShell>
@@ -376,12 +380,12 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
         )}
         {incomeMode === 'gross-salary' && (
           <>
-            <Field label="Annual gross salary" htmlFor="col-salary">
+            <Field label={t("Annual gross salary")} htmlFor="col-salary">
               <InputShell prefix="$">
                 <input id="col-salary" type="number" min="0" step="1000" inputMode="decimal" value={annualGrossSalary} onChange={(event) => setAnnualGrossSalary(event.target.value)} />
               </InputShell>
             </Field>
-            <Field label="Filing status" htmlFor="col-filing">
+            <Field label={t("Filing status")} htmlFor="col-filing">
               <span className="input-shell select-shell">
                 <select id="col-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as FilingStatus)}>
                   {FILING_STATUSES.map((status) => <option key={status} value={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -399,7 +403,7 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
       */}
       <AdvancedSection
         id="other-essentials"
-        title="Other essentials"
+        title={t("Other essentials")}
         hint="Phone, internet and similar. HUD gross rent does not include these, so they are not counted unless you add them."
       >
         <div className="calc-form-grid">
@@ -425,15 +429,15 @@ export function CostOfLivingCalculator({ initialCoverage }: { initialCoverage: L
               <ul>
                 {value.housing.included && <li>Housing ({value.housing.calculationSource === 'manual' ? 'your figure' : 'HUD Fair Market Rent'})</li>}
                 {value.food.included && <li>Food at home (USDA Food Plan)</li>}
-                {value.transportation.included && <li>Transportation</li>}
+                {value.transportation.included && <li>{t("Transportation")}</li>}
                 {value.otherEssentials.included && <li>Other essentials you entered</li>}
               </ul>
             </div>
             <div>
               <p className="model-coverage-head">Not counted</p>
               <ul>
-                {!value.housing.included && <li>Housing</li>}
-                {!value.transportation.included && <li>Transportation</li>}
+                {!value.housing.included && <li>{t("Housing")}</li>}
+                {!value.transportation.included && <li>{t("Transportation")}</li>}
                 <li>Healthcare and insurance</li>
                 <li>Childcare</li>
                 <li>Debt payments</li>

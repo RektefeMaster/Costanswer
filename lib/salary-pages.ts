@@ -37,12 +37,18 @@ export type SalaryPublicationState = 'indexable' | 'wave-1' | 'staged';
 /**
  * How far the family has been opened to search engines.
  *
- * Leaves used to open in employment waves so a young domain would not dump
- * 30,000 URLs on Google at once. The bilingual corpus needs every occupation-
- * in-state pair in both languages, so `occupationInState` is fully
- * `indexable`. `salaryLeafIsOpen` is still the one answer both the sitemap and
- * the tables read. `SALARY_LEAF_WAVE_1_MIN_EMPLOYMENT` remains if a later
- * crawl-budget retreat has to close the long tail again.
+ * Leaves open in employment waves so a young domain is not handed 30,000 URLs
+ * at once. That was the original design, it was briefly set to `indexable` for
+ * the whole bilingual corpus, and it is back — because publishing 61,614 leaf
+ * pages on a domain with no history is not a bigger bet, it is a slower one.
+ * A crawler that has never seen the site budgets a few thousand URLs a day;
+ * spend that on the long tail and the pages with real search volume wait
+ * behind it. Wave 1 is those pages.
+ *
+ * `salaryLeafIsOpen` is the one answer both the sitemap and the tables read,
+ * so a leaf is never indexed without a link or linked without being indexed.
+ * Widening is one constant away: lower the threshold once Search Console shows
+ * wave 1 indexed, and the next wave arrives with the domain already trusted.
  */
 export const SALARY_PUBLICATION: Record<SalaryLevel, SalaryPublicationState> = {
   familyHub: 'indexable',

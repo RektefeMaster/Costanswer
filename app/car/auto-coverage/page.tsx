@@ -2,10 +2,10 @@ import { AutoCoverageCalculator } from '@/components/calculators/car/AutoCoverag
 import { ToolPage } from '@/components/tool/ToolPage';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('auto-coverage');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function AutoCoveragePage() {
   return (

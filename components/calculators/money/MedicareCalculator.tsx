@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateMedicareCost } from '@/lib/calculations/medicare';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -11,6 +13,8 @@ type FilingStatus = 'single' | 'married-joint' | 'married-separate';
 type Quarters = '40-or-more' | '30-to-39' | 'under-30';
 
 export function MedicareCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [filingStatus, setFilingStatus] = useState<FilingStatus>('single');
   const [annualMagi, setAnnualMagi] = useState('75000');
   const [partAQuarters, setPartAQuarters] = useState<Quarters>('40-or-more');
@@ -70,8 +74,8 @@ export function MedicareCalculator() {
           <span className="input-shell select-shell">
             <select id="medicare-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as FilingStatus)}>
               <option value="single">Single, head of household, or qualifying widow(er)</option>
-              <option value="married-joint">Married filing jointly</option>
-              <option value="married-separate">Married filing separately</option>
+              <option value="married-joint">{t("Married filing jointly")}</option>
+              <option value="married-separate">{t("Married filing separately")}</option>
             </select>
           </span>
         </Field>
@@ -178,7 +182,7 @@ export function MedicareCalculator() {
                       {index === value.irmaaBracketIndex && ' · you'}
                     </th>
                     <td>{formatMoney(value.partBStandardPremium + bracket.partBMonthlyAdjustment)}</td>
-                    <td>{bracket.partDMonthlyAdjustment === 0 ? '—' : `+${formatMoney(bracket.partDMonthlyAdjustment)}`}</td>
+                    <td>{bracket.partDMonthlyAdjustment === 0 ? '$0' : `+${formatMoney(bracket.partDMonthlyAdjustment)}`}</td>
                   </tr>
                 ))}
               </tbody>

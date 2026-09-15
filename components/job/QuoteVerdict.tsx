@@ -32,11 +32,11 @@ export function QuoteVerdict({ result }: { result: QuoteCheckResult }) {
         </div>
         <div>
           <dt>CostAnswer expected</dt>
-          <dd>{range ? formatMoney(range.expectedCents / 100, 0) : '—'}</dd>
+          <dd>{range ? formatMoney(range.expectedCents / 100, 0) : 'Incomplete'}</dd>
         </div>
         <div>
           <dt>CostAnswer estimated range</dt>
-          <dd>{range ? `${formatMoney(range.lowCents / 100, 0)} – ${formatMoney(range.highCents / 100, 0)}` : 'Incomplete'}</dd>
+          <dd>{range ? `${formatMoney(range.lowCents / 100, 0)} to ${formatMoney(range.highCents / 100, 0)}` : 'Incomplete'}</dd>
         </div>
       </dl>
       {result.reasonsAHigherQuoteCanBeCorrect.length > 0 && (

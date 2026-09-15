@@ -4,11 +4,11 @@ import { gsaPerDiemSnapshot, listPerDiemDestinations } from '@/lib/data/gsa-perd
 import { zctaCountySnapshot } from '@/lib/data/zcta-county-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
 const tool = getTool('per-diem');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const perDiemSource = datasetSourceDisplay({
   datasetId: 'gsa-perdiem',

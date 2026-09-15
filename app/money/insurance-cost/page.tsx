@@ -2,10 +2,10 @@ import { InsuranceCalculator } from '@/components/calculators/money/InsuranceCal
 import { ToolPage } from '@/components/tool/ToolPage';
 import { insuranceSnapshot } from '@/lib/data/insurance-snapshot';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('insurance-cost');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function InsuranceCostPage() {
   return <ToolPage tool={tool}

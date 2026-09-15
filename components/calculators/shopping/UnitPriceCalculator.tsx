@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateUnitPrices, UNIT_DEFINITIONS, type UnitId } from '@/lib/calculations/unit-price';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -14,6 +16,8 @@ const unitGroups: Array<{ label: string; units: UnitId[] }> = [
 ];
 
 export function UnitPriceCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [packages, setPackages] = useState<PackageOption[]>([
     { id: 'a', label: 'Option A', price: '8.99', quantity: '24', unit: 'oz' },
     { id: 'b', label: 'Option B', price: '12.49', quantity: '2', unit: 'lb' },
@@ -77,11 +81,11 @@ export function UnitPriceCalculator() {
                 </button>
               )}
             </div>
-            <Field label="Label" htmlFor={`package-${option.id}-label`}><span className="input-shell"><input aria-label={`Option ${String.fromCharCode(65 + index)} label`} id={`package-${option.id}-label`} value={option.label} maxLength={60} onChange={(event) => updatePackage(option.id, { label: event.target.value })} /></span></Field>
-            <Field label="Package price" htmlFor={`package-${option.id}-price`}><InputShell prefix="$"><input aria-label={`Option ${String.fromCharCode(65 + index)} package price`} id={`package-${option.id}-price`} type="number" min="0.01" step="0.01" value={option.price} onChange={(event) => updatePackage(option.id, { price: event.target.value })} /></InputShell></Field>
+            <Field label={t("Label")} htmlFor={`package-${option.id}-label`}><span className="input-shell"><input aria-label={`Option ${String.fromCharCode(65 + index)} label`} id={`package-${option.id}-label`} value={option.label} maxLength={60} onChange={(event) => updatePackage(option.id, { label: event.target.value })} /></span></Field>
+            <Field label={t("Package price")} htmlFor={`package-${option.id}-price`}><InputShell prefix="$"><input aria-label={`Option ${String.fromCharCode(65 + index)} package price`} id={`package-${option.id}-price`} type="number" min="0.01" step="0.01" value={option.price} onChange={(event) => updatePackage(option.id, { price: event.target.value })} /></InputShell></Field>
             <div className="quantity-unit-row">
-              <Field label="Quantity" htmlFor={`package-${option.id}-quantity`}><InputShell><input aria-label={`Option ${String.fromCharCode(65 + index)} quantity`} id={`package-${option.id}-quantity`} type="number" min="0.0001" step="0.01" value={option.quantity} onChange={(event) => updatePackage(option.id, { quantity: event.target.value })} /></InputShell></Field>
-              <Field label="Unit" htmlFor={`package-${option.id}-unit`}><span className="input-shell select-shell"><select aria-label={`Option ${String.fromCharCode(65 + index)} unit`} id={`package-${option.id}-unit`} value={option.unit} onChange={(event) => updatePackage(option.id, { unit: event.target.value as UnitId })}>{unitGroups.map((group) => <optgroup label={group.label} key={group.label}>{group.units.map((unit) => <option value={unit} key={unit}>{UNIT_DEFINITIONS[unit].label}</option>)}</optgroup>)}</select></span></Field>
+              <Field label={t("Quantity")} htmlFor={`package-${option.id}-quantity`}><InputShell><input aria-label={`Option ${String.fromCharCode(65 + index)} quantity`} id={`package-${option.id}-quantity`} type="number" min="0.0001" step="0.01" value={option.quantity} onChange={(event) => updatePackage(option.id, { quantity: event.target.value })} /></InputShell></Field>
+              <Field label={t("Unit")} htmlFor={`package-${option.id}-unit`}><span className="input-shell select-shell"><select aria-label={`Option ${String.fromCharCode(65 + index)} unit`} id={`package-${option.id}-unit`} value={option.unit} onChange={(event) => updatePackage(option.id, { unit: event.target.value as UnitId })}>{unitGroups.map((group) => <optgroup label={group.label} key={group.label}>{group.units.map((unit) => <option value={unit} key={unit}>{UNIT_DEFINITIONS[unit].label}</option>)}</optgroup>)}</select></span></Field>
             </div>
           </section>
         ))}

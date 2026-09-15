@@ -1,10 +1,10 @@
 import { AgeCalculator } from '@/components/calculators/everyday/AgeCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('age');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function AgePage() {
   const initialDate = new Date().toISOString().slice(0, 10);

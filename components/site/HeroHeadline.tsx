@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { Locale } from '@/lib/i18n/locales';
 
 const HERO_NOUNS = ['a house', 'a car', 'a mortgage', 'a paycheck', 'power', 'groceries', 'gas'] as const;
 const HOLD_MS = 2200;
 const SLIDE_MS = 380;
 
-export function HeroHeadline() {
+export function HeroHeadline({ locale = 'en-US' }: { locale?: Locale }) {
+  const nouns = locale === 'es-US' ? ['una casa', 'un auto', 'una hipoteca', 'la nómina', 'la luz', 'la compra', 'la gasolina'] : HERO_NOUNS;
   const headlineRef = useRef<HTMLHeadingElement>(null);
   const indexRef = useRef(0);
   const [index, setIndex] = useState(0);
@@ -52,8 +54,8 @@ export function HeroHeadline() {
     return () => window.clearTimeout(timer);
   }, [previous]);
 
-  const noun = HERO_NOUNS[index];
-  const outgoing = previous == null ? null : HERO_NOUNS[previous];
+  const noun = nouns[index];
+  const outgoing = previous == null ? null : nouns[previous];
 
   return (
     /*
@@ -64,9 +66,9 @@ export function HeroHeadline() {
       together as a single doubled title. The stable name now comes from
       aria-label, so the heading holds exactly one readable sentence.
     */
-    <h1 ref={headlineRef} aria-label="How much will it cost in the U.S.?">
+    <h1 ref={headlineRef} aria-label={locale === 'es-US' ? '¿Cuánto cuesta en Estados Unidos?' : 'How much will it cost in the U.S.?'}>
       <span className="hero-headline">
-        <span className="hero-kicker">How much will</span>
+        <span className="hero-kicker">{locale === 'es-US' ? '¿Cuánto cuesta' : 'How much will'}</span>
         <span className="hero-rotate" aria-hidden="true">
           {outgoing == null ? (
             <span className="hero-noun">{noun}</span>
@@ -77,7 +79,7 @@ export function HeroHeadline() {
             </span>
           )}
         </span>
-        cost in the <em>U.S.?</em>
+        {locale === 'es-US' ? 'en ' : 'cost in the '}<em>{locale === 'es-US' ? 'EE. UU.?' : 'U.S.?'}</em>
       </span>
     </h1>
   );

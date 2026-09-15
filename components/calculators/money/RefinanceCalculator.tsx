@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateRefinance } from '@/lib/calculations/refinance';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -13,6 +15,8 @@ export function RefinanceCalculator({
 }: {
   rates: { snapshotId: string; observationPeriod: string; thirtyYearFixedPercent: number; fifteenYearFixedPercent: number };
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [currentBalance, setCurrentBalance] = useState('290000');
   const [currentRatePercent, setCurrentRatePercent] = useState('7.5');
   const [currentTermYears, setCurrentTermYears] = useState('30');
@@ -78,17 +82,17 @@ export function RefinanceCalculator({
       <div className="comparison-inputs">
         <section>
           <h3 className="comparison-label gas-label">Loan you have</h3>
-          <Field label="Balance left" htmlFor="refi-balance" hint="What you owe now, not what you borrowed">
+          <Field label={t("Balance left")} htmlFor="refi-balance" hint="What you owe now, not what you borrowed">
             <InputShell prefix="$"><input id="refi-balance" type="number" min="1" step="1000" inputMode="decimal" value={currentBalance} onChange={(event) => setCurrentBalance(event.target.value)} /></InputShell>
           </Field>
-          <Field label="Interest rate" htmlFor="refi-current-rate">
+          <Field label={t("Interest rate")} htmlFor="refi-current-rate">
             <InputShell suffix="%"><input id="refi-current-rate" type="number" min="0" max="25" step="0.05" inputMode="decimal" value={currentRatePercent} onChange={(event) => setCurrentRatePercent(event.target.value)} /></InputShell>
           </Field>
-          <Field label="Original term" htmlFor="refi-current-term">
-            <InputShell suffix="years"><input id="refi-current-term" type="number" min="1" max="50" step="1" inputMode="numeric" value={currentTermYears} onChange={(event) => setCurrentTermYears(event.target.value)} /></InputShell>
+          <Field label={t("Original term")} htmlFor="refi-current-term">
+            <InputShell suffix={t("years")}><input id="refi-current-term" type="number" min="1" max="50" step="1" inputMode="numeric" value={currentTermYears} onChange={(event) => setCurrentTermYears(event.target.value)} /></InputShell>
           </Field>
-          <Field label="Payments already made" htmlFor="refi-paid" hint="With the original term, used to infer your current P&I assuming no extra principal. Type your statement payment below if you paid ahead.">
-            <InputShell suffix="months"><input id="refi-paid" type="number" min="0" max="600" step="1" inputMode="numeric" value={monthsAlreadyPaid} onChange={(event) => setMonthsAlreadyPaid(event.target.value)} /></InputShell>
+          <Field label={t("Payments already made")} htmlFor="refi-paid" hint="With the original term, used to infer your current P&I assuming no extra principal. Type your statement payment below if you paid ahead.">
+            <InputShell suffix={t("months")}><input id="refi-paid" type="number" min="0" max="600" step="1" inputMode="numeric" value={monthsAlreadyPaid} onChange={(event) => setMonthsAlreadyPaid(event.target.value)} /></InputShell>
           </Field>
           <Field label="Current monthly P&I (optional)" htmlFor="refi-payment" hint="From your statement. Leave blank to infer from rate and original term.">
             <InputShell prefix="$"><input id="refi-payment" type="number" min="0" step="1" inputMode="decimal" value={currentMonthlyPayment} onChange={(event) => setCurrentMonthlyPayment(event.target.value)} /></InputShell>
@@ -96,18 +100,18 @@ export function RefinanceCalculator({
         </section>
         <section>
           <h3 className="comparison-label ev-label">Loan you would take</h3>
-          <Field label="New interest rate" htmlFor="refi-new-rate" hint="Starts at the dated national average above. Use your quote if you have one.">
+          <Field label={t("New interest rate")} htmlFor="refi-new-rate" hint="Starts at the dated national average above. Use your quote if you have one.">
             <InputShell suffix="%"><input id="refi-new-rate" type="number" min="0" max="25" step="0.05" inputMode="decimal" value={newRatePercent} onChange={(event) => setNewRatePercent(event.target.value)} /></InputShell>
           </Field>
-          <Field label="New term" htmlFor="refi-new-term" hint="Going back to 30 years lowers the payment and usually raises total interest">
-            <InputShell suffix="years"><input id="refi-new-term" type="number" min="1" max="50" step="1" inputMode="numeric" value={newTermYears} onChange={(event) => setNewTermYears(event.target.value)} /></InputShell>
+          <Field label={t("New term")} htmlFor="refi-new-term" hint="Going back to 30 years lowers the payment and usually raises total interest">
+            <InputShell suffix={t("years")}><input id="refi-new-term" type="number" min="1" max="50" step="1" inputMode="numeric" value={newTermYears} onChange={(event) => setNewTermYears(event.target.value)} /></InputShell>
           </Field>
           <AdvancedSection
             id="closing-costs"
-            title="Closing costs"
+            title={t("Closing costs")}
             hint="What the refinance itself costs up front. This is the figure the break-even point is measured against."
           >
-            <Field label="Closing costs" htmlFor="refi-costs" hint="Lender fees, title, appraisal, recording">
+            <Field label={t("Closing costs")} htmlFor="refi-costs" hint="Lender fees, title, appraisal, recording">
               <InputShell prefix="$"><input id="refi-costs" type="number" min="0" step="100" inputMode="decimal" value={closingCosts} onChange={(event) => setClosingCosts(event.target.value)} /></InputShell>
             </Field>
             <div className="mode-tabs" role="group" aria-label="How closing costs are paid">

@@ -1,21 +1,26 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { AuthorByline } from '@/components/site/AuthorByline';
 import { faqPageJsonLd } from '@/lib/seo';
 import type { ToolEditorial } from '@/lib/tool-content';
+import type { Locale } from '@/lib/i18n/locales';
+import { siteText } from '@/lib/i18n/site-copy';
 
 export function CalculatorEditorial({
   toolPath,
   content,
+  locale = 'en-US',
 }: {
   toolPath: `/${string}`;
   content: ToolEditorial;
+  locale?: Locale;
 }) {
+  const t = (text: string) => siteText(text, locale);
   return (
     <section className="editorial-section" aria-labelledby="editorial-title">
       {content.faq.length >= 2 && <JsonLd data={faqPageJsonLd(content.faq, toolPath)} />}
       <div className="editorial-heading">
-        <p className="eyebrow muted"><span /> Guide</p>
+        <p className="eyebrow muted"><span /> {t('Guide')}</p>
         <h2 id="editorial-title">{content.guide.heading}</h2>
         <AuthorByline compact />
       </div>
@@ -40,23 +45,30 @@ export function CalculatorEditorial({
 
       <div className="editorial-split">
         <section className="editorial-faq" aria-labelledby="editorial-faq-title">
-          <h3 id="editorial-faq-title">Questions about this calculator</h3>
-          {content.faq.map((entry) => (
-            <details key={entry.question}>
-              <summary>{entry.question}</summary>
-              {entry.answer.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </details>
-          ))}
+          <h3 id="editorial-faq-title">{t('Questions about this calculator')}</h3>
+          <div className="editorial-faq-list">
+            {content.faq.map((entry) => (
+              <details key={entry.question} className="editorial-faq-details">
+                <summary className="editorial-faq-summary">
+                  <span>{entry.question}</span>
+                  <span className="editorial-faq-chevron" aria-hidden="true">↓</span>
+                </summary>
+                <div className="editorial-faq-body">
+                  {entry.answer.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              </details>
+            ))}
+          </div>
         </section>
         <section className="editorial-glossary" aria-labelledby="editorial-glossary-title">
-          <h3 id="editorial-glossary-title">Terms used here</h3>
-          <dl>
+          <h3 id="editorial-glossary-title">{t('Terms used here')}</h3>
+          <dl className="editorial-glossary-grid">
             {content.glossary.map((item) => (
-              <div key={item.term}>
-                <dt>{item.term}</dt>
-                <dd>{item.definition}</dd>
+              <div key={item.term} className="editorial-glossary-card">
+                <dt className="editorial-glossary-term">{item.term}</dt>
+                <dd className="editorial-glossary-def">{item.definition}</dd>
               </div>
             ))}
           </dl>
@@ -64,30 +76,43 @@ export function CalculatorEditorial({
       </div>
 
       <section className="editorial-tips" aria-labelledby="editorial-tips-title">
-        <h3 id="editorial-tips-title">Practical tips</h3>
-        <ul>
+        <h3 id="editorial-tips-title">
+          <span className="editorial-card-badge is-tip" aria-hidden="true">💡</span>
+          {t('Practical tips')}
+        </h3>
+        <div className="editorial-tips-grid">
           {content.tips.map((tip) => (
-            <li key={tip}>{tip}</li>
+            <div key={tip} className="editorial-tip-card">
+              <span className="editorial-tip-icon" aria-hidden="true">✓</span>
+              <p>{tip}</p>
+            </div>
           ))}
-        </ul>
+        </div>
       </section>
 
       <section className="editorial-caveats" aria-labelledby="editorial-caveats-title">
-        <h3 id="editorial-caveats-title">Limits and caveats</h3>
-        <ul>
+        <h3 id="editorial-caveats-title">
+          <span className="editorial-card-badge is-caveat" aria-hidden="true">⚠️</span>
+          {t('Limits and caveats')}
+        </h3>
+        <div className="editorial-caveats-grid">
           {content.caveats.map((caveat) => (
-            <li key={caveat}>{caveat}</li>
+            <div key={caveat} className="editorial-caveat-card">
+              <span className="editorial-caveat-icon" aria-hidden="true">•</span>
+              <p>{caveat}</p>
+            </div>
           ))}
-        </ul>
+        </div>
         <p className="editorial-advice">
-          Results are for information. They are not legal, tax, medical, or financial advice.
+          {t('Results are for information. They are not legal, tax, medical, or financial advice.')}
           {' '}
-          <Link href="/methodology">How the math is maintained</Link>
+          <Link href="/methodology">{t('How the math is maintained')}</Link>
           {' · '}
-          <Link href="/contact">Report a wrong figure</Link>
+          <Link href="/contact">{t('Report a wrong figure')}</Link>
           .
         </p>
       </section>
     </section>
   );
 }
+

@@ -22,7 +22,7 @@ describe('ad embed', () => {
     const embed = adEmbed({ AD_PROVIDER: 'adsense', ADSENSE_CLIENT_ID: CLIENT });
     expect(embed).not.toBeNull();
     expect(embed?.networkId).toBe('adsense');
-    expect(embed?.consentRequirement).toBe('tcf_v2');
+    expect(embed?.consentRequirement).toBe('us_state_optout');
     expect(embed?.scriptUrl).toBe(
       `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${CLIENT}`,
     );

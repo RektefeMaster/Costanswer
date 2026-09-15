@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateRothIra } from '@/lib/calculations/roth-ira';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -7,6 +9,8 @@ import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultD
 import { money } from '../finance-format';
 
 export function RothIraCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [currentBalance, setCurrentBalance] = useState('5000');
   const [monthlyContribution, setMonthlyContribution] = useState('500');
   const [years, setYears] = useState('25');
@@ -32,11 +36,11 @@ export function RothIraCalculator() {
   return (
     <CalculatorPanel title="Roth IRA growth" intro="Contribution growth under an assumed return. Eligibility is not determined here." toolId="roth-ira" category="money" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([currentBalance, monthlyContribution, years, assumedReturnPercent, currentAge])}>
       <div className="calc-form-grid">
-        <Field label="Current balance" htmlFor="roth-bal"><InputShell prefix="$"><input id="roth-bal" type="number" min="0" step="100" inputMode="decimal" value={currentBalance} onChange={(event) => setCurrentBalance(event.target.value)} /></InputShell></Field>
-        <Field label="Monthly contribution" htmlFor="roth-contrib"><InputShell prefix="$"><input id="roth-contrib" type="number" min="0" step="25" inputMode="decimal" value={monthlyContribution} onChange={(event) => setMonthlyContribution(event.target.value)} /></InputShell></Field>
-        <Field label="Your age" htmlFor="roth-age" hint="Sets the annual IRA limit, including catch-up from 50"><InputShell suffix="years old"><input id="roth-age" type="number" min="16" max="99" step="1" inputMode="numeric" value={currentAge} onChange={(event) => setCurrentAge(event.target.value)} /></InputShell></Field>
-        <Field label="Years" htmlFor="roth-years"><InputShell suffix="years"><input id="roth-years" type="number" min="1" max="80" step="1" inputMode="decimal" value={years} onChange={(event) => setYears(event.target.value)} /></InputShell></Field>
-        <Field label="Assumed annual return" htmlFor="roth-return"><InputShell suffix="%"><input id="roth-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
+        <Field label={t("Current balance")} htmlFor="roth-bal"><InputShell prefix="$"><input id="roth-bal" type="number" min="0" step="100" inputMode="decimal" value={currentBalance} onChange={(event) => setCurrentBalance(event.target.value)} /></InputShell></Field>
+        <Field label={t("Monthly contribution")} htmlFor="roth-contrib"><InputShell prefix="$"><input id="roth-contrib" type="number" min="0" step="25" inputMode="decimal" value={monthlyContribution} onChange={(event) => setMonthlyContribution(event.target.value)} /></InputShell></Field>
+        <Field label={t("Your age")} htmlFor="roth-age" hint="Sets the annual IRA limit, including catch-up from 50"><InputShell suffix={t("years old")}><input id="roth-age" type="number" min="16" max="99" step="1" inputMode="numeric" value={currentAge} onChange={(event) => setCurrentAge(event.target.value)} /></InputShell></Field>
+        <Field label={t("Years")} htmlFor="roth-years"><InputShell suffix={t("years")}><input id="roth-years" type="number" min="1" max="80" step="1" inputMode="decimal" value={years} onChange={(event) => setYears(event.target.value)} /></InputShell></Field>
+        <Field label={t("Assumed annual return")} htmlFor="roth-return"><InputShell suffix="%"><input id="roth-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (

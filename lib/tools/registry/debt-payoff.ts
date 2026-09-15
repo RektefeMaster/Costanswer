@@ -6,7 +6,7 @@ import { DEBT_PAYOFF_ENGINE_ID } from '../../calculations/finance/version';
 export const tool: ToolDefinition = {
   id: 'debt-payoff',
   path: '/money/debt-payoff',
-  title: 'Debt Payoff Calculator',
+  title: 'How Long to Pay Off My Debt?',
   shortTitle: 'Debt payoff',
   description: 'Compare snowball and avalanche payoff plans on the same debts. See which order saves more interest and how extra payments change the date.',
   category: 'money',

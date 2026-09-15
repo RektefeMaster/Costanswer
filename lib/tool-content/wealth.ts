@@ -223,7 +223,7 @@ export const WEALTH_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Does this check Roth IRA income limits?',
         answer: [
-          'It illustrates growth from contributions and a return you enter. Income-phaseout eligibility is not determined here — check current IRS rules.',
+          'It illustrates growth from contributions and a return you enter. Income-phaseout eligibility is not determined here; check current IRS rules.',
         ],
       },
     ],

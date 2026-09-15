@@ -10,7 +10,7 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
         {
           heading: 'Nights are not days',
           paragraphs: [
-            'A Tuesday–Thursday trip has two lodging nights and three M&IE days. Mixing those counts is the usual way a voucher estimate comes out wrong. Seasonal localities also change the lodging cap by month; the page prices each night in the month that night falls in.',
+            'A Tuesday to Thursday trip has two lodging nights and three M&IE days. Mixing those counts is the usual way a voucher estimate comes out wrong. Seasonal localities also change the lodging cap by month; the page prices each night in the month that night falls in.',
           ],
         },
         {
@@ -156,7 +156,7 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Can I count days until a future date?',
         answer: [
-          'Yes — use a negative offset or the target-date mode on the form. Weekends still count unless you switch to business days.',
+          'Yes, use a negative offset or the target-date mode on the form. Weekends still count unless you switch to business days.',
         ],
       },
     ],
@@ -308,7 +308,7 @@ export const EVERYDAY_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Can I split the check evenly?',
         answer: [
-          'Yes. Enter how many people share the total after tip. Uneven splits are not modeled — divide outside the page if needed.',
+          'Yes. Enter how many people share the total after tip. Uneven splits are not modeled; divide outside the page if needed.',
         ],
       },
     ],

@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculate401k, PAY_FREQUENCIES, PAY_FREQUENCY_LABELS, type PayFrequency } from '@/lib/calculations/k401';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -7,6 +9,8 @@ import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, Prima
 import { money } from '../finance-format';
 
 export function K401Calculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [currentBalance, setCurrentBalance] = useState('10000');
   const [salary, setSalary] = useState('80000');
   const [employeePercent, setEmployeePercent] = useState('6');
@@ -42,17 +46,17 @@ export function K401Calculator() {
   return (
     <CalculatorPanel title="401(k) projection" intro="Employee deferrals plus a simple employer match, grown at an assumed return." toolId="401k" category="money" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([currentBalance, salary, employeePercent, matchRatePercent, matchSalaryCapPercent, years, assumedReturnPercent, salaryGrowthPercent, currentAge, payFrequency])}>
       <div className="calc-form-grid">
-        <Field label="Current balance" htmlFor="k401-bal"><InputShell prefix="$"><input id="k401-bal" type="number" min="0" step="500" inputMode="decimal" value={currentBalance} onChange={(event) => setCurrentBalance(event.target.value)} /></InputShell></Field>
-        <Field label="Your age" htmlFor="k401-age" hint="Sets the catch-up limit that applies each year"><InputShell suffix="years old"><input id="k401-age" type="number" min="16" max="99" step="1" inputMode="numeric" value={currentAge} onChange={(event) => setCurrentAge(event.target.value)} /></InputShell></Field>
-        <Field label="Pay frequency" htmlFor="k401-frequency" hint="How often deferrals go in">
+        <Field label={t("Current balance")} htmlFor="k401-bal"><InputShell prefix="$"><input id="k401-bal" type="number" min="0" step="500" inputMode="decimal" value={currentBalance} onChange={(event) => setCurrentBalance(event.target.value)} /></InputShell></Field>
+        <Field label={t("Your age")} htmlFor="k401-age" hint="Sets the catch-up limit that applies each year"><InputShell suffix={t("years old")}><input id="k401-age" type="number" min="16" max="99" step="1" inputMode="numeric" value={currentAge} onChange={(event) => setCurrentAge(event.target.value)} /></InputShell></Field>
+        <Field label={t("Pay frequency")} htmlFor="k401-frequency" hint="How often deferrals go in">
           <span className="input-shell select-shell">
             <select id="k401-frequency" value={payFrequency} onChange={(event) => setPayFrequency(event.target.value as PayFrequency)}>
               {PAY_FREQUENCIES.map((frequency) => <option key={frequency} value={frequency}>{PAY_FREQUENCY_LABELS[frequency]}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Salary" htmlFor="k401-salary"><InputShell prefix="$"><input id="k401-salary" type="number" min="1" step="1000" inputMode="decimal" value={salary} onChange={(event) => setSalary(event.target.value)} /></InputShell></Field>
-        <Field label="Employee contribution" htmlFor="k401-emp"><InputShell suffix="% of salary"><input id="k401-emp" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={employeePercent} onChange={(event) => setEmployeePercent(event.target.value)} /></InputShell></Field>
+        <Field label={t("Salary")} htmlFor="k401-salary"><InputShell prefix="$"><input id="k401-salary" type="number" min="1" step="1000" inputMode="decimal" value={salary} onChange={(event) => setSalary(event.target.value)} /></InputShell></Field>
+        <Field label={t("Employee contribution")} htmlFor="k401-emp"><InputShell suffix={t("% of salary")}><input id="k401-emp" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={employeePercent} onChange={(event) => setEmployeePercent(event.target.value)} /></InputShell></Field>
       </div>
       <AdvancedSection
         id="growth"
@@ -60,17 +64,17 @@ export function K401Calculator() {
         hint="Planning figures, not a forecast. The match fields come off your plan document."
       >
         <div className="calc-form-grid">
-          <Field label="Employer match rate" htmlFor="k401-match"><InputShell suffix="%"><input id="k401-match" type="number" min="0" max="100" step="1" inputMode="decimal" value={matchRatePercent} onChange={(event) => setMatchRatePercent(event.target.value)} /></InputShell></Field>
-          <Field label="Match applies up to" htmlFor="k401-cap" hint="Percent of salary"><InputShell suffix="% of salary"><input id="k401-cap" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={matchSalaryCapPercent} onChange={(event) => setMatchSalaryCapPercent(event.target.value)} /></InputShell></Field>
-          <Field label="Years" htmlFor="k401-years"><InputShell suffix="years"><input id="k401-years" type="number" min="1" max="50" step="1" inputMode="numeric" value={years} onChange={(event) => setYears(event.target.value)} /></InputShell></Field>
-          <Field label="Assumed annual return" htmlFor="k401-return"><InputShell suffix="%"><input id="k401-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
-          <Field label="Salary growth" htmlFor="k401-growth"><InputShell suffix="% / year"><input id="k401-growth" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={salaryGrowthPercent} onChange={(event) => setSalaryGrowthPercent(event.target.value)} /></InputShell></Field>
+          <Field label={t("Employer match rate")} htmlFor="k401-match"><InputShell suffix="%"><input id="k401-match" type="number" min="0" max="100" step="1" inputMode="decimal" value={matchRatePercent} onChange={(event) => setMatchRatePercent(event.target.value)} /></InputShell></Field>
+          <Field label={t("Match applies up to")} htmlFor="k401-cap" hint={t("Percent of salary")}><InputShell suffix={t("% of salary")}><input id="k401-cap" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={matchSalaryCapPercent} onChange={(event) => setMatchSalaryCapPercent(event.target.value)} /></InputShell></Field>
+          <Field label={t("Years")} htmlFor="k401-years"><InputShell suffix={t("years")}><input id="k401-years" type="number" min="1" max="50" step="1" inputMode="numeric" value={years} onChange={(event) => setYears(event.target.value)} /></InputShell></Field>
+          <Field label={t("Assumed annual return")} htmlFor="k401-return"><InputShell suffix="%"><input id="k401-return" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={assumedReturnPercent} onChange={(event) => setAssumedReturnPercent(event.target.value)} /></InputShell></Field>
+          <Field label={t("Salary growth")} htmlFor="k401-growth"><InputShell suffix={t("% / year")}><input id="k401-growth" type="number" min="0" max="20" step="0.1" inputMode="decimal" value={salaryGrowthPercent} onChange={(event) => setSalaryGrowthPercent(event.target.value)} /></InputShell></Field>
         </div>
       </AdvancedSection>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Projected balance" value={money(calculation.result.value.endingBalance, 0)} note="Under these contribution and return assumptions" tone="mint" />
+          <PrimaryResult label={t("Projected balance")} value={money(calculation.result.value.endingBalance, 0)} note="Under these contribution and return assumptions" tone="mint" />
           <StatGrid items={[
             { label: 'Employee contributions', value: money(calculation.result.value.totalEmployee, 0) },
             { label: 'Employer match', value: money(calculation.result.value.totalEmployer, 0) },
@@ -81,7 +85,7 @@ export function K401Calculator() {
             <div className="data-callout">
               <span>IRS LIMIT</span>
               <p>
-                <strong>Contributions capped in {calculation.result.value.yearsDeferralLimited} of {years} years</strong>
+                <strong>Contributions capped in {calculation.result.value.yearsDeferralLimited} of {years} {t("years")}</strong>
                 <small>That percent of salary is above the elective-deferral limit for your age. Those years use the limit instead.</small>
               </p>
             </div>

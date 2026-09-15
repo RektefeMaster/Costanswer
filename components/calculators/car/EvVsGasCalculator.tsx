@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import type { StateCode } from '@/lib/location/states';
 import { calculateEvVsGas } from '@/lib/calculations/ev-vs-gas';
@@ -25,6 +27,8 @@ export function EvVsGasCalculator({
   observationPeriod: string;
   gasolineObservationPeriod: string;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [annualMiles, setAnnualMiles] = useState('12000');
   const [gasMpg, setGasMpg] = useState('28');
   // The site already carries a verified EIA weekly pump average by state, and
@@ -84,36 +88,36 @@ export function EvVsGasCalculator({
       <div className="comparison-inputs">
         <section>
           <h3 className="comparison-label gas-label">Gas vehicle</h3>
-          <Field label="Fuel economy" htmlFor="gas-mpg"><InputShell suffix="MPG"><input id="gas-mpg" type="number" min="1" step="0.1" value={gasMpg} onChange={(event) => setGasMpg(event.target.value)} /></InputShell></Field>
+          <Field label={t("Fuel economy")} htmlFor="gas-mpg"><InputShell suffix="MPG"><input id="gas-mpg" type="number" min="1" step="0.1" value={gasMpg} onChange={(event) => setGasMpg(event.target.value)} /></InputShell></Field>
           <Field
-            label="Gas price"
+            label={t("Gas price")}
             htmlFor="gas-price"
             hint={`Leave blank for the ${gasolineSource.periodLabel} EIA average for ${selectedGas.geographyLabel}. A station price is better if you have one.`}
           >
-            <InputShell prefix="$" suffix="/ gal">
+            <InputShell prefix="$" suffix={t("/ gal")}>
               <input id="gas-price" type="number" min="0" step="0.01" placeholder={selectedGas.dollarsPerGallon.toFixed(2)} value={customGasPrice} onChange={(event) => setCustomGasPrice(event.currentTarget.value)} />
             </InputShell>
           </Field>
         </section>
         <section>
           <h3 className="comparison-label ev-label">Electric vehicle</h3>
-          <Field label="Vehicle efficiency" htmlFor="ev-efficiency"><InputShell suffix="kWh / 100 mi"><input id="ev-efficiency" type="number" min="5" step="0.1" value={evEfficiency} onChange={(event) => setEvEfficiency(event.target.value)} /></InputShell></Field>
-          <Field label="State electricity average" htmlFor="ev-state"><span className="input-shell select-shell"><select id="ev-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomElectricityRate(''); setCustomGasPrice(''); }}>{rates.map((rate) => <option key={rate.stateCode} value={rate.stateCode}>{rate.stateName} · {rate.priceCentsPerKwh.toFixed(2)}¢</option>)}</select></span></Field>
-          <Field label="Your electricity rate (optional)" htmlFor="ev-rate" hint="Leave blank to use the state average"><InputShell suffix="¢ / kWh"><input id="ev-rate" type="number" min="0" step="0.01" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customElectricityRate} onChange={(event) => setCustomElectricityRate(event.target.value)} /></InputShell></Field>
+          <Field label={t("Vehicle efficiency")} htmlFor="ev-efficiency"><InputShell suffix="kWh / 100 mi"><input id="ev-efficiency" type="number" min="5" step="0.1" value={evEfficiency} onChange={(event) => setEvEfficiency(event.target.value)} /></InputShell></Field>
+          <Field label={t("State electricity average")} htmlFor="ev-state"><span className="input-shell select-shell"><select id="ev-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomElectricityRate(''); setCustomGasPrice(''); }}>{rates.map((rate) => <option key={rate.stateCode} value={rate.stateCode}>{rate.stateName} · {rate.priceCentsPerKwh.toFixed(2)}¢</option>)}</select></span></Field>
+          <Field label={t("Your electricity rate (optional)")} htmlFor="ev-rate" hint="Leave blank to use the state average"><InputShell suffix="¢ / kWh"><input id="ev-rate" type="number" min="0" step="0.01" placeholder={selected.priceCentsPerKwh.toFixed(2)} value={customElectricityRate} onChange={(event) => setCustomElectricityRate(event.target.value)} /></InputShell></Field>
         </section>
       </div>
       <div className="shared-inputs">
         <p className="shared-inputs-kicker">TRIP SETTINGS</p>
         <div className="calc-form-grid compact-grid">
-          <Field label="Miles driven per year" htmlFor="annual-miles"><InputShell suffix="miles"><input id="annual-miles" type="number" min="0" step="100" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} /></InputShell></Field>
+          <Field label={t("Miles driven per year")} htmlFor="annual-miles"><InputShell suffix={t("miles")}><input id="annual-miles" type="number" min="0" step="100" value={annualMiles} onChange={(event) => setAnnualMiles(event.target.value)} /></InputShell></Field>
         </div>
         <AdvancedSection
           id="charging"
-          title="Charging losses"
+          title={t("Charging losses")}
           hint="Energy lost between the wall and the battery. 12% is typical for home AC charging."
         >
           <div className="calc-form-grid compact-grid">
-            <Field label="Charging loss" htmlFor="charging-loss" hint="Loss from the wall to the battery. 12% is a typical starting point."><InputShell suffix="%"><input id="charging-loss" type="number" min="0" max="30" step="1" value={chargingLoss} onChange={(event) => setChargingLoss(event.target.value)} /></InputShell></Field>
+            <Field label={t("Charging loss")} htmlFor="charging-loss" hint="Loss from the wall to the battery. 12% is a typical starting point."><InputShell suffix="%"><input id="charging-loss" type="number" min="0" max="30" step="1" value={chargingLoss} onChange={(event) => setChargingLoss(event.target.value)} /></InputShell></Field>
           </div>
         </AdvancedSection>
       </div>

@@ -1,7 +1,9 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { calculateMortgage, defaultRateForTerm, type MortgageTermYears } from '@/lib/calculations/mortgage';
 import { calculationErrorMessage } from '@/lib/calculations/error';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
@@ -20,6 +22,8 @@ function money(value: number, digits = 2) {
 }
 
 export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [homePrice, setHomePrice] = useState('400000');
   const [downPayment, setDownPayment] = useState('80000');
   const [termYears, setTermYears] = useState<MortgageTermYears>(30);
@@ -66,7 +70,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
 
   return (
     <CalculatorPanel
-      title="Monthly mortgage payment"
+      title={t("Monthly mortgage payment")}
       intro="Starts from the dated Freddie Mac national average below. Type your own quote if you have one."
       toolId="mortgage-payment"
       category="money"
@@ -88,22 +92,22 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
           </small>
         </p>
       </div>
-      <div className="mode-tabs" role="group" aria-label="Loan term">
+      <div className="mode-tabs" role="group" aria-label={t("Loan term")}>
         <button type="button" aria-pressed={termYears === 30} className={termYears === 30 ? 'active' : ''} onClick={() => setTerm(30)}>30-year fixed</button>
         <button type="button" aria-pressed={termYears === 15} className={termYears === 15 ? 'active' : ''} onClick={() => setTerm(15)}>15-year fixed</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Home price" htmlFor="mortgage-price">
+        <Field label={t("Home price")} htmlFor="mortgage-price">
           <InputShell prefix="$">
             <input id="mortgage-price" type="number" min="1" step="1000" inputMode="decimal" value={homePrice} onChange={(event) => setHomePrice(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Down payment" htmlFor="mortgage-down">
+        <Field label={t("Down payment")} htmlFor="mortgage-down">
           <InputShell prefix="$">
             <input id="mortgage-down" type="number" min="0" step="1000" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Interest rate" htmlFor="mortgage-rate" hint={rateTouched ? 'Your rate' : 'National weekly average. Type a quote to replace it.'}>
+        <Field label={t("Interest rate")} htmlFor="mortgage-rate" hint={rateTouched ? 'Your rate' : 'National weekly average. Type a quote to replace it.'}>
           <InputShell suffix="%">
             <input
               id="mortgage-rate"
@@ -127,17 +131,17 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
         hint="Leave these at zero for principal and interest only. Filling them in gives the payment a lender will actually quote."
       >
         <div className="calc-form-grid">
-          <Field label="Yearly property tax" htmlFor="mortgage-tax" hint="Optional">
+          <Field label={t("Yearly property tax")} htmlFor="mortgage-tax" hint={t("Optional")}>
             <InputShell prefix="$">
               <input id="mortgage-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Yearly home insurance" htmlFor="mortgage-insurance" hint="Enter an annual quote or planning estimate">
+          <Field label={t("Yearly home insurance")} htmlFor="mortgage-insurance" hint="Enter an annual quote or planning estimate">
             <InputShell prefix="$">
               <input id="mortgage-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Monthly HOA" htmlFor="mortgage-hoa" hint="Optional">
+          <Field label={t("Monthly HOA")} htmlFor="mortgage-hoa" hint={t("Optional")}>
             <InputShell prefix="$">
               <input id="mortgage-hoa" type="number" min="0" step="10" inputMode="decimal" value={monthlyHoa} onChange={(event) => setMonthlyHoa(event.target.value)} />
             </InputShell>
@@ -155,7 +159,7 @@ export function MortgageCalculator({ rates }: { rates: RateSnapshot }) {
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated monthly payment"
+            label={t("Estimated monthly payment")}
             value={money(calculation.result.value.monthlyTotal)}
             note={calculation.result.value.monthlyTotal === calculation.result.value.monthlyPrincipalAndInterest
               ? 'Principal and interest'

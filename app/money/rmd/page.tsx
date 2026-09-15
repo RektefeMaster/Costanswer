@@ -2,10 +2,10 @@ import { RmdCalculator } from '@/components/calculators/money/RmdCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { irsRmdSnapshot } from '@/lib/data/irs-rmd';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('rmd');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const sourceById = (id: string) => {
   const source = irsRmdSnapshot.sources.find((entry) => entry.id === id);

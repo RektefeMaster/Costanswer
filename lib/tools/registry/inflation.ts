@@ -5,7 +5,7 @@ import { requiresOfficialData } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'inflation',
   path: '/money/inflation',
-  title: 'Inflation Calculator',
+  title: 'What Is That Worth After Inflation?',
   shortTitle: 'Inflation',
   description: 'See what an amount in one U.S. month would buy in another, using the BLS CPI-U all-items index since 1913.',
   category: 'money',

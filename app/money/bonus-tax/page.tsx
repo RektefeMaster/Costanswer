@@ -4,10 +4,10 @@ import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { DEFAULT_TAX_YEAR } from '@/lib/calculations/tax/version';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('bonus-tax');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const taxSource = datasetSourceDisplay({
   datasetId: 'us-tax',

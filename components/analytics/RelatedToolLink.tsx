@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import type { ReactNode } from 'react';
 import { emitAnalyticsEvent } from '@/lib/analytics';
 import type { CategoryId } from '@/lib/categories';

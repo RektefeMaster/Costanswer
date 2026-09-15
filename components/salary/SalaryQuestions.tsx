@@ -16,12 +16,17 @@ export function SalaryQuestions({ profile, locale = 'en-US' }: { profile: Occupa
     <section className="editorial-section salary-questions" aria-labelledby="questions-title">
       <p className="eyebrow muted"><span /> {wageUi('questionsKicker', locale)}</p>
       <h2 id="questions-title">{heading}</h2>
-      <div className="editorial-faq">
-        {questions.map((entry) => (
-          <article key={entry.question}>
-            <h3>{entry.question}</h3>
-            {entry.answer.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          </article>
+      <div className="salary-faq-accordion">
+        {questions.map((entry, index) => (
+          <details className="salary-faq-card" key={entry.question} open={index < 2}>
+            <summary className="salary-faq-summary">
+              <span>{entry.question}</span>
+              <span className="salary-faq-chevron" aria-hidden="true">↓</span>
+            </summary>
+            <div className="salary-faq-body">
+              {entry.answer.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+            </div>
+          </details>
         ))}
       </div>
     </section>

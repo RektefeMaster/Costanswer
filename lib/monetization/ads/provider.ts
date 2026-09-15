@@ -37,7 +37,20 @@ export type AdProviderDescriptor = {
   };
   /** Script origin, so it can be added to the CSP deliberately rather than by wildcard. */
   readonly scriptOrigin?: string;
-  /** Consent signal the network requires before its script may run. */
+  /**
+   * Consent signal this site requires before the network's script may run.
+   *
+   * This is the regime the *site* applies, not the strictest regime that
+   * exists anywhere. The distinction was worth a whole audit finding: every
+   * network here is used in the EEA under opt-in rules and in the US under
+   * opt-out rules, and collapsing the two into `tcf_v2` meant a US reader who
+   * had never been asked anything counted as having refused. The site then
+   * served blank boxes to its entire audience while a "Do Not Sell" control
+   * waited on the privacy page for a visit that does not come.
+   *
+   * Where the opt-in layer lives is the other half of the answer, and for
+   * AdSense it is not here — see the note on that entry.
+   */
   readonly consentRequirement: 'none' | 'us_state_optout' | 'tcf_v2';
   readonly outstandingDependency?: string;
   readonly documentationCheckedAt: string;
@@ -58,9 +71,24 @@ export const AD_PROVIDERS: readonly AdProviderDescriptor[] = Object.freeze([
       img: ['https://pagead2.googlesyndication.com', 'https://tpc.googlesyndication.com', 'https://www.google.com'],
       frame: ['https://googleads.g.doubleclick.net', 'https://tpc.googlesyndication.com'],
     },
-    consentRequirement: 'tcf_v2',
+    /*
+     * Opt-out here, opt-in at Google.
+     *
+     * Google requires a certified CMP for EEA, UK and Swiss traffic and ships
+     * one in the AdSense console (Privacy & messaging). That CMP does its own
+     * geo-detection at Google's end, writes the TCF string, and AdSense reads
+     * that string in preference to anything this page can say. So the opt-in
+     * layer exists and is mandatory — it is configured in the AdSense account
+     * rather than in this repository.
+     *
+     * What this layer owns is the regime it can actually decide from a static
+     * page: the US opt-out. Resolving the country here instead would mean
+     * reading a request header, which turns every prerendered calculator page
+     * dynamic in order to answer a question Google already answers.
+     */
+    consentRequirement: 'us_state_optout',
     outstandingDependency:
-      'AdSense account approval and a publisher client id. Google requires a certified consent management platform for EEA/UK/Swiss traffic, so a CMP must be selected and wired before this is enabled.',
+      'AdSense account approval and a publisher client id. Before serving EEA, UK or Swiss traffic, turn on a Google-certified CMP in the AdSense console under Privacy & messaging; that is what supplies the opt-in consent this layer deliberately does not try to collect.',
     documentationCheckedAt: CHECKED_AT,
   },
   {
@@ -123,4 +151,18 @@ export function activeAdProvider(
   if (!descriptor) return null;
   const ready = descriptor.requiredEnv.every((key) => (environment[key]?.trim().length ?? 0) > 0);
   return ready ? descriptor : null;
+}
+
+/**
+ * The consent regime the site applies when no network is configured.
+ *
+ * Analytics consent-mode defaults have to agree with the ad script about the
+ * same reader, and analytics can be on while advertising is off. Reading the
+ * active provider when there is one, and falling back to the site's own
+ * posture when there is not, keeps one answer rather than two.
+ */
+export function siteConsentRequirement(
+  environment: Record<string, string | undefined> = process.env,
+): AdProviderDescriptor['consentRequirement'] {
+  return activeAdProvider(environment)?.consentRequirement ?? 'us_state_optout';
 }

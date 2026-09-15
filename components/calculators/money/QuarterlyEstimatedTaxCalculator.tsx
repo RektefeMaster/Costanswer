@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateQuarterlyEstimatedTax } from '@/lib/calculations/tax/quarterly-estimated';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -29,6 +31,8 @@ function formatDueDate(isoDate: string): string {
 }
 
 export function QuarterlyEstimatedTaxCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [expectedCurrentYearTax, setExpectedCurrentYearTax] = useState('12000');
   const [priorYearTax, setPriorYearTax] = useState('10000');
@@ -93,7 +97,7 @@ export function QuarterlyEstimatedTaxCalculator() {
             <input id="es-withholding" type="number" min="0" step="500" inputMode="decimal" value={expectedWithholdingAndRefundableCredits} onChange={(event) => setExpectedWithholdingAndRefundableCredits(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Filing status" htmlFor="es-filing">
+        <Field label={t("Filing status")} htmlFor="es-filing">
           <span className="input-shell select-shell">
             <select id="es-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -124,7 +128,7 @@ export function QuarterlyEstimatedTaxCalculator() {
                   <tr>
                     <th scope="col">Installment</th>
                     <th scope="col">Due</th>
-                    <th scope="col">Amount</th>
+                    <th scope="col">{t("Amount")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -143,12 +147,12 @@ export function QuarterlyEstimatedTaxCalculator() {
             level="high"
             reasons={[
               'Safe harbors and due dates transcribed from 2026 Form 1040-ES',
-              'Equal installments only — the annualized income method is not modeled',
+              'Equal installments only; the annualized income method is not modeled',
               'This is not a Form 2210 penalty calculation',
             ]}
           />
           <CalculationReceipt
-            title={`Quarterly estimated tax — ${money(Number(expectedCurrentYearTax))} expected tax, ${snapshot.taxYear}`}
+            title={`Quarterly estimated tax: ${money(Number(expectedCurrentYearTax))} expected tax, ${snapshot.taxYear}`}
             headline={{ label: value.paymentsRequired ? 'Each quarterly payment' : 'Estimated payments', value: value.paymentsRequired ? money(value.quarterlyPayment) : 'None' }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

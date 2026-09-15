@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateAmortization } from '@/lib/calculations/amortization';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -8,6 +10,8 @@ import { pluralize } from '@/lib/plural';
 import { money } from '../finance-format';
 
 export function AmortizationCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [principal, setPrincipal] = useState('200000');
   const [annualRatePercent, setAnnualRatePercent] = useState('6');
   const [termMonths, setTermMonths] = useState('360');
@@ -26,16 +30,16 @@ export function AmortizationCalculator() {
   return (
     <CalculatorPanel title="Amortization schedule" intro="Principal versus interest over time, using the same engine as the Loan Calculator." toolId="amortization" category="money" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([principal, annualRatePercent, termMonths, extraMonthlyPayment, startDate])}>
       <div className="calc-form-grid">
-        <Field label="Principal" htmlFor="am-principal"><InputShell prefix="$"><input id="am-principal" type="number" min="1" step="1000" inputMode="decimal" value={principal} onChange={(event) => setPrincipal(event.target.value)} /></InputShell></Field>
-        <Field label="Interest rate" htmlFor="am-rate"><InputShell suffix="%"><input id="am-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>
-        <Field label="Term" htmlFor="am-term"><InputShell suffix="months"><input id="am-term" type="number" min="1" max="480" step="1" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} /></InputShell></Field>
-        <Field label="Extra monthly principal" htmlFor="am-extra"><InputShell prefix="$"><input id="am-extra" type="number" min="0" step="25" inputMode="decimal" value={extraMonthlyPayment} onChange={(event) => setExtraMonthlyPayment(event.target.value)} /></InputShell></Field>
-        <Field label="First payment date" htmlFor="am-start"><span className="input-shell"><input id="am-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
+        <Field label={t("Principal")} htmlFor="am-principal"><InputShell prefix="$"><input id="am-principal" type="number" min="1" step="1000" inputMode="decimal" value={principal} onChange={(event) => setPrincipal(event.target.value)} /></InputShell></Field>
+        <Field label={t("Interest rate")} htmlFor="am-rate"><InputShell suffix="%"><input id="am-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>
+        <Field label={t("Term")} htmlFor="am-term"><InputShell suffix={t("months")}><input id="am-term" type="number" min="1" max="480" step="1" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} /></InputShell></Field>
+        <Field label={t("Extra monthly principal")} htmlFor="am-extra"><InputShell prefix="$"><input id="am-extra" type="number" min="0" step="25" inputMode="decimal" value={extraMonthlyPayment} onChange={(event) => setExtraMonthlyPayment(event.target.value)} /></InputShell></Field>
+        <Field label={t("First payment date")} htmlFor="am-start"><span className="input-shell"><input id="am-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} /></span></Field>
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Monthly payment" value={money(calculation.result.value.monthlyPayment)} note={pluralize(calculation.result.value.actualPeriods, 'payment', 'payments')} tone="mint" />
+          <PrimaryResult label={t("Monthly payment")} value={money(calculation.result.value.monthlyPayment)} note={pluralize(calculation.result.value.actualPeriods, 'payment', 'payments')} tone="mint" />
           <StatGrid items={[
             { label: 'Total principal', value: money(calculation.result.value.totalPrincipal, 0) },
             { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0) },
@@ -48,9 +52,9 @@ export function AmortizationCalculator() {
                   <th scope="col">#</th>
                   <th scope="col">Date</th>
                   <th scope="col">Payment</th>
-                  <th scope="col">Principal</th>
+                  <th scope="col">{t("Principal")}</th>
                   <th scope="col">Interest</th>
-                  <th scope="col">Balance</th>
+                  <th scope="col">{t("Balance")}</th>
                 </tr>
               </thead>
               <tbody>

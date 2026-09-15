@@ -1,22 +1,16 @@
-import Link from 'next/link';
-import { chrome } from '@/lib/i18n/chrome';
-import { languageSwitcherHref, localeFromPath } from '@/lib/i18n/alternates';
-import { requestPathname } from '@/lib/i18n/request-locale';
+import { LanguagePicker } from '@/components/site/LanguagePicker';
+import { languageSwitcherHref } from '@/lib/i18n/alternates';
+import { requestLocale, requestPathname } from '@/lib/i18n/request-locale';
 
-export async function LanguageSwitcher() {
+export async function LanguageSwitcher({ inline = false, variant = 'header' }: { inline?: boolean; variant?: 'header' | 'menu' } = {}) {
   const pathname = await requestPathname();
-  const locale = localeFromPath(pathname);
-  const enHref = languageSwitcherHref(pathname, 'en-US');
-  const esHref = languageSwitcherHref(pathname, 'es-US');
+  const locale = await requestLocale();
   return (
-    <nav className="lang-switch" aria-label={chrome('language', locale)}>
-      <Link href={enHref} hrefLang="en-US" aria-current={locale === 'en-US' ? 'page' : undefined}>
-        {chrome('english', locale)}
-      </Link>
-      <span aria-hidden="true">·</span>
-      <Link href={esHref} hrefLang="es-US" aria-current={locale === 'es-US' ? 'page' : undefined}>
-        {chrome('spanish', locale)}
-      </Link>
-    </nav>
+    <LanguagePicker
+      spanish={locale === 'es-US'}
+      englishHref={locale === 'en-US' ? pathname : languageSwitcherHref(pathname, 'en-US')}
+      spanishHref={locale === 'es-US' ? pathname : languageSwitcherHref(pathname, 'es-US')}
+      inline={inline || variant === 'menu'}
+    />
   );
 }

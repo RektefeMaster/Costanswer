@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import {
   calculateVaFundingFee,
@@ -16,6 +18,8 @@ const usesDownPayment = (loanType: VaLoanType) => loanType === 'purchase';
 const usesFirstUse = (loanType: VaLoanType) => loanType === 'purchase' || loanType === 'cash-out';
 
 export function VaFundingFeeCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [loanType, setLoanType] = useState<VaLoanType>('purchase');
   const [loanAmount, setLoanAmount] = useState('350000');
   const [firstUse, setFirstUse] = useState(true);
@@ -69,13 +73,13 @@ export function VaFundingFeeCalculator() {
             </select>
           </span>
         </Field>
-        <Field label="Loan amount" htmlFor="va-fee-amount" hint="The financed amount before adding this fee">
+        <Field label={t("Loan amount")} htmlFor="va-fee-amount" hint="The financed amount before adding this fee">
           <InputShell prefix="$">
             <input id="va-fee-amount" type="number" min="0" step="1000" inputMode="decimal" value={loanAmount} onChange={(event) => setLoanAmount(event.target.value)} />
           </InputShell>
         </Field>
         {usesDownPayment(loanType) && (
-          <Field label="Down payment" htmlFor="va-fee-down" hint="Percent of the purchase price. The 5% and 10% steps are the ones VA prints.">
+          <Field label={t("Down payment")} htmlFor="va-fee-down" hint="Percent of the purchase price. The 5% and 10% steps are the ones VA prints.">
             <InputShell suffix="%">
               <input id="va-fee-down" type="number" min="0" max="100" step="0.5" inputMode="decimal" value={downPaymentPercent} onChange={(event) => setDownPaymentPercent(event.target.value)} />
             </InputShell>
@@ -96,8 +100,8 @@ export function VaFundingFeeCalculator() {
             <Field label="Have you used a VA home loan before?" htmlFor="va-fee-use">
               <span className="input-shell select-shell">
                 <select id="va-fee-use" value={firstUse ? 'first' : 'subsequent'} onChange={(event) => setFirstUse(event.target.value === 'first')}>
-                  <option value="first">No — first use</option>
-                  <option value="subsequent">Yes — after first use</option>
+                  <option value="first">No: first use</option>
+                  <option value="subsequent">Yes: after first use</option>
                 </select>
               </span>
             </Field>

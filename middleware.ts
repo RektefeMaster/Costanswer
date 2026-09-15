@@ -1,5 +1,6 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
+import { spanishRewritePath } from '@/lib/i18n/routing';
 import { localeFromPathname } from '@/lib/i18n/path-locale';
 import { LOCALE_HEADER, PATHNAME_HEADER } from '@/lib/i18n/request-locale';
 
@@ -15,6 +16,12 @@ export function middleware(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(LOCALE_HEADER, locale);
   requestHeaders.set(PATHNAME_HEADER, request.nextUrl.pathname);
+  const rewritePath = spanishRewritePath(request.nextUrl.pathname);
+  if (rewritePath) {
+    const destination = request.nextUrl.clone();
+    destination.pathname = rewritePath;
+    return NextResponse.rewrite(destination, { request: { headers: requestHeaders } });
+  }
   return NextResponse.next({ request: { headers: requestHeaders } });
 }
 

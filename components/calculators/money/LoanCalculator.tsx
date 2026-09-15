@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateLoan } from '@/lib/calculations/loan';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -17,6 +19,8 @@ function formatTermDisplay(termMonths: number, termUnit: 'years' | 'months'): st
 }
 
 export function LoanCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   // Canonical term is always months so Years↔Months is a presentation toggle only.
   const [termMonths, setTermMonths] = useState(60);
   const [termUnit, setTermUnit] = useState<'years' | 'months'>('years');
@@ -77,24 +81,24 @@ export function LoanCalculator() {
 
   return (
     <CalculatorPanel
-      title="Monthly loan payment"
+      title={t("Monthly loan payment")}
       intro="A fixed-rate amortizing loan. Extra principal is optional."
       toolId="loan"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
       calculationSignature={JSON.stringify([loanAmount, annualRatePercent, termMonths, termUnit, extraMonthlyPayment])}
     >
-      <div className="mode-tabs" role="group" aria-label="Loan term unit">
-        <button type="button" aria-pressed={termUnit === 'years'} className={termUnit === 'years' ? 'active' : ''} onClick={() => setUnit('years')}>Years</button>
+      <div className="mode-tabs" role="group" aria-label={t("Loan term unit")}>
+        <button type="button" aria-pressed={termUnit === 'years'} className={termUnit === 'years' ? 'active' : ''} onClick={() => setUnit('years')}>{t("Years")}</button>
         <button type="button" aria-pressed={termUnit === 'months'} className={termUnit === 'months' ? 'active' : ''} onClick={() => setUnit('months')}>Months</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Loan amount" htmlFor="loan-amount">
+        <Field label={t("Loan amount")} htmlFor="loan-amount">
           <InputShell prefix="$">
             <input id="loan-amount" type="number" min="1" step="100" inputMode="decimal" value={loanAmount} onChange={(event) => setLoanAmount(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Interest rate" htmlFor="loan-rate" hint="Nominal annual rate, not APR">
+        <Field label={t("Interest rate")} htmlFor="loan-rate" hint="Nominal annual rate, not APR">
           <InputShell suffix="%">
             <input id="loan-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} />
           </InputShell>
@@ -113,7 +117,7 @@ export function LoanCalculator() {
             />
           </InputShell>
         </Field>
-        <Field label="Extra monthly principal" htmlFor="loan-extra" hint="Optional">
+        <Field label={t("Extra monthly principal")} htmlFor="loan-extra" hint={t("Optional")}>
           <InputShell prefix="$">
             <input id="loan-extra" type="number" min="0" step="25" inputMode="decimal" value={extraMonthlyPayment} onChange={(event) => setExtraMonthlyPayment(event.target.value)} />
           </InputShell>
@@ -123,7 +127,7 @@ export function LoanCalculator() {
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated monthly payment"
+            label={t("Estimated monthly payment")}
             value={money(calculation.result.value.monthlyPayment)}
             note={calculation.result.value.extraMonthlyPayment > 0
               ? `Scheduled P&I. Extra ${money(calculation.result.value.extraMonthlyPayment)} is on top.`

@@ -289,14 +289,14 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
 
           <label htmlFor={`${formId}-homeowner`}>{t('homeownerLabel')}</label>
           <select id={`${formId}-homeowner`} value={homeowner} onChange={(event) => setHomeowner(event.target.value as 'yes' | 'no' | '')}>
-            <option value="">—</option>
+            <option value="">{locale === 'es-US' ? 'Seleccione...' : 'Select...'}</option>
             <option value="yes">{t('yes')}</option>
             <option value="no">{t('no')}</option>
           </select>
 
           <label htmlFor={`${formId}-timeframe`}>{t('timeframeLabel')}</label>
           <select id={`${formId}-timeframe`} value={timeframe} onChange={(event) => setTimeframe(event.target.value)}>
-            <option value="">—</option>
+            <option value="">{locale === 'es-US' ? 'Seleccione...' : 'Select...'}</option>
             <option value="immediately">{t('timeframeImmediately')}</option>
             <option value="within_1_month">{t('timeframeMonth')}</option>
             <option value="within_3_months">{t('timeframeThreeMonths')}</option>
@@ -306,7 +306,7 @@ export function LeadForm({ context, vertical, known }: LeadFormProps) {
 
           <label htmlFor={`${formId}-work-type`}>{t('workTypeLabel')}</label>
           <select id={`${formId}-work-type`} value={workType} onChange={(event) => setWorkType(event.target.value)}>
-            <option value="">—</option>
+            <option value="">{locale === 'es-US' ? 'Seleccione...' : 'Select...'}</option>
             <option value="repair">{t('workRepair')}</option>
             <option value="replacement">{t('workReplacement')}</option>
             <option value="new_installation">{t('workNew')}</option>

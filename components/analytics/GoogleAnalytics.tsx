@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import type { AnalyticsEvent } from '@/lib/analytics';
 import {
   AD_CONSENT_STORAGE_KEY, DEFAULT_AD_CONSENT, mayPersonalise, parseAdConsent,
+  type ConsentRequirement,
 } from '@/lib/monetization/ads/consent';
 
 type GtagArgs = [command: string, ...rest: unknown[]];
@@ -30,7 +31,19 @@ declare global {
  * throws into a page: a blocked or failed tag is a site with no measurement,
  * not a site with a broken calculator.
  */
-export function GoogleAnalytics({ measurementId }: { measurementId: string }) {
+export function GoogleAnalytics({
+  measurementId,
+  consentRequirement,
+}: {
+  measurementId: string;
+  /*
+   * The regime this reader is under, resolved on the server. Advertising
+   * signals need an affirmative answer where consent is opt-in and follow the
+   * reader's own opt-out where it is not; measurement is first-party counting
+   * either way and is what the privacy page says is on.
+   */
+  consentRequirement: ConsentRequirement;
+}) {
   useEffect(() => {
     const marker = 'data-costanswer-ga4';
     if (document.querySelector(`script[${marker}]`)) return;
@@ -42,7 +55,7 @@ export function GoogleAnalytics({ measurementId }: { measurementId: string }) {
     } catch {
       // Storage unavailable. The default denies advertising signals.
     }
-    const advertising = mayPersonalise(consent) ? 'granted' : 'denied';
+    const advertising = mayPersonalise(consentRequirement, consent) ? 'granted' : 'denied';
 
     window.dataLayer = window.dataLayer ?? [];
     const gtag: (...args: GtagArgs) => void = (...args) => { window.dataLayer?.push(args); };
@@ -71,7 +84,7 @@ export function GoogleAnalytics({ measurementId }: { measurementId: string }) {
     script.setAttribute(marker, measurementId);
     script.addEventListener('error', () => script.remove());
     document.head.appendChild(script);
-  }, [measurementId]);
+  }, [measurementId, consentRequirement]);
 
   useEffect(() => {
     const forward = (event: Event) => {

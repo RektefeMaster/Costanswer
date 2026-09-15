@@ -190,7 +190,7 @@ export const JOB_CATALOG: Record<JobId, JobPublicMeta> = {
     jobId: 'bathroom-remodel',
     title: 'How much does a bathroom remodel cost?',
     shortTitle: 'Bathroom remodel',
-    description: 'How much does a bathroom remodel cost? CostAnswer range for a full bath on the same layout — toilet, 36-inch vanity, and ceramic tile for floor plus shower walls. A separate tub or shower pan is not priced. Composite recipes start at low confidence.',
+    description: 'How much does a bathroom remodel cost? CostAnswer range for a full bath on the same layout (toilet, 36-inch vanity, and ceramic tile for floor plus shower walls). A separate tub or shower pan is not priced. Composite recipes start at low confidence.',
     tradeLabel: 'Multiple trades',
     unitLabel: 'bathrooms',
     scope: { id: 'units', label: 'Bathrooms', hint: 'Count full bathrooms of similar size. A powder room is not this recipe.', min: 1, max: 2, step: 1, defaultValue: 1 },
@@ -291,7 +291,7 @@ export const JOB_CATALOG: Record<JobId, JobPublicMeta> = {
     description: 'A CostAnswer estimated range for hanging residential drywall board, using drywall-installer wages and a sourced board intercept. Tape, mud, texture, and paint are not priced.',
     tradeLabel: 'Drywall',
     unitLabel: 'square feet of board',
-    scope: { id: 'units', label: 'Board area', hint: 'Square feet of drywall to hang. This is board only — finishing is not in the range.', min: 80, max: 4000, step: 10, defaultValue: 400 },
+    scope: { id: 'units', label: 'Board area', hint: 'Square feet of drywall to hang. This is board only, finishing is not in the range.', min: 80, max: 4000, step: 10, defaultValue: 400 },
     modifiers: [
       { id: 'location', label: 'Location', defaultOptionId: 'walls', options: [{ id: 'walls', label: 'Walls' }, { id: 'ceilings', label: 'Ceilings or both' }] },
       { id: 'occupied', label: 'House', defaultOptionId: 'empty', options: [{ id: 'empty', label: 'Mostly empty' }, { id: 'lived-in', label: 'Furniture and protection' }] },

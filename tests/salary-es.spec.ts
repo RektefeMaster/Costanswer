@@ -40,9 +40,10 @@ describe('hreflang', () => {
     expect(hreflangLanguagesFor('/es')).toEqual({ 'en-US': '/', 'es-US': '/es', 'x-default': '/' });
   });
 
-  it('does not invent a Spanish twin for an English calculator', () => {
+  it('includes the shared Spanish calculator route', () => {
     expect(hreflangLanguagesFor('/money/paycheck')).toEqual({
       'en-US': '/money/paycheck',
+      'es-US': '/es/money/paycheck',
       'x-default': '/money/paycheck',
     });
   });

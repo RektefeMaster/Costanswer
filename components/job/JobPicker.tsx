@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JOB_CATALOG, JOB_IDS, type JobId, jobPath } from '@/lib/job/catalog';
 
 export function JobPicker({

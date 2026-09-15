@@ -499,7 +499,7 @@ export const HOUSING_EDITORIAL: ToolEditorial[] = [
           heading: 'Purchase loans change at 5% and 10% down',
           paragraphs: [
             'First use under 5% down is 2.15%. At 5% or more it drops to 1.5%, and at 10% or more to 1.25%. After first use the zero-down rate is 3.3%; the 5% and 10% steps match first use. VA’s own example of a $200,000 house with $10,000 down is a $190,000 loan and a $2,850 fee.',
-            'Cash-out refinance ignores those down-payment steps: 2.15% first use, 3.3% after. IRRRL is 0.5%. Financing the fee adds that same dollar amount to the loan. VA computes the percentage on the loan without the fee included, then adds it — it does not compound.',
+            'Cash-out refinance ignores those down-payment steps: 2.15% first use, 3.3% after. IRRRL is 0.5%. Financing the fee adds that same dollar amount to the loan. VA computes the percentage on the loan without the fee included, then adds it; it does not compound.',
           ],
         },
       ],

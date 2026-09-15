@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import type { StateCode } from '@/lib/location/states';
 import { calculateRoadTripFuel } from '@/lib/calculations/road-trip-fuel';
@@ -23,6 +25,8 @@ export function RoadTripFuelCalculator({
   snapshotId: string;
   observationPeriod: string;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [miles, setMiles] = useState('300');
   const [mpg, setMpg] = useState('28');
   const [stateCode, setStateCode] = useState<StateCode>('TX');
@@ -67,17 +71,17 @@ export function RoadTripFuelCalculator({
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Trip distance" htmlFor="trip-miles">
-          <InputShell suffix="miles">
+        <Field label={t("Trip distance")} htmlFor="trip-miles">
+          <InputShell suffix={t("miles")}>
             <input id="trip-miles" type="number" min="0.1" step="10" inputMode="decimal" value={miles} onChange={(event) => setMiles(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Fuel economy" htmlFor="trip-mpg">
+        <Field label={t("Fuel economy")} htmlFor="trip-mpg">
           <InputShell suffix="MPG">
             <input id="trip-mpg" type="number" min="1" step="0.1" inputMode="decimal" value={mpg} onChange={(event) => setMpg(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="State" htmlFor="trip-state">
+        <Field label={t("State")} htmlFor="trip-state">
           <span className="input-shell select-shell">
             <select id="trip-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomPrice(''); }}>
               {prices.map((price) => <option value={price.stateCode} key={price.stateCode}>{price.stateName}</option>)}
@@ -85,7 +89,7 @@ export function RoadTripFuelCalculator({
           </span>
         </Field>
         <Field label="Pump price (optional)" htmlFor="trip-gas-price" hint="Leave blank to use the EIA average">
-          <InputShell prefix="$" suffix="/ gal">
+          <InputShell prefix="$" suffix={t("/ gal")}>
             <input id="trip-gas-price" type="number" min="0.01" step="0.01" inputMode="decimal" placeholder={selected.dollarsPerGallon.toFixed(3)} value={customPrice} onChange={(event) => setCustomPrice(event.target.value)} />
           </InputShell>
         </Field>
@@ -94,7 +98,7 @@ export function RoadTripFuelCalculator({
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated fuel cost"
+            label={t("Estimated fuel cost")}
             value={money(calculation.result.value.tripCost)}
             note={`${calculation.result.value.gallons} gallons at ${money(Number(dollarsPerGallon), 3)}`}
             tone="blue"

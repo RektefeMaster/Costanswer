@@ -153,6 +153,35 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
         ],
       });
     }
+
+    const p10 = profile.wage.annual.p10;
+    const p25 = profile.wage.annual.p25;
+    if (p10 !== null && p25 !== null) {
+      const hp10 = profile.wage.hourly.p10;
+      const hp25 = profile.wage.hourly.p25;
+      const hourlyText = hp10 !== null && hp25 !== null ? `, o de ${hourly(hp10)} a ${hourly(hp25)} por hora` : '';
+      questions.push({
+        question: `¿Cuál es el salario inicial de ${article} ${singular} ${place}?`,
+        answer: [
+          `El sueldo inicial para ${plural} ${place} se sitúa habitualmente entre ${money(p10)} y ${money(p25)} al año${hourlyText}.`,
+          `Esto corresponde a los percentiles 10 y 25 de la encuesta salarial de BLS para ${profile.referenceLabel}, que representa las remuneraciones base de quienes comienzan en la ocupación.`,
+        ],
+      });
+    }
+
+    const p90 = profile.wage.annual.p90;
+    const p75 = profile.wage.annual.p75;
+    if (p10 !== null && p90 !== null) {
+      questions.push({
+        question: `¿Cuál es la escala salarial de ${article} ${singular} ${place}?`,
+        answer: [
+          `La escala salarial de ${plural} ${place} va desde ${money(p10)} para el 10 % inicial hasta ${money(p90)} para el 10 % con mayores ingresos.`,
+          p25 !== null && p75 !== null
+            ? `El 50 % central de los profesionales gana entre ${money(p25)} y ${money(p75)} al año, con una mediana de ${money(median)}.`
+            : `La mediana salarial es de ${money(median)} al año, según la encuesta OEWS de BLS para ${profile.referenceLabel}.`,
+        ],
+      });
+    }
   } else if (profile.wage.hourlyMedian !== null) {
     questions.push({
       question: `¿Cuánto gana por hora ${article} ${singular} ${place}?`,
@@ -165,6 +194,7 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
 
   if (profile.takeHome) {
     const takeHome = profile.takeHome;
+    const biweekly = Math.round(takeHome.annual / 26);
     questions.push({
       question: `¿Cuánto queda neto para ${article} ${singular} ${place}?`,
       answer: [
@@ -175,6 +205,14 @@ export function salaryQuestionsEs(profile: OccupationWageProfile): SalaryQuestio
           : NO_STATE_INCOME_TAX_AREAS.has(profile.area)
             ? `${where} no cobra impuesto estatal sobre salarios, así que no se retiene nada.`
             : 'El impuesto estatal estimado es $0 para estos ingresos y esta situación fiscal. Eso no significa que el estado no tenga impuesto sobre la renta.',
+      ],
+    });
+
+    questions.push({
+      question: `¿Cuánto gana al mes ${article} ${singular} ${place}?`,
+      answer: [
+        `Tomando como base el sueldo mediano de ${money(takeHome.grossAnnual)}, el ingreso mensual estimado es de unos ${money(takeHome.monthly)} netos tras descontar impuestos federales, estatales y FICA.`,
+        `Para quienes reciben pagos quincenales (26 cheques al año), cada cheque representa aproximadamente ${money(biweekly)} libres en mano.`,
       ],
     });
   }

@@ -2,10 +2,10 @@ import { MedicareCalculator } from '@/components/calculators/money/MedicareCalcu
 import { ToolPage } from '@/components/tool/ToolPage';
 import { medicareSnapshot } from '@/lib/data/medicare';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('medicare-cost');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const sourceById = (id: string) => {
   const source = medicareSnapshot.sources.find((entry) => entry.id === id);

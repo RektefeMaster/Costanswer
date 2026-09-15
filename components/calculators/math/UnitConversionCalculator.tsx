@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import {
   calculateUnitConversion,
@@ -11,6 +13,8 @@ import { calculationErrorMessage } from '@/lib/calculations/error';
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails } from '../CalculatorUI';
 
 export function UnitConversionCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [category, setCategory] = useState<ConversionCategory>('length');
   const units = unitsForCategory(category);
   const [fromUnit, setFromUnit] = useState(units[0].id);
@@ -42,10 +46,10 @@ export function UnitConversionCalculator() {
             </select>
           </span>
         </Field>
-        <Field label="Value" htmlFor="conv-value"><InputShell><input id="conv-value" type="number" step="any" inputMode="decimal" value={value} onChange={(event) => setValue(event.target.value)} /></InputShell></Field>
+        <Field label={t("Value")} htmlFor="conv-value"><InputShell><input id="conv-value" type="number" step="any" inputMode="decimal" value={value} onChange={(event) => setValue(event.target.value)} /></InputShell></Field>
       </div>
       <div className="conversion-pair">
-        <Field label="From" htmlFor="conv-from">
+        <Field label={t("From")} htmlFor="conv-from">
           <span className="input-shell select-shell">
             <select id="conv-from" value={fromUnit} onChange={(event) => setFromUnit(event.target.value)}>
               {units.map((unit) => <option value={unit.id} key={unit.id}>{unit.label} ({unit.symbol})</option>)}
@@ -53,7 +57,7 @@ export function UnitConversionCalculator() {
           </span>
         </Field>
         <button type="button" className="conversion-swap" aria-label="Swap units" onClick={() => { setFromUnit(toUnit); setToUnit(fromUnit); }}>⇄</button>
-        <Field label="To" htmlFor="conv-to">
+        <Field label={t("To")} htmlFor="conv-to">
           <span className="input-shell select-shell">
             <select id="conv-to" value={toUnit} onChange={(event) => setToUnit(event.target.value)}>
               {units.map((unit) => <option value={unit.id} key={`to-${unit.id}`}>{unit.label} ({unit.symbol})</option>)}
@@ -65,7 +69,7 @@ export function UnitConversionCalculator() {
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Converted value"
+            label={t("Converted value")}
             value={`${calculation.result.value.output} ${calculation.result.value.toSymbol}`}
             note={`${value} ${calculation.result.value.fromSymbol}`}
             tone="violet"

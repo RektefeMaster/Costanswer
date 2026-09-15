@@ -25,8 +25,8 @@ for (const id of STORE_OBJECT_IDS) {
   }
   const target = join(root, 'public', entry.assetPath.replace(/^\//, ''));
   mkdirSync(dirname(target), { recursive: true });
-  copyFileSync(source, target);
   const bytes = readFileSync(source);
+  writeFileSync(target, bytes);
   promoted.push({
     id,
     assetPath: entry.assetPath,

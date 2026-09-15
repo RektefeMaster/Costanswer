@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { localizedHref, unlocalizedPath, spanishRewritePath } from './routing';
 import { DEFAULT_LOCALE, type Locale } from './locales';
 import { localeFromPathname } from './path-locale';
 import { bilingualSalaryPair } from '@/lib/salary-es-pages';
@@ -14,7 +15,12 @@ export function hreflangLanguagesFor(path: string): HrefLangMap {
   if (path === '/es') {
     return { 'en-US': '/', 'es-US': '/es', 'x-default': '/' };
   }
-  if (!pair) return { [DEFAULT_LOCALE]: path, 'x-default': path };
+  if (!pair) {
+    const en = unlocalizedPath(path);
+    const es = localizedHref(en, 'es-US');
+    if (en === '/' || spanishRewritePath(es)) return { 'en-US': en, 'es-US': es, 'x-default': en };
+    return { [DEFAULT_LOCALE]: path, 'x-default': path };
+  }
   return {
     'en-US': pair.en,
     'es-US': pair.es,
@@ -24,8 +30,8 @@ export function hreflangLanguagesFor(path: string): HrefLangMap {
 
 export function languageSwitcherHref(pathname: string, target: Locale): string {
   const pair = bilingualSalaryPair(pathname);
-  if (target === 'es-US') return pair?.es ?? '/es';
-  return pair?.en ?? '/';
+  if (pair) return target === 'es-US' ? pair.es : pair.en;
+  return localizedHref(unlocalizedPath(pathname), target);
 }
 
 export function metadataLanguages(path: `/${string}`): NonNullable<Metadata['alternates']>['languages'] {

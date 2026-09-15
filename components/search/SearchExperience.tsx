@@ -1,7 +1,11 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { CATEGORY_ES, siteText } from '@/lib/i18n/site-copy';
+import { localizedTool } from '@/lib/i18n/tool-copy';
+import { localizedHref } from '@/lib/i18n/routing';
 import { FormEvent, useMemo, useState, useSyncExternalStore } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { useSearchParams } from 'next/navigation';
 import { siteConfig } from '@/lib/site-config';
 import { searchTools } from '@/lib/search';
@@ -25,19 +29,19 @@ type JobSearchEntry = { jobId: JobId; name: string; path: `/cost/${JobId}`; term
  * "Nurse Practitioner" above "Licensed Practical Nurse" for "nurse".
  */
 function matchSalaryPages(query: string, index: readonly SalarySearchEntry[]): SalarySearchEntry[] {
-  const needle = query.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\bsalary|salaries|pay|wage|wages\b/g, '').trim();
+  const needle = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\bsalary|salaries|pay|wage|wages|salario|salarios|sueldo|sueldos\b/g, '').trim();
   if (needle.length < 3) return [];
   return index
-    .filter((entry) => entry.terms.some((term) => term.includes(needle)))
+    .filter((entry) => entry.terms.some((term) => term.normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(needle)))
     .sort((left, right) => left.name.length - right.name.length || left.name.localeCompare(right.name))
     .slice(0, SALARY_RESULT_LIMIT);
 }
 
 function matchJobPages(query: string, index: readonly JobSearchEntry[]): JobSearchEntry[] {
-  const needle = query.toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\bcost|price|quote\b/g, '').trim();
+  const needle = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9 ]+/g, ' ').replace(/\bcost|price|quote\b/g, '').trim();
   if (needle.length < 3) return [];
   return index
-    .filter((entry) => entry.terms.some((term) => term.includes(needle)) || entry.name.toLowerCase().includes(needle))
+    .filter((entry) => entry.terms.some((term) => term.normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(needle)) || entry.name.toLowerCase().includes(needle))
     .sort((left, right) => left.name.length - right.name.length || left.name.localeCompare(right.name))
     .slice(0, JOB_RESULT_LIMIT);
 }
@@ -49,14 +53,26 @@ export function SearchExperience({
   salaryIndex?: readonly SalarySearchEntry[];
   jobIndex?: readonly JobSearchEntry[];
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const hydrated = useSyncExternalStore(() => () => undefined, () => true, () => false);
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') ?? '');
   const [showAll, setShowAll] = useState(false);
   const browsing = query.trim() === '';
   const results = useMemo(
-    () => searchTools(query, browsing && showAll ? tools.length : 8),
-    [query, browsing, showAll],
+    () => {
+      const limit = browsing && showAll ? tools.length : 8;
+      const found = searchTools(query, limit).map(({ tool }) => ({ tool: localizedTool(tool, locale) }));
+      if (locale !== 'es-US' || browsing) return found;
+      const words = query.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().split(/\s+/);
+      const spanish = tools.map((tool) => localizedTool(tool, locale)).filter((tool) => {
+        const text = `${tool.title} ${tool.description}`.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+        return words.every((word) => text.includes(word));
+      }).map((tool) => ({ tool }));
+      return [...new Map([...spanish, ...found].map((item) => [item.tool.id, item])).values()].slice(0, limit);
+    },
+    [query, browsing, showAll, locale],
   );
   const salaryResults = useMemo(
     () => (browsing ? [] : matchSalaryPages(query, salaryIndex)),
@@ -71,37 +87,37 @@ export function SearchExperience({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     const nextUrl = query.trim() ? `/search?q=${encodeURIComponent(query.trim())}` : '/search';
-    window.history.replaceState(null, '', nextUrl);
+    window.history.replaceState(null, '', localizedHref(nextUrl, locale));
     emitAnalyticsEvent('search', { resultType: matchCount ? 'matched' : 'empty' });
   };
 
   return (
     <div className="search-experience" data-hydrated={hydrated}>
-      <form className="answer-search search-page-form" role="search" action="/search" method="get" onSubmit={submit}>
-        <label className="sr-only" htmlFor="site-search">Search {siteConfig.name} calculators</label>
+      <form className="answer-search search-page-form" role="search" action={localizedHref('/search', locale)} method="get" onSubmit={submit}>
+        <label className="sr-only" htmlFor="site-search">{t("Search")} {siteConfig.name} calculators</label>
         <span className="search-icon" aria-hidden="true" />
-        <input id="site-search" name="q" type="search" value={query} onChange={(event) => { setQuery(event.target.value); setShowAll(false); }} placeholder="Hourly to salary, electricity, concrete…" autoCapitalize="none" autoCorrect="off" enterKeyHint="search" />
-        <button type="submit">Search <span aria-hidden="true">→</span></button>
+        <input id="site-search" name="q" type="search" value={query} onChange={(event) => { setQuery(event.target.value); setShowAll(false); }} placeholder={t("Hourly to salary, electricity, concrete…")} autoCapitalize="none" autoCorrect="off" enterKeyHint="search" />
+        <button type="submit">{t("Search")} <span aria-hidden="true">→</span></button>
       </form>
       <div className="search-results">
         <p role="status" aria-live="polite" aria-atomic="true">
           {browsing
-            ? (showAll ? `All ${tools.length} calculators` : 'Popular calculators')
-            : `${matchCount} match${matchCount === 1 ? '' : 'es'}`}
+            ? (showAll ? (locale === 'es-US' ? `Las ${tools.length} calculadoras` : `All ${tools.length} calculators`) : t('Popular calculators'))
+            : (locale === 'es-US' ? `${matchCount} resultados` : `${matchCount} match${matchCount === 1 ? '' : 'es'}`)}
         </p>
         {jobResults.map((entry) => (
           <Link href={entry.path} key={entry.jobId}>
             <CategoryChip category="home" size="row" tone="color" />
-            <span><strong>{`${entry.name} cost`}</strong><small>CostAnswer estimated range for this job</small></span>
-            <span className="search-result-category">Job costs</span>
+            <span><strong>{locale === 'es-US' ? `Costo de ${t(entry.name)}` : `${entry.name} cost`}</strong><small>{t("CostAnswer estimated range for this job")}</small></span>
+            <span className="search-result-category">{t("Job costs")}</span>
             <b aria-hidden="true">→</b>
           </Link>
         ))}
         {salaryResults.map((entry) => (
-          <Link href={`/salary/${entry.slug}`} key={entry.slug}>
+          <Link href={locale === 'es-US' ? `/es/salario/${entry.slug}` : `/salary/${entry.slug}`} key={entry.slug}>
             <CategoryChip category="money" size="row" tone="color" />
-            <span><strong>{`${entry.name} salary`}</strong><small>{`What the job pays nationally and in every state · SOC ${entry.code}`}</small></span>
-            <span className="search-result-category">Salaries</span>
+            <span><strong>{locale === 'es-US' ? `Salario de ${entry.name}` : `${entry.name} salary`}</strong><small>{locale === 'es-US' ? `Sueldo nacional y por estado · SOC ${entry.code}` : `What the job pays nationally and in every state · SOC ${entry.code}`}</small></span>
+            <span className="search-result-category">{t("Salaries")}</span>
             <b aria-hidden="true">→</b>
           </Link>
         ))}
@@ -109,18 +125,18 @@ export function SearchExperience({
           <Link href={tool.path} key={tool.id} onClick={() => emitAnalyticsEvent('result_interaction', { toolId: tool.id, category: tool.category, interaction: 'search_result_click' })}>
             <CategoryChip category={tool.category} size="row" tone="color" />
             <span><strong>{tool.title}</strong><small>{tool.description}</small></span>
-            <span className="search-result-category">{categories[tool.category].name}</span>
+            <span className="search-result-category">{locale === 'es-US' ? CATEGORY_ES[tool.category].name : categories[tool.category].name}</span>
             <b aria-hidden="true">→</b>
           </Link>
         )) : salaryResults.length === 0 && jobResults.length === 0 && (
           <div className="empty-search">
-            <h2>Nothing matches that yet.</h2>
-            <p>Try a job title, a home project, pay, electricity, concrete, shopping, a recipe, or business days.</p>
+            <h2>{t("Nothing matches that yet.")}</h2>
+            <p>{t("Try a job title, a home project, pay, electricity, concrete, shopping, a recipe, or business days.")}</p>
           </div>
         )}
         {browsing && !showAll && results.length < tools.length && (
           <button type="button" className="search-see-all" onClick={() => setShowAll(true)}>
-            See all {tools.length} calculators <span aria-hidden="true">→</span>
+            {locale === 'es-US' ? `Ver las ${tools.length} calculadoras` : `See all ${tools.length} calculators`} <span aria-hidden="true">→</span>
           </button>
         )}
       </div>

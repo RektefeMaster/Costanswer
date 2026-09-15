@@ -50,13 +50,13 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
   {
     toolId: 'bmr',
     guide: {
-      heading: 'Mifflin–St Jeor BMR, not a metabolic cart',
-      lede: 'Basal metabolic rate is estimated with the Mifflin–St Jeor equation from age, sex, height, and weight. It is an estimate of resting energy use, not a lab measurement.',
+      heading: 'Mifflin-St Jeor BMR, not a metabolic cart',
+      lede: 'Basal metabolic rate is estimated with the Mifflin-St Jeor equation from age, sex, height, and weight. It is an estimate of resting energy use, not a lab measurement.',
       sections: [
         {
           heading: 'Why equations disagree',
           paragraphs: [
-            'Harris-Benedict, Katch-McArdle, and Mifflin–St Jeor were fitted on different samples. This site uses Mifflin–St Jeor and says so. Thyroid disease, fever, and some medications can move real BMR a long way from any equation.',
+            'Harris-Benedict, Katch-McArdle, and Mifflin-St Jeor were fitted on different samples. This site uses Mifflin-St Jeor and says so. Thyroid disease, fever, and some medications can move real BMR a long way from any equation.',
           ],
         },
       ],
@@ -69,7 +69,7 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
         ],
       },
       {
-        question: 'Why does this use Mifflin–St Jeor?',
+        question: 'Why does this use Mifflin-St Jeor?',
         answer: [
           'It is a widely cited adult equation and the one this engine is tested against. Other equations exist. The page will not switch formulas silently.',
         ],
@@ -82,8 +82,8 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
       },
     ],
     glossary: [
-      { term: 'BMR', definition: 'Estimated basal metabolic rate in kcal/day under Mifflin–St Jeor.' },
-      { term: 'Mifflin–St Jeor', definition: 'The equation this page applies. It is not a calorimeter.' },
+      { term: 'BMR', definition: 'Estimated basal metabolic rate in kcal/day under Mifflin-St Jeor.' },
+      { term: 'Mifflin-St Jeor', definition: 'The equation this page applies. It is not a calorimeter.' },
     ],
     tips: [
       'If you have a measured RMR from a clinic, prefer that number over this estimate.',
@@ -155,7 +155,7 @@ export const HEALTH_MATH_EDITORIAL: ToolEditorial[] = [
       {
         question: 'How many calories do I need per day?',
         answer: [
-          'The maintenance line is estimated TDEE from Mifflin–St Jeor and the activity factor you pick. It is not a lab measurement and not a meal plan.',
+          'The maintenance line is estimated TDEE from Mifflin-St Jeor and the activity factor you pick. It is not a lab measurement and not a meal plan.',
         ],
       },
       {

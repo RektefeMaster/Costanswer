@@ -3,10 +3,10 @@ import { ToolPage } from '@/components/tool/ToolPage';
 import { electricitySnapshot } from '@/lib/data/electricity-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('appliance-electricity');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 const electricitySource = datasetSourceDisplay({
   datasetId: 'eia-electricity',
   observationPeriod: electricitySnapshot.observationPeriod,

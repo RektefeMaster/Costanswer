@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateFederalBracket } from '@/lib/calculations/tax/federal-bracket';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -21,6 +23,8 @@ const percent = (value: number) => `${value.toFixed(value % 1 === 0 ? 0 : 2)}%`;
 const bracketLabel = (rate: number | null) => (rate === null ? 'None' : percent(rate));
 
 export function FederalTaxBracketCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [income, setIncome] = useState('100000');
   const [incomeBasis, setIncomeBasis] = useState<'gross' | 'taxable'>('gross');
@@ -70,13 +74,13 @@ export function FederalTaxBracketCalculator() {
           htmlFor="bracket-income"
           hint={incomeBasis === 'gross'
             ? 'The standard deduction comes off before the brackets apply'
-            : 'Line 15 of Form 1040 — after the deduction has already come out'}
+            : 'Line 15 of Form 1040 (after the deduction has already come out)'}
         >
           <InputShell prefix="$">
             <input id="bracket-income" type="number" min="0" step="1000" inputMode="decimal" value={income} onChange={(event) => setIncome(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Filing status" htmlFor="bracket-filing">
+        <Field label={t("Filing status")} htmlFor="bracket-filing">
           <span className="input-shell select-shell">
             <select id="bracket-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -128,19 +132,19 @@ export function FederalTaxBracketCalculator() {
               <caption>How your income is taxed, band by band</caption>
               <thead>
                 <tr>
-                  <th scope="col">Rate</th>
+                  <th scope="col">{t("Rate")}</th>
                   <th scope="col">Band of taxable income</th>
                   <th scope="col">Your income in it</th>
-                  <th scope="col">Tax</th>
+                  <th scope="col">{t("Tax")}</th>
                 </tr>
               </thead>
               <tbody>
                 {value.bands.map((band) => (
                   <tr key={band.rate} className={band.isCurrent ? 'is-current' : undefined}>
                     <th scope="row">{percent(band.rate)}{band.isCurrent && <span className="band-flag"> your bracket</span>}</th>
-                    <td>{band.to === null ? `Over ${money(band.from)}` : `${money(band.from)} – ${money(band.to)}`}</td>
-                    <td>{band.incomeInBand === 0 ? '—' : money(band.incomeInBand)}</td>
-                    <td>{band.incomeInBand === 0 ? '—' : money(band.taxInBand)}</td>
+                    <td>{band.to === null ? `Over ${money(band.from)}` : `${money(band.from)} to ${money(band.to)}`}</td>
+                    <td>{band.incomeInBand === 0 ? '$0' : money(band.incomeInBand)}</td>
+                    <td>{band.incomeInBand === 0 ? '$0' : money(band.taxInBand)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -151,12 +155,12 @@ export function FederalTaxBracketCalculator() {
             level="high"
             reasons={[
               `Brackets and the standard deduction are transcribed from ${snapshot.federal.sourceName}`,
-              'Federal income tax only — Social Security, Medicare and state tax are not included',
+              'Federal income tax only (Social Security, Medicare, and state tax are not included)',
               'Credits, capital gains and itemized deductions are not modeled',
             ]}
           />
           <CalculationReceipt
-            title={`Federal tax bracket — ${money(Number(income))} ${incomeBasis === 'gross' ? 'before deductions' : 'taxable'}, ${snapshot.taxYear}`}
+            title={`Federal tax bracket: ${money(Number(income))} ${incomeBasis === 'gross' ? 'before deductions' : 'taxable'}, ${snapshot.taxYear}`}
             headline={{ label: 'Federal bracket', value: bracketLabel(value.currentBracketRate) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

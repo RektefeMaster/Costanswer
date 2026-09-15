@@ -5,7 +5,7 @@ export async function SiteHeader() {
   return (
     <SiteHeaderNav
       languageSwitcher={<LanguageSwitcher />}
-      mobileLanguageSwitcher={<LanguageSwitcher />}
+      mobileLanguageSwitcher={<LanguageSwitcher inline />}
     />
   );
 }

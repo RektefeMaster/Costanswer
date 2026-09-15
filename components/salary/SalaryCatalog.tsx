@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { formatNumber } from '@/lib/calculations/contracts';
 import type { Locale } from '@/lib/i18n/locales';
 import { salaryHubPayLabel, salaryHubPayNote, type SalaryHubGroup, type SalaryHubOccupation } from '@/lib/salary-hub-view';

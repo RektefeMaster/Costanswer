@@ -7,7 +7,7 @@ import { resolveHudFmrSnapshot, hudLatestPublishedSnapshot } from '@/lib/data/hu
 import { usdaFoodSnapshot } from '@/lib/data/usda-food-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 import { PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
 
 const tool = getTool('cost-of-living');
@@ -18,7 +18,7 @@ const tool = getTool('cost-of-living');
  * picks somewhere else.
  */
 const initialCoverage = resolveCostOfLivingCoverage({ locationId: 'place:4805000' });
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const hudEffective = resolveHudFmrSnapshot(PUBLISHING_SNAPSHOT_DATE);
 const hudSource = datasetSourceDisplay({

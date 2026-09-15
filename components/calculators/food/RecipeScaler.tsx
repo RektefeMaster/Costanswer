@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { scaleRecipe } from '@/lib/calculations/recipe-scaler';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -9,6 +11,8 @@ import { pluralize } from '@/lib/plural';
 type Ingredient = { id: string; name: string; quantity: string; unit: string };
 
 export function RecipeScaler() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [originalServings, setOriginalServings] = useState('4');
   const [desiredServings, setDesiredServings] = useState('6');
   const [ingredients, setIngredients] = useState<Ingredient[]>([
@@ -36,7 +40,7 @@ export function RecipeScaler() {
 
   return (
     <CalculatorPanel
-      title="Scale the recipe"
+      title={t("Scale the recipe")}
       intro="Original servings and the servings you want. Fractions are fine. We round to the nearest 1/16."
       toolId="recipe-scaler"
       category="food"
@@ -44,16 +48,16 @@ export function RecipeScaler() {
       calculationSignature={JSON.stringify([originalServings, desiredServings, ingredients])}
     >
       <div className="calc-form-grid compact-grid">
-        <Field label="Original servings" htmlFor="original-servings"><InputShell suffix="servings"><input id="original-servings" type="number" min="0.1" step="1" value={originalServings} onChange={(event) => setOriginalServings(event.target.value)} /></InputShell></Field>
-        <Field label="Desired servings" htmlFor="desired-servings"><InputShell suffix="servings"><input id="desired-servings" type="number" min="0.1" step="1" value={desiredServings} onChange={(event) => setDesiredServings(event.target.value)} /></InputShell></Field>
+        <Field label={t("Original servings")} htmlFor="original-servings"><InputShell suffix={t("servings")}><input id="original-servings" type="number" min="0.1" step="1" value={originalServings} onChange={(event) => setOriginalServings(event.target.value)} /></InputShell></Field>
+        <Field label={t("Desired servings")} htmlFor="desired-servings"><InputShell suffix={t("servings")}><input id="desired-servings" type="number" min="0.1" step="1" value={desiredServings} onChange={(event) => setDesiredServings(event.target.value)} /></InputShell></Field>
       </div>
-      <div className="ingredient-editor" role="group" aria-label="Recipe ingredients">
-        <div className="ingredient-head" aria-hidden="true"><span>Ingredient</span><span>Quantity</span><span>Unit</span><span /></div>
+      <div className="ingredient-editor" role="group" aria-label={t("Recipe ingredients")}>
+        <div className="ingredient-head" aria-hidden="true"><span>Ingredient</span><span>{t("Quantity")}</span><span>{t("Unit")}</span><span /></div>
         {ingredients.map((ingredient, index) => (
           <div className="ingredient-row" key={ingredient.id}>
             <label><span className="sr-only">Ingredient {index + 1} name</span><span className="ingredient-mobile-label" aria-hidden="true">Ingredient</span><input value={ingredient.name} placeholder="Ingredient name" onChange={(event) => updateIngredient(ingredient.id, { name: event.target.value })} /></label>
-            <label><span className="sr-only">Ingredient {index + 1} quantity</span><span className="ingredient-mobile-label" aria-hidden="true">Quantity</span><input value={ingredient.quantity} placeholder="1 1/2" onChange={(event) => updateIngredient(ingredient.id, { quantity: event.target.value })} /></label>
-            <label><span className="sr-only">Ingredient {index + 1} unit</span><span className="ingredient-mobile-label" aria-hidden="true">Unit</span><input value={ingredient.unit} placeholder="cups" onChange={(event) => updateIngredient(ingredient.id, { unit: event.target.value })} /></label>
+            <label><span className="sr-only">Ingredient {index + 1} quantity</span><span className="ingredient-mobile-label" aria-hidden="true">{t("Quantity")}</span><input value={ingredient.quantity} placeholder="1 1/2" onChange={(event) => updateIngredient(ingredient.id, { quantity: event.target.value })} /></label>
+            <label><span className="sr-only">Ingredient {index + 1} unit</span><span className="ingredient-mobile-label" aria-hidden="true">{t("Unit")}</span><input value={ingredient.unit} placeholder="cups" onChange={(event) => updateIngredient(ingredient.id, { unit: event.target.value })} /></label>
             <button type="button" aria-label={`Remove ${ingredient.name || `ingredient ${index + 1}`}`} disabled={ingredients.length === 1} onClick={() => setIngredients((current) => current.filter((item) => item.id !== ingredient.id))}>×</button>
           </div>
         ))}
@@ -62,7 +66,7 @@ export function RecipeScaler() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Scale factor" value={`${calculation.result.value.scaleFactor}×`} note={`${pluralize(Number(originalServings), 'serving', 'servings')} → ${pluralize(Number(desiredServings), 'serving', 'servings')}`} tone="coral" />
+          <PrimaryResult label={t("Scale factor")} value={`${calculation.result.value.scaleFactor}×`} note={`${pluralize(Number(originalServings), 'serving', 'servings')} → ${pluralize(Number(desiredServings), 'serving', 'servings')}`} tone="coral" />
           <div className="scaled-ingredients">
             {calculation.result.value.ingredients.map((ingredient) => (
               <div key={ingredient.id}><strong>{ingredient.displayQuantity}{ingredient.unit ? ` ${ingredient.unit}` : ''}</strong><span>{ingredient.name}</span></div>

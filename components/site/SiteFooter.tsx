@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { siteConfig } from '@/lib/site-config';
 import { categories, CATEGORY_IDS } from '@/lib/categories';
 import { occupationHeadingName } from '@/lib/salary-content';
@@ -11,12 +11,14 @@ import {
 } from '@/lib/salary-pages';
 import { salaryFamilyPathEs, salaryOccupationPathEs, salaryStateIndexPathEs } from '@/lib/salary-es-pages';
 import { JOB_CATALOG } from '@/lib/job/catalog';
+import { CATEGORY_ES, siteText } from '@/lib/i18n/site-copy';
 import { chrome } from '@/lib/i18n/chrome';
 import { requestLocale } from '@/lib/i18n/request-locale';
 import { LanguageSwitcher } from '@/components/site/LanguageSwitcher';
 
 export async function SiteFooter() {
   const locale = await requestLocale();
+  const t = (text: string) => siteText(text, locale);
   const homeHref = locale === 'es-US' ? '/es' : '/';
   const salaryRoot = locale === 'es-US' ? salaryFamilyPathEs() : salaryFamilyPath();
   const stateIndex = locale === 'es-US' ? salaryStateIndexPathEs() : salaryStateIndexPath();
@@ -38,7 +40,7 @@ export async function SiteFooter() {
           <p id="footer-topics-heading" className="footer-kicker">{chrome('topics', locale)}</p>
           <div className="footer-topics">
             {CATEGORY_IDS.map((categoryId) => (
-              <Link href={`/topics/${categoryId}`} key={categoryId}>{categories[categoryId].name}</Link>
+              <Link href={`/topics/${categoryId}`} key={categoryId}>{locale === 'es-US' ? CATEGORY_ES[categoryId].name : categories[categoryId].name}</Link>
             ))}
           </div>
         </nav>
@@ -51,10 +53,10 @@ export async function SiteFooter() {
               <Link href={occupationHref(occupation)} key={occupation.code}>{occupationName(occupation)}</Link>
             ))}
             <Link href="/cost">{chrome('jobCosts', locale)}</Link>
-            <Link href="/cost/estimate">Estimate a job</Link>
-            <Link href="/cost/check-quote">Check a quote</Link>
-            <Link href="/cost/hvac-replacement">{JOB_CATALOG['hvac-replacement'].shortTitle}</Link>
-            <Link href="/cost/tree-removal">{JOB_CATALOG['tree-removal'].shortTitle}</Link>
+            <Link href="/cost/estimate">{t("Estimate a job")}</Link>
+            <Link href="/cost/check-quote">{t("Check a quote")}</Link>
+            <Link href="/cost/hvac-replacement">{t(JOB_CATALOG['hvac-replacement'].shortTitle)}</Link>
+            <Link href="/cost/tree-removal">{t(JOB_CATALOG['tree-removal'].shortTitle)}</Link>
           </div>
         </nav>
         <nav className="footer-nav-site" aria-labelledby="footer-site-heading">

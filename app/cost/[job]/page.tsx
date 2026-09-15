@@ -1,10 +1,10 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JobEstimator } from '@/components/job/JobEstimator';
 import { JobPicker } from '@/components/job/JobPicker';
 import { CostPage } from '@/components/job/CostPage';
 import { JOB_CATALOG, JOB_IDS, isJobId } from '@/lib/job/catalog';
-import { jobCostPageTitle, jobCostQuestions } from '@/lib/job/content';
+import { jobCostPageTitle, jobCostQuestions, jobRelatedTools } from '@/lib/job/content';
 import { costPageRobots } from '@/lib/job/publication';
 import { jobInStatePath, openStatesForJob } from '@/lib/job/state-pages';
 import { getStateName } from '@/lib/location/states';
@@ -40,7 +40,15 @@ export default async function JobCostPage({ params }: { params: Promise<{ job: s
         { title: 'Range', body: 'Shown as a CostAnswer estimated range. Incomplete when a critical material has no sourced price.' },
       ]}
     >
-      <p className="related-lede"><Link href="/cost/check-quote">Compare a contractor quote</Link> on the same engine. Related: <Link href="/home/concrete-calculator">concrete calculator</Link>, <Link href="/money/home-affordability">how much house you can afford</Link>.</p>
+      <p className="related-lede">
+        <Link href="/cost/check-quote">Compare a contractor quote</Link> on the same engine.
+        {jobRelatedTools(job).map((tool) => (
+          <span key={tool.href}>
+            {' · '}
+            <Link href={tool.href}>{tool.label}</Link>
+          </span>
+        ))}
+      </p>
       <JobPicker activeJobId={job} />
       <JobEstimator key={job} jobId={job} mode="estimate" />
       {openStates.length > 0 && (

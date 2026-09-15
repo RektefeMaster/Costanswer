@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, useSyncExternalStore, type FormEvent, type ReactNode } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { useRouter } from 'next/navigation';
 import { SalaryOccupationList } from '@/components/salary/SalaryCatalog';
 import { formatNumber } from '@/lib/calculations/contracts';

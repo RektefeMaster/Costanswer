@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { formatMoney, formatNumber } from '@/lib/calculations/contracts';
 import type { OewsEstimate, OewsOccupation } from '@/lib/data/bls-oews';
 import { getStateName, type StateCode } from '@/lib/location/states';

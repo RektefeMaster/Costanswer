@@ -1,10 +1,10 @@
 import { SquareFootageCalculator } from '@/components/calculators/home/SquareFootageCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('square-footage');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function SquareFootagePage() {
   return (

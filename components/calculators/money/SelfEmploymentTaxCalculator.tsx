@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateSelfEmploymentTax } from '@/lib/calculations/tax/self-employment';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -20,6 +22,8 @@ import {
 const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
 export function SelfEmploymentTaxCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [netProfit, setNetProfit] = useState('50000');
   const [socialSecurityWages, setSocialSecurityWages] = useState('0');
@@ -72,7 +76,7 @@ export function SelfEmploymentTaxCalculator() {
             <input id="se-ss-wages" type="number" min="0" step="1000" inputMode="decimal" value={socialSecurityWages} onChange={(event) => setSocialSecurityWages(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Filing status" htmlFor="se-filing">
+        <Field label={t("Filing status")} htmlFor="se-filing">
           <span className="input-shell select-shell">
             <select id="se-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -112,7 +116,7 @@ export function SelfEmploymentTaxCalculator() {
             ]}
           />
           <CalculationReceipt
-            title={`Self-employment tax — ${money(Number(netProfit))} net profit, ${snapshot.taxYear}`}
+            title={`Self-employment tax: ${money(Number(netProfit))} net profit, ${snapshot.taxYear}`}
             headline={{ label: 'Schedule SE tax', value: money(value.scheduleSeTax) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

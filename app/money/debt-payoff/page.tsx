@@ -1,10 +1,10 @@
 import { DebtPayoffCalculator } from '@/components/calculators/money/DebtPayoffCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('debt-payoff');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function DebtPayoffPage() {
   return (

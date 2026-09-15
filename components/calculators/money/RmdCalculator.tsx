@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateRmd } from '@/lib/calculations/rmd';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -8,6 +10,8 @@ import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultD
 import { money } from '../finance-format';
 
 export function RmdCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const year = irsRmdSnapshot.distributionYear;
   const [balance, setBalance] = useState('500000');
   const [age, setAge] = useState('75');
@@ -74,7 +78,7 @@ export function RmdCalculator() {
             <input id="rmd-age" type="number" min="18" max="120" step="1" inputMode="numeric" value={age} onChange={(event) => setAge(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Birth year" htmlFor="rmd-birth" hint={`Sets the Table III age in ${year} (${year} − birth year) and whether RMDs start at 73 or 75`}>
+        <Field label={t("Birth year")} htmlFor="rmd-birth" hint={`Sets the Table III age in ${year} (${year} − birth year) and whether RMDs start at 73 or 75`}>
           <InputShell>
             <input id="rmd-birth" type="number" min="1900" max="2020" step="1" inputMode="numeric" value={birthYear} onChange={(event) => setBirthYear(event.target.value)} />
           </InputShell>
@@ -117,7 +121,7 @@ export function RmdCalculator() {
           />
           <StatGrid items={[
             { label: 'Starting age', value: String(value.startAge) },
-            { label: 'Table III factor', value: value.denominator === null ? '—' : value.denominator.toFixed(1) },
+            { label: 'Table III factor', value: value.denominator === null ? 'Not applicable' : value.denominator.toFixed(1) },
             { label: `${year - 1} balance`, value: money(Number(balance) || 0, 0) },
           ]} />
           <ResultDetails

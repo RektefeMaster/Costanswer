@@ -32,3 +32,48 @@ declare module '@/data/cms-marketplace/index.json' {
   const value: unknown;
   export default value;
 }
+
+declare module '@/data/zcta-county/current.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/hud-fmr/current.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/hud-fmr/snapshots/hud-fmr-fy2026-revised-2026-05-21-v1.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/hud-fmr/snapshots/hud-fmr-fy2027-v1.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/geography/current.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/census-acs/current.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/bea-rpp/current.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/gsa-perdiem/snapshots/gsa-perdiem-conus-fy2026-v1.json' {
+  const value: unknown;
+  export default value;
+}
+
+declare module '@/data/gsa-perdiem/snapshots/gsa-perdiem-conus-fy2027-v1.json' {
+  const value: unknown;
+  export default value;
+}

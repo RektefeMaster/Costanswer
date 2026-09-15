@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateTaxRefund } from '@/lib/calculations/tax/tax-refund';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -20,6 +22,8 @@ import {
 const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
 export function TaxRefundCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [grossIncome, setGrossIncome] = useState('100000');
   const [federalWithholding, setFederalWithholding] = useState('15000');
@@ -70,17 +74,17 @@ export function TaxRefundCalculator() {
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Gross income" htmlFor="refund-gross" hint="Wages and other non-SE income. Do not include Schedule C profit here">
+        <Field label={t("Gross income")} htmlFor="refund-gross" hint="Wages and other non-SE income. Do not include Schedule C profit here">
           <InputShell prefix="$">
             <input id="refund-gross" type="number" min="0" step="1000" inputMode="decimal" value={grossIncome} onChange={(event) => setGrossIncome(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Federal income tax withheld" htmlFor="refund-withholding" hint="Form W-2 box 2">
+        <Field label={t("Federal income tax withheld")} htmlFor="refund-withholding" hint="Form W-2 box 2">
           <InputShell prefix="$">
             <input id="refund-withholding" type="number" min="0" step="100" inputMode="decimal" value={federalWithholding} onChange={(event) => setFederalWithholding(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Filing status" htmlFor="refund-filing">
+        <Field label={t("Filing status")} htmlFor="refund-filing">
           <span className="input-shell select-shell">
             <select id="refund-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -94,12 +98,12 @@ export function TaxRefundCalculator() {
             <input id="refund-se" type="number" step="1000" inputMode="decimal" value={netSelfEmploymentProfit} onChange={(event) => setNetSelfEmploymentProfit(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Qualifying children" htmlFor="refund-children">
+        <Field label={t("Qualifying children")} htmlFor="refund-children">
           <InputShell>
             <input id="refund-children" type="number" min="0" max="20" step="1" inputMode="numeric" value={qualifyingChildren} onChange={(event) => setQualifyingChildren(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Other dependents" htmlFor="refund-other">
+        <Field label={t("Other dependents")} htmlFor="refund-other">
           <InputShell>
             <input id="refund-other" type="number" min="0" max="20" step="1" inputMode="numeric" value={otherDependents} onChange={(event) => setOtherDependents(event.target.value)} />
           </InputShell>
@@ -109,7 +113,7 @@ export function TaxRefundCalculator() {
             <input id="refund-es" type="number" min="0" step="100" inputMode="decimal" value={estimatedTaxPayments} onChange={(event) => setEstimatedTaxPayments(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Investment income" htmlFor="refund-investment" hint="Can disallow the earned income credit">
+        <Field label={t("Investment income")} htmlFor="refund-investment" hint="Can disallow the earned income credit">
           <InputShell prefix="$">
             <input id="refund-investment" type="number" min="0" step="100" inputMode="decimal" value={investmentIncome} onChange={(event) => setInvestmentIncome(event.target.value)} />
           </InputShell>
@@ -135,12 +139,12 @@ export function TaxRefundCalculator() {
             level="medium"
             reasons={[
               'Income tax, EITC and child credits use the 2026 official amounts',
-              'Withholding is what you type — Publication 15-T W-4 tables are not in the snapshot',
+              'Withholding is what you type (Publication 15-T W-4 tables are not in the snapshot)',
               'Adjustments, itemized deductions and other credits are not modeled, so tax can be too high',
             ]}
           />
           <CalculationReceipt
-            title={`Estimated refund — ${money(Number(grossIncome))} gross, ${snapshot.taxYear}`}
+            title={`Estimated refund: ${money(Number(grossIncome))} gross, ${snapshot.taxYear}`}
             headline={{ label: value.amountOwed > 0 ? 'Amount owed' : 'Refund', value: money(value.refund > 0 ? value.refund : value.amountOwed) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

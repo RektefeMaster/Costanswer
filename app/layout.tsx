@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { LocaleProvider } from '@/components/i18n/LocaleProvider';
 import { SiteAnalytics } from '@/components/analytics/SiteAnalytics';
 import { AdvertisingScript } from '@/components/monetization/AdvertisingScript';
 import { AttributionCapture } from '@/components/monetization/AttributionCapture';
@@ -50,6 +51,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   return (
     <html lang={htmlLang(locale)}>
       <body>
+        <LocaleProvider locale={locale}>
         <a className="skip-link" href="#main-content">{chrome('skip', locale)}</a>
         {/*
           Captured once per tab, in the layout, so the landing page recorded is
@@ -66,6 +68,7 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
         {/* Nothing unless analytics is enabled and a measurement id is set. */}
         <SiteAnalytics />
         {children}
+              </LocaleProvider>
       </body>
     </html>
   );

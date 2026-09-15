@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { ContactForm } from '@/components/site/ContactForm';
 import { InfoPage } from '@/components/site/InfoPage';
 import { siteContactEmail } from '@/lib/integration-config';

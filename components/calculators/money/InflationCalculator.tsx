@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateInflation, type InflationCpiObservation } from '@/lib/calculations/inflation';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -45,6 +47,8 @@ export function InflationCalculator({
   observationPeriod: string;
   years: number[];
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const latestYear = observationPeriod.slice(0, 4);
   const latestMonth = observationPeriod.slice(5);
   const [amount, setAmount] = useState('100');
@@ -93,20 +97,20 @@ export function InflationCalculator({
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Amount" htmlFor="inflation-amount">
+        <Field label={t("Amount")} htmlFor="inflation-amount">
           <span className="input-shell">
             <span className="input-affix">$</span>
             <input id="inflation-amount" type="number" min="0.01" step="1" inputMode="decimal" value={amount} onChange={(event) => setAmount(event.target.value)} />
           </span>
         </Field>
-        <Field label="Starting month" htmlFor="inflation-start-month">
+        <Field label={t("Starting month")} htmlFor="inflation-start-month">
           <span className="input-shell select-shell">
             <select id="inflation-start-month" value={startPeriod.slice(5)} onChange={(event) => setStartMonth(event.target.value)}>
               {startMonths.map(([month, label]) => <option value={month} key={`start-${month}`}>{label}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Starting year" htmlFor="inflation-start-year">
+        <Field label={t("Starting year")} htmlFor="inflation-start-year">
           <span className="input-shell select-shell">
             <select
               id="inflation-start-year"
@@ -121,14 +125,14 @@ export function InflationCalculator({
             </select>
           </span>
         </Field>
-        <Field label="Ending month" htmlFor="inflation-end-month">
+        <Field label={t("Ending month")} htmlFor="inflation-end-month">
           <span className="input-shell select-shell">
             <select id="inflation-end-month" value={endPeriod.slice(5)} onChange={(event) => setEndMonth(event.target.value)}>
               {endMonths.map(([month, label]) => <option value={month} key={`end-${month}`}>{label}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Ending year" htmlFor="inflation-end-year">
+        <Field label={t("Ending year")} htmlFor="inflation-end-year">
           <span className="input-shell select-shell">
             <select
               id="inflation-end-year"

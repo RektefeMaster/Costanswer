@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateCreditCardPayoff } from '@/lib/calculations/credit-card-payoff';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -7,6 +9,8 @@ import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultD
 import { money } from '../finance-format';
 
 export function CreditCardPayoffCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [mode, setMode] = useState<'payment' | 'target-months'>('payment');
   const [balance, setBalance] = useState('4500');
   const [aprPercent, setAprPercent] = useState('21.99');
@@ -36,12 +40,12 @@ export function CreditCardPayoffCalculator() {
         <button type="button" aria-pressed={mode === 'target-months'} className={mode === 'target-months' ? 'active' : ''} onClick={() => setMode('target-months')}>I have a target payoff time</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Balance" htmlFor="cc-bal"><InputShell prefix="$"><input id="cc-bal" type="number" min="0.01" step="50" inputMode="decimal" value={balance} onChange={(event) => setBalance(event.target.value)} /></InputShell></Field>
+        <Field label={t("Balance")} htmlFor="cc-bal"><InputShell prefix="$"><input id="cc-bal" type="number" min="0.01" step="50" inputMode="decimal" value={balance} onChange={(event) => setBalance(event.target.value)} /></InputShell></Field>
         <Field label="APR" htmlFor="cc-apr"><InputShell suffix="%"><input id="cc-apr" type="number" min="0" max="80" step="0.01" inputMode="decimal" value={aprPercent} onChange={(event) => setAprPercent(event.target.value)} /></InputShell></Field>
         {mode === 'payment' ? (
-          <Field label="Monthly payment" htmlFor="cc-pay"><InputShell prefix="$"><input id="cc-pay" type="number" min="0" step="10" inputMode="decimal" value={monthlyPayment} onChange={(event) => setMonthlyPayment(event.target.value)} /></InputShell></Field>
+          <Field label={t("Monthly payment")} htmlFor="cc-pay"><InputShell prefix="$"><input id="cc-pay" type="number" min="0" step="10" inputMode="decimal" value={monthlyPayment} onChange={(event) => setMonthlyPayment(event.target.value)} /></InputShell></Field>
         ) : (
-          <Field label="Target months" htmlFor="cc-months"><InputShell suffix="months"><input id="cc-months" type="number" min="1" max="600" step="1" inputMode="numeric" value={targetMonths} onChange={(event) => setTargetMonths(event.target.value)} /></InputShell></Field>
+          <Field label="Target months" htmlFor="cc-months"><InputShell suffix={t("months")}><input id="cc-months" type="number" min="1" max="600" step="1" inputMode="numeric" value={targetMonths} onChange={(event) => setTargetMonths(event.target.value)} /></InputShell></Field>
         )}
       </div>
       {calculation.error && <InlineError message={calculation.error} />}

@@ -33,6 +33,20 @@ function adSlotLabel(placement: AdPlacement): string {
  *
  * The `pageId` gate matters: a restricted page renders no slot at all, so a
  * body-fat estimate never carries advertising even if every flag is on.
+ *
+ * **Reserving costs nothing only once advertising exists.** Before a network is
+ * approved there is no late arrival to absorb and no layout to protect, so the
+ * three `empty` slots on a page were 590px of blank band above and below the
+ * answer, plus an empty 600px rail. `status === 'empty'` therefore collapses:
+ * the element stays in the tree, carrying its placement, status and consent
+ * regime, so it is still findable and still explains itself, and it occupies
+ * no space until there is something to hold space for.
+ *
+ * `data-ad-status` and `data-ad-consent` are in the markup because the failure
+ * they describe is silent. A slot that never fills looks identical whether the
+ * flag is off, the network is unconfigured, or consent refused it — and this
+ * layer has already shipped that exact mystery twice. They make "why are there
+ * no ads on this page" a question `curl` can answer.
  */
 export function AdSlot({
   placement,
@@ -74,8 +88,9 @@ export function AdSlot({
       data-ad-placement={placement}
       data-ad-status={status}
       data-ad-network={provider?.networkId}
+      data-ad-consent={provider?.consentRequirement}
       data-ad-lazy={spec.lazy ? 'true' : 'false'}
-      style={{ minHeight: spec.reservedHeight, maxWidth: spec.reservedWidth }}
+      style={announced ? { minHeight: spec.reservedHeight, maxWidth: spec.reservedWidth } : undefined}
       role={announced ? 'region' : 'presentation'}
       aria-label={announced ? adSlotLabel(placement) : undefined}
     >

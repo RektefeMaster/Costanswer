@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import type { StateCode } from '@/lib/location/states';
 import { calculateElectricityCost } from '@/lib/calculations/electricity-cost';
@@ -10,6 +12,8 @@ import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultD
 type StateRate = { stateCode: StateCode; stateName: string; priceCentsPerKwh: number };
 
 export function ElectricityCostCalculator({ rates, snapshotId, observationPeriod }: { rates: StateRate[]; snapshotId: string; observationPeriod: string }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [monthlyKwh, setMonthlyKwh] = useState('900');
   const [customRate, setCustomRate] = useState('');
@@ -48,14 +52,14 @@ export function ElectricityCostCalculator({ rates, snapshotId, observationPeriod
         <p><strong>{selected.stateName}: {selected.priceCentsPerKwh.toFixed(2)}¢/kWh</strong><small>Residential state average · {source.periodLabel}</small></p>
       </div>
       <div className="calc-form-grid">
-        <Field label="State" htmlFor="electricity-state">
+        <Field label={t("State")} htmlFor="electricity-state">
           <span className="input-shell select-shell">
             <select id="electricity-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomRate(''); }}>
               {rates.map((rate) => <option value={rate.stateCode} key={rate.stateCode}>{rate.stateName}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Monthly usage" htmlFor="monthly-kwh" hint="kWh from a recent bill">
+        <Field label={t("Monthly usage")} htmlFor="monthly-kwh" hint="kWh from a recent bill">
           <InputShell suffix="kWh">
             <input id="monthly-kwh" type="number" min="0" step="10" inputMode="decimal" value={monthlyKwh} onChange={(event) => setMonthlyKwh(event.target.value)} />
           </InputShell>
@@ -69,7 +73,7 @@ export function ElectricityCostCalculator({ rates, snapshotId, observationPeriod
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Estimated monthly electric bill" value={money(calculation.result.value.monthlyEnergyCost)} note={`${monthlyKwh || 0} kWh at ${Number(effectiveRate).toFixed(2)}¢/kWh`} tone="amber" />
+          <PrimaryResult label={t("Estimated monthly electric bill")} value={money(calculation.result.value.monthlyEnergyCost)} note={`${monthlyKwh || 0} kWh at ${Number(effectiveRate).toFixed(2)}¢/kWh`} tone="amber" />
           <StatGrid items={[
             { label: 'Yearly estimate', value: money(calculation.result.value.annualEnergyCost), note: 'Same usage × 12' },
             { label: 'Daily average', value: money(calculation.result.value.dailyEnergyCost), note: 'Yearly estimate ÷ 365' },

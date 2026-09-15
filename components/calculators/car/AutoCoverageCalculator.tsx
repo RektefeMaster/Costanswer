@@ -1,6 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
+import Link from '@/components/i18n/LocalizedLink';
 import { useMemo, useState } from 'react';
 import { calculateAutoCoverage } from '@/lib/calculations/auto-coverage';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -10,6 +12,8 @@ import { STATE_CODES, US_STATES, type StateCode } from '@/lib/location/states';
 import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 
 export function AutoCoverageCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [stateCode, setStateCode] = useState<StateCode>('TX');
   const [vehicleValue, setVehicleValue] = useState('6000');
   const [collisionDeductible, setCollisionDeductible] = useState('1000');
@@ -48,7 +52,7 @@ export function AutoCoverageCalculator() {
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="State" htmlFor="coverage-state" hint="Sets the published collision and comprehensive averages. Your address is not collected.">
+        <Field label={t("State")} htmlFor="coverage-state" hint="Sets the published collision and comprehensive averages. Your address is not collected.">
           <span className="input-shell select-shell">
             <select id="coverage-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>
               {STATE_CODES.map((code) => <option key={code} value={code}>{US_STATES[code]}</option>)}

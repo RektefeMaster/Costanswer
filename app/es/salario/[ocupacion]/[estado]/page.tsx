@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { notFound } from 'next/navigation';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SiteFooter } from '@/components/site/SiteFooter';
@@ -88,7 +88,7 @@ export default async function SpanishOccupationInStatePage({ params }: { params:
         ]}
       />
       <SiteHeader />
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1} className="salary-page">
         <header className="tool-hero accent-mint">
           <nav className="breadcrumbs" aria-label="Miga de pan">
             {breadcrumbs.map((item, index) => (

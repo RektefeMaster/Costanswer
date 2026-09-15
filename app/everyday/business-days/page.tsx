@@ -1,10 +1,10 @@
 import { BusinessDaysCalculator } from '@/components/calculators/everyday/BusinessDaysCalculator';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('business-days');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function BusinessDaysPage() {
   const initialDate = new Date().toISOString().slice(0, 10);

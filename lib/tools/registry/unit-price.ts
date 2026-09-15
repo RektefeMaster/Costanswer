@@ -5,7 +5,7 @@ import { formulaOnly } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'unit-price',
   path: '/shopping/unit-price',
-  title: 'Unit Price Calculator',
+  title: 'Which Package Is Cheaper per Unit?',
   shortTitle: 'Unit price',
   description: 'See which package is cheaper per ounce, pound, or item, even if the labels use different units.',
   category: 'shopping',

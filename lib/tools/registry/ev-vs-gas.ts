@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'ev-vs-gas',
   path: '/car/ev-vs-gas',
-  title: 'EV vs. Gas Energy Cost Calculator',
+  title: 'EV vs Gas: Which Costs Less to Drive?',
   shortTitle: 'EV vs. gas',
   description: 'Yearly charging versus gasoline, using your miles, MPG, a local gas price, and a state electricity average.',
   category: 'car',

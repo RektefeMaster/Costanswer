@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateAcaSubsidy, type AcaSubsidyStatus } from '@/lib/calculations/aca-subsidy';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -31,6 +33,8 @@ const STATUS_LABELS: Record<AcaSubsidyStatus, { tag: string; tone: 'estimate' | 
 };
 
 export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSummary }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [zip, setZip] = useState('77002');
   const [chosenFips, setChosenFips] = useState('');
   const [enrollingAges, setEnrollingAges] = useState('40, 38, 10');
@@ -141,7 +145,7 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="ZIP code" htmlFor="health-zip" hint={`Premiums are filed by county. ${release.countyCount.toLocaleString('en-US')} counties across ${release.coveredStateCount} HealthCare.gov states are priced here.`}>
+        <Field label={t("ZIP code")} htmlFor="health-zip" hint={`Premiums are filed by county. ${release.countyCount.toLocaleString('en-US')} counties across ${release.coveredStateCount} HealthCare.gov states are priced here.`}>
           <InputShell>
             <input id="health-zip" type="text" inputMode="numeric" maxLength={5} value={zip} onChange={(event) => { setZip(event.target.value); setChosenFips(''); }} />
           </InputShell>
@@ -309,7 +313,7 @@ export function HealthInsuranceCalculator({ release }: { release: CmsReleaseSumm
                     <tr key={label}>
                       <th scope="row">{label}</th>
                       <td>{quote ? formatMoney(quote.premium) : 'None filed'}</td>
-                      <td>{quote ? formatMoney(afterCredit(quote.premium)!) : '—'}</td>
+                      <td>{quote ? formatMoney(afterCredit(quote.premium)!) : 'None filed'}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import type { Locale } from '@/lib/i18n/locales';
 import { wageUi } from '@/lib/salary/wage-ui';
 
@@ -14,10 +14,10 @@ const LINKS_EN = [
 ] as const;
 
 const LINKS_ES = [
-  { href: '/money/paycheck', label: 'Calculadora de cheque', note: 'Neto semanal, quincenal o mensual' },
+  { href: '/money/paycheck', label: 'Calculadora de nómina neta', note: 'Neto semanal, quincenal o mensual' },
   { href: '/money/salary-after-tax', label: 'Sueldo después de impuestos', note: 'Federal, FICA y estatal sobre un sueldo anual' },
-  { href: '/money/hourly-to-salary', label: 'De hora a sueldo anual', note: 'Bruto semanal, mensual y anual desde un salario por hora' },
-  { href: '/money/cost-of-living', label: 'Costo de vida', note: 'Renta, comida y precios locales por lugar' },
+  { href: '/money/hourly-to-salary', label: 'De salario por hora a sueldo anual', note: 'Bruto semanal, mensual y anual desde un salario por hora' },
+  { href: '/money/cost-of-living', label: 'Costo de vida', note: 'Renta, alimentos y nivel de precios por lugar' },
 ] as const;
 
 export function SalaryNextSteps({ locale = 'en-US' }: { locale?: Locale }) {
@@ -26,14 +26,17 @@ export function SalaryNextSteps({ locale = 'en-US' }: { locale?: Locale }) {
     <section className="engine-notes" aria-labelledby="salary-next-title">
       <h2 id="salary-next-title">{wageUi('nextStepsTitle', locale)}</h2>
       <p className="engine-notes-lede">{wageUi('nextStepsLede', locale)}</p>
-      <ul className="salary-next-steps">
+      <div className="salary-next-steps-grid">
         {links.map((link) => (
-          <li key={link.href}>
-            <Link href={link.href}>{link.label}</Link>
-            <small>{link.note}</small>
-          </li>
+          <Link href={link.href} className="salary-step-card" key={link.href}>
+            <div className="salary-step-card-content">
+              <strong className="salary-step-title">{link.label}</strong>
+              <span className="salary-step-note">{link.note}</span>
+            </div>
+            <span className="salary-step-arrow" aria-hidden="true">→</span>
+          </Link>
         ))}
-      </ul>
+      </div>
     </section>
   );
 }

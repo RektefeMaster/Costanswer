@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { addBusinessDays, calculateBusinessDaysBetween, parseDateOnly } from '@/lib/calculations/business-days';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -8,6 +10,8 @@ import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultD
 type Mode = 'between' | 'add';
 
 export function BusinessDaysCalculator({ initialDate }: { initialDate: string }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [mode, setMode] = useState<Mode>('between');
   const [startDate, setStartDate] = useState(initialDate);
   const [endDate, setEndDate] = useState(() => {
@@ -48,23 +52,23 @@ export function BusinessDaysCalculator({ initialDate }: { initialDate: string })
 
   return (
     <CalculatorPanel
-      title="Workdays"
+      title={t("Workdays")}
       intro="Count workdays between two dates, or add workdays to a date. Federal holidays are optional."
       toolId="business-days"
       category="everyday"
       calculationState={calculation.result ? 'complete' : 'invalid'}
       calculationSignature={JSON.stringify([mode, startDate, endDate, daysToAdd, includeStart, includeEnd, excludeFederalHolidays])}
     >
-      <div className="mode-tabs" role="group" aria-label="Calculation mode">
+      <div className="mode-tabs" role="group" aria-label={t("Calculation mode")}>
         <button type="button" aria-pressed={mode === 'between'} className={mode === 'between' ? 'active' : ''} onClick={() => setMode('between')}>Between two dates</button>
         <button type="button" aria-pressed={mode === 'add'} className={mode === 'add' ? 'active' : ''} onClick={() => setMode('add')}>Add or subtract days</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Start date" htmlFor="business-start"><span className="input-shell"><input id="business-start" type="date" min="1900-01-01" max="2200-12-31" value={startDate} onChange={(event) => { dateWasEdited.current = true; setStartDate(event.target.value); }} /></span></Field>
+        <Field label={t("Start date")} htmlFor="business-start"><span className="input-shell"><input id="business-start" type="date" min="1900-01-01" max="2200-12-31" value={startDate} onChange={(event) => { dateWasEdited.current = true; setStartDate(event.target.value); }} /></span></Field>
         {mode === 'between' ? (
-          <Field label="End date" htmlFor="business-end"><span className="input-shell"><input id="business-end" type="date" min="1900-01-01" max="2200-12-31" value={endDate} onChange={(event) => { dateWasEdited.current = true; setEndDate(event.target.value); }} /></span></Field>
+          <Field label={t("End date")} htmlFor="business-end"><span className="input-shell"><input id="business-end" type="date" min="1900-01-01" max="2200-12-31" value={endDate} onChange={(event) => { dateWasEdited.current = true; setEndDate(event.target.value); }} /></span></Field>
         ) : (
-          <Field label="Business days to add" htmlFor="business-add" hint="Use a negative number to move backward"><InputShell suffix="days"><input id="business-add" type="number" min="-10000" max="10000" step="1" value={daysToAdd} onChange={(event) => setDaysToAdd(event.target.value)} /></InputShell></Field>
+          <Field label={t("Business days to add")} htmlFor="business-add" hint="Use a negative number to move backward"><InputShell suffix={t("days")}><input id="business-add" type="number" min="-10000" max="10000" step="1" value={daysToAdd} onChange={(event) => setDaysToAdd(event.target.value)} /></InputShell></Field>
         )}
       </div>
       <div className="check-row">
@@ -77,7 +81,7 @@ export function BusinessDaysCalculator({ initialDate }: { initialDate: string })
       {calculation.error && <InlineError message={calculation.error} />}
       {betweenResult && (
         <div className="calculation-output">
-          <PrimaryResult label="Business days" value={Math.abs(betweenResult.value.businessDays).toLocaleString('en-US')} note={betweenResult.value.direction === 'backward' ? 'The end date is before the start date' : 'Using the holiday and date choices above'} tone="rose" />
+          <PrimaryResult label={t("Business days")} value={Math.abs(betweenResult.value.businessDays).toLocaleString('en-US')} note={betweenResult.value.direction === 'backward' ? 'The end date is before the start date' : 'Using the holiday and date choices above'} tone="rose" />
           <StatGrid items={[
             { label: 'Calendar days', value: `${betweenResult.value.calendarDays}`, note: 'Elapsed days' },
             { label: 'Weekends skipped', value: `${betweenResult.value.weekendDays}`, note: 'Saturday and Sunday' },
@@ -88,7 +92,7 @@ export function BusinessDaysCalculator({ initialDate }: { initialDate: string })
       )}
       {addResult && (
         <div className="calculation-output">
-          <PrimaryResult label="Resulting date" value={readableDate} note={`${daysToAdd} business days from ${startDate}`} tone="rose" />
+          <PrimaryResult label={t("Resulting date")} value={readableDate} note={`${daysToAdd} business days from ${startDate}`} tone="rose" />
           <StatGrid items={[
             { label: 'ISO date', value: addResult.value.resultDate },
             { label: 'Calendar days moved', value: `${addResult.value.calendarDaysMoved}` },

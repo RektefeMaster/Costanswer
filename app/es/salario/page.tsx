@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SalaryFeatured, SalaryGroupCatalog } from '@/components/salary/SalaryCatalog';
 import { SalaryDirectory } from '@/components/salary/SalaryDirectory';
@@ -34,7 +34,7 @@ export default function SpanishSalaryHubPage() {
     <>
       <JsonLd data={breadcrumbJsonLd(breadcrumbs)} />
       <SiteHeader />
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1} className="salary-page">
         <header className="tool-hero accent-mint salary-hero">
           <nav className="breadcrumbs" aria-label="Miga de pan">
             {breadcrumbs.map((item, index) => (
@@ -49,7 +49,7 @@ export default function SpanishSalaryHubPage() {
           <div className="tool-hero-grid">
             <div>
               <p className="eyebrow"><span /> {`BLS ${oewsIndex.referenceLabel} · ${formatNumberLocale('es-US', hub.occupationCount)} ocupaciones`}</p>
-              <h1>Sueldos en EE. UU. por ocupación</h1>
+              <h1>Salarios por ocupación</h1>
             </div>
             <div className="tool-intro">
               <p className="direct-answer">
@@ -57,6 +57,11 @@ export default function SpanishSalaryHubPage() {
                   ? 'Busque un trabajo, o salte a un campo. Cada página muestra la mediana, el rango y lo que queda después de impuestos en cada estado.'
                   : `El trabajo mediano en Estados Unidos paga ${formatMoneyLocale('es-US', hub.nationalMedian, 0)} al año. Busque un título para ver la mediana, los percentiles y el neto en cada estado.`}
               </p>
+              <dl className="salary-hero-stats">
+                <div><dt>Mediana de EE. UU.</dt><dd>{hub.nationalMedian == null ? 'Sin datos' : formatMoneyLocale('es-US', hub.nationalMedian, 0)}</dd></div>
+                <div><dt>Ocupaciones</dt><dd>{formatNumberLocale('es-US', hub.occupationCount)}</dd></div>
+                <div><dt>Estados y D. C.</dt><dd>{formatNumberLocale('es-US', hub.stateCount)}</dd></div>
+              </dl>
               <p className="salary-hero-alt"><Link href={salaryStateIndexPathEs()}>Ver por estado →</Link></p>
             </div>
           </div>

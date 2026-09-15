@@ -6,7 +6,7 @@ import { SQUARE_FOOTAGE_ENGINE_ID } from '../../calculations/education/formulas'
 export const tool: ToolDefinition = {
   id: 'square-footage',
   path: '/home/square-footage',
-  title: 'Square Footage Calculator',
+  title: 'How Many Square Feet Is This Space?',
   shortTitle: 'Square footage',
   description: 'Add rectangular rooms or spaces and get total area in square feet, with square meters from the shared conversion engine.',
   category: 'home',

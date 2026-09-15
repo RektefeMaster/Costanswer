@@ -5,7 +5,7 @@ import { formulaWithDefault } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'electricity-cost',
   path: '/home/electricity-cost',
-  title: 'Electricity Cost Calculator by State',
+  title: 'How Much Is My Electric Bill by State?',
   shortTitle: 'Electricity cost',
   description: 'A monthly electric bill from your kWh and the EIA average for your state. You can type the rate from your bill instead.',
   category: 'home',

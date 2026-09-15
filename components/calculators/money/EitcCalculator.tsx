@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateEitc, type EitcValue } from '@/lib/calculations/tax/eitc';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -37,6 +39,8 @@ function phaseLabel(phase: EitcValue['phase']): string {
 }
 
 export function EitcCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [earnedIncome, setEarnedIncome] = useState('20000');
   const [adjustedGrossIncome, setAdjustedGrossIncome] = useState('20000');
@@ -81,17 +85,17 @@ export function EitcCalculator() {
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Earned income" htmlFor="eitc-earned" hint="Wages plus net self-employment earnings">
+        <Field label={t("Earned income")} htmlFor="eitc-earned" hint="Wages plus net self-employment earnings">
           <InputShell prefix="$">
             <input id="eitc-earned" type="number" min="0" step="500" inputMode="decimal" value={earnedIncome} onChange={(event) => setEarnedIncome(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Adjusted gross income" htmlFor="eitc-agi">
+        <Field label={t("Adjusted gross income")} htmlFor="eitc-agi">
           <InputShell prefix="$">
             <input id="eitc-agi" type="number" min="0" step="500" inputMode="decimal" value={adjustedGrossIncome} onChange={(event) => setAdjustedGrossIncome(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Qualifying children" htmlFor="eitc-children" hint="The credit stops rising after three">
+        <Field label={t("Qualifying children")} htmlFor="eitc-children" hint="The credit stops rising after three">
           <span className="input-shell select-shell">
             <select id="eitc-children" value={qualifyingChildren} onChange={(event) => setQualifyingChildren(event.target.value)}>
               <option value="0">None</option>
@@ -101,7 +105,7 @@ export function EitcCalculator() {
             </select>
           </span>
         </Field>
-        <Field label="Filing status" htmlFor="eitc-filing">
+        <Field label={t("Filing status")} htmlFor="eitc-filing">
           <span className="input-shell select-shell">
             <select id="eitc-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -109,8 +113,8 @@ export function EitcCalculator() {
           </span>
         </Field>
       </div>
-      <AdvancedSection id="investment-income" title="Investment income">
-        <Field label="Investment income" htmlFor="eitc-investment" hint={`The credit is $0 above ${money(snapshot.federalCredits.earnedIncomeCredit.investmentIncomeLimit)}`}>
+      <AdvancedSection id="investment-income" title={t("Investment income")}>
+        <Field label={t("Investment income")} htmlFor="eitc-investment" hint={`The credit is $0 above ${money(snapshot.federalCredits.earnedIncomeCredit.investmentIncomeLimit)}`}>
           <InputShell prefix="$">
             <input id="eitc-investment" type="number" min="0" step="100" inputMode="decimal" value={investmentIncome} onChange={(event) => setInvestmentIncome(event.target.value)} />
           </InputShell>
@@ -140,7 +144,7 @@ export function EitcCalculator() {
             ]}
           />
           <CalculationReceipt
-            title={`Earned income credit — ${money(Number(earnedIncome))} earned, ${snapshot.taxYear}`}
+            title={`Earned income credit: ${money(Number(earnedIncome))} earned, ${snapshot.taxYear}`}
             headline={{ label: 'Earned income credit', value: money(value.credit) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateBmi } from '@/lib/calculations/health';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -12,6 +14,8 @@ import {
 import { CalculatorPanel, Field, InlineError, InputShell, PrimaryResult, ResultDetails, StatGrid } from '../CalculatorUI';
 
 export function BmiCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [unitSystem, setUnitSystem] = useState<'metric' | 'us'>('us');
   const [weight, setWeight] = useState('154');
   const [height, setHeight] = useState('69');
@@ -42,17 +46,17 @@ export function BmiCalculator() {
       calculationState={calculation.result ? 'complete' : 'invalid'}
       calculationSignature={JSON.stringify([unitSystem, weight, height])}
     >
-      <div className="mode-tabs" role="group" aria-label="Unit system">
+      <div className="mode-tabs" role="group" aria-label={t("Unit system")}>
         <button type="button" aria-pressed={unitSystem === 'us'} className={unitSystem === 'us' ? 'active' : ''} onClick={() => switchUnits('us')}>US</button>
         <button type="button" aria-pressed={unitSystem === 'metric'} className={unitSystem === 'metric' ? 'active' : ''} onClick={() => switchUnits('metric')}>Metric</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Weight" htmlFor="bmi-weight">
+        <Field label={t("Weight")} htmlFor="bmi-weight">
           <InputShell suffix={unitSystem === 'metric' ? 'kg' : 'lb'}>
             <input id="bmi-weight" type="number" min={weightBounds.min} max={weightBounds.max} step="0.1" inputMode="decimal" value={weight} onChange={(event) => setWeight(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Height" htmlFor="bmi-height">
+        <Field label={t("Height")} htmlFor="bmi-height">
           <InputShell suffix={unitSystem === 'metric' ? 'cm' : 'in'}>
             <input id="bmi-height" type="number" min={heightBounds.min} max={heightBounds.max} step="0.1" inputMode="decimal" value={height} onChange={(event) => setHeight(event.target.value)} />
           </InputShell>
@@ -61,7 +65,7 @@ export function BmiCalculator() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Estimated BMI" value={calculation.result.value.bmi.toFixed(2)} note="Adult formula. Not a diagnosis." tone="rose" />
+          <PrimaryResult label={t("Estimated BMI")} value={calculation.result.value.bmi.toFixed(2)} note="Adult formula. Not a diagnosis." tone="rose" />
           <StatGrid items={[
             { label: 'Weight', value: `${calculation.result.value.weightKg.toFixed(1)} kg` },
             { label: 'Height', value: `${calculation.result.value.heightMeters.toFixed(2)} m` },

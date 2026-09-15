@@ -3,10 +3,10 @@ import { ToolPage } from '@/components/tool/ToolPage';
 import { taxSnapshot } from '@/lib/data/tax/snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('effective-tax-rate');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const taxSource = datasetSourceDisplay({
   datasetId: 'us-tax',
@@ -29,7 +29,7 @@ export default function EffectiveTaxRatePage() {
       methodology={[
         {
           title: 'Effective rate is measured against gross pay',
-          body: `Total tax divided by gross pay, not by taxable income. Dividing by taxable income gives a higher number — the ${money(singleDeduction)} standard deduction has already come out of it — and it is not what people mean when they ask what share of their pay goes to tax.`,
+          body: `Total tax divided by gross pay, not by taxable income. Dividing by taxable income gives a higher number (the ${money(singleDeduction)} standard deduction has already come out of it), and it is not what people mean when they ask what share of their pay goes to tax.`,
         },
         {
           title: 'The bracket is a rate on your last dollar',
@@ -37,7 +37,7 @@ export default function EffectiveTaxRatePage() {
         },
         {
           title: 'The next $1,000 is measured, not assumed',
-          body: 'The rate on additional pay is found by running the entire calculation again a thousand dollars higher and taking the difference. That is slower than reading a bracket off a table, and it is the most reliable general method over a combined federal, payroll and state engine — states that phase a credit out, subtract federal tax, or switch schedules have no single published marginal rate to read. It is an effective marginal rate across that $1,000, not an instantaneous one: where the interval crosses a boundary such as the Social Security wage base, the figure is the weighted average of both sides. That is the right answer to what happens to your next $1,000, and it is deliberately not labelled a statutory marginal rate.',
+          body: 'The rate on additional pay is found by running the entire calculation again a thousand dollars higher and taking the difference. That is slower than reading a bracket off a table, and it is the most reliable general method over a combined federal, payroll, and state engine; states that phase a credit out, subtract federal tax, or switch schedules have no single published marginal rate to read. It is an effective marginal rate across that $1,000, not an instantaneous one: where the interval crosses a boundary such as the Social Security wage base, the figure is the weighted average of both sides. That is the right answer to what happens to your next $1,000, and it is deliberately not labelled a statutory marginal rate.',
         },
         {
           title: 'What is left out',

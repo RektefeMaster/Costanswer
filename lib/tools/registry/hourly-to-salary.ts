@@ -5,7 +5,7 @@ import { formulaOnly } from '../data-manifest';
 export const tool: ToolDefinition = {
   id: 'hourly-to-salary',
   path: '/money/hourly-to-salary',
-  title: 'Hourly to Salary Calculator',
+  title: 'How Much Is That Hourly Wage a Year?',
   shortTitle: 'Hourly to salary',
   description: 'Turn an hourly wage into weekly, monthly, and yearly pay before taxes. Overtime has its own line.',
   category: 'money',

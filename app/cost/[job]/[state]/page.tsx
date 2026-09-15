@@ -1,12 +1,12 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { notFound } from 'next/navigation';
 import { JobEstimator } from '@/components/job/JobEstimator';
 import { CostPage } from '@/components/job/CostPage';
 import { formatMoney } from '@/lib/calculations/contracts';
 import { geographySnapshot } from '@/lib/data/geography-snapshot';
 import { JOB_CATALOG, isJobId, jobPath } from '@/lib/job/catalog';
-import { jobCostPageTitle, jobCostQuestions } from '@/lib/job/content';
+import { jobCostPageTitle, jobCostQuestions, jobRelatedTools } from '@/lib/job/content';
 import { calculateJobEstimate } from '@/lib/job/estimate';
 import { costPageRobots } from '@/lib/job/publication';
 import { toJobEstimateInput } from '@/lib/job/scope';
@@ -126,6 +126,12 @@ export default async function JobCostInStatePage({ params }: { params: Promise<P
         <Link href={jobPath(job)}>National {meta.shortTitle.toLowerCase()} page</Link>
         {' · '}
         <Link href="/cost/check-quote">Check a contractor quote</Link>
+        {jobRelatedTools(job).map((tool) => (
+          <span key={tool.href}>
+            {' · '}
+            <Link href={tool.href}>{tool.label}</Link>
+          </span>
+        ))}
       </p>
       {peerStates.length > 1 && (
         <section className="related-section" aria-labelledby="peer-states-title">

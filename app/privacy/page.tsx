@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { InfoPage } from '@/components/site/InfoPage';
 import { ga4MeasurementId } from '@/lib/analytics-provider';
 import { integrationConfig, siteContactEmail } from '@/lib/integration-config';
@@ -73,7 +73,7 @@ export default function PrivacyPage() {
           The measurement runs through {analyticsProviderName}, acting for us. What it
           receives is the page you opened, the address you arrived from, an approximate
           location from your IP address, your device and browser, and the short list of
-          events named above. What you type into a calculator is not sent — the arithmetic
+          events named above. What you type into a calculator is not sent: the arithmetic
           happens in your browser and the figures never leave it. The privacy choices below
           also govern the advertising signals sent with that measurement.
         </p>
@@ -107,11 +107,11 @@ export default function PrivacyPage() {
       <p>
         We send one request to one partner. We do not sell the same request to several networks. We do
         not send your details anywhere if the check above found nobody, and we do not use them to market
-        anything of our own — CostAnswer does not cold call, text or email you.
+        anything of our own; CostAnswer does not cold call, text or email you.
       </p>
       <p>
         Your contact details are stored apart from everything else and are never included in analytics.
-        What analytics sees is that a request happened, in which category and which state — never who
+        What analytics sees is that a request happened, in which category and which state, never who
         you are, never your phone number, never your ZIP code.
       </p>
 

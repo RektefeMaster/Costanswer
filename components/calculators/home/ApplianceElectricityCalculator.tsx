@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import type { StateCode } from '@/lib/location/states';
 import { calculateApplianceElectricity } from '@/lib/calculations/appliance-electricity';
@@ -39,6 +41,8 @@ export function ApplianceElectricityCalculator({
   snapshotId: string;
   observationPeriod: string;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [exampleId, setExampleId] = useState('air-conditioner');
   const [watts, setWatts] = useState('1500');
   const [hoursPerDay, setHoursPerDay] = useState('8');
@@ -132,23 +136,23 @@ export function ApplianceElectricityCalculator({
           : 'Wattage is the number you entered. It is not a measured rating for a specific model.'}
       </p>
       <div className="calc-form-grid">
-        <Field label="Wattage" htmlFor="appliance-watts" hint="From a label, spec sheet, or the example above">
+        <Field label={t("Wattage")} htmlFor="appliance-watts" hint="From a label, spec sheet, or the example above">
           <InputShell suffix="W">
             <input id="appliance-watts" type="number" min="0" step="10" inputMode="decimal" value={watts} onChange={(event) => editWatts(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Hours used per day" htmlFor="appliance-hours">
-          <InputShell suffix="hours">
+        <Field label={t("Hours used per day")} htmlFor="appliance-hours">
+          <InputShell suffix={t("hours")}>
             <input id="appliance-hours" type="number" min="0" max="24" step="0.1" inputMode="decimal" value={hoursPerDay} onChange={(event) => { setExampleId(''); setHoursPerDay(event.target.value); }} />
           </InputShell>
         </Field>
-        <Field label="Days used per week" htmlFor="appliance-days">
-          <InputShell suffix="days">
+        <Field label={t("Days used per week")} htmlFor="appliance-days">
+          <InputShell suffix={t("days")}>
             <input id="appliance-days" type="number" min="0" max="7" step="1" inputMode="decimal" value={daysPerWeek} onChange={(event) => { setExampleId(''); setDaysPerWeek(event.target.value); }} />
           </InputShell>
         </Field>
         <Field
-          label="Running share of those hours"
+          label={t("Running share of those hours")}
           htmlFor="appliance-duty"
           hint="Fridges, freezers, and air conditioners cycle on and off. 100% means it draws full power the whole time."
         >
@@ -159,11 +163,11 @@ export function ApplianceElectricityCalculator({
       </div>
       <AdvancedSection
         id="rate"
-        title="Your own electricity rate"
+        title={t("Your own electricity rate")}
         hint="The state average is used unless you enter the rate from your own bill."
       >
         <div className="calc-form-grid">
-          <Field label="State" htmlFor="appliance-state">
+          <Field label={t("State")} htmlFor="appliance-state">
             <span className="input-shell select-shell">
               <select id="appliance-state" value={stateCode} onChange={(event) => { setStateCode(event.target.value as StateCode); setCustomRate(''); }}>
                 {rates.map((rate) => <option value={rate.stateCode} key={rate.stateCode}>{rate.stateName}</option>)}
@@ -181,7 +185,7 @@ export function ApplianceElectricityCalculator({
       {calculation.result && (
         <div className="calculation-output">
           <PrimaryResult
-            label="Estimated monthly electricity cost"
+            label={t("Estimated monthly electricity cost")}
             value={money(calculation.result.value.monthlyCost)}
             note={`${kwh(calculation.result.value.kwhPerMonth)} at ${Number(effectiveRate).toFixed(2)}¢/kWh`}
             tone="amber"

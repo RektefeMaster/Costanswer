@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateEffectiveTaxRate } from '@/lib/calculations/tax/effective-rate';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -26,6 +28,8 @@ function money(value: number) {
 const percent = (value: number) => `${value.toFixed(2)}%`;
 
 export function EffectiveTaxRateCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [annualGrossSalary, setAnnualGrossSalary] = useState('100000');
   const [stateCode, setStateCode] = useState<StateCode>('TX');
@@ -76,7 +80,7 @@ export function EffectiveTaxRateCalculator() {
   return (
     <CalculatorPanel
       title="Your effective tax rate"
-      intro="The share of your pay that actually goes to tax — and why it is lower than the bracket you are in."
+      intro="The share of your pay that actually goes to tax, and why it is lower than the bracket you are in."
       toolId="effective-tax-rate"
       category="money"
       calculationState={calculation.result ? 'complete' : 'invalid'}
@@ -90,19 +94,19 @@ export function EffectiveTaxRateCalculator() {
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Annual gross salary" htmlFor="etr-gross">
+        <Field label={t("Annual gross salary")} htmlFor="etr-gross">
           <InputShell prefix="$">
             <input id="etr-gross" type="number" min="0" step="1000" inputMode="decimal" value={annualGrossSalary} onChange={(event) => setAnnualGrossSalary(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="State" htmlFor="etr-state">
+        <Field label={t("State")} htmlFor="etr-state">
           <span className="input-shell select-shell">
             <select id="etr-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>
               {STATE_CODES.map((code) => <option value={code} key={code}>{getStateName(code)}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Filing status" htmlFor="etr-filing">
+        <Field label={t("Filing status")} htmlFor="etr-filing">
           <span className="input-shell select-shell">
             <select id="etr-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -116,12 +120,12 @@ export function EffectiveTaxRateCalculator() {
         hint="Defaults cover the common case: no dependents, the current tax year."
       >
         <div className="calc-form-grid">
-          <Field label="Dependents" htmlFor="etr-dependents" hint={dependentsNote(policy) ?? undefined}>
+          <Field label={t("Dependents")} htmlFor="etr-dependents" hint={dependentsNote(policy) ?? undefined}>
             <InputShell>
               <input id="etr-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Tax year" htmlFor="etr-year">
+          <Field label={t("Tax year")} htmlFor="etr-year">
             <span className="input-shell select-shell">
               <select id="etr-year" value={taxYear} onChange={(event) => setTaxYear(event.target.value)}>
                 <option value={snapshot.taxYear}>{snapshot.taxYear}</option>
@@ -136,7 +140,7 @@ export function EffectiveTaxRateCalculator() {
           <PrimaryResult
             label="Effective tax rate"
             value={percent(value.effectiveTotalRate)}
-            note={`${money(value.totalTax)} of ${money(value.grossAnnual)} — federal, FICA${value.stateTaxStatus === 'unsupported' ? '' : ' and state'}`}
+            note={`${money(value.totalTax)} of ${money(value.grossAnnual)} (federal, FICA${value.stateTaxStatus === 'unsupported' ? '' : ' and state'})`}
             tone={value.stateTaxStatus === 'unsupported' ? 'amber' : 'mint'}
           />
           <StatGrid items={[
@@ -163,7 +167,7 @@ export function EffectiveTaxRateCalculator() {
             reasons={reasons as [string, ...string[]]}
           />
           <CalculationReceipt
-            title={`Effective tax rate — ${money(value.grossAnnual)} in ${getStateName(stateCode)}, ${taxYear}`}
+            title={`Effective tax rate: ${money(value.grossAnnual)} in ${getStateName(stateCode)}, ${taxYear}`}
             headline={{ label: 'Effective tax rate', value: percent(value.effectiveTotalRate) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

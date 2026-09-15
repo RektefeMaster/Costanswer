@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculatePaycheck } from '@/lib/calculations/paycheck';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -23,6 +25,8 @@ const FREQUENCY_LABELS: Record<PayFrequency, string> = {
 };
 
 export function PaycheckCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [payFrequency, setPayFrequency] = useState<PayFrequency>('biweekly');
   const [amount, setAmount] = useState('3846.15');
@@ -57,7 +61,7 @@ export function PaycheckCalculator() {
 
   return (
     <CalculatorPanel
-      title="Estimated net paycheck"
+      title={t("Estimated net paycheck")}
       intro="Annual estimated tax is split across pay periods. This is not employer payroll withholding."
       toolId="paycheck"
       category="money"
@@ -68,10 +72,10 @@ export function PaycheckCalculator() {
         <span>ASSUMPTION</span>
         <p>
           <strong>Annualized tax liability, not IRS withholding tables</strong>
-          <small>Tax year {taxYear} · Federal source IRS · State source shown in the result</small>
+          <small>{t("Tax year")} {taxYear} · Federal source IRS · State source shown in the result</small>
         </p>
       </div>
-      <div className="mode-tabs" role="group" aria-label="Pay frequency">
+      <div className="mode-tabs" role="group" aria-label={t("Pay frequency")}>
         {PAY_FREQUENCIES.map((frequency) => (
           <button
             key={frequency}
@@ -87,18 +91,18 @@ export function PaycheckCalculator() {
       <div className="calc-form-grid">
         {payFrequency === 'hourly' ? (
           <>
-            <Field label="Hourly rate" htmlFor="paycheck-hourly-rate">
-              <InputShell prefix="$" suffix="/ hour">
+            <Field label={t("Hourly rate")} htmlFor="paycheck-hourly-rate">
+              <InputShell prefix="$" suffix={t("/ hour")}>
                 <input id="paycheck-hourly-rate" type="number" min="0.01" step="0.25" inputMode="decimal" value={hourlyRate} onChange={(event) => setHourlyRate(event.target.value)} />
               </InputShell>
             </Field>
-            <Field label="Hours per week" htmlFor="paycheck-hours">
-              <InputShell suffix="hours">
+            <Field label={t("Hours per week")} htmlFor="paycheck-hours">
+              <InputShell suffix={t("hours")}>
                 <input id="paycheck-hours" type="number" min="0" max="168" step="0.5" inputMode="decimal" value={hoursPerWeek} onChange={(event) => setHoursPerWeek(event.target.value)} />
               </InputShell>
             </Field>
-            <Field label="Paid weeks" htmlFor="paycheck-weeks">
-              <InputShell suffix="/ year">
+            <Field label={t("Paid weeks")} htmlFor="paycheck-weeks">
+              <InputShell suffix={t("/ year")}>
                 <input id="paycheck-weeks" type="number" min="1" max="53" step="1" inputMode="numeric" value={weeksPerYear} onChange={(event) => setWeeksPerYear(event.target.value)} />
               </InputShell>
             </Field>
@@ -110,7 +114,7 @@ export function PaycheckCalculator() {
             </InputShell>
           </Field>
         )}
-        <Field label="State" htmlFor="paycheck-state">
+        <Field label={t("State")} htmlFor="paycheck-state">
           <span className="input-shell select-shell">
             <select id="paycheck-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>
               {STATE_CODES.map((code) => <option value={code} key={code}>{getStateName(code)}</option>)}
@@ -124,19 +128,19 @@ export function PaycheckCalculator() {
         hint="Defaults cover the common case: single, no dependents, the current year."
       >
         <div className="calc-form-grid">
-          <Field label="Filing status" htmlFor="paycheck-filing">
+          <Field label={t("Filing status")} htmlFor="paycheck-filing">
             <span className="input-shell select-shell">
               <select id="paycheck-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
                 {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
               </select>
             </span>
           </Field>
-          <Field label="Dependents" htmlFor="paycheck-dependents" hint={dependentsNote(snapshot.states.find((row) => row.stateCode === stateCode)) ?? undefined}>
+          <Field label={t("Dependents")} htmlFor="paycheck-dependents" hint={dependentsNote(snapshot.states.find((row) => row.stateCode === stateCode)) ?? undefined}>
             <InputShell>
               <input id="paycheck-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Tax year" htmlFor="paycheck-year">
+          <Field label={t("Tax year")} htmlFor="paycheck-year">
             <span className="input-shell select-shell">
               <select id="paycheck-year" value={taxYear} onChange={(event) => setTaxYear(event.target.value)}>
                 <option value={snapshot.taxYear}>{snapshot.taxYear}</option>

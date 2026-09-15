@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { categories, CATEGORY_IDS, getTool } from '@/lib/tool-registry';
@@ -49,7 +49,7 @@ export default function NotFound() {
           <div className="info-lede-block">
             <p className="info-lede">
               The address you followed does not match a calculator, a topic, a job or an
-              occupation on this site. Nothing is broken — the page simply does not exist.
+              occupation on this site. Nothing is broken: the page simply does not exist.
             </p>
           </div>
         </header>
@@ -88,7 +88,7 @@ export default function NotFound() {
 
           <p>
             If a link on this site sent you here, that is a defect worth
-            reporting — <Link href="/contact">tell us where it was</Link>.
+            reporting: <Link href="/contact">tell us where it was</Link>.
           </p>
         </article>
       </main>

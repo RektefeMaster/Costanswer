@@ -189,7 +189,7 @@ export function MonetizationDashboard() {
                   <td>{provider.displayName}</td>
                   <td>{provider.status}</td>
                   <td>{provider.credentialsPresent ? 'present' : 'missing'}</td>
-                  <td>{provider.outstandingDependency ?? '—'}</td>
+                  <td>{provider.outstandingDependency ?? 'None'}</td>
                 </tr>
               );
             })}
@@ -213,7 +213,7 @@ export function MonetizationDashboard() {
                     <td>{failure.providerId}</td>
                     <td>{failure.status}</td>
                     <td>{failure.attemptCount}</td>
-                    <td>{failure.failureReason ?? '—'}</td>
+                    <td>{failure.failureReason ?? 'None'}</td>
                   </tr>
                 ))}
               </tbody>
@@ -228,7 +228,7 @@ export function MonetizationDashboard() {
             <li key={`${change.createdAt}-${index}`}>
               <time>{change.createdAt.slice(0, 16).replace('T', ' ')}</time>{' '}
               <strong>{change.actor}</strong> set {change.entityType}/{change.entityId}{' '}
-              <code>{change.field}</code> to <code>{change.newValue ?? '—'}</code>
+              <code>{change.field}</code> to <code>{change.newValue ?? 'None'}</code>
             </li>
           ))}
         </ul>
@@ -274,7 +274,7 @@ function Funnel({ title, steps }: { title: string; steps: FunnelStep[] }) {
             <b>{step.count.toLocaleString('en-US')}</b>
             {/* A rate with a zero denominator is unknown, not zero. Printing 0%
                 makes an unmeasured step look like a broken one. */}
-            <span>{step.rate === null ? '—' : `${(step.rate * 100).toFixed(1)}%`}</span>
+            <span>{step.rate === null ? 'N/A' : `${(step.rate * 100).toFixed(1)}%`}</span>
           </li>
         ))}
       </ol>

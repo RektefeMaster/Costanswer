@@ -1,4 +1,5 @@
 import { tools } from '@/lib/tool-registry';
+import type { Locale } from '@/lib/i18n/locales';
 import { EDUCATION_SHOPPING_FOOD_EDITORIAL } from './education-shopping-food';
 import { AUTO_COVERAGE_EDITORIAL } from './auto-coverage';
 import { EVERYDAY_EDITORIAL } from './everyday';
@@ -12,6 +13,7 @@ import { MEDICARE_EDITORIAL } from './medicare';
 import { PAY_EDITORIAL } from './pay';
 import type { ToolEditorial } from './types';
 import { WEALTH_EDITORIAL } from './wealth';
+import { EDITORIAL_ES } from './es/editorial-es';
 
 export type { EditorialFaq, EditorialGlossaryTerm, EditorialSection, ToolEditorial } from './types';
 
@@ -31,6 +33,7 @@ const ALL_EDITORIAL: ToolEditorial[] = [
 ];
 
 const editorialById = new Map(ALL_EDITORIAL.map((entry) => [entry.toolId, entry]));
+const editorialEsById = new Map(EDITORIAL_ES.map((entry) => [entry.toolId, entry]));
 
 function assertEditorialCoverage(): void {
   if (editorialById.size !== ALL_EDITORIAL.length) {
@@ -50,12 +53,17 @@ function assertEditorialCoverage(): void {
 
 assertEditorialCoverage();
 
-export function getToolEditorial(toolId: string): ToolEditorial {
+export function getToolEditorial(toolId: string, locale?: Locale): ToolEditorial {
+  if (locale === 'es-US') {
+    const es = editorialEsById.get(toolId);
+    if (es) return es;
+  }
   const editorial = editorialById.get(toolId);
   if (!editorial) throw new Error(`Unknown tool editorial: ${toolId}`);
   return editorial;
 }
 
-export function listToolEditorial(): ToolEditorial[] {
-  return tools.map((tool) => getToolEditorial(tool.id));
+export function listToolEditorial(locale?: Locale): ToolEditorial[] {
+  return tools.map((tool) => getToolEditorial(tool.id, locale));
 }
+

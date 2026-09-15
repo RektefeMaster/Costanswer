@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateTip } from '@/lib/calculations/everyday';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -11,6 +13,8 @@ function money(value: number) {
 }
 
 export function TipCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [billSubtotal, setBillSubtotal] = useState('100');
   const [tipPercent, setTipPercent] = useState('20');
   const [people, setPeople] = useState('1');
@@ -27,15 +31,15 @@ export function TipCalculator() {
   return (
     <CalculatorPanel title="Tip and split" intro="Tip on the subtotal, then split the total." toolId="tip" category="everyday" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([billSubtotal, tipPercent, people, taxAmount])}>
       <div className="calc-form-grid">
-        <Field label="Bill subtotal" htmlFor="tip-bill"><InputShell prefix="$"><input id="tip-bill" type="number" min="0" step="1" inputMode="decimal" value={billSubtotal} onChange={(event) => setBillSubtotal(event.target.value)} /></InputShell></Field>
-        <Field label="Tip" htmlFor="tip-percent"><InputShell suffix="%"><input id="tip-percent" type="number" min="0" max="100" step="1" inputMode="decimal" value={tipPercent} onChange={(event) => setTipPercent(event.target.value)} /></InputShell></Field>
-        <Field label="People" htmlFor="tip-people"><InputShell><input id="tip-people" type="number" min="1" max="100" step="1" inputMode="numeric" value={people} onChange={(event) => setPeople(event.target.value)} /></InputShell></Field>
-        <Field label="Tax" htmlFor="tip-tax" hint="Optional, added after tip"><InputShell prefix="$"><input id="tip-tax" type="number" min="0" step="0.01" inputMode="decimal" value={taxAmount} onChange={(event) => setTaxAmount(event.target.value)} /></InputShell></Field>
+        <Field label={t("Bill subtotal")} htmlFor="tip-bill"><InputShell prefix="$"><input id="tip-bill" type="number" min="0" step="1" inputMode="decimal" value={billSubtotal} onChange={(event) => setBillSubtotal(event.target.value)} /></InputShell></Field>
+        <Field label={t("Tip")} htmlFor="tip-percent"><InputShell suffix="%"><input id="tip-percent" type="number" min="0" max="100" step="1" inputMode="decimal" value={tipPercent} onChange={(event) => setTipPercent(event.target.value)} /></InputShell></Field>
+        <Field label={t("People")} htmlFor="tip-people"><InputShell><input id="tip-people" type="number" min="1" max="100" step="1" inputMode="numeric" value={people} onChange={(event) => setPeople(event.target.value)} /></InputShell></Field>
+        <Field label={t("Tax")} htmlFor="tip-tax" hint="Optional, added after tip"><InputShell prefix="$"><input id="tip-tax" type="number" min="0" step="0.01" inputMode="decimal" value={taxAmount} onChange={(event) => setTaxAmount(event.target.value)} /></InputShell></Field>
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Total" value={money(calculation.result.value.total)} note={`${money(calculation.result.value.tipAmount)} tip`} tone="rose" />
+          <PrimaryResult label={t("Total")} value={money(calculation.result.value.total)} note={`${money(calculation.result.value.tipAmount)} tip`} tone="rose" />
           <StatGrid items={[
             { label: 'Tip', value: money(calculation.result.value.tipAmount) },
             { label: 'Each person', value: money(calculation.result.value.perPerson), note: pluralize(calculation.result.value.people, 'person', 'people') },

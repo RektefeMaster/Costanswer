@@ -4,7 +4,9 @@ import { siteConfig } from './site-config';
 import { categories, evaluateToolIndexability, type ToolDefinition } from './tool-registry';
 import type { ToolEditorial } from './tool-content';
 import { hreflangLanguagesFor, localeFromPath } from './i18n/alternates';
+import { localizedHref } from './i18n/routing';
 import type { Locale } from './i18n/locales';
+
 
 /**
  * The social preview card every page carries.
@@ -19,7 +21,7 @@ import type { Locale } from './i18n/locales';
  * the cost of an image pipeline the Worker does not have.
  */
 const SHARE_CARD_URL = '/og.png';
-const SHARE_CARD_ALT = `${siteConfig.name} — practical U.S. calculators with the math shown`;
+const SHARE_CARD_ALT = `${siteConfig.name}: practical U.S. calculators with the math shown`;
 
 function shareCard() {
   return [{ url: SHARE_CARD_URL, width: 1200, height: 630, alt: SHARE_CARD_ALT }];
@@ -87,13 +89,14 @@ export function toolMetadata(tool: ToolDefinition): Metadata {
   };
 }
 
-export function toolJsonLd(tool: ToolDefinition) {
+export function toolJsonLd(tool: ToolDefinition, locale: Locale = 'en-US') {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebApplication',
     name: tool.title,
     description: tool.description,
-    url: new URL(tool.path, siteConfig.origin).toString(),
+    url: new URL(localizedHref(tool.path, locale), siteConfig.origin).toString(),
+    inLanguage: locale,
     applicationCategory: 'UtilitiesApplication',
     operatingSystem: 'Any',
     isAccessibleForFree: true,
@@ -105,14 +108,15 @@ export function toolJsonLd(tool: ToolDefinition) {
   };
 }
 
-export function toolArticleJsonLd(tool: ToolDefinition, content: ToolEditorial) {
+export function toolArticleJsonLd(tool: ToolDefinition, content: ToolEditorial, locale: Locale = 'en-US') {
+  const pageUrl = new URL(localizedHref(tool.path, locale), siteConfig.origin).toString();
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline: content.guide.heading,
     description: content.guide.lede,
-    url: new URL(tool.path, siteConfig.origin).toString(),
-    inLanguage: 'en-US',
+    url: pageUrl,
+    inLanguage: locale,
     author: {
       '@type': 'Organization',
       name: `${siteConfig.name} editorial`,
@@ -126,10 +130,11 @@ export function toolArticleJsonLd(tool: ToolDefinition, content: ToolEditorial) 
     about: {
       '@type': 'WebApplication',
       name: tool.title,
-      url: new URL(tool.path, siteConfig.origin).toString(),
+      url: pageUrl,
     },
   };
 }
+
 
 export function organizationJsonLd() {
   return {

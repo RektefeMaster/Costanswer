@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateHsaContribution } from '@/lib/calculations/hsa';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -8,6 +10,8 @@ import { AdvancedSection, CalculatorPanel, Field, InlineError, InputShell, Prima
 import { money } from '../finance-format';
 
 export function HsaContributionCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [coverage, setCoverage] = useState<HsaCoverage>('self-only');
   const [age, setAge] = useState('40');
   const [monthsEligible, setMonthsEligible] = useState('12');
@@ -67,7 +71,7 @@ export function HsaContributionCalculator() {
           </InputShell>
         </Field>
         <Field label="Months eligible this year" htmlFor="hsa-months" hint={enrolledInMedicare ? 'Count only months before Medicare enrollment (at most 11). Last-month rule cannot apply after that.' : 'Covered by a qualifying HDHP on the first day of the month'}>
-          <InputShell suffix="months">
+          <InputShell suffix={t("months")}>
             <input id="hsa-months" type="number" min="0" max={enrolledInMedicare ? 11 : 12} step="1" inputMode="numeric" value={monthsEligible} onChange={(event) => setMonthsEligible(event.target.value)} disabled={lastMonthRule && !enrolledInMedicare} />
           </InputShell>
         </Field>
@@ -98,8 +102,8 @@ export function HsaContributionCalculator() {
         <Field label="Last-month rule" htmlFor="hsa-last-month" hint={enrolledInMedicare ? 'Not available after Medicare enrollment.' : 'Full annual limit if eligible on 1 December, provided you stay eligible through next 31 December'}>
           <span className="input-shell select-shell">
             <select id="hsa-last-month" value={lastMonthRule && !enrolledInMedicare ? 'yes' : 'no'} onChange={(event) => setLastMonthRule(event.target.value === 'yes')} disabled={enrolledInMedicare}>
-              <option value="no">No — prorate by months</option>
-              <option value="yes">Yes — I am using the last-month rule</option>
+              <option value="no">No: prorate by months</option>
+              <option value="yes">Yes: I am using the last-month rule</option>
             </select>
           </span>
         </Field>

@@ -185,7 +185,7 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Does this include insurance or depreciation?',
         answer: [
-          'No. It is energy cost per the miles, efficiency, and rates you enter — not total cost of ownership.',
+          'No. It is energy cost per the miles, efficiency, and rates you enter, not total cost of ownership.',
         ],
       },
     ],
@@ -225,7 +225,7 @@ export const HOME_CAR_EDITORIAL: ToolEditorial[] = [
       {
         question: 'Does the gas price change when I cross state lines?',
         answer: [
-          'Not automatically. The page uses one price — an EIA average for the geography you pick, or a pump price you type. Split the trip if you want two rates.',
+          'Not automatically. The page uses one price (an EIA average for the geography you pick, or a pump price you type). Split the trip if you want two rates.',
         ],
       },
     ],

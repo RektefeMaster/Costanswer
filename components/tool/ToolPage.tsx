@@ -1,4 +1,7 @@
-import Link from 'next/link';
+import { requestLocale } from '@/lib/i18n/request-locale';
+import { CATEGORY_ES, siteText } from '@/lib/i18n/site-copy';
+import { localizedTool } from '@/lib/i18n/tool-copy';
+import Link from '@/components/i18n/LocalizedLink';
 import type { ReactNode } from 'react';
 import { RelatedToolLink } from '@/components/analytics/RelatedToolLink';
 import { AdSlot } from '@/components/monetization/AdSlot';
@@ -74,18 +77,21 @@ const RESULT_NOTES: Record<ResultNature, { heading: string; body: string }> = {
 };
 
 export async function ToolPage({ tool, children, methodology, sources = [], caution, sourcePeriods }: ToolPageProps) {
-  const category = categories[tool.category];
+  const locale = await requestLocale();
+  const t = (text: string) => siteText(text, locale);
+  tool = localizedTool(tool, locale);
+  const category = locale === 'es-US' ? { ...categories[tool.category], ...CATEGORY_ES[tool.category] } : categories[tool.category];
   /*
    * Built from the tool's own data manifest rather than hand-listed per page,
    * so a tool cannot claim a source it does not read and cannot quietly gain a
    * dependency without the receipt saying so.
    */
   const receipt = calculationReceipt({ manifest: tool.data, periods: sourcePeriods });
-  const related = getRelatedTools(tool);
+  const related = getRelatedTools(tool).map((item) => localizedTool(item, locale));
   // Naming the journey the reader is on gives the related block a reason to
   // exist beyond "more of the same category".
   const clusters = getToolClusters(tool.id);
-  const editorialContent = getToolEditorial(tool.id);
+  const editorialContent = getToolEditorial(tool.id, locale);
   /*
    * Built from the registry entry, not from a live calculation. The interactive
    * island owns the numbers; this page only knows which tool it is and what its
@@ -106,11 +112,11 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
 
   return (
     <>
-      <JsonLd data={[toolJsonLd(tool), toolArticleJsonLd(tool, editorialContent), breadcrumbJsonLd(breadcrumbs)]} />
+      <JsonLd data={[toolJsonLd(tool, locale), toolArticleJsonLd(tool, editorialContent, locale), breadcrumbJsonLd(breadcrumbs)]} />
       <SiteHeader />
       <main id="main-content" tabIndex={-1}>
         <header className={`tool-hero accent-${tool.accent}`}>
-          <nav className="breadcrumbs" aria-label="Breadcrumb">
+          <nav className="breadcrumbs" aria-label={t("Breadcrumb")}>
             {breadcrumbs.map((item, index) => (
               <span key={item.path}>
                 {index > 0 && <b aria-hidden="true">/</b>}
@@ -151,28 +157,28 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
             />
             <AffiliateOffers toolId={tool.id} />
             <AdSlot placement="in-content" pageId={tool.id} />
-            <CalculatorEditorial toolPath={tool.path} content={editorialContent} />
+            <CalculatorEditorial toolPath={tool.path} content={editorialContent} locale={locale} />
             {methodology.length > 0 && (
               <section className="engine-notes" aria-labelledby="engine-notes-title">
-                <h2 id="engine-notes-title">Engine notes</h2>
-                <p className="engine-notes-lede">Rounding, versioning, and omissions that sit beside the guide rather than repeating it.</p>
+                <h2 id="engine-notes-title">{t("Engine notes")}</h2>
+                <p className="engine-notes-lede">{t("Rounding, versioning, and omissions that sit beside the guide rather than repeating it.")}</p>
                 <ul>
                   {methodology.map((item) => (
                     <li key={item.title}>
-                      <strong>{item.title}.</strong>
+                      <strong>{t(item.title)}.</strong>
                       {' '}
-                      {item.body}
+                      {t(item.body)}
                     </li>
                   ))}
                 </ul>
               </section>
             )}
           </div>
-          <aside className="tool-rail" aria-label="Tool information">
+          <aside className="tool-rail" aria-label={t("Tool information")}>
             <div className="rail-card">
-              <p className="rail-kicker">Note</p>
-              <h2>{RESULT_NOTES[tool.resultNature].heading}</h2>
-              <p>{caution ?? RESULT_NOTES[tool.resultNature].body}</p>
+              <p className="rail-kicker">{t("Note")}</p>
+              <h2>{t(RESULT_NOTES[tool.resultNature].heading)}</h2>
+              <p>{t(caution ?? RESULT_NOTES[tool.resultNature].body)}</p>
             </div>
             <AdSlot placement="desktop-rail" pageId={tool.id} />
           </aside>
@@ -180,8 +186,8 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
 
         <section className="receipt-section" aria-labelledby="receipt-title">
           <div>
-            <p className="eyebrow muted"><span /> Calculation receipt</p>
-            <h2 id="receipt-title">What each number here is</h2>
+            <p className="eyebrow muted"><span /> {t("Calculation receipt")}</p>
+            <h2 id="receipt-title">{t("What each number here is")}</h2>
             <p className="receipt-lede">{receiptSummary(tool.data)}</p>
           </div>
           <div className="receipt-list">
@@ -202,23 +208,24 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
             )}
             {tool.data.requiresData && (
               <p className="receipt-fallback">
-                <strong>If a source above is unavailable or out of date:</strong> {tool.data.fallbackBehavior.note}
+                <strong>{t("If a source above is unavailable or out of date:")}</strong> {tool.data.fallbackBehavior.note}
               </p>
             )}
           </div>
         </section>
 
+
         {sources.length > 0 && (
           <section className="sources-section" aria-labelledby="sources-title">
             <div>
-              <p className="eyebrow muted"><span /> Sources</p>
-              <h2 id="sources-title">Where this data comes from</h2>
+              <p className="eyebrow muted"><span /> {t("Sources")}</p>
+              <h2 id="sources-title">{t("Where this data comes from")}</h2>
             </div>
             <div className="source-list">
               {sources.map((source) => (
                 <a href={source.href} key={source.href} target="_blank" rel="noreferrer">
                   <span><strong>{source.name}</strong><small>{source.detail}</small></span>
-                  <span>{source.dateLabel ?? 'View source'} ↗</span>
+                  <span>{source.dateLabel ?? t('View source')} ↗</span>
                 </a>
               ))}
             </div>
@@ -226,8 +233,8 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
         )}
 
         <section className="related-section" aria-labelledby="related-title">
-          <p className="eyebrow muted"><span /> Next</p>
-          <h2 id="related-title">Related calculators</h2>
+          <p className="eyebrow muted"><span /> {t("Next")}</p>
+          <h2 id="related-title">{t("Related calculators")}</h2>
           {clusters.length > 0 && (
             <p className="related-lede">
               People working through {clusters.map((cluster) => cluster.label.toLowerCase()).join(' and ')} usually need these next.
@@ -236,7 +243,7 @@ export async function ToolPage({ tool, children, methodology, sources = [], caut
           <div className="related-grid">
             {related.map((relatedTool) => (
               <RelatedToolLink href={relatedTool.path} toolId={tool.id} category={tool.category} relatedToolId={relatedTool.id} key={relatedTool.id}>
-                <span>{categories[relatedTool.category].name}</span>
+                <span>{locale === 'es-US' ? CATEGORY_ES[relatedTool.category].name : categories[relatedTool.category].name}</span>
                 <strong>{relatedTool.shortTitle}</strong>
                 <small>{relatedTool.description}</small>
                 <b aria-hidden="true">→</b>

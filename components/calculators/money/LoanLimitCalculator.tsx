@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { calculateLoanLimit } from '@/lib/calculations/loan-limit';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -26,6 +28,8 @@ export function LoanLimitCalculator({
   states: Array<{ code: string; name: string }>;
   defaultCounty: LoanLimitCountyView;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [state, setState] = useState(defaultCounty.state);
   const [counties, setCounties] = useState<LoanLimitCountyView[]>([defaultCounty]);
   const [countyFips, setCountyFips] = useState(defaultCounty.fips);
@@ -158,7 +162,7 @@ export function LoanLimitCalculator({
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="State" htmlFor="loan-limit-state">
+        <Field label={t("State")} htmlFor="loan-limit-state">
           <span className="input-shell select-shell">
             <select
               id="loan-limit-state"
@@ -175,7 +179,7 @@ export function LoanLimitCalculator({
             </select>
           </span>
         </Field>
-        <Field label="County" htmlFor="loan-limit-county" hint={visibleZipNote || listError || undefined}>
+        <Field label={t("County")} htmlFor="loan-limit-county" hint={visibleZipNote || listError || undefined}>
           <span className="input-shell select-shell">
             <select
               id="loan-limit-county"
@@ -188,12 +192,12 @@ export function LoanLimitCalculator({
             </select>
           </span>
         </Field>
-        <Field label="Loan amount" htmlFor="loan-limit-amount" hint="The financed amount, not the purchase price">
+        <Field label={t("Loan amount")} htmlFor="loan-limit-amount" hint="The financed amount, not the purchase price">
           <InputShell prefix="$">
             <input id="loan-limit-amount" type="number" min="0" step="1000" inputMode="decimal" value={loanAmount} onChange={(event) => setLoanAmount(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Units" htmlFor="loan-limit-units" hint="1–4 unit residential property">
+        <Field label={t("Units")} htmlFor="loan-limit-units" hint="1–4 unit residential property">
           <span className="input-shell select-shell">
             <select id="loan-limit-units" value={units} onChange={(event) => setUnits(Number(event.target.value) as (typeof UNIT_OPTIONS)[number])}>
               {UNIT_OPTIONS.map((count) => (
@@ -205,7 +209,7 @@ export function LoanLimitCalculator({
       </div>
       <AdvancedSection id="zip-and-price" title="ZIP code and largest conforming price" hint="A ZIP is mapped to a county. Down payment is only used to show the largest conforming purchase price.">
         <div className="calc-form-grid">
-          <Field label="ZIP code" htmlFor="loan-limit-zip" hint="Optional. A ZIP is mapped to a county; it is not an FHFA field.">
+          <Field label={t("ZIP code")} htmlFor="loan-limit-zip" hint="Optional. A ZIP is mapped to a county; it is not an FHFA field.">
             <InputShell>
               <input
                 id="loan-limit-zip"
@@ -218,7 +222,7 @@ export function LoanLimitCalculator({
               />
             </InputShell>
           </Field>
-          <Field label="Down payment" htmlFor="loan-limit-down" hint="Used only to show the largest conforming purchase price">
+          <Field label={t("Down payment")} htmlFor="loan-limit-down" hint="Used only to show the largest conforming purchase price">
             <InputShell suffix="%">
               <input id="loan-limit-down" type="number" min="0" max="100" step="1" inputMode="decimal" value={downPaymentPercent} onChange={(event) => setDownPaymentPercent(event.target.value)} />
             </InputShell>

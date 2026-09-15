@@ -60,7 +60,7 @@ export function AdScript({
     script.crossOrigin = 'anonymous';
     script.setAttribute(marker, clientId);
     // Contextual-only when personalisation was refused or a sale opt-out is on.
-    script.setAttribute('data-npa', mayPersonalise(consent) ? '0' : '1');
+    script.setAttribute('data-npa', mayPersonalise(consentRequirement, consent) ? '0' : '1');
 
     script.addEventListener('load', () => {
       emitMonetizationEvent('ad_slot_rendered', {

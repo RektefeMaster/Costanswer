@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useEffect, useMemo, useState } from 'react';
 import { calculatePerDiem } from '@/lib/calculations/travel/per-diem';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -65,6 +67,8 @@ export function PerDiemCalculator({
   defaultStartDate: string;
   defaultEndDate: string;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [query, setQuery] = useState('');
   const [destinationKey, setDestinationKey] = useState(defaultDestinationKey);
   const [startDate, setStartDate] = useState(defaultStartDate);
@@ -188,7 +192,7 @@ export function PerDiemCalculator({
     >
       <div className="calc-form-grid">
         <Field
-          label="Destination"
+          label={t("Destination")}
           htmlFor="perdiem-destination"
           hint="Type a city, county, or five-digit ZIP. Anywhere GSA does not list separately takes its state's standard CONUS rate."
         >
@@ -240,12 +244,12 @@ export function PerDiemCalculator({
             />
           </InputShell>
         </Field>
-        <Field label="Leaving" htmlFor="perdiem-start">
+        <Field label={t("Leaving")} htmlFor="perdiem-start">
           <InputShell>
             <input id="perdiem-start" type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Returning" htmlFor="perdiem-end" hint="Same day for a trip with no overnight stay">
+        <Field label={t("Returning")} htmlFor="perdiem-end" hint="Same day for a trip with no overnight stay">
           <InputShell>
             <input id="perdiem-end" type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
           </InputShell>

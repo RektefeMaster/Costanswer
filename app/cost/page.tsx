@@ -5,7 +5,7 @@ import { pageMetadata } from '@/lib/seo';
 
 export const metadata = pageMetadata(
   'Home Job Cost Estimates: Kitchen, HVAC, Bath, Deck & More',
-  'How much should a home project cost? CostAnswer ranges for fifteen residential jobs from BLS wages, ECEC labor loading, FEMA equipment proxies, and named recipes — not contractor quotes.',
+  'How much should a home project cost? CostAnswer ranges for fifteen residential jobs from BLS wages, ECEC labor loading, FEMA equipment proxies, and named recipes (not contractor quotes).',
   '/cost',
   costPageRobots('familyHub'),
 );
@@ -14,7 +14,7 @@ export default function CostHubPage() {
   return (
     <CostPage
       title="What should this job cost?"
-      description="Pick a job. You get a CostAnswer estimated range from published wages and named recipes — or an incomplete result when a critical material still has no sourced price."
+      description="Pick a job. You get a CostAnswer estimated range from published wages and named recipes, or an incomplete result when a critical material still has no sourced price."
       path="/cost"
       pageId="job-cost-hub"
       methodology={[

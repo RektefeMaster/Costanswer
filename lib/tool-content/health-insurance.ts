@@ -11,7 +11,7 @@ export const HEALTH_INSURANCE_EDITORIAL: ToolEditorial[] = [{
         'Choose a cheaper plan than the benchmark and the credit stays the same size, so more of your premium disappears; the credit can never exceed what you are enrolled in, so it cannot pay you. Choose a dearer plan and the extra is yours. The benchmark also excludes any tobacco surcharge even when the plan you buy carries one.',
       ] },
       { heading: 'How the contribution percentage is found', paragraphs: [
-        'Your income is expressed as a percentage of the poverty guideline for your household size, then located in the IRS table. The table gives each band a starting and an ending percentage, and your percentage sits proportionally between them. It is not a bracket: at 175% of the guideline you get a percentage roughly halfway across the 150–200% band, not the band edge.',
+        'Your income is expressed as a percentage of the poverty guideline for your household size, then located in the IRS table. The table gives each band a starting and an ending percentage, and your percentage sits proportionally between them. It is not a bracket: at 175% of the guideline you get a percentage roughly halfway across the 150% to 200% band, not the band edge.',
         'That percentage is applied to annual household income and divided by twelve to give your expected monthly contribution. The credit is the benchmark premium minus that contribution, floored at zero. When the benchmark is cheaper than your expected contribution there is no credit, which happens to higher earners in low-premium areas.',
       ] },
       { heading: 'How your county premium is built', paragraphs: [

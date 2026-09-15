@@ -6,7 +6,7 @@ import { GRADE_ENGINE_ID } from '../../calculations/education/formulas';
 export const tool: ToolDefinition = {
   id: 'grade',
   path: '/education/grade',
-  title: 'Grade Calculator',
+  title: 'What Grade Do I Need on the Final?',
   shortTitle: 'Weighted grade',
   description: 'Weighted category or item grades from earned, possible, and weight. Any letter shown uses an assumed 90/80/70/60 scale.',
   category: 'education',

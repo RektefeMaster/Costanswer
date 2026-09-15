@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateBonusTax } from '@/lib/calculations/tax/bonus';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -18,6 +20,8 @@ function flatRate(share: number) {
 }
 
 export function BonusTaxCalculator({ taxYear }: { taxYear: number }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [bonusAmount, setBonusAmount] = useState('10000');
   const [regularWagesToDate, setRegularWagesToDate] = useState('60000');
   const [priorSupplementalWagesThisYear, setPriorSupplementalWagesThisYear] = useState('0');
@@ -57,12 +61,12 @@ export function BonusTaxCalculator({ taxYear }: { taxYear: number }) {
         <span>WITHHOLDING, NOT TAX</span>
         <p>
           <strong>A flat rate comes out now. What you owe is settled on your return.</strong>
-          <small>Tax year {taxYear} · IRS Publication 15 (Circular E), section 7 · State source shown in the result</small>
+          <small>{t("Tax year")} {taxYear} · IRS Publication 15 (Circular E), section 7 · State source shown in the result</small>
         </p>
       </div>
 
       <div className="calc-form-grid">
-        <Field label="Bonus amount" htmlFor="bonus-amount" hint="Before anything is taken out">
+        <Field label="Bonus amount" htmlFor="bonus-amount" hint={t("Before anything is taken out")}>
           <InputShell prefix="$"><input id="bonus-amount" type="number" min="0" step="500" inputMode="decimal" value={bonusAmount} onChange={(event) => setBonusAmount(event.target.value)} /></InputShell>
         </Field>
         <Field label="Regular wages paid so far this year" htmlFor="bonus-wages" hint="Decides how much Social Security is left to pay">
@@ -71,14 +75,14 @@ export function BonusTaxCalculator({ taxYear }: { taxYear: number }) {
         <Field label="Bonuses already paid this year" htmlFor="bonus-prior" hint="Only matters near the $1 million mark">
           <InputShell prefix="$"><input id="bonus-prior" type="number" min="0" step="1000" inputMode="decimal" value={priorSupplementalWagesThisYear} onChange={(event) => setPriorSupplementalWagesThisYear(event.target.value)} /></InputShell>
         </Field>
-        <Field label="State" htmlFor="bonus-state">
+        <Field label={t("State")} htmlFor="bonus-state">
           <span className="input-shell select-shell">
             <select id="bonus-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>
               {STATE_CODES.map((code) => <option key={code} value={code}>{US_STATES[code]}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Filing status" htmlFor="bonus-filing">
+        <Field label={t("Filing status")} htmlFor="bonus-filing">
           <span className="input-shell select-shell">
             <select id="bonus-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as FilingStatus)}>
               {FILING_STATUSES.map((status) => <option key={status} value={status}>{FILING_STATUS_LABELS[status]}</option>)}

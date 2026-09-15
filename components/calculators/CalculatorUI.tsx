@@ -1,5 +1,8 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { localizedTool } from '@/lib/i18n/tool-copy';
+import { siteText } from '@/lib/i18n/site-copy';
 import type { BreakdownStep } from '@/lib/calculations/contracts';
 import { emitAnalyticsEvent } from '@/lib/analytics';
 import {
@@ -58,11 +61,13 @@ type FieldProps = {
 };
 
 export function Field({ label, htmlFor, hint, children }: FieldProps) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   return (
     <div className="calc-field">
-      <label className="field-label" htmlFor={htmlFor}>{label}</label>
+      <label className="field-label" htmlFor={htmlFor}>{t(label)}</label>
       {children}
-      {hint && <small>{hint}</small>}
+      {hint && <small>{t(hint)}</small>}
     </div>
   );
 }
@@ -78,6 +83,8 @@ function stepperName(props: InputHTMLAttributes<HTMLInputElement>) {
 }
 
 export function InputShell({ prefix, suffix, children }: { prefix?: string; suffix?: string; children: ReactNode }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const child = Children.count(children) === 1 ? Children.only(children) : null;
   const numberInput = isValidElement(child) && child.type === 'input' && (child.props as InputHTMLAttributes<HTMLInputElement>).type === 'number'
     ? child as ReactElement<InputHTMLAttributes<HTMLInputElement>>
@@ -86,9 +93,9 @@ export function InputShell({ prefix, suffix, children }: { prefix?: string; suff
   if (!numberInput) {
     return (
       <span className="input-shell">
-        {prefix && <span className="input-affix">{prefix}</span>}
+        {prefix && <span className="input-affix">{t(prefix)}</span>}
         {children}
-        {suffix && <span className="input-affix">{suffix}</span>}
+        {suffix && <span className="input-affix">{t(suffix)}</span>}
       </span>
     );
   }
@@ -121,9 +128,9 @@ export function InputShell({ prefix, suffix, children }: { prefix?: string; suff
         −
       </button>
       <span className="input-shell-value">
-        {prefix && <span className="input-affix">{prefix}</span>}
+        {prefix && <span className="input-affix">{t(prefix)}</span>}
         {cloneElement(numberInput, { inputMode })}
-        {suffix && <span className="input-affix">{suffix}</span>}
+        {suffix && <span className="input-affix">{t(suffix)}</span>}
       </span>
       <button
         type="button"
@@ -157,6 +164,9 @@ export function CalculatorPanel({
   calculationSignature: string;
   children: ReactNode;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
+  const display = localizedTool({ id: toolId, title, shortTitle: title, description: intro, eyebrow: '' }, locale);
   const hydrated = useSyncExternalStore(subscribeToHydration, clientHydratedSnapshot, serverHydratedSnapshot);
   const opened = useRef(false);
   const started = useRef(false);
@@ -193,9 +203,9 @@ export function CalculatorPanel({
         <ResultDockReadContext.Provider value={dock}>
           <section className={`calculator-panel${dockVisible ? ' dock-visible' : ''}`} aria-labelledby="calculator-title" data-hydrated={hydrated} onInputCapture={markStarted} onChangeCapture={markStarted}>
             <div className="calculator-heading">
-              <p>Your numbers</p>
-              <h2 id="calculator-title">{title}</h2>
-              <span>{intro}</span>
+              <p>{t("Your numbers")}</p>
+              <h2 id="calculator-title">{display.title}</h2>
+              <span>{display.description}</span>
             </div>
             {children}
             {dock && <ResultDock label={dock.label} value={dock.value} tone={dock.tone} />}
@@ -207,6 +217,8 @@ export function CalculatorPanel({
 }
 
 function ResultDock({ label, value, tone }: ResultDockState) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const dockWrite = useContext(ResultDockWriteContext);
   const setDockVisible = dockWrite?.setDockVisible;
   const [visible, setVisible] = useState(false);
@@ -257,13 +269,15 @@ function ResultDock({ label, value, tone }: ResultDockState) {
 
   return (
     <p className={`result-dock result-${tone}${visible ? ' is-visible' : ''}`} aria-hidden="true">
-      <span>{label}</span>
+      <span>{t(label)}</span>
       <strong>{value}</strong>
     </p>
   );
 }
 
 export function PrimaryResult({ label, value, note, tone = 'mint' }: { label: string; value: string; note?: string; tone?: string }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const dockWrite = useContext(ResultDockWriteContext);
   const setDock = dockWrite?.setDock;
   const [copied, setCopied] = useState(false);
@@ -290,24 +304,26 @@ export function PrimaryResult({ label, value, note, tone = 'mint' }: { label: st
 
   return (
     <div className={`primary-result result-${tone}`} aria-live="polite">
-      <p>{label}</p>
+      <p>{t(label)}</p>
       <strong>{value}</strong>
-      {note && <span>{note}</span>}
-      <button type="button" className="copy-result" onClick={copyResult} aria-label={copied ? 'Result copied' : 'Copy result'}>
-        {copied ? 'Copied' : 'Copy'}
+      {note && <span>{t(note)}</span>}
+      <button type="button" className="copy-result" onClick={copyResult} aria-label={copied ? t('Result copied') : t('Copy result')}>
+        {copied ? t('Copied') : t('Copy')}
       </button>
     </div>
   );
 }
 
 export function StatGrid({ items }: { items: Array<{ label: string; value: string; note?: string }> }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   return (
     <div className="result-stat-grid">
       {items.map((item) => (
         <div key={item.label}>
-          <span>{item.label}</span>
+          <span>{t(item.label)}</span>
           <strong>{item.value}</strong>
-          {item.note && <small>{item.note}</small>}
+          {item.note && <small>{t(item.note)}</small>}
         </div>
       ))}
     </div>
@@ -340,6 +356,8 @@ export function CalculationReceipt({
   headline,
   title,
 }: ReceiptProps) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const analytics = useContext(ToolAnalyticsContext);
   const [copied, setCopied] = useState(false);
 
@@ -457,7 +475,7 @@ export function CalculationReceipt({
   return (
     <div className="result-details">
       <details open>
-        <summary onClick={() => emitInteraction('math_toggle')}>How we got this</summary>
+        <summary onClick={() => emitInteraction('math_toggle')}>{t("How we got this")}</summary>
         <ol>
           {breakdown.map((step, index) => (
             <li key={`${index}-${step.label}-${step.value}`}>
@@ -468,7 +486,7 @@ export function CalculationReceipt({
         </ol>
       </details>
       <details>
-        <summary onClick={() => emitInteraction('assumptions_toggle')}>What we assumed</summary>
+        <summary onClick={() => emitInteraction('assumptions_toggle')}>{t("What we assumed")}</summary>
         <ul>{assumptions.map((assumption) => <li key={assumption}>{assumption}</li>)}</ul>
       </details>
       {/*
@@ -477,18 +495,26 @@ export function CalculationReceipt({
         they fold away behind a summary anyone who wants them can open.
       */}
       <details className="result-audit-details">
-        <summary>Technical details</summary>
+        <summary>{t("Technical details")}</summary>
         <p className="result-audit">
           <span>Method {calculationVersion}</span>
           <span>{datasetSnapshotIds.length > 0 ? `Data ${datasetSnapshotIds.join(', ')}` : 'Data Manual inputs / fixed rules'}</span>
         </p>
         <p className="result-audit-help">
-          Discrepancy in the numbers? You can click <em>Report incorrect result</em> below or email <a href="mailto:hello@costanswer.com">hello@costanswer.com</a> with the Method and Data lines.
+          {locale === 'es-US' ? (
+            <>
+              ¿Discrepancia en los números? Puedes hacer clic en <em>{t("Report incorrect result")}</em> abajo o escribir a <a href="mailto:hello@costanswer.com">hello@costanswer.com</a> con las líneas de Método y Datos.
+            </>
+          ) : (
+            <>
+              Discrepancy in the numbers? You can click <em>{t("Report incorrect result")}</em> below or email <a href="mailto:hello@costanswer.com">hello@costanswer.com</a> with the Method and Data lines.
+            </>
+          )}
         </p>
       </details>
       <div className="receipt-actions">
         <button type="button" className="receipt-copy" onClick={copyReceipt}>
-          {copied ? 'Copied the working' : 'Copy result and working'}
+          {copied ? t('Copied the working') : t('Copy result and working')}
         </button>
         <button
           type="button"
@@ -501,7 +527,7 @@ export function CalculationReceipt({
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <span>{reportStatus ?? 'Report incorrect result'}</span>
+          <span>{reportStatus ?? t('Report incorrect result')}</span>
         </button>
       </div>
     </div>
@@ -583,6 +609,8 @@ export function AdvancedSection({
   hint?: string;
   children?: ReactNode;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const analytics = useContext(ToolAnalyticsContext);
   const key = `costanswer:advanced:${analytics?.toolId ?? 'tool'}:${id}`;
   const subscribe = useMemo(() => subscribeToSessionFlag(key), [key]);
@@ -604,8 +632,8 @@ export function AdvancedSection({
         }
       }}
     >
-      <summary>{title}</summary>
-      {hint && <p className="advanced-hint">{hint}</p>}
+      <summary>{t(title)}</summary>
+      {hint && <p className="advanced-hint">{t(hint)}</p>}
       <div className="advanced-body">{children}</div>
     </details>
   );
@@ -628,6 +656,8 @@ export function ScenarioCompare({
   rows: readonly CompareRow[];
   caption?: string;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const analytics = useContext(ToolAnalyticsContext);
   const deltas = useMemo(() => compareScenarios(rows), [rows]);
   const changed = deltas.some((delta) => delta.direction !== 'unchanged');
@@ -644,19 +674,19 @@ export function ScenarioCompare({
   return (
     <div className="scenario-compare">
       <table>
-        {caption && <caption>{caption}</caption>}
+        {caption && <caption>{t(caption)}</caption>}
         <thead>
           <tr>
-            <th scope="col">Figure</th>
-            <th scope="col">{labelA}</th>
-            <th scope="col">{labelB}</th>
-            <th scope="col">Difference</th>
+            <th scope="col">{t('Figure')}</th>
+            <th scope="col">{t(labelA)}</th>
+            <th scope="col">{t(labelB)}</th>
+            <th scope="col">{t('Difference')}</th>
           </tr>
         </thead>
         <tbody>
           {deltas.map((delta) => (
             <tr key={delta.label}>
-              <th scope="row">{delta.label}</th>
+              <th scope="row">{t(delta.label)}</th>
               <td>{delta.a}</td>
               <td>{delta.b}</td>
               <td className={`delta delta-${delta.direction}`}>{delta.change}</td>
@@ -705,6 +735,8 @@ export function ReverseSolve({
   formatInput: (value: number) => string;
   prefix?: string;
 }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const analytics = useContext(ToolAnalyticsContext);
   const [target, setTarget] = useState('');
   const [result, setResult] = useState<ReverseSolveResult | null>(null);
@@ -713,7 +745,7 @@ export function ReverseSolve({
   const run = () => {
     const parsed = Number(target);
     if (target.trim() === '' || !Number.isFinite(parsed)) {
-      setResult({ status: 'invalid-range', reason: 'Enter a target first.' });
+      setResult({ status: 'invalid-range', reason: t('Enter a target first.') });
       return;
     }
     setResult(solveForTarget({ evaluate, target: parsed, lower, upper, tolerance }));
@@ -733,16 +765,16 @@ export function ReverseSolve({
           />
         </InputShell>
       </Field>
-      <button type="button" className="reverse-solve-run" onClick={run}>Solve</button>
+      <button type="button" className="reverse-solve-run" onClick={run}>{t('Solve')}</button>
       {result?.status === 'solved' && (
         <p className="reverse-solve-answer" aria-live="polite">
-          <span>{inputLabel}</span>
+          <span>{t(inputLabel)}</span>
           <strong>{formatInput(result.value)}</strong>
         </p>
       )}
       {result && result.status !== 'solved' && (
         <p className={`reverse-solve-answer ${REVERSE_STATUS_TONE[result.status]}`} aria-live="polite">
-          {result.reason}
+          {t(result.reason)}
         </p>
       )}
     </div>
@@ -764,12 +796,14 @@ const CONFIDENCE_LABEL: Record<ConfidenceLevel, string> = {
  * because no reason means there is no claim to make.
  */
 export function ConfidenceChip({ level, reasons }: { level: ConfidenceLevel; reasons: ConfidenceReasons }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const statement = confidenceStatement(level, reasons);
   if (!statement) return null;
   return (
     <p className={`confidence-chip confidence-${statement.level}`}>
-      <span>{CONFIDENCE_LABEL[statement.level]}</span>
-      <small>{statement.reason}</small>
+      <span>{t(CONFIDENCE_LABEL[statement.level])}</span>
+      <small>{t(statement.reason)}</small>
     </p>
   );
 }

@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateCarLoan } from '@/lib/calculations/car-loan';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -8,6 +10,8 @@ import { pluralize } from '@/lib/plural';
 import { money } from '../finance-format';
 
 export function CarLoanCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [mode, setMode] = useState<'purchase' | 'financed'>('financed');
   const [vehiclePrice, setVehiclePrice] = useState('28000');
   const [downPayment, setDownPayment] = useState('4000');
@@ -39,35 +43,35 @@ export function CarLoanCalculator() {
   return (
     <CalculatorPanel title="Car loan payment" intro="Monthly principal and interest for a vehicle loan. Not ownership cost." toolId="car-loan" category="money" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={JSON.stringify([mode, vehiclePrice, downPayment, tradeInValue, taxesAndFees, financedAmount, annualRatePercent, termMonths])}>
       <div className="mode-tabs" role="group" aria-label="Loan input mode">
-        <button type="button" aria-pressed={mode === 'financed'} className={mode === 'financed' ? 'active' : ''} onClick={() => setMode('financed')}>Amount financed</button>
+        <button type="button" aria-pressed={mode === 'financed'} className={mode === 'financed' ? 'active' : ''} onClick={() => setMode('financed')}>{t("Amount financed")}</button>
         <button type="button" aria-pressed={mode === 'purchase'} className={mode === 'purchase' ? 'active' : ''} onClick={() => setMode('purchase')}>Price and down payment</button>
       </div>
       <div className="calc-form-grid">
         {mode === 'financed' ? (
-          <Field label="Amount financed" htmlFor="car-financed"><InputShell prefix="$"><input id="car-financed" type="number" min="1" step="100" inputMode="decimal" value={financedAmount} onChange={(event) => setFinancedAmount(event.target.value)} /></InputShell></Field>
+          <Field label={t("Amount financed")} htmlFor="car-financed"><InputShell prefix="$"><input id="car-financed" type="number" min="1" step="100" inputMode="decimal" value={financedAmount} onChange={(event) => setFinancedAmount(event.target.value)} /></InputShell></Field>
         ) : (
           <>
-            <Field label="Vehicle price" htmlFor="car-price"><InputShell prefix="$"><input id="car-price" type="number" min="0" step="100" inputMode="decimal" value={vehiclePrice} onChange={(event) => setVehiclePrice(event.target.value)} /></InputShell></Field>
-            <Field label="Down payment" htmlFor="car-down"><InputShell prefix="$"><input id="car-down" type="number" min="0" step="100" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} /></InputShell></Field>
+            <Field label={t("Vehicle price")} htmlFor="car-price"><InputShell prefix="$"><input id="car-price" type="number" min="0" step="100" inputMode="decimal" value={vehiclePrice} onChange={(event) => setVehiclePrice(event.target.value)} /></InputShell></Field>
+            <Field label={t("Down payment")} htmlFor="car-down"><InputShell prefix="$"><input id="car-down" type="number" min="0" step="100" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} /></InputShell></Field>
             <AdvancedSection
               id="trade-and-fees"
               title="Trade-in, taxes and fees"
               hint="Both default to zero. A trade-in lowers the amount financed; taxes and fees raise it."
             >
               <div className="calc-form-grid">
-                <Field label="Trade-in" htmlFor="car-trade"><InputShell prefix="$"><input id="car-trade" type="number" min="0" step="100" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} /></InputShell></Field>
+                <Field label={t("Trade-in")} htmlFor="car-trade"><InputShell prefix="$"><input id="car-trade" type="number" min="0" step="100" inputMode="decimal" value={tradeInValue} onChange={(event) => setTradeInValue(event.target.value)} /></InputShell></Field>
                 <Field label="Taxes and fees" htmlFor="car-fees"><InputShell prefix="$"><input id="car-fees" type="number" min="0" step="50" inputMode="decimal" value={taxesAndFees} onChange={(event) => setTaxesAndFees(event.target.value)} /></InputShell></Field>
               </div>
             </AdvancedSection>
           </>
         )}
-        <Field label="Interest rate" htmlFor="car-rate" hint="Nominal annual rate"><InputShell suffix="%"><input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>
-        <Field label="Term" htmlFor="car-term"><InputShell suffix="months"><input id="car-term" type="number" min="1" max="96" step="1" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} /></InputShell></Field>
+        <Field label={t("Interest rate")} htmlFor="car-rate" hint={t("Nominal annual rate")}><InputShell suffix="%"><input id="car-rate" type="number" min="0" max="40" step="0.01" inputMode="decimal" value={annualRatePercent} onChange={(event) => setAnnualRatePercent(event.target.value)} /></InputShell></Field>
+        <Field label={t("Term")} htmlFor="car-term"><InputShell suffix={t("months")}><input id="car-term" type="number" min="1" max="96" step="1" inputMode="numeric" value={termMonths} onChange={(event) => setTermMonths(event.target.value)} /></InputShell></Field>
       </div>
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Estimated monthly loan payment" value={money(calculation.result.value.monthlyPayment)} note={pluralize(calculation.result.value.termMonths, 'month', 'months')} tone="mint" />
+          <PrimaryResult label={t("Estimated monthly loan payment")} value={money(calculation.result.value.monthlyPayment)} note={pluralize(calculation.result.value.termMonths, 'month', 'months')} tone="mint" />
           <StatGrid items={[
             { label: 'Amount financed', value: money(calculation.result.value.amountFinanced) },
             { label: 'Total interest', value: money(calculation.result.value.totalInterest, 0) },

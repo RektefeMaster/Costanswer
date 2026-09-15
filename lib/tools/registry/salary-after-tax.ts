@@ -6,7 +6,7 @@ import { SALARY_AFTER_TAX_ENGINE_ID } from '../../calculations/tax/version';
 export const tool: ToolDefinition = {
   id: 'salary-after-tax',
   path: '/money/salary-after-tax',
-  title: 'Salary After Tax Calculator',
+  title: 'How Much Is My Salary After Tax?',
   shortTitle: 'Salary after tax',
   description: 'Estimate federal income tax, FICA, and state income tax on a U.S. salary, then see take-home by year, month, and paycheck.',
   category: 'money',

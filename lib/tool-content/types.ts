@@ -28,6 +28,6 @@ export type ToolEditorial = {
   glossary: EditorialGlossaryTerm[];
   tips: string[];
   caveats: string[];
-  /** Long-tail supporting notes (state, loan type, year, occupation) — not doorway pages. */
+  /** Long-tail supporting notes (state, loan type, year, occupation), not doorway pages. */
   longTail?: EditorialSection[];
 };

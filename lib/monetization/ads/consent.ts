@@ -55,10 +55,24 @@ export function mayLoadAdScript(requirement: ConsentRequirement, state: AdConsen
   }
 }
 
-/** May advertising be personalised? An opt-out forces contextual-only. */
-export function mayPersonalise(state: AdConsentState): boolean {
+/**
+ * May advertising be personalised?
+ *
+ * The same two regimes as `mayLoadAdScript`, and for the same reason. Under
+ * `tcf_v2` personalisation needs an affirmative signal. Under an opt-out
+ * regime it is permitted until the reader refuses it, either by turning
+ * personalisation off or by using the sale/share opt-out — which is exactly
+ * what US state privacy law describes, and what the privacy page offers.
+ *
+ * Requiring a signal nobody was asked for does not make the site more private.
+ * It serves every US reader a contextual-only ad, at a fraction of the rate,
+ * while collecting no less data than the law already allows them to refuse.
+ */
+export function mayPersonalise(requirement: ConsentRequirement, state: AdConsentState): boolean {
   if (state.saleOptOut) return false;
-  return state.personalisation === 'granted';
+  if (state.personalisation === 'denied') return false;
+  if (requirement === 'tcf_v2') return state.personalisation === 'granted';
+  return true;
 }
 
 export const AD_CONSENT_STORAGE_KEY = 'costanswer:ad-consent';

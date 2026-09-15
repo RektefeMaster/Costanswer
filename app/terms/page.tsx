@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { InfoPage } from '@/components/site/InfoPage';
 import { integrationConfig } from '@/lib/integration-config';
 import { formatPublishingDateLong, PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';

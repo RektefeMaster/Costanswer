@@ -20,6 +20,7 @@ import { recordConsent } from '@/lib/monetization/store/repositories/consents';
 import { hashContact } from '@/lib/monetization/leads/dedupe';
 import { isSuppressed } from '@/lib/monetization/store/repositories/governance';
 import { mayLoadAdScript, mayPersonalise, parseAdConsent, DEFAULT_AD_CONSENT } from '@/lib/monetization/ads/consent';
+import { AD_PROVIDERS, siteConsentRequirement } from '@/lib/monetization/ads/provider';
 import type { LeadCampaign } from '@/lib/monetization/leads/campaigns';
 
 const PEPPER = 'operations-pepper-at-least-thirty-two-chars';
@@ -309,9 +310,49 @@ describe('advertising consent', () => {
   });
 
   it('lets a sale opt-out force contextual advertising', () => {
-    expect(mayPersonalise({ script: 'granted', personalisation: 'granted', saleOptOut: true })).toBe(false);
-    expect(mayPersonalise({ script: 'granted', personalisation: 'granted', saleOptOut: false })).toBe(true);
-    expect(mayPersonalise(DEFAULT_AD_CONSENT)).toBe(false);
+    const granted = { script: 'granted', personalisation: 'granted', saleOptOut: false } as const;
+    expect(mayPersonalise('us_state_optout', { ...granted, saleOptOut: true })).toBe(false);
+    expect(mayPersonalise('us_state_optout', granted)).toBe(true);
+    expect(mayPersonalise('tcf_v2', { ...granted, saleOptOut: true })).toBe(false);
+  });
+
+  it('personalises by default only where the regime is opt-out', () => {
+    // The unanswered case is the whole point. Under opt-in there is no consent
+    // yet, so personalisation waits. Under opt-out the reader is permitted to
+    // refuse and has not, so requiring a signal nobody asked for just serves
+    // every US reader a contextual ad at a fraction of the rate.
+    expect(mayPersonalise('tcf_v2', DEFAULT_AD_CONSENT)).toBe(false);
+    expect(mayPersonalise('us_state_optout', DEFAULT_AD_CONSENT)).toBe(true);
+    expect(mayPersonalise('none', DEFAULT_AD_CONSENT)).toBe(true);
+  });
+
+  it('honours an explicit refusal under every regime', () => {
+    const refused = { ...DEFAULT_AD_CONSENT, personalisation: 'denied' } as const;
+    expect(mayPersonalise('us_state_optout', refused)).toBe(false);
+    expect(mayPersonalise('none', refused)).toBe(false);
+    expect(mayPersonalise('tcf_v2', refused)).toBe(false);
+  });
+
+  it('asks AdSense for the opt-out regime, so a US reader is not read as a refusal', () => {
+    /*
+     * The regression this locks down: AdSense was declared `tcf_v2`, which
+     * needs an affirmative signal, and the only control that can write one
+     * lives on /privacy. A reader who never visits that page therefore counted
+     * as having refused, and the entire audience saw empty boxes.
+     *
+     * The opt-in layer for EEA/UK/Swiss traffic is Google's own certified CMP,
+     * configured in the AdSense console. See the note on the descriptor.
+     */
+    const adsense = AD_PROVIDERS.find((entry) => entry.networkId === 'adsense');
+    expect(adsense?.consentRequirement).toBe('us_state_optout');
+    expect(mayLoadAdScript(adsense!.consentRequirement, DEFAULT_AD_CONSENT)).toBe(true);
+    expect(adsense?.outstandingDependency).toMatch(/CMP/i);
+  });
+
+  it('falls back to the site posture when no network is configured', () => {
+    expect(siteConsentRequirement({})).toBe('us_state_optout');
+    expect(siteConsentRequirement({ AD_PROVIDER: 'adsense', ADSENSE_CLIENT_ID: 'ca-pub-1234567890123456' }))
+      .toBe('us_state_optout');
   });
 
   it('reads a malformed stored preference as no preference', () => {

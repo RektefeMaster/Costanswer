@@ -1,7 +1,9 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import {
   AFFORDABILITY_BANDS,
   calculateHomeAffordability,
@@ -48,6 +50,8 @@ function verdictTone(verdict: 'comfortable' | 'stretch' | 'risky') {
 }
 
 export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [mode, setMode] = useState<HomeAffordabilityMode>('this-house');
   const [monthlyNetIncome, setMonthlyNetIncome] = useState('7000');
   const [monthlyExistingDebt, setMonthlyExistingDebt] = useState('400');
@@ -137,39 +141,39 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
         <button type="button" aria-pressed={mode === 'this-house'} className={mode === 'this-house' ? 'active' : ''} onClick={() => setMode('this-house')}>Can I buy this house?</button>
         <button type="button" aria-pressed={mode === 'how-much-house'} className={mode === 'how-much-house' ? 'active' : ''} onClick={() => setMode('how-much-house')}>How much house?</button>
       </div>
-      <div className="mode-tabs" role="group" aria-label="Loan term">
+      <div className="mode-tabs" role="group" aria-label={t("Loan term")}>
         <button type="button" aria-pressed={termYears === 30} className={termYears === 30 ? 'active' : ''} onClick={() => setTerm(30)}>30-year fixed</button>
         <button type="button" aria-pressed={termYears === 15} className={termYears === 15 ? 'active' : ''} onClick={() => setTerm(15)}>15-year fixed</button>
       </div>
       <div className="calc-form-grid">
-        <Field label="Monthly take-home pay" htmlFor="afford-income" hint="After taxes. Not gross salary.">
+        <Field label={t("Monthly take-home pay")} htmlFor="afford-income" hint={t("After taxes. Not gross salary.")}>
           <InputShell prefix="$">
             <input id="afford-income" type="number" min="1" step="100" inputMode="decimal" value={monthlyNetIncome} onChange={(event) => setMonthlyNetIncome(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Monthly debts" htmlFor="afford-debt" hint="Car loans, student loans, cards">
+        <Field label={t("Monthly debts")} htmlFor="afford-debt" hint="Car loans, student loans, cards">
           <InputShell prefix="$">
             <input id="afford-debt" type="number" min="0" step="50" inputMode="decimal" value={monthlyExistingDebt} onChange={(event) => setMonthlyExistingDebt(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Other monthly expenses" htmlFor="afford-other" hint="Food, transport, childcare, and the rest">
+        <Field label={t("Other monthly expenses")} htmlFor="afford-other" hint="Food, transport, childcare, and the rest">
           <InputShell prefix="$">
             <input id="afford-other" type="number" min="0" step="50" inputMode="decimal" value={monthlyOtherExpenses} onChange={(event) => setMonthlyOtherExpenses(event.target.value)} />
           </InputShell>
         </Field>
         {mode === 'this-house' && (
-          <Field label="Home price" htmlFor="afford-price">
+          <Field label={t("Home price")} htmlFor="afford-price">
             <InputShell prefix="$">
               <input id="afford-price" type="number" min="1" step="1000" inputMode="decimal" value={homePrice} onChange={(event) => setHomePrice(event.target.value)} />
             </InputShell>
           </Field>
         )}
-        <Field label="Down payment" htmlFor="afford-down">
+        <Field label={t("Down payment")} htmlFor="afford-down">
           <InputShell prefix="$">
             <input id="afford-down" type="number" min="0" step="1000" inputMode="decimal" value={downPayment} onChange={(event) => setDownPayment(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Interest rate" htmlFor="afford-rate" hint={rateTouched ? 'Your rate' : 'National weekly average. Type a quote to replace it.'}>
+        <Field label={t("Interest rate")} htmlFor="afford-rate" hint={rateTouched ? 'Your rate' : 'National weekly average. Type a quote to replace it.'}>
           <InputShell suffix="%">
             <input
               id="afford-rate"
@@ -193,27 +197,27 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
         hint="Every one has a working default. Filling them in gives the payment a lender would quote."
       >
         <div className="calc-form-grid">
-          <Field label="Yearly property tax" htmlFor="afford-tax" hint="Optional">
+          <Field label={t("Yearly property tax")} htmlFor="afford-tax" hint={t("Optional")}>
             <InputShell prefix="$">
               <input id="afford-tax" type="number" min="0" step="100" inputMode="decimal" value={annualPropertyTax} onChange={(event) => setAnnualPropertyTax(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Yearly home insurance" htmlFor="afford-insurance" hint="Enter an annual quote or planning estimate">
+          <Field label={t("Yearly home insurance")} htmlFor="afford-insurance" hint="Enter an annual quote or planning estimate">
             <InputShell prefix="$">
               <input id="afford-insurance" type="number" min="0" step="50" inputMode="decimal" value={annualHomeInsurance} onChange={(event) => setAnnualHomeInsurance(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Monthly HOA" htmlFor="afford-hoa" hint="Optional">
+          <Field label={t("Monthly HOA")} htmlFor="afford-hoa" hint={t("Optional")}>
             <InputShell prefix="$">
               <input id="afford-hoa" type="number" min="0" step="10" inputMode="decimal" value={monthlyHoa} onChange={(event) => setMonthlyHoa(event.target.value)} />
             </InputShell>
           </Field>
           <Field label="Yearly repairs" htmlFor="afford-maint" hint="Share of the home price. 1% is a planning default.">
-            <InputShell suffix="% / year">
+            <InputShell suffix={t("% / year")}>
               <input id="afford-maint" type="number" min="0" max="5" step="0.1" inputMode="decimal" value={maintenanceAnnualPercent} onChange={(event) => setMaintenanceAnnualPercent(event.target.value)} />
             </InputShell>
           </Field>
-          <Field label="Closing costs" htmlFor="afford-closing" hint="Share of the price, on top of the down payment">
+          <Field label={t("Closing costs")} htmlFor="afford-closing" hint="Share of the price, on top of the down payment">
             <InputShell suffix="%">
               <input id="afford-closing" type="number" min="0" max="10" step="0.1" inputMode="decimal" value={closingCostPercent} onChange={(event) => setClosingCostPercent(event.target.value)} />
             </InputShell>
@@ -307,7 +311,7 @@ export function HomeAffordabilityCalculator({ rates }: { rates: RateSnapshot }) 
             </div>
           )}
           <PrimaryResult
-            label="Comfortable home price"
+            label={t("Comfortable home price")}
             value={howMuch.comfortableHomePrice > 0 ? roundedGuidelineMoney(howMuch.comfortableHomePrice) : 'None'}
             note="Rounded. The price that stays inside our comfortable caps"
             tone="mint"

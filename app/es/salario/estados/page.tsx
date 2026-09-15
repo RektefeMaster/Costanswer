@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { SiteHeader } from '@/components/site/SiteHeader';
@@ -37,7 +37,7 @@ export default function SpanishSalaryStatesPage() {
     <>
       <JsonLd data={breadcrumbJsonLd(breadcrumbs)} />
       <SiteHeader />
-      <main id="main-content" tabIndex={-1}>
+      <main id="main-content" tabIndex={-1} className="salary-page">
         <header className="tool-hero accent-blue">
           <nav className="breadcrumbs" aria-label="Miga de pan">
             {breadcrumbs.map((item, index) => (

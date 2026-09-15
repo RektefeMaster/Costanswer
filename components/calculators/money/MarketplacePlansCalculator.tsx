@@ -1,6 +1,8 @@
 'use client';
 
-import Link from 'next/link';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
+import Link from '@/components/i18n/LocalizedLink';
 import { useMemo, useState } from 'react';
 import { calculateMarketplacePlanCost } from '@/lib/calculations/marketplace-plans';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -18,6 +20,8 @@ const byDisplayOrder = <T extends { metal: CmsMetal }>(rows: T[]): T[] =>
   [...rows].sort((left, right) => METAL_DISPLAY_ORDER.indexOf(left.metal) - METAL_DISPLAY_ORDER.indexOf(right.metal));
 
 export function MarketplacePlansCalculator({ release }: { release: CmsReleaseSummary }) {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [zip, setZip] = useState('77002');
   const [chosenFips, setChosenFips] = useState('');
   const [enrollingAges, setEnrollingAges] = useState('40');
@@ -95,7 +99,7 @@ export function MarketplacePlansCalculator({ release }: { release: CmsReleaseSum
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="ZIP code" htmlFor="plans-zip" hint={`${release.countyCount.toLocaleString('en-US')} counties across ${release.coveredStateCount} HealthCare.gov states are priced here.`}>
+        <Field label={t("ZIP code")} htmlFor="plans-zip" hint={`${release.countyCount.toLocaleString('en-US')} counties across ${release.coveredStateCount} HealthCare.gov states are priced here.`}>
           <InputShell>
             <input id="plans-zip" type="text" inputMode="numeric" maxLength={5} value={zip} onChange={(event) => { setZip(event.target.value); setChosenFips(''); }} />
           </InputShell>

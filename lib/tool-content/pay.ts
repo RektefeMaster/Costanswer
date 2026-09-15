@@ -276,7 +276,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
         {
           heading: 'What the bracket actually applies to',
           paragraphs: [
-            'US federal income tax is charged in bands. The standard deduction comes off first, and what is left is taxed a slice at a time: the lowest band at its rate, the next band at its rate, and so on. Your bracket is the rate on the final slice — never on all of it.',
+            'US federal income tax is charged in bands. The standard deduction comes off first, and what is left is taxed a slice at a time: the lowest band at its rate, the next band at its rate, and so on. Your bracket is the rate on the final slice, never on all of it.',
             'That is why someone on $100,000 sits in the 22% bracket while paying about 13% of their pay in federal income tax. Nothing has been avoided; the lower bands were charged at their own rates and the deduction was not charged at all.',
           ],
         },
@@ -350,7 +350,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
         {
           heading: 'Income is taxed in bands, not all at one rate',
           paragraphs: [
-            'The standard deduction comes off first and is taxed at nothing. What is left is cut into bands, and each band is charged at its own rate — the lowest slice at the lowest rate, and so on upward.',
+            'The standard deduction comes off first and is taxed at nothing. What is left is cut into bands, and each band is charged at its own rate, with the lowest slice at the lowest rate, and so on upward.',
             'Your bracket is the rate on the final slice. Someone with $100,000 of pay is in the 22% band, but the 22% applies only to the part of their taxable income above the threshold. Everything below is charged less, and the deduction is charged nothing.',
           ],
         },
@@ -358,7 +358,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
           heading: 'Crossing into a higher bracket never costs you money',
           paragraphs: [
             'This is the fear behind most bracket questions: that a raise pushes all of your income to a higher rate and leaves you worse off. It does not. Only the amount above the threshold takes the higher rate.',
-            'The room shown on this page is the practical version of that. It tells you how much more taxable income you can have before any of it is charged at the next rate — which is the number worth having when weighing overtime or a bonus.',
+            'The room shown on this page is the practical version of that. It tells you how much more taxable income you can have before any of it is charged at the next rate, which is the number worth having when weighing overtime or a bonus.',
           ],
         },
         {
@@ -375,7 +375,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
         question: 'What tax bracket am I in?',
         answer: [
           'The one your last dollar of taxable income falls in. Enter your income above and the band is shown, along with how much of your income sits in each of the bands below it.',
-          'If your figure lands exactly on a threshold you are in the lower band — the dollar at the edge is charged at the lower rate.',
+          'If your figure lands exactly on a threshold you are in the lower band; the dollar at the edge is charged at the lower rate.',
         ],
       },
       {
@@ -486,7 +486,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
     toolId: 'eitc',
     guide: {
       heading: 'The earned income credit is a curve, then a cliff',
-      lede: 'The federal EITC is not a flat amount per child. It rises with earned income, sits at a published maximum, then phases out against the larger of AGI and earned income — unless investment income is high enough to disallow it entirely.',
+      lede: 'The federal EITC is not a flat amount per child. It rises with earned income, sits at a published maximum, then phases out against the larger of AGI and earned income, unless investment income is high enough to disallow it entirely.',
       sections: [
         {
           heading: 'Three numbers decide the credit',
@@ -688,7 +688,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
         {
           heading: 'Two percentages, one required payment',
           paragraphs: [
-            'The required annual payment is the smaller of those two safe harbors. Paying that amount on time, together with withholding, is how most people avoid an underpayment penalty — not by matching the final tax to the dollar.',
+            'The required annual payment is the smaller of those two safe harbors. Paying that amount on time, together with withholding, is how most people avoid an underpayment penalty, rather than by matching the final tax to the dollar.',
             'If last year’s AGI was more than $150,000 ($75,000 if you will file married separately), last year’s tax is multiplied by 110% instead of 100%.',
           ],
         },
@@ -754,7 +754,7 @@ export const PAY_EDITORIAL: ToolEditorial[] = [
           heading: 'Why this is not a W-4 calculator',
           paragraphs: [
             'Employers withhold from Form W-4 and IRS percentage-method tables in Publication 15-T. Those tables have not been transcribed here, so inventing a withholding figure from filing status and a paycheck would be a guess dressed as a schedule.',
-            'Enter what was actually withheld — Form W-2 box 2 — and the page compares it with tax from the ordinary brackets, Schedule SE if you enter a profit, and the same credit engines as the dedicated pages.',
+            'Enter what was actually withheld (Form W-2 box 2) and the page compares it with tax from the ordinary brackets, Schedule SE if you enter a profit, and the same credit engines as the dedicated pages.',
           ],
         },
         {

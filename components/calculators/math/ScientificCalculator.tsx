@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateScientific } from '@/lib/calculations/math-tools';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -41,6 +43,8 @@ const KEYS: Array<{ label: string; insert?: string; action?: 'clear' | 'delete' 
 ];
 
 export function ScientificCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [expression, setExpression] = useState('2 + 3 × 4');
   const [angleMode, setAngleMode] = useState<'radians' | 'degrees'>('degrees');
   const [lastAnswer, setLastAnswer] = useState<string | null>(null);
@@ -82,12 +86,12 @@ export function ScientificCalculator() {
 
   return (
     <CalculatorPanel title="Scientific calculator" intro="A bounded parser. It does not run JavaScript." toolId="scientific" category="math" calculationState={calculation.result ? 'complete' : 'invalid'} calculationSignature={`${expression}|${angleMode}`}>
-      <div className="mode-tabs" role="group" aria-label="Angle mode">
+      <div className="mode-tabs" role="group" aria-label={t("Angle mode")}>
         <button type="button" aria-pressed={angleMode === 'degrees'} className={angleMode === 'degrees' ? 'active' : ''} onClick={() => setAngleMode('degrees')}>Degrees (DEG)</button>
         <button type="button" aria-pressed={angleMode === 'radians'} className={angleMode === 'radians' ? 'active' : ''} onClick={() => setAngleMode('radians')}>Radians (RAD)</button>
       </div>
       <div className="expression-input">
-        <Field label="Expression" htmlFor="sci-expression">
+        <Field label={t("Expression")} htmlFor="sci-expression">
           <span className="input-shell">
             <input id="sci-expression" value={expression} onChange={(event) => setExpression(event.target.value)} autoCapitalize="off" autoCorrect="off" spellCheck={false} inputMode="text" />
           </span>
@@ -101,7 +105,7 @@ export function ScientificCalculator() {
       {calculation.error && <InlineError message={calculation.error} />}
       {calculation.result && (
         <div className="calculation-output">
-          <PrimaryResult label="Result" value={String(calculation.result.value.result)} tone="violet" />
+          <PrimaryResult label={t("Result")} value={String(calculation.result.value.result)} tone="violet" />
           <ResultDetails breakdown={calculation.result.breakdown} assumptions={calculation.result.assumptions} calculationVersion={calculation.result.calculationVersion} datasetSnapshotIds={calculation.result.datasetSnapshotIds} />
         </div>
       )}

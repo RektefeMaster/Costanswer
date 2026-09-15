@@ -3,10 +3,10 @@ import { ToolPage } from '@/components/tool/ToolPage';
 import { acaSubsidySnapshot } from '@/lib/data/aca-subsidy';
 import { cmsMarketplaceIndex, cmsReleaseSummary } from '@/lib/data/cms-marketplace-snapshot';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('health-insurance');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const sourceById = (id: string) => {
   const source = acaSubsidySnapshot.sources.find((entry) => entry.id === id);

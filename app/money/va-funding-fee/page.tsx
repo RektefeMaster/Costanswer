@@ -2,10 +2,10 @@ import { VaFundingFeeCalculator } from '@/components/calculators/money/VaFunding
 import { ToolPage } from '@/components/tool/ToolPage';
 import { vaFundingFeeSnapshot } from '@/lib/data/va-funding-fee';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('va-funding-fee');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const source = vaFundingFeeSnapshot.sources[0];
 

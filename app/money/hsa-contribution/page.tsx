@@ -3,10 +3,10 @@ import { ToolPage } from '@/components/tool/ToolPage';
 import { irsHsaLimits, irsHsaSnapshot } from '@/lib/data/irs-hsa';
 import { formatMoney } from '@/lib/calculations/contracts';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('hsa-contribution');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const sourceById = (id: string) => {
   const source = irsHsaSnapshot.sources.find((entry) => entry.id === id);
@@ -20,7 +20,7 @@ export default function HsaContributionPage() {
     <ToolPage
       tool={tool}
       sourcePeriods={{ 'irs-hsa-limits': `Calendar year ${year}` }}
-      caution="The cap is the IRS figure for the year. Whether you are an eligible individual — HDHP coverage, no disqualifying coverage, not enrolled in Medicare — is a facts-and-circumstances question this page does not decide."
+      caution="The cap is the IRS figure for the year. Whether you are an eligible individual (HDHP coverage, no disqualifying coverage, not enrolled in Medicare) is a facts-and-circumstances question this page does not decide."
       methodology={[
         {
           title: 'Two published caps, plus a statutory catch-up',
@@ -28,7 +28,7 @@ export default function HsaContributionPage() {
         },
         {
           title: 'Months, then the last-month rule',
-          body: 'Each month you are eligible on the first day counts as 1/12 of the annual limit, rounded to the nearest dollar. Eligible on 1 December, you may use the full annual amount — only if you remain eligible through the following 31 December. Failing that testing period recaptures the extra. Medicare enrollment ends eligibility for later months, so enter only the months before it, and do not use the last-month rule after it starts.',
+          body: 'Each month you are eligible on the first day counts as 1/12 of the annual limit, rounded to the nearest dollar. Eligible on 1 December, you may use the full annual amount, but only if you remain eligible through the following 31 December. Failing that testing period recaptures the extra. Medicare enrollment ends eligibility for later months, so enter only the months before it, and do not use the last-month rule after it starts.',
         },
         {
           title: 'The HDHP test is two numbers',

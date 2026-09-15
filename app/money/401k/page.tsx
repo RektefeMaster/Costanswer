@@ -3,10 +3,10 @@ import { ToolPage } from '@/components/tool/ToolPage';
 import { irsRetirementLimits, irsRetirementPublishedLabel, irsRetirementSnapshot } from '@/lib/data/irs-retirement-snapshot';
 import { formatMoney } from '@/lib/calculations/contracts';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('401k');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 const deferral = formatMoney(irsRetirementLimits.electiveDeferral401k, 0);
 const catchUp50 = formatMoney(irsRetirementLimits.catchUp401kAge50, 0);

@@ -5,10 +5,10 @@ import { gasolineSnapshot } from '@/lib/data/gasoline-snapshot';
 import { grocerySnapshot } from '@/lib/data/grocery-snapshot';
 import { datasetSourceDisplay } from '@/lib/data/source-display';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('where-cheaper');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 const electricitySource = datasetSourceDisplay({
   datasetId: 'eia-electricity',
   observationPeriod: electricitySnapshot.observationPeriod,

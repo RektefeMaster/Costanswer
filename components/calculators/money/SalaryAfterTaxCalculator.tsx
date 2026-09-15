@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateSalaryAfterTax } from '@/lib/calculations/salary-after-tax';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -14,6 +16,8 @@ function money(value: number) {
 }
 
 export function SalaryAfterTaxCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [annualGrossSalary, setAnnualGrossSalary] = useState('100000');
   const [stateCode, setStateCode] = useState<StateCode>('TX');
@@ -42,7 +46,7 @@ export function SalaryAfterTaxCalculator() {
 
   return (
     <CalculatorPanel
-      title="Estimated take-home pay"
+      title={t("Estimated take-home pay")}
       intro="Federal income tax, FICA, and state income tax where this snapshot has a verified schedule. This is not a tax return."
       toolId="salary-after-tax"
       category="money"
@@ -68,31 +72,31 @@ export function SalaryAfterTaxCalculator() {
         </div>
       )}
       <div className="calc-form-grid">
-        <Field label="Annual gross salary" htmlFor="salary-gross">
+        <Field label={t("Annual gross salary")} htmlFor="salary-gross">
           <InputShell prefix="$">
             <input id="salary-gross" type="number" min="0" step="1000" inputMode="decimal" value={annualGrossSalary} onChange={(event) => setAnnualGrossSalary(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="State" htmlFor="salary-state">
+        <Field label={t("State")} htmlFor="salary-state">
           <span className="input-shell select-shell">
             <select id="salary-state" value={stateCode} onChange={(event) => setStateCode(event.target.value as StateCode)}>
               {STATE_CODES.map((code) => <option value={code} key={code}>{getStateName(code)}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Filing status" htmlFor="salary-filing">
+        <Field label={t("Filing status")} htmlFor="salary-filing">
           <span className="input-shell select-shell">
             <select id="salary-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
             </select>
           </span>
         </Field>
-        <Field label="Dependents" htmlFor="salary-dependents" hint={dependentsNote(selectedPolicy) ?? undefined}>
+        <Field label={t("Dependents")} htmlFor="salary-dependents" hint={dependentsNote(selectedPolicy) ?? undefined}>
           <InputShell>
             <input id="salary-dependents" type="number" min="0" max="20" step="1" inputMode="numeric" value={dependents} onChange={(event) => setDependents(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Tax year" htmlFor="salary-year">
+        <Field label={t("Tax year")} htmlFor="salary-year">
           <span className="input-shell select-shell">
             <select id="salary-year" value={taxYear} onChange={(event) => setTaxYear(event.target.value)}>
               <option value={snapshot.taxYear}>{snapshot.taxYear}</option>

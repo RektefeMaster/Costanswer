@@ -404,6 +404,35 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
         ],
       });
     }
+
+    const p10 = profile.wage.annual.p10;
+    const p25 = profile.wage.annual.p25;
+    if (p10 !== null && p25 !== null) {
+      const hp10 = profile.wage.hourly.p10;
+      const hp25 = profile.wage.hourly.p25;
+      const hourlyStr = hp10 !== null && hp25 !== null ? `, or about ${formatMoney(hp10)} to ${formatMoney(hp25)} an hour` : '';
+      questions.push({
+        question: `What is the starting salary for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
+        answer: [
+          `Starting and entry-level pay for ${plural} in ${where} typically ranges from ${money(p10)} to ${money(p25)} a year${hourlyStr}.`,
+          `This represents the 10th to 25th percentiles of the BLS ${profile.referenceLabel} wage survey, reflecting base pay for newcomers and early-career workers.`,
+        ],
+      });
+    }
+
+    const p90 = profile.wage.annual.p90;
+    const p75 = profile.wage.annual.p75;
+    if (p10 !== null && p90 !== null) {
+      questions.push({
+        question: `What is the salary range for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
+        answer: [
+          `The overall salary range for ${plural} in ${where} spans from ${money(p10)} for the bottom 10% to ${money(p90)} for top earners.`,
+          p25 !== null && p75 !== null
+            ? `The middle 50% earn between ${money(p25)} and ${money(p75)} a year, with the overall median at ${money(median)}.`
+            : `The median pay sits at ${money(median)} a year, based on the BLS ${profile.referenceLabel} wage survey.`,
+        ],
+      });
+    }
   } else if (profile.wage.hourlyMedian !== null) {
     questions.push({
       question: `What is the hourly pay for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
@@ -416,6 +445,7 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
 
   if (profile.takeHome) {
     const takeHome = profile.takeHome;
+    const biweekly = Math.round(takeHome.annual / 26);
     questions.push({
       question: `What is the take-home pay for ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural}${inWhere}?`,
       answer: [
@@ -426,6 +456,14 @@ export function salaryQuestions(profile: OccupationWageProfile): SalaryQuestion[
           : NO_STATE_INCOME_TAX_AREAS.has(profile.area)
             ? `${profile.areaLabel} levies no state income tax on wages, so nothing is withheld for it.`
             : 'Estimated state income tax is $0 for this income and filing setup. A zero estimate does not mean the state has no income tax.',
+      ],
+    });
+
+    questions.push({
+      question: `How much does ${hasCuratedName(profile.occupation) ? `${article} ${singular}` : plural} make a month in ${profile.areaLabel}?`,
+      answer: [
+        `On the median annual salary of ${money(takeHome.grossAnnual)}, estimated take-home pay is roughly ${money(takeHome.monthly)} a month after federal, state, and FICA taxes.`,
+        `For workers paid on a standard biweekly schedule (26 pay periods per year), each paycheck is approximately ${money(biweekly)} net.`,
       ],
     });
   }

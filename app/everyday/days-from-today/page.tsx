@@ -1,10 +1,10 @@
 import { DaysFromTodayCalculator } from '@/components/calculators/everyday/EverydayCalculators';
 import { ToolPage } from '@/components/tool/ToolPage';
 import { getTool } from '@/lib/tool-registry';
-import { toolMetadata } from '@/lib/seo';
+import { localizedToolMetadata } from '@/lib/i18n/metadata';
 
 const tool = getTool('days-from-today');
-export const metadata = toolMetadata(tool);
+export function generateMetadata() { return localizedToolMetadata(tool); }
 
 export default function DaysFromTodayPage() {
   const today = new Date().toISOString().slice(0, 10);

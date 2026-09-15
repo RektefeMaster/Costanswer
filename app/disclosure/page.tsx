@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { InfoPage } from '@/components/site/InfoPage';
 import { integrationConfig } from '@/lib/integration-config';
 import { formatPublishingDateLong, PUBLISHING_SNAPSHOT_DATE } from '@/lib/publishing';
@@ -64,7 +64,7 @@ export default function DisclosurePage() {
         ? disclosureText('generic-affiliate', 'en-US')
         : 'Affiliate links are off. When they are on, a materials or tools section can appear under a project calculator, and CostAnswer may earn a commission if you buy through one. It never changes your price.'}</p>
       <p>
-        Product suggestions come from what the calculator worked out you need — gallons of paint,
+        Product suggestions come from what the calculator worked out you need: gallons of paint,
         squares of roofing, cubic yards of concrete. A merchant paying more can decide which of two
         equally relevant links we show. It cannot invent a product you had no reason to see, and where
         payment did affect the order, the module says so.
@@ -105,7 +105,7 @@ export default function DisclosurePage() {
       <h2 id="how-to-tell">How to tell</h2>
       <p>
         Anything commercial is labelled where it sits, not only here. Paid links carry a
-        <code> sponsored </code> attribute, open in a new tab, and go straight to the merchant — there is
+        <code> sponsored </code> attribute, open in a new tab, and go straight to the merchant; there is
         no redirect hiding the destination. Read more in our{' '}
         <Link href="/privacy">privacy policy</Link> and{' '}
         <Link href="/terms">user agreement</Link>.

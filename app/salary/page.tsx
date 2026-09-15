@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Link from 'next/link';
+import Link from '@/components/i18n/LocalizedLink';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { SalaryFeatured, SalaryGroupCatalog } from '@/components/salary/SalaryCatalog';
 import { SalaryDirectory } from '@/components/salary/SalaryDirectory';
@@ -25,7 +25,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const hub = salaryHubModel();
   return pageMetadata(
     'U.S. Salary by Occupation: Median Pay and Take-Home',
-    `Median wages for ${formatNumber(hub.occupationCount)} U.S. jobs from the BLS ${oewsIndex.referenceLabel} survey — plus hourly pay, percentiles, and take-home after tax by state.`,
+    `Median wages for ${formatNumber(hub.occupationCount)} U.S. jobs from the BLS ${oewsIndex.referenceLabel} survey, plus hourly pay, percentiles, and take-home after tax by state.`,
     salaryFamilyPath(),
     { index: isSalaryLevelIndexable('familyHub'), follow: true },
   );
@@ -63,12 +63,12 @@ export default function SalaryHubPage() {
               <p>
                 {hub.nationalMedian == null
                   ? 'Search a job, or jump to a field. Every page shows the median, the spread, and what the wage leaves after tax in each state.'
-                  : `The median American job pays ${formatMoney(hub.nationalMedian, 0)} a year. Search a title to see the median, the percentiles, and take-home in every state — or scan the directory by field.`}
+                  : `The median American job pays ${formatMoney(hub.nationalMedian, 0)} a year. Search a title to see the median, the percentiles, and take-home in every state, or scan the directory by field.`}
               </p>
               <dl className="salary-hero-stats">
                 <div>
                   <dt>U.S. median job</dt>
-                  <dd>{hub.nationalMedian == null ? '—' : formatMoney(hub.nationalMedian, 0)}</dd>
+                  <dd>{hub.nationalMedian == null ? 'None' : formatMoney(hub.nationalMedian, 0)}</dd>
                 </div>
                 <div>
                   <dt>Occupations</dt>

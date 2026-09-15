@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import { analyticsCspSources } from './lib/analytics-provider';
 import { adCspSources } from './lib/monetization/ads/provider';
+import { htmlLimitedBotsPattern } from './lib/seo/crawlers';
 
 /*
  * The policy widens only for the vendors that are actually configured.
@@ -42,6 +43,17 @@ const contentSecurityPolicy = [
 ].join('; ');
 
 const nextConfig: NextConfig = {
+  /*
+   * Crawlers that get metadata in `<head>` instead of in the stream.
+   *
+   * Measured before it was changed: with the framework default, GPTBot,
+   * ClaudeBot, PerplexityBot and OAI-SearchBot all received a `<head>` with no
+   * `<title>`, no description and no canonical, because those tags were still
+   * in the body waiting for a hydration that a crawler never runs. Slack,
+   * Facebook and Bingbot were already handled by the default and are kept.
+   * `lib/seo/crawlers.ts` says what is in the list and why Googlebot is too.
+   */
+  htmlLimitedBots: htmlLimitedBotsPattern(),
   async redirects() {
     return [
       { source: '/topics/auto', destination: '/topics/car', permanent: true },
@@ -114,6 +126,18 @@ const nextConfig: NextConfig = {
         source: '/api/marketplace/quote',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=600, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/cost/:job/:state',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
+        ],
+      },
+      {
+        source: '/cost/:job',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=0, s-maxage=86400, stale-while-revalidate=604800' },
         ],
       },
     ];

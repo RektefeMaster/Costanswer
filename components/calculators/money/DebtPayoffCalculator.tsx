@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateDebtPayoff, formatPayoffDuration, MAX_DEBT_ACCOUNTS } from '@/lib/calculations/debt-payoff';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -22,6 +24,8 @@ function newDebtId(): string {
 }
 
 export function DebtPayoffCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const [additionalMonthlyPayment, setAdditionalMonthlyPayment] = useState('100');
   const [debts, setDebts] = useState<DebtRow[]>([
     { id: 'debt-loan', label: 'Personal loan', balance: '3500', annualRatePercent: '7.5', minimumPayment: '110' },
@@ -72,7 +76,7 @@ export function DebtPayoffCalculator() {
       calculationSignature={JSON.stringify([additionalMonthlyPayment, debts])}
     >
       <div className="calc-form-grid compact-grid">
-        <Field label="Additional monthly payment" htmlFor="debt-extra" hint="On top of the minimums. This amount keeps going after a debt is paid off.">
+        <Field label={t("Additional monthly payment")} htmlFor="debt-extra" hint="On top of the minimums. This amount keeps going after a debt is paid off.">
           <InputShell prefix="$">
             <input id="debt-extra" type="number" min="0" step="25" inputMode="decimal" value={additionalMonthlyPayment} onChange={(event) => setAdditionalMonthlyPayment(event.target.value)} />
           </InputShell>
@@ -81,9 +85,9 @@ export function DebtPayoffCalculator() {
       <div className="ingredient-editor debt-editor" role="group" aria-label="Debts">
         <div className="ingredient-head" aria-hidden="true">
           <span>Name</span>
-          <span>Balance</span>
-          <span>Rate</span>
-          <span>Minimum</span>
+          <span>{t("Balance")}</span>
+          <span>{t("Rate")}</span>
+          <span>{t("Minimum")}</span>
           <span />
         </div>
         {debts.map((debt, index) => (
@@ -95,7 +99,7 @@ export function DebtPayoffCalculator() {
             </label>
             <label>
               <span className="sr-only">Debt {index + 1} balance</span>
-              <span className="ingredient-mobile-label" aria-hidden="true">Balance</span>
+              <span className="ingredient-mobile-label" aria-hidden="true">{t("Balance")}</span>
               <input id={index === 0 ? 'debt-balance-0' : undefined} type="number" min="0.01" step="50" inputMode="decimal" value={debt.balance} onChange={(event) => updateDebt(debt.id, { balance: event.target.value })} />
             </label>
             <label>
@@ -105,7 +109,7 @@ export function DebtPayoffCalculator() {
             </label>
             <label>
               <span className="sr-only">Debt {index + 1} minimum payment</span>
-              <span className="ingredient-mobile-label" aria-hidden="true">Minimum</span>
+              <span className="ingredient-mobile-label" aria-hidden="true">{t("Minimum")}</span>
               <input type="number" min="0" step="10" inputMode="decimal" value={debt.minimumPayment} onChange={(event) => updateDebt(debt.id, { minimumPayment: event.target.value })} />
             </label>
             <button type="button" aria-label={`Remove ${debt.label || `debt ${index + 1}`}`} disabled={debts.length === 1} onClick={() => setDebts((current) => current.filter((item) => item.id !== debt.id))}>×</button>

@@ -1,5 +1,7 @@
 'use client';
 
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { siteText } from '@/lib/i18n/site-copy';
 import { useMemo, useState } from 'react';
 import { calculateCapitalGains } from '@/lib/calculations/tax/capital-gains';
 import { calculationErrorMessage } from '@/lib/calculations/error';
@@ -20,6 +22,8 @@ import {
 const money = (value: number) => value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 
 export function CapitalGainsCalculator() {
+  const locale = useLocale();
+  const t = (text: string) => siteText(text, locale);
   const snapshot = getTaxYearSnapshot(DEFAULT_TAX_YEAR);
   const [otherTaxableIncome, setOtherTaxableIncome] = useState('80000');
   const [longTermGains, setLongTermGains] = useState('20000');
@@ -64,7 +68,7 @@ export function CapitalGainsCalculator() {
         </p>
       </div>
       <div className="calc-form-grid">
-        <Field label="Other taxable income" htmlFor="cg-ordinary" hint="Taxable income that is not long-term gain or qualified dividends">
+        <Field label={t("Other taxable income")} htmlFor="cg-ordinary" hint="Taxable income that is not long-term gain or qualified dividends">
           <InputShell prefix="$">
             <input id="cg-ordinary" type="number" min="0" step="1000" inputMode="decimal" value={otherTaxableIncome} onChange={(event) => setOtherTaxableIncome(event.target.value)} />
           </InputShell>
@@ -74,7 +78,7 @@ export function CapitalGainsCalculator() {
             <input id="cg-gains" type="number" min="0" step="1000" inputMode="decimal" value={longTermGains} onChange={(event) => setLongTermGains(event.target.value)} />
           </InputShell>
         </Field>
-        <Field label="Filing status" htmlFor="cg-filing">
+        <Field label={t("Filing status")} htmlFor="cg-filing">
           <span className="input-shell select-shell">
             <select id="cg-filing" value={filingStatus} onChange={(event) => setFilingStatus(event.target.value as (typeof FILING_STATUSES)[number])}>
               {FILING_STATUSES.map((status) => <option value={status} key={status}>{FILING_STATUS_LABELS[status]}</option>)}
@@ -83,7 +87,7 @@ export function CapitalGainsCalculator() {
         </Field>
       </div>
       <AdvancedSection id="niit-inputs" title="MAGI and net investment income for NIIT">
-        <Field label="Modified AGI" htmlFor="cg-magi" hint="Leave blank to use other taxable income plus the gains">
+        <Field label={t("Modified AGI")} htmlFor="cg-magi" hint="Leave blank to use other taxable income plus the gains">
           <InputShell prefix="$">
             <input id="cg-magi" type="number" min="0" step="1000" inputMode="decimal" value={modifiedAgi} onChange={(event) => setModifiedAgi(event.target.value)} />
           </InputShell>
@@ -117,7 +121,7 @@ export function CapitalGainsCalculator() {
             ]}
           />
           <CalculationReceipt
-            title={`Capital gains — ${money(Number(longTermGains))} long-term, ${snapshot.taxYear}`}
+            title={`Capital gains: ${money(Number(longTermGains))} long-term, ${snapshot.taxYear}`}
             headline={{ label: 'Tax on long-term gains', value: money(value.capitalGainsTax) }}
             breakdown={calculation.result.breakdown}
             assumptions={calculation.result.assumptions}

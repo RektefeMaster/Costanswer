@@ -7,6 +7,8 @@ export const CHROME = {
   salaries: localized({ 'en-US': 'Salaries', 'es-US': 'Salarios' }),
   jobCosts: localized({ 'en-US': 'Job costs', 'es-US': 'Costos de un trabajo' }),
   menu: localized({ 'en-US': 'Open site navigation', 'es-US': 'Abrir el menú' }),
+  menuShort: localized({ 'en-US': 'Menu', 'es-US': 'Menú' }),
+  explore: localized({ 'en-US': 'Explore', 'es-US': 'Explorar' }),
   english: localized({ 'en-US': 'English', 'es-US': 'English' }),
   spanish: localized({ 'en-US': 'Español', 'es-US': 'Español' }),
   language: localized({ 'en-US': 'Language', 'es-US': 'Idioma' }),
