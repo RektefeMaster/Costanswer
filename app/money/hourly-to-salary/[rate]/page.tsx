@@ -4,8 +4,7 @@ import { notFound } from 'next/navigation';
 import { SiteHeader } from '@/components/site/SiteHeader';
 import { SiteFooter } from '@/components/site/SiteFooter';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { breadcrumbJsonLd, faqJsonLd } from '@/lib/seo/jsonld';
-import { pageMetadata, buildSerpTitle } from '@/lib/seo';
+import { breadcrumbJsonLd, faqPageJsonLd, pageMetadata, buildSerpTitle } from '@/lib/seo';
 import { siteConfig } from '@/lib/site-config';
 import { HourlySalaryCalculator } from '@/components/calculators/money/HourlySalaryCalculator';
 import {
@@ -30,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const profile = getHourlyWageProfile(rateNumber);
   const title = buildSerpTitle(`$${rateNumber} an Hour Is How Much a Year?`, 'evergreen');
-  const description = `$${rateNumber} an hour is $${profile.annualGross.toLocaleString()} per year before taxes, $${profile.monthlyGross.toLocaleString()} per month, and $${profile.biweeklyGross.toLocaleString()} biweekly. Compare 50-state take-home pay, overtime, and budget guidelines.`;
+  const description = `$${rateNumber} an hour is $${profile.annualGross.toLocaleString()} per year before taxes, $${profile.monthlyGross.toLocaleString()} per month, and $${profile.biweeklyGross.toLocaleString()} biweekly. Compare 50-state take-home pay, overtime, cost of living purchasing power, and budget guidelines.`;
   const path = `/money/hourly-to-salary/${slug}` as `/${string}`;
 
   return pageMetadata(title, description, path);
@@ -66,34 +65,45 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
   const faqs = [
     {
       question: `How much is $${rateNumber} an hour annually?`,
-      answer: `$${rateNumber} an hour equals ${money(profile.annualGross)} per year before taxes, assuming 40 hours per week across 52 weeks (2,080 working hours). If you take 2 weeks of unpaid vacation (50 weeks worked), your annual gross is ${money(rateNumber * 2000)}.`,
+      answer: `$${rateNumber} an hour equals ${money(profile.annualGross)} per year before taxes for a full-time schedule of 40 hours per week and 52 weeks worked (2,080 hours). With 2 weeks of unpaid vacation (50 weeks worked), it equals ${money(rateNumber * 2000)}.`,
     },
     {
       question: `How much is $${rateNumber} an hour monthly and biweekly?`,
-      answer: `At $${rateNumber} an hour, your gross monthly pay is ${money(profile.monthlyGross)} across 12 calendar months. Your biweekly paycheck (every two weeks, 26 paychecks per year) is ${money(profile.biweeklyGross, 2)} before deductions.`,
+      answer: `At $${rateNumber} an hour, gross monthly pay is ${money(profile.monthlyGross)} across 12 calendar months. Your biweekly paycheck (every two weeks, 26 paychecks per year) is ${money(profile.biweeklyGross, 2)} before deductions.`,
+    },
+    {
+      question: `Is $${rateNumber} an hour a good wage in 2026?`,
+      answer: `At ${money(profile.annualGross)} per year, $${rateNumber} an hour puts you in approximately the ${profile.percentileData.percentile}th percentile of individual wage earners in the United States, placing you in the ${profile.percentileData.classStatus}. It ${profile.percentileData.isLivingWageSingle ? 'comfortably exceeds' : 'approaches'} the living wage for a single adult in most U.S. states.`,
     },
     {
       question: `What is time and a half for $${rateNumber} an hour?`,
-      answer: `Time and a half (1.5x) for $${rateNumber} an hour is ${money(profile.overtime.timeAndHalfRate, 2)} per overtime hour. Double time (2.0x) is ${money(profile.overtime.doubleTimeRate, 2)} per hour. Working 5 hours of overtime each week increases your annual income by ${money(profile.overtime.scenarios[0].extraAnnualGross)} to ${money(profile.overtime.scenarios[0].totalAnnualGross)}.`,
+      answer: `Time and a half (1.5x) for $${rateNumber} an hour is ${money(profile.overtime.timeAndHalfRate, 2)} per overtime hour. Double time (2.0x) is ${money(profile.overtime.doubleTimeRate, 2)} per hour. Working 5 hours of overtime each week adds ${money(profile.overtime.scenarios[0].extraAnnualGross)} per year, raising your gross income to ${money(profile.overtime.scenarios[0].totalAnnualGross)}.`,
     },
     {
       question: `How much is $${rateNumber} an hour after taxes in 2026?`,
-      answer: `For a single filer claiming the standard deduction in 2026, take-home pay on $${rateNumber}/hour ranges from approximately ${money(caTakeHome?.annualNet ?? profile.annualGross * 0.75)} per year (${money(caTakeHome?.monthlyNet ?? profile.monthlyGross * 0.75)}/month) in California to ${money(txTakeHome?.annualNet ?? profile.annualGross * 0.82)} per year (${money(txTakeHome?.monthlyNet ?? profile.monthlyGross * 0.82)}/month) in states with no state income tax like Texas and Florida.`,
+      answer: `For a single filer claiming the standard deduction in 2026, estimated take-home pay on $${rateNumber}/hour ranges from approximately ${money(caTakeHome?.annualNet ?? profile.annualGross * 0.75)} per year in California to ${money(txTakeHome?.annualNet ?? profile.annualGross * 0.82)} per year in states with no state income tax like Texas and Florida.`,
     },
     {
       question: `How much rent can you afford on $${rateNumber} an hour?`,
-      answer: `Under the standard 30% rule of thumb, you can safely spend up to ${money(profile.housingGuideline.maxRentMonthly)} per month on rent or total housing costs.`,
+      answer: `Following the standard 30% rule of thumb, you can safely spend up to ${money(profile.housingGuideline.maxRentMonthly)} per month on rent or total housing costs.`,
     },
     {
       question: `Can you buy a house on $${rateNumber} an hour?`,
-      answer: `Yes, depending on debt and local property taxes, a ${money(profile.annualGross)} income commonly qualifies for a home between ${money(profile.housingGuideline.affordabilityHomeRange[0])} and ${money(profile.housingGuideline.affordabilityHomeRange[1])}, with a recommended maximum monthly mortgage payment around ${money(profile.housingDeep.frontEndMonthlyBudget)}.`,
+      answer: `Yes, depending on debt and local property taxes, a ${money(profile.annualGross)} income commonly qualifies for a home between ${money(profile.housingGuideline.affordabilityHomeRange[0])} and ${money(profile.housingGuideline.affordabilityHomeRange[1])}, keeping your monthly mortgage payment below the 28% front-end guideline of ${money(profile.housingDeep.frontEndMonthlyBudget)}/month.`,
     },
   ];
 
   return (
     <>
-      <JsonLd data={breadcrumbJsonLd(breadcrumbs)} />
-      <JsonLd data={faqJsonLd(faqs)} />
+      <JsonLd
+        data={[
+          breadcrumbJsonLd(breadcrumbs),
+          faqPageJsonLd(
+            faqs.map((f) => ({ question: f.question, answer: [f.answer] })),
+            `/money/hourly-to-salary/${hourlyToSlug(rateNumber)}`,
+          ),
+        ]}
+      />
       <SiteHeader />
 
       <main id="main-content" tabIndex={-1} className="wage-matrix-page">
@@ -225,6 +235,74 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
               </div>
             </article>
 
+            {/* Income Percentile & Middle Class Benchmark */}
+            <article className="matrix-card">
+              <h2>Is ${rateNumber} an Hour Good? Income Percentile & Status</h2>
+              <p className="matrix-card-desc">
+                How a <strong>{money(profile.annualGross)}/year</strong> income compares against all individual workers in the United States:
+              </p>
+              <div className="matrix-percentile-grid">
+                <div className="matrix-percentile-box is-highlight">
+                  <span className="matrix-stat-eyebrow">Income Percentile</span>
+                  <strong>{profile.percentileData.percentile}th Percentile</strong>
+                  <p>{profile.percentileData.nationalComparison}</p>
+                </div>
+                <div className="matrix-percentile-box">
+                  <span className="matrix-stat-eyebrow">Socioeconomic Class</span>
+                  <strong>{profile.percentileData.classStatus}</strong>
+                  <p>Based on Pew Research and U.S. Census median household income definitions.</p>
+                </div>
+                <div className="matrix-percentile-box">
+                  <span className="matrix-stat-eyebrow">Living Wage Benchmark</span>
+                  <strong>{profile.percentileData.isLivingWageSingle ? 'Above Living Wage' : 'Near Threshold'}</strong>
+                  <p>
+                    {profile.percentileData.isLivingWageSingle
+                      ? `Exceeds the national living wage threshold for a single adult (${money(38000)}/yr).`
+                      : `Meets entry-level living costs in low-to-moderate cost regions.`}
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            {/* Regional Cost of Living & Real Purchasing Power */}
+            <article className="matrix-card">
+              <h2>Cost of Living on ${rateNumber}/Hour: What It Buys by State</h2>
+              <p className="matrix-card-desc">
+                A dollar does not buy the same amount everywhere. Based on official Bureau of Economic Analysis (BEA) Regional Price Parities (RPP), here is the real purchasing power of ${rateNumber}/hour:
+              </p>
+              <div className="matrix-table-wrap">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">State</th>
+                      <th scope="col">Cost of Living Tier</th>
+                      <th scope="col">BEA Price Index</th>
+                      <th scope="col">Effective Purchasing Power</th>
+                      <th scope="col">Real Annual Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profile.purchasingPower.map((rpp) => (
+                      <tr key={rpp.stateCode}>
+                        <th scope="row"><strong>{rpp.stateName}</strong></th>
+                        <td>
+                          <span className={rpp.costOfLivingTier === 'Low Cost' ? 'matrix-tag-green' : rpp.costOfLivingTier === 'High Cost' ? 'matrix-tag-rose' : 'matrix-tag-neutral'}>
+                            {rpp.costOfLivingTier}
+                          </span>
+                        </td>
+                        <td>{rpp.rppIndex.toFixed(1)}</td>
+                        <td><strong>{money(rpp.adjustedEquivalentWage, 2)}/hr</strong></td>
+                        <td><strong>{money(rpp.adjustedEquivalentAnnual)}</strong></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="matrix-footnote">
+                Source: U.S. Bureau of Economic Analysis Regional Price Parities. Indices above 100 represent higher-than-average living costs.
+              </p>
+            </article>
+
             {/* Work Schedule & Unpaid Vacation Scenarios */}
             <article className="matrix-card">
               <h2>Work Hours & Vacation Scenarios for ${rateNumber}/Hour</h2>
@@ -307,6 +385,79 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
                   </tbody>
                 </table>
               </div>
+            </article>
+
+            {/* Single vs Married Filing Jointly vs Head of Household */}
+            <article className="matrix-card">
+              <h2>Take-Home Pay by Tax Filing Status (2026)</h2>
+              <p className="matrix-card-desc">
+                Your federal income tax liability and standard deduction change significantly based on your filing status:
+              </p>
+              <div className="matrix-table-wrap">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Filing Status</th>
+                      <th scope="col">Federal Tax</th>
+                      <th scope="col">FICA (SS & Medicare)</th>
+                      <th scope="col">Biweekly Take-Home</th>
+                      <th scope="col">Monthly Net</th>
+                      <th scope="col">Annual Net</th>
+                      <th scope="col">Tax Advantage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profile.filingStatuses.map((fs) => (
+                      <tr key={fs.filingStatus}>
+                        <th scope="row"><strong>{fs.filingStatus}</strong></th>
+                        <td>{money(fs.federalTax)}</td>
+                        <td>{money(fs.ficaTax)}</td>
+                        <td>{money(fs.estimatedNetBiweekly, 2)}</td>
+                        <td><strong>{money(fs.estimatedNetMonthly)}</strong></td>
+                        <td><strong>{money(fs.estimatedNetAnnual)}</strong></td>
+                        <td>
+                          {fs.taxSavingsVsSingle > 0 ? (
+                            <span className="matrix-positive-tag">+{money(fs.taxSavingsVsSingle)}/yr</span>
+                          ) : (
+                            <span className="matrix-subtext">Baseline</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </article>
+
+            {/* Long-Term Compound Wealth & Retirement Projection */}
+            <article className="matrix-card">
+              <h2>Can You Become a Millionaire on ${rateNumber}/Hour?</h2>
+              <p className="matrix-card-desc">
+                Assuming a historical 7% real annual return (S&P 500 index fund after inflation), here is how saving 10% or 15% of a <strong>{money(profile.annualGross)}</strong> salary compounds over time:
+              </p>
+              <div className="matrix-table-wrap">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Investment Horizon</th>
+                      <th scope="col">10% Savings Rate ({money(profile.retirementWealth.monthlySavings10)}/mo)</th>
+                      <th scope="col">15% Savings Rate ({money(profile.retirementWealth.monthlySavings15)}/mo)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profile.retirementWealth.milestones.map((m) => (
+                      <tr key={m.years}>
+                        <th scope="row"><strong>{m.years} Years</strong></th>
+                        <td><strong>{money(m.totalSaved10Percent)}</strong></td>
+                        <td><strong className="matrix-wealth-highlight">{money(m.totalSaved15Percent)}</strong></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <p className="matrix-footnote">
+                Assumes monthly contributions invested in low-cost, diversified index funds compounding at 7% real annual return. Employer 401(k) matches accelerate these totals significantly.
+              </p>
             </article>
 
             {/* Top 6 States Quick Comparison Cards */}
@@ -484,6 +635,46 @@ export default async function HourlyRateMatrixPage({ params }: Props) {
                     Calculate your exact home affordability with today&apos;s mortgage rates →
                   </Link>
                 </p>
+              </div>
+            </article>
+
+            {/* Adjacent Micro-Wage Step Table */}
+            <article className="matrix-card">
+              <h2>Nearby Hourly Wage Conversions</h2>
+              <p className="matrix-card-desc">
+                Quick comparison of pay across adjacent hourly rates:
+              </p>
+              <div className="matrix-table-wrap">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th scope="col">Hourly Rate</th>
+                      <th scope="col">Weekly Gross</th>
+                      <th scope="col">Biweekly Gross</th>
+                      <th scope="col">Monthly Gross</th>
+                      <th scope="col">Annual Gross</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {profile.microSteps.map((ms) => (
+                      <tr key={ms.rate} className={ms.isCurrent ? 'is-current-row' : ''}>
+                        <th scope="row">
+                          {ms.isCurrent ? (
+                            <strong>${ms.rate}/hr (Current)</strong>
+                          ) : (
+                            <Link href={`/money/hourly-to-salary/${hourlyToSlug(ms.rate)}`}>
+                              ${ms.rate}/hr
+                            </Link>
+                          )}
+                        </th>
+                        <td>{money(ms.weeklyGross, 2)}</td>
+                        <td>{money(ms.biweeklyGross, 2)}</td>
+                        <td>{money(ms.monthlyGross, 2)}</td>
+                        <td><strong>{money(ms.annualGross)}</strong></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </article>
 

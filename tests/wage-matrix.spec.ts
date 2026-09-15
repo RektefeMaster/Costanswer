@@ -214,4 +214,100 @@ describe('Wage Matrix Data & Conversions', () => {
       expect(entry.priority).toBe(0.8);
     }
   });
+
+  it('calculates accurate national income percentiles and socioeconomic class status', () => {
+    const profile30 = getHourlyWageProfile(30);
+    expect(profile30.percentileData.percentile).toBe(61);
+    expect(profile30.percentileData.classStatus).toBe('Solid Middle Class');
+    expect(profile30.percentileData.isLivingWageSingle).toBe(true);
+    expect(profile30.percentileData.nationalComparison).toBe('At or above the national median individual wage');
+
+    const profile15 = getHourlyWageProfile(15);
+    expect(profile15.percentileData.percentile).toBe(29);
+    expect(profile15.percentileData.classStatus).toBe('Lower-Middle Income');
+    expect(profile15.percentileData.isLivingWageSingle).toBe(false);
+
+    const salaryProfile100k = getAnnualSalaryProfile(100_000);
+    expect(salaryProfile100k.percentileData.percentile).toBe(80);
+    expect(salaryProfile100k.percentileData.classStatus).toBe('Upper-Middle Class / High Earner');
+    expect(salaryProfile100k.percentileData.isLivingWageSingle).toBe(true);
+  });
+
+  it('computes BEA regional price parity purchasing power across benchmark states', () => {
+    const profile = getHourlyWageProfile(30);
+    expect(profile.purchasingPower).toHaveLength(8);
+
+    const mississippi = profile.purchasingPower.find((s) => s.stateCode === 'MS')!;
+    expect(mississippi).toBeDefined();
+    expect(mississippi.costOfLivingTier).toBe('Low Cost');
+    expect(mississippi.rppIndex).toBe(87.5);
+    // In low-cost states, effective purchasing power is higher than nominal wage
+    expect(mississippi.adjustedEquivalentWage).toBeGreaterThan(30);
+    expect(mississippi.adjustedEquivalentAnnual).toBeGreaterThan(62_400);
+
+    const california = profile.purchasingPower.find((s) => s.stateCode === 'CA')!;
+    expect(california).toBeDefined();
+    expect(california.costOfLivingTier).toBe('High Cost');
+    expect(california.rppIndex).toBe(112.5);
+    // In high-cost states, effective purchasing power is lower than nominal wage
+    expect(california.adjustedEquivalentWage).toBeLessThan(30);
+    expect(california.adjustedEquivalentAnnual).toBeLessThan(62_400);
+
+    const salaryProfile = getAnnualSalaryProfile(60_000);
+    expect(salaryProfile.purchasingPower).toHaveLength(8);
+  });
+
+  it('compares federal tax liabilities and savings across 2026 tax filing statuses', () => {
+    const profile = getHourlyWageProfile(30);
+    expect(profile.filingStatuses).toHaveLength(3);
+
+    const single = profile.filingStatuses.find((f) => f.filingStatus === 'Single')!;
+    const mfj = profile.filingStatuses.find((f) => f.filingStatus === 'Married Filing Jointly')!;
+    const hoh = profile.filingStatuses.find((f) => f.filingStatus === 'Head of Household')!;
+
+    expect(single).toBeDefined();
+    expect(mfj).toBeDefined();
+    expect(hoh).toBeDefined();
+
+    expect(single.taxSavingsVsSingle).toBe(0);
+    expect(mfj.taxSavingsVsSingle).toBeGreaterThan(0);
+    expect(mfj.estimatedNetAnnual).toBeGreaterThan(single.estimatedNetAnnual);
+    expect(hoh.taxSavingsVsSingle).toBeGreaterThan(0);
+    expect(hoh.estimatedNetAnnual).toBeGreaterThan(single.estimatedNetAnnual);
+
+    // FICA must remain the same across statuses for the same wage
+    expect(single.ficaTax).toBe(mfj.ficaTax);
+    expect(single.ficaTax).toBe(hoh.ficaTax);
+  });
+
+  it('projects long-term compound wealth milestones and millionaire timeline', () => {
+    const profile = getHourlyWageProfile(30);
+    expect(profile.retirementWealth.monthlySavings10).toBe(520); // 10% of 5200
+    expect(profile.retirementWealth.monthlySavings15).toBe(780); // 15% of 5200
+    expect(profile.retirementWealth.milestones).toHaveLength(4);
+
+    const [y10, y20, y30, y40] = profile.retirementWealth.milestones;
+    expect(y10.years).toBe(10);
+    expect(y20.years).toBe(20);
+    expect(y30.years).toBe(30);
+    expect(y40.years).toBe(40);
+
+    expect(y40.totalSaved15Percent).toBeGreaterThan(y40.totalSaved10Percent);
+    expect(y40.totalSaved15Percent).toBeGreaterThan(1_000_000); // Exceeds $1M at 15% in 40 years
+  });
+
+  it('generates 5 adjacent micro-steps with active rate indication', () => {
+    const profile = getHourlyWageProfile(30);
+    expect(profile.microSteps).toHaveLength(5);
+    expect(profile.microSteps.map((s) => s.rate)).toEqual([28, 29, 30, 31, 32]);
+    expect(profile.microSteps.find((s) => s.rate === 30)!.isCurrent).toBe(true);
+    expect(profile.microSteps.find((s) => s.rate === 29)!.isCurrent).toBe(false);
+
+    const salaryProfile = getAnnualSalaryProfile(60_000);
+    expect(salaryProfile.microSteps).toHaveLength(5);
+    expect(salaryProfile.microSteps.map((s) => s.salary)).toEqual([50_000, 55_000, 60_000, 65_000, 70_000]);
+    expect(salaryProfile.microSteps.find((s) => s.salary === 60_000)!.isCurrent).toBe(true);
+    expect(salaryProfile.microSteps.find((s) => s.salary === 55_000)!.isCurrent).toBe(false);
+  });
 });
+

@@ -3814,6 +3814,14 @@ input, select { font-variant-numeric: tabular-nums; }
 .wage-matrix-page .tool-hero {
   padding-block: 36px 40px;
 }
+.wage-matrix-page .tool-layout {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-inline: 20px;
+}
+.wage-matrix-page .tool-primary-flow {
+  width: 100%;
+}
 .matrix-direct-answer {
   font-size: 19px;
   line-height: 1.6;
@@ -4318,6 +4326,75 @@ input, select { font-variant-numeric: tabular-nums; }
 .matrix-cta-link a:hover {
   color: #0d5f58;
 }
+
+.matrix-percentile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 14px;
+}
+.matrix-percentile-box {
+  padding: 18px;
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.matrix-percentile-box.is-highlight {
+  background: rgba(201, 255, 85, 0.18);
+  border-color: rgba(32, 119, 103, 0.35);
+}
+.matrix-stat-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+}
+.matrix-percentile-box strong {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+}
+.matrix-percentile-box p {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.45;
+  margin: 2px 0 0;
+}
+
+.matrix-tag-rose {
+  padding: 2px 8px;
+  background: rgba(225, 29, 72, 0.12);
+  color: #be123c;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.matrix-wealth-highlight {
+  color: #0f766e;
+  font-weight: 800;
+}
+.matrix-footnote {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+.matrix-table tbody tr.is-current-row {
+  background: rgba(201, 255, 85, 0.15);
+}
+.matrix-table tbody tr.is-current-row th strong {
+  color: #0f766e;
+}
+
 
 
 

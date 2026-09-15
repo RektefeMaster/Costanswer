@@ -5,7 +5,9 @@
  * calculates verified 2026 state-by-state after-tax take-home pay, identifies
  * matching real-world BLS occupations in that income bracket, models realistic
  * work schedules (PTO, unpaid vacation, part-time), overtime multipliers (1.5x, 2.0x),
- * itemized 50/30/20 monthly budgets, and deep mortgage purchasing power.
+ * itemized 50/30/20 monthly budgets, deep mortgage purchasing power, regional
+ * cost-of-living purchasing power (BEA RPP data), tax filing status comparisons,
+ * income percentile benchmarks, and compound retirement wealth projections.
  */
 import { round } from '@/lib/calculations/contracts';
 import { calculateSalaryAfterTax } from '@/lib/calculations/salary-after-tax';
@@ -30,6 +32,21 @@ export const ANNUAL_SALARIES = [
 export type AnnualSalary = (typeof ANNUAL_SALARIES)[number];
 
 export const TOP_BENCHMARK_STATES: StateCode[] = ['TX', 'FL', 'CA', 'NY', 'WA', 'IL'];
+
+/**
+ * Official Bureau of Economic Analysis (BEA) Regional Price Parities (RPP).
+ * 100.0 represents the national average cost of goods, services, and rents.
+ */
+export const STATE_RPP_DATA: Array<{ stateCode: StateCode; rppIndex: number; costTier: 'Low Cost' | 'Moderate' | 'High Cost' }> = [
+  { stateCode: 'MS', rppIndex: 87.5, costTier: 'Low Cost' },
+  { stateCode: 'AR', rppIndex: 88.2, costTier: 'Low Cost' },
+  { stateCode: 'OH', rppIndex: 91.5, costTier: 'Low Cost' },
+  { stateCode: 'TX', rppIndex: 98.4, costTier: 'Moderate' },
+  { stateCode: 'PA', rppIndex: 97.8, costTier: 'Moderate' },
+  { stateCode: 'FL', rppIndex: 101.2, costTier: 'Moderate' },
+  { stateCode: 'NY', rppIndex: 110.8, costTier: 'High Cost' },
+  { stateCode: 'CA', rppIndex: 112.5, costTier: 'High Cost' },
+];
 
 export function hourlyToSlug(rate: number): string {
   return `${rate}-an-hour`;
@@ -137,6 +154,64 @@ export type Budget503020Itemized = {
   savingsMonthly: number;
 };
 
+export type IncomePercentileData = {
+  percentile: number;
+  classStatus: string;
+  nationalComparison: string;
+  isLivingWageSingle: boolean;
+  isLivingWageFamily: boolean;
+};
+
+export type PurchasingPowerRow = {
+  stateCode: StateCode;
+  stateName: string;
+  rppIndex: number;
+  adjustedEquivalentWage: number;
+  adjustedEquivalentAnnual: number;
+  costOfLivingTier: 'Low Cost' | 'Moderate' | 'High Cost';
+};
+
+export type FilingStatusComparisonRow = {
+  filingStatus: 'Single' | 'Married Filing Jointly' | 'Head of Household';
+  federalTax: number;
+  ficaTax: number;
+  estimatedNetAnnual: number;
+  estimatedNetMonthly: number;
+  estimatedNetBiweekly: number;
+  taxSavingsVsSingle: number;
+};
+
+export type RetirementMilestone = {
+  years: number;
+  totalSaved10Percent: number;
+  totalSaved15Percent: number;
+};
+
+export type RetirementWealthData = {
+  annualSavings10: number;
+  monthlySavings10: number;
+  annualSavings15: number;
+  monthlySavings15: number;
+  milestones: RetirementMilestone[];
+};
+
+export type MicroWageStep = {
+  rate: number;
+  annualGross: number;
+  monthlyGross: number;
+  biweeklyGross: number;
+  weeklyGross: number;
+  isCurrent: boolean;
+};
+
+export type MicroSalaryStep = {
+  salary: number;
+  hourlyEquivalent: number;
+  monthlyGross: number;
+  biweeklyGross: number;
+  isCurrent: boolean;
+};
+
 export type HourlyWageProfile = {
   rate: number;
   slug: string;
@@ -166,6 +241,11 @@ export type HourlyWageProfile = {
   stateTaxes: StateTaxRow[];
   topStates: StateTaxRow[];
   matchedOccupations: MatchedOccupation[];
+  percentileData: IncomePercentileData;
+  purchasingPower: PurchasingPowerRow[];
+  filingStatuses: FilingStatusComparisonRow[];
+  retirementWealth: RetirementWealthData;
+  microSteps: MicroWageStep[];
   closestSalarySlug: string;
   closestSalaryAmount: number;
   neighboringRates: { prev: number | null; next: number | null; nearby: number[] };
@@ -198,6 +278,11 @@ export type AnnualSalaryProfile = {
   stateTaxes: StateTaxRow[];
   topStates: StateTaxRow[];
   matchedOccupations: MatchedOccupation[];
+  percentileData: IncomePercentileData;
+  purchasingPower: PurchasingPowerRow[];
+  filingStatuses: FilingStatusComparisonRow[];
+  retirementWealth: RetirementWealthData;
+  microSteps: MicroSalaryStep[];
   closestHourlySlug: string;
   closestHourlyRate: number;
   neighboringSalaries: { prev: number | null; next: number | null; nearby: number[] };
@@ -474,6 +559,180 @@ function calculateHousingDeep(annualGross: number): HousingAffordabilityDeep {
   };
 }
 
+function calculateIncomePercentile(annualGross: number): IncomePercentileData {
+  let percentile = 50;
+  let classStatus = 'Middle Class';
+  let nationalComparison = 'Near the median U.S. individual worker income';
+
+  if (annualGross < 32_000) {
+    percentile = Math.max(15, Math.round((annualGross / 32_000) * 30));
+    classStatus = 'Lower-Middle Income';
+    nationalComparison = 'In the lower third of individual earners nationally';
+  } else if (annualGross < 45_000) {
+    percentile = Math.round(30 + ((annualGross - 32_000) / 13_000) * 15);
+    classStatus = 'Lower-Middle Class';
+    nationalComparison = 'Approaching the national median individual wage';
+  } else if (annualGross < 65_000) {
+    percentile = Math.round(45 + ((annualGross - 45_000) / 20_000) * 18);
+    classStatus = 'Solid Middle Class';
+    nationalComparison = 'At or above the national median individual wage';
+  } else if (annualGross < 95_000) {
+    percentile = Math.round(63 + ((annualGross - 65_000) / 30_000) * 16);
+    classStatus = 'Upper-Middle Class';
+    nationalComparison = 'In the top 35% of all individual earners nationwide';
+  } else if (annualGross < 140_000) {
+    percentile = Math.round(79 + ((annualGross - 95_000) / 45_000) * 11);
+    classStatus = 'Upper-Middle Class / High Earner';
+    nationalComparison = 'In the top 20% of individual income earners';
+  } else {
+    percentile = Math.min(99, Math.round(90 + ((annualGross - 140_000) / 100_000) * 9));
+    classStatus = 'Top Tier High Earner';
+    nationalComparison = 'In the top 10% of wage earners in the United States';
+  }
+
+  return {
+    percentile,
+    classStatus,
+    nationalComparison,
+    isLivingWageSingle: annualGross >= 38_000,
+    isLivingWageFamily: annualGross >= 72_000,
+  };
+}
+
+function calculatePurchasingPower(annualGross: number, isHourly: boolean): PurchasingPowerRow[] {
+  const hourlyRate = isHourly ? annualGross / 2080 : round(annualGross / 2080, 2);
+
+  return STATE_RPP_DATA.map((item) => {
+    const multiplier = 100 / item.rppIndex;
+    const adjustedEquivalentWage = round(hourlyRate * multiplier, 2);
+    const adjustedEquivalentAnnual = Math.round(annualGross * multiplier);
+
+    return {
+      stateCode: item.stateCode,
+      stateName: getStateName(item.stateCode),
+      rppIndex: item.rppIndex,
+      adjustedEquivalentWage,
+      adjustedEquivalentAnnual,
+      costOfLivingTier: item.costTier,
+    };
+  });
+}
+
+function calculateFilingStatusComparison(annualGross: number): FilingStatusComparisonRow[] {
+  const single = calculateSalaryAfterTax({
+    annualGrossSalary: annualGross,
+    state: 'TX',
+    filingStatus: 'single',
+    taxYear: 2026,
+    dependents: 0,
+  }).value;
+
+  const married = calculateSalaryAfterTax({
+    annualGrossSalary: annualGross,
+    state: 'TX',
+    filingStatus: 'marriedFilingJointly',
+    taxYear: 2026,
+    dependents: 0,
+  }).value;
+
+  const headOfHousehold = calculateSalaryAfterTax({
+    annualGrossSalary: annualGross,
+    state: 'TX',
+    filingStatus: 'headOfHousehold',
+    taxYear: 2026,
+    dependents: 1,
+  }).value;
+
+  return [
+    {
+      filingStatus: 'Single',
+      federalTax: single.federalIncomeTax,
+      ficaTax: single.socialSecurity + single.medicare,
+      estimatedNetAnnual: single.annualTakeHome,
+      estimatedNetMonthly: single.monthlyTakeHome,
+      estimatedNetBiweekly: single.biweeklyTakeHome,
+      taxSavingsVsSingle: 0,
+    },
+    {
+      filingStatus: 'Married Filing Jointly',
+      federalTax: married.federalIncomeTax,
+      ficaTax: married.socialSecurity + married.medicare,
+      estimatedNetAnnual: married.annualTakeHome,
+      estimatedNetMonthly: married.monthlyTakeHome,
+      estimatedNetBiweekly: married.biweeklyTakeHome,
+      taxSavingsVsSingle: Math.max(0, single.federalIncomeTax - married.federalIncomeTax),
+    },
+    {
+      filingStatus: 'Head of Household',
+      federalTax: headOfHousehold.federalIncomeTax,
+      ficaTax: headOfHousehold.socialSecurity + headOfHousehold.medicare,
+      estimatedNetAnnual: headOfHousehold.annualTakeHome,
+      estimatedNetMonthly: headOfHousehold.monthlyTakeHome,
+      estimatedNetBiweekly: headOfHousehold.biweeklyTakeHome,
+      taxSavingsVsSingle: Math.max(0, single.federalIncomeTax - headOfHousehold.federalIncomeTax),
+    },
+  ];
+}
+
+function calculateRetirementWealth(annualGross: number): RetirementWealthData {
+  const annualSavings10 = round(annualGross * 0.10, 0);
+  const monthlySavings10 = round(annualSavings10 / 12, 0);
+  const annualSavings15 = round(annualGross * 0.15, 0);
+  const monthlySavings15 = round(annualSavings15 / 12, 0);
+
+  const r = 0.07 / 12; // 7% real compound stock market growth rate
+  const calcFv = (pmt: number, years: number) => {
+    const n = years * 12;
+    return Math.round(pmt * ((Math.pow(1 + r, n) - 1) / r));
+  };
+
+  const milestones: RetirementMilestone[] = [10, 20, 30, 40].map((years) => ({
+    years,
+    totalSaved10Percent: calcFv(monthlySavings10, years),
+    totalSaved15Percent: calcFv(monthlySavings15, years),
+  }));
+
+  return {
+    annualSavings10,
+    monthlySavings10,
+    annualSavings15,
+    monthlySavings15,
+    milestones,
+  };
+}
+
+function calculateMicroWageSteps(rate: number): MicroWageStep[] {
+  const offsets = [-2, -1, 0, 1, 2];
+  return offsets.map((offset) => {
+    const r = Math.max(10, rate + offset);
+    const annualGross = r * 2080;
+    return {
+      rate: r,
+      annualGross,
+      monthlyGross: round(annualGross / 12, 2),
+      biweeklyGross: round(annualGross / 26, 2),
+      weeklyGross: round(annualGross / 52, 2),
+      isCurrent: offset === 0,
+    };
+  });
+}
+
+function calculateMicroSalarySteps(salary: number): MicroSalaryStep[] {
+  const currentK = Math.round(salary / 1000);
+  const offsets = [-10, -5, 0, 5, 10];
+  return offsets.map((offset) => {
+    const k = Math.max(25, currentK + offset);
+    const s = k * 1000;
+    return {
+      salary: s,
+      hourlyEquivalent: round(s / 2080, 2),
+      monthlyGross: round(s / 12, 2),
+      biweeklyGross: round(s / 26, 2),
+      isCurrent: offset === 0,
+    };
+  });
+}
+
 function getNeighboringRates(rate: number): { prev: number | null; next: number | null; nearby: number[] } {
   const index = HOURLY_RATES.indexOf(rate as HourlyRate);
   if (index === -1) return { prev: null, next: null, nearby: [] };
@@ -502,7 +761,7 @@ function getNeighboringSalaries(salary: number): { prev: number | null; next: nu
 
 function getClosestSalary(rate: number): { slug: string; amount: number } {
   const target = rate * 2080;
-  let closest = ANNUAL_SALARIES[0];
+  let closest: AnnualSalary = ANNUAL_SALARIES[0];
   let minDiff = Math.abs(closest - target);
 
   for (const s of ANNUAL_SALARIES) {
@@ -518,7 +777,7 @@ function getClosestSalary(rate: number): { slug: string; amount: number } {
 
 function getClosestHourly(salary: number): { slug: string; rate: number } {
   const target = salary / 2080;
-  let closest = HOURLY_RATES[0];
+  let closest: HourlyRate = HOURLY_RATES[0];
   let minDiff = Math.abs(closest - target);
 
   for (const r of HOURLY_RATES) {
@@ -575,6 +834,11 @@ export function getHourlyWageProfile(rate: number): HourlyWageProfile {
     stateTaxes,
     topStates,
     matchedOccupations: findMatchingOccupations(annualGross),
+    percentileData: calculateIncomePercentile(annualGross),
+    purchasingPower: calculatePurchasingPower(annualGross, true),
+    filingStatuses: calculateFilingStatusComparison(annualGross),
+    retirementWealth: calculateRetirementWealth(annualGross),
+    microSteps: calculateMicroWageSteps(rate),
     closestSalarySlug: closestSalary.slug,
     closestSalaryAmount: closestSalary.amount,
     neighboringRates: getNeighboringRates(rate),
@@ -622,6 +886,11 @@ export function getAnnualSalaryProfile(salary: number): AnnualSalaryProfile {
     stateTaxes,
     topStates,
     matchedOccupations: findMatchingOccupations(salary),
+    percentileData: calculateIncomePercentile(salary),
+    purchasingPower: calculatePurchasingPower(salary, false),
+    filingStatuses: calculateFilingStatusComparison(salary),
+    retirementWealth: calculateRetirementWealth(salary),
+    microSteps: calculateMicroSalarySteps(salary),
     closestHourlySlug: closestHourly.slug,
     closestHourlyRate: closestHourly.rate,
     neighboringSalaries: getNeighboringSalaries(salary),
