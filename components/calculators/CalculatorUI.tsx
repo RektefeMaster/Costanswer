@@ -37,11 +37,18 @@ const serverHydratedSnapshot = () => false;
 const ToolAnalyticsContext = createContext<{ toolId: string; category: CategoryId } | null>(null);
 
 type ResultDockState = { label: string; value: string; tone: string };
-const ResultDockContext = createContext<{
-  dock: ResultDockState | null;
+/*
+ * Write and read are separate contexts on purpose. Putting live `dock` state
+ * into the same object PrimaryResult's effect depends on recreates that object
+ * on every setDock, which re-runs the effect (cleanup setDock(null) → setDock
+ * again) and trips "Maximum update depth exceeded". Setters stay stable;
+ * readers subscribe to dock state without poisoning the write path.
+ */
+const ResultDockWriteContext = createContext<{
   setDock: (state: ResultDockState | null) => void;
   setDockVisible: (visible: boolean) => void;
 } | null>(null);
+const ResultDockReadContext = createContext<ResultDockState | null>(null);
 
 type FieldProps = {
   label: string;
@@ -178,27 +185,30 @@ export function CalculatorPanel({
 
   const [dock, setDock] = useState<ResultDockState | null>(null);
   const [dockVisible, setDockVisible] = useState(false);
-  const dockApi = useMemo(() => ({ dock, setDock, setDockVisible }), [dock]);
+  const dockWrite = useMemo(() => ({ setDock, setDockVisible }), []);
 
   return (
     <ToolAnalyticsContext.Provider value={{ toolId, category }}>
-      <ResultDockContext.Provider value={dockApi}>
-        <section className={`calculator-panel${dockVisible ? ' dock-visible' : ''}`} aria-labelledby="calculator-title" data-hydrated={hydrated} onInputCapture={markStarted} onChangeCapture={markStarted}>
-          <div className="calculator-heading">
-            <p>Your numbers</p>
-            <h2 id="calculator-title">{title}</h2>
-            <span>{intro}</span>
-          </div>
-          {children}
-          {dock && <ResultDock label={dock.label} value={dock.value} tone={dock.tone} />}
-        </section>
-      </ResultDockContext.Provider>
+      <ResultDockWriteContext.Provider value={dockWrite}>
+        <ResultDockReadContext.Provider value={dock}>
+          <section className={`calculator-panel${dockVisible ? ' dock-visible' : ''}`} aria-labelledby="calculator-title" data-hydrated={hydrated} onInputCapture={markStarted} onChangeCapture={markStarted}>
+            <div className="calculator-heading">
+              <p>Your numbers</p>
+              <h2 id="calculator-title">{title}</h2>
+              <span>{intro}</span>
+            </div>
+            {children}
+            {dock && <ResultDock label={dock.label} value={dock.value} tone={dock.tone} />}
+          </section>
+        </ResultDockReadContext.Provider>
+      </ResultDockWriteContext.Provider>
     </ToolAnalyticsContext.Provider>
   );
 }
 
 function ResultDock({ label, value, tone }: ResultDockState) {
-  const dock = useContext(ResultDockContext);
+  const dockWrite = useContext(ResultDockWriteContext);
+  const setDockVisible = dockWrite?.setDockVisible;
   const [visible, setVisible] = useState(false);
   const resultInView = useRef(true);
   const panelInView = useRef(true);
@@ -218,7 +228,7 @@ function ResultDock({ label, value, tone }: ResultDockState) {
     const sync = () => {
       const next = panelInView.current && !resultInView.current;
       setVisible((current) => (current === next ? current : next));
-      dock?.setDockVisible(next);
+      setDockVisible?.(next);
     };
 
     const resultObserver = new IntersectionObserver((entries) => {
@@ -240,10 +250,10 @@ function ResultDock({ label, value, tone }: ResultDockState) {
     return () => {
       resultObserver.disconnect();
       panelObserver.disconnect();
-      dock?.setDockVisible(false);
+      setDockVisible?.(false);
       setVisible(false);
     };
-  }, [dock, label, value]);
+  }, [setDockVisible, label, value]);
 
   return (
     <p className={`result-dock result-${tone}${visible ? ' is-visible' : ''}`} aria-hidden="true">
@@ -254,13 +264,14 @@ function ResultDock({ label, value, tone }: ResultDockState) {
 }
 
 export function PrimaryResult({ label, value, note, tone = 'mint' }: { label: string; value: string; note?: string; tone?: string }) {
-  const dock = useContext(ResultDockContext);
+  const dockWrite = useContext(ResultDockWriteContext);
+  const setDock = dockWrite?.setDock;
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    dock?.setDock({ label, value, tone });
-    return () => dock?.setDock(null);
-  }, [dock, label, value, tone]);
+    setDock?.({ label, value, tone });
+    return () => setDock?.(null);
+  }, [setDock, label, value, tone]);
 
   useEffect(() => {
     if (!copied) return;
@@ -342,9 +353,9 @@ export function CalculationReceipt({
     if (analytics) emitAnalyticsEvent('result_interaction', { ...analytics, interaction });
   };
 
-  const dock = useContext(ResultDockContext);
+  const dock = useContext(ResultDockReadContext);
   const resolvedHeadline = headline
-    ?? (dock?.dock ? { label: dock.dock.label, value: dock.dock.value } : null)
+    ?? (dock ? { label: dock.label, value: dock.value } : null)
     ?? { label: 'Result', value: breakdown[breakdown.length - 1]?.value ?? '' };
 
   const [reportStatus, setReportStatus] = useState<string | null>(null);

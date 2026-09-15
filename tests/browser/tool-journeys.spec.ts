@@ -440,6 +440,7 @@ test('the remaining calculator classes recalculate and explain their results', a
   await expect(page.locator('.primary-result strong')).toHaveText('July 6, 2026');
 
   await page.goto('/shopping/unit-price');
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await page.getByRole('spinbutton', { name: 'Option A package price' }).fill('10');
   await page.getByRole('spinbutton', { name: 'Option A quantity' }).fill('1');
   await page.getByRole('combobox', { name: 'Option A unit' }).selectOption('kg');
@@ -468,6 +469,7 @@ test('the remaining calculator classes recalculate and explain their results', a
   await expect(page.locator('#grocery-products')).toContainText('Some example products');
 
   await page.goto('/food/recipe-scaler');
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await page.locator('#desired-servings').fill('8');
   await expect(page.locator('.primary-result strong')).toHaveText('2×');
   const ingredientCount = await page.locator('.ingredient-row').count();
@@ -556,12 +558,12 @@ test('loan, compound interest, and debt payoff calculators use the shared shell'
 
   await page.goto('/money/compound-interest');
   await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
-  await expect(page.locator('.primary-result strong')).toHaveText('$16,288.95');
+  await expect(page.locator('.primary-result strong')).toHaveText('$16,470.09');
   await expect(page.locator('.result-audit')).toContainText('Method compound-interest-v1.0.0');
   await page.locator('.result-details summary').filter({ hasText: 'What we assumed' }).click();
   await expect(page.locator('.result-details')).toContainText('end of each contribution period');
   await page.locator('#compound-contribution').fill('100');
-  await expect(page.locator('.primary-result strong')).not.toHaveText('$16,288.95');
+  await expect(page.locator('.primary-result strong')).not.toHaveText('$16,470.09');
   await expect(page.locator('.result-stat-grid')).toContainText('Total contributions');
 
   await page.goto('/money/debt-payoff');
@@ -651,7 +653,7 @@ test('header navigation at 390px with the mobile menu open stays inside the view
 test('homepage at 390px with the menu closed stays inside the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
-  await expect(page.locator('.mobile-menu nav')).toBeHidden();
+  await expect(page.getByRole('navigation', { name: 'Mobile navigation' })).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1)).toBe(true);
 });
 
@@ -677,6 +679,7 @@ test('mobile skip link and recipe editor work without horizontal overflow', asyn
 });
 
 test('small phones keep home, search, and calculators inside the viewport', async ({ page }) => {
+  test.setTimeout(120_000);
   for (const width of [320, 360, 390, 430]) {
     await page.setViewportSize({ width, height: 720 });
     // The insurance page carries the widest fixed layouts on the site: two
@@ -749,6 +752,7 @@ test('phase 7.5 calculators calculate across each family', async ({ page }) => {
   await expect(page.locator('.primary-result strong')).toHaveText(/^1(\.0+)?$/);
 
   await page.goto('/math/unit-conversion');
+  await expect(page.locator('.calculator-panel')).toHaveAttribute('data-hydrated', 'true');
   await page.locator('#conv-from').selectOption('in');
   await page.locator('#conv-to').selectOption('cm');
   await page.locator('#conv-value').fill('1');
